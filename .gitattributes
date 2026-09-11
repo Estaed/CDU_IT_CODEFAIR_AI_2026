@@ -1,0 +1,21 @@
+# Normalize line endings so a Windows checkout and a Linux CI runner see the
+# same bytes; this template is edited on Windows but its scripts run wherever
+# a clone lands, and a silently mismatched EOL breaks Bash's `#!/bin/bash`
+# shebang parsing (a CRLF script fails with "bad interpreter") while a batch
+# file that isn't CRLF can fail to run under cmd.exe. So: text is normalized
+# by default, shell scripts are forced to LF, Windows launchers to CRLF, and
+# known binaries are marked so Git never attempts to diff or convert them.
+
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary

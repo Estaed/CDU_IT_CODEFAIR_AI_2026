@@ -80,9 +80,10 @@ Datasets is a judging criterion; every source below goes into the report.
 
 ## Open questions
 
-- Region scale: whole NT or one region (e.g. Katherine / Big Rivers)? One region makes
-  the map readable and the story tighter. Leaning one region, confirm with Tarik.
+- Region scale: **whole NT** (decided 2026-09-12). Map must stay readable at that scale:
+  cluster by region (Darwin, Katherine/Big Rivers, Barkly, Central), zoom to region.
 - Whether the tenant view is a separate page or a mode of the same app.
 - How the equity term is defined so it is defensible in Q&A (wait-time cap? exposure
-  penalty? explicit weight?). Candidate for a short idea-arena if it stays open.
-- Deadline 30 Sep vs 8 Oct: organiser asked? Not yet as of 2026-09-12.
+  penalty? explicit weight?). Proposed after research item 5; no idea-arena (decided).
+- Deadline: **30 Sep 2026** is the target (decided 2026-09-12). Organiser not asked.
+- Not a ticketing / field-service system. Decision support only: rank, explain, sign.

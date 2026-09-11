@@ -1,5 +1,8 @@
 # Notes — raw dump, 2026-09-12
 
+Project name: **Fair Turn** (decided 2026-09-12). Package/module name `fair_turn`,
+repo folder stays as is. Report title: "Fair Turn: ..." (subtitle at PRD time).
+
 Brief chosen: **1. Housing maintenance triage** (docs/task-briefs.md). Decided 2026-09-12
 after weighing all six against the judging criteria; runner-up was 4 (inspection
 prioritisation), whose feedback-loop trap we fold in as a measured extra.

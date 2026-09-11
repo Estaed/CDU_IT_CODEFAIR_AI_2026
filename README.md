@@ -100,6 +100,26 @@ Link" points at the *Data Innovation Challenge Requirement* page, and the file n
 that page reads `DataChallenge_Team xx(number)_Report.pdf`. Ask the organisers whether the AI
 Challenge wants its own prefix, and until they answer, follow the published rule literally.
 
+## A second live AI Challenge page contradicts this one (found 12 September 2026)
+
+<https://itcodefair.cdu.edu.au/ai-challenge-2/> is live alongside `/ai-challenge/` and
+gives different facts. Fetched and compared 12 September 2026:
+
+| Item | `/ai-challenge/` (transcribed above) | `/ai-challenge-2/` |
+|---|---|---|
+| Registration closing | Tue 15 Sep 2026 | Fri 12 Sep 2026 |
+| Final submission | Thu 8 Oct 2026 (30 Sep in process section) | Wed 30 Sep 2026 |
+| Challenge Day | Thu 15 Oct 2026 | Wed 7 Oct 2026 |
+| Judges | Cat Kutay (CDU), Rushi Vyas (OpenAI), 2 TBD | Bruno Braga, Sarah Strzelecki, Mohammad Aurangzeb Khan, Sandeep Rasali (all NT Govt DCDD) |
+| Resources | none | connectivity datasets (ADII, NBN, ACCC, ACMA, ABS TableBuilder, First Nations Connectivity Mapping Tool) |
+
+The `/ai-challenge-2/` resources list is connectivity-oriented and its judges match the
+Data Innovation Challenge page, so it may be a stale copy. Not resolved. Registration is
+done. **30 September is the only submission date safe under both pages; build for it.**
+Ask the organisers which Challenge Day and which panel is real. Write the report so it
+works for either panel: NT Government digital-services staff ("could we pilot this?") as
+well as academic and industry AI judges.
+
 ## Challenge Day
 
 **Thursday 15 October 2026, 09:00–17:00**, Festival Learning Space 1.12, Danala | ECP,

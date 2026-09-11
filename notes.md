@@ -87,3 +87,37 @@ Datasets is a judging criterion; every source below goes into the report.
   penalty? explicit weight?). Proposed after research item 5; no idea-arena (decided).
 - Deadline: **30 Sep 2026** is the target (decided 2026-09-12). Organiser not asked.
 - Not a ticketing / field-service system. Decision support only: rank, explain, sign.
+
+## What the research changed (2026-09-12, five reports in reports/)
+
+- **NT policy itself encodes the town/remote gap.** FS17 (10/2025): Urgent 2 business
+  days town / 5 remote; Routine 10 / 25. The tenant-facing site publishes no timeframes
+  at all. Our twist is documented, not assumed. Tenant view fills a real disclosure gap.
+- Scale: 73 remote communities + 17 town camps, ~5,500 dwellings. Synthetic set sized to
+  that. Measured NT wait gap: none published (TBD); WA OAG 2025 analogue 21.9 vs 10.6 days.
+- QLD escalates fan / hot-water faults to 24 h *in remote communities* — real-world
+  precedent for an equity term inside the class definition.
+- Household vulnerability and heat appear in no official class. They are our extension;
+  say so. Frame as **health risk**, not deficit ("vulnerable"), for the CDU judge.
+- Heat: NT Health warnings + BoM Excess Heat Factor (relative, not a fixed °C). No BoM
+  API; Open-Meteo (keyless, CC BY) or a frozen climate CSV.
+- Geography: BushTel undocumented JSON API gives 96 major/minor communities with
+  lat/lon, population, region, road access, km-to-town (licence TBD). Cross-check with
+  data.nt.gov.au mobile-coverage XLSX (CC BY) and ABS ILOC 2021 (CC BY 4.0). Road report
+  live feed exists (snapshot only, no history): 90-day closures are synthetic, labelled.
+  Distances: frozen matrix pre-computed (OSRM demo or haversine), no network at demo time.
+- **Cultural safety:** CARE / AIATSIS imply real geography, fictional settlement names,
+  stated on the UI and in the report. Decision: Tarik's, pending.
+- LLM: Citations cannot combine with structured outputs (HTTP 400). Source phrase is a
+  schema field, verified as a literal substring in Python. Draw the label distribution in
+  Python first, then let the LLM write the text (gives free ground truth). Extraction is
+  an offline build step; the Streamlit app runs with no API key.
+- No open dataset of real tenant-voice repair text exists; 311 data is taxonomy only.
+- Framing: equity slider = "price of fairness" (Bertsimas 2011). Counterfactuals for
+  rankings are thin in the literature (Tan 2021); ours are exact, not searched.
+  Feedback loop: Ensign 2018 + Altenburger & Ho 2019. Ethics: Australia's 8 AI Ethics
+  Principles (contestability, transparency, accountability) + NT Government AI Policy and
+  AI Assurance Framework (DCDD; date contradictory, verify in browser).
+- Competition: two live pages disagree (see README). 30 Sep target holds. Panel may be
+  four NT Government DCDD staff: write for "could we pilot this". Past winners never
+  published. The thing must run in the room.

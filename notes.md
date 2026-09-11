@@ -108,6 +108,10 @@ Datasets is a judging criterion; every source below goes into the report.
   Distances: frozen matrix pre-computed (OSRM demo or haversine), no network at demo time.
 - **Cultural safety:** CARE / AIATSIS imply real geography, fictional settlement names,
   stated on the UI and in the report. Decision: Tarik's, pending.
+- **No deficit language (decided 2026-09-12).** The factor is "household health risk",
+  never "vulnerability" / "vulnerable". Tenant text is plain language, no blame. Applies to
+  code identifiers, UI, report.
+- Organiser contact (dates, panel): Tarik handles directly, not a project task.
 - LLM: Citations cannot combine with structured outputs (HTTP 400). Source phrase is a
   schema field, verified as a literal substring in Python. Draw the label distribution in
   Python first, then let the LLM write the text (gives free ground truth). Extraction is

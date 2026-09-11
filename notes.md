@@ -145,3 +145,17 @@ Datasets is a judging criterion; every source below goes into the report.
   log. National framework v1.0 (21 Jun 2024, agreed in Darwin). Wording: year-7 reading
   level, ~15-word sentences, active voice, no deficit language (Style Manual).
   Out of scope, say so: merits-review path, NT self-assurance, transparency statement.
+- **Community identity (decided 2026-09-12): pseudonymous, not fictional names.** Each
+  community is a region-coded id ("Big Rivers R-07") shown with its real attributes
+  (population band, road type, km to town, wet-season closure). No invented
+  Aboriginal-sounding names. Every card carries a provenance label ("geography real:
+  BushTel/ABS; events synthetic"). The id-to-real-name mapping lives outside the repo; in a
+  real pilot the key sits with the agency and community representatives (CARE "authority
+  to control" as a design pattern, not a paragraph).
+- Baseline model (proposed, cheap): TF-IDF + logistic regression on the synthetic set for
+  fault class / safety class, compared with LLM extraction on the same 150 labelled items.
+  Gives a comparison table, a no-API fallback, and a measured "why LLM" answer. No LLM
+  fine-tuning: nothing real to train on, and train/test on the same synthetic set is a
+  judge's question we cannot answer.
+- Coordinator workflow: research bee 8 running (job ads, program docs, audits) so the PRD
+  persona is sourced. Real-coordinator interview: ask at the September workshop.

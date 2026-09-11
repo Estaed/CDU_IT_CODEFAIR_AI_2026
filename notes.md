@@ -128,3 +128,20 @@ Datasets is a judging criterion; every source below goes into the report.
 - Competition: two live pages disagree (see README). 30 Sep target holds. Panel may be
   four NT Government DCDD staff: write for "could we pilot this". Past winners never
   published. The thing must run in the room.
+- Evals (report 6): 150 hand-labelled reports, per-field P/R/F1, span exact+partial,
+  Wilson 95% CI; pandas+sklearn only. LLM self-reported confidence is NOT shown in the UI
+  (undocumented reliability); "no source phrase = field empty = human queue" instead.
+  Injection: ranking never reads LLM free text, spans substring-verified, 20-item
+  adversarial subset asserts rank unchanged. Oversight: decide-before-reveal (Buçinca
+  2021), show disagreement, own override rate on the audit screen. Feedback loop: no
+  published decay model; decay rate is a labelled, slider-exposed assumption.
+- Assurance (report 7): NT AI Assurance Framework is **November 2025**, six principles
+  (Community benefit, Safety, Fairness, Privacy and security, Transparency incl.
+  contestability, Accountability). NT AI Policy: no personal/sensitive data into
+  third-party AI tools (fault reports qualify: health, racial origin) -> synthetic data is
+  also a compliance argument; "validate AI-generated content before use" = our human
+  queue. DTA policy is v2.0 (15 Dec 2025). AI impact assessment tool s9.1 names housing as
+  a significant effect; s11.1 asks for the decision-maker's reasoning record = sign-off
+  log. National framework v1.0 (21 Jun 2024, agreed in Darwin). Wording: year-7 reading
+  level, ~15-word sentences, active voice, no deficit language (Style Manual).
+  Out of scope, say so: merits-review path, NT self-assurance, transparency statement.

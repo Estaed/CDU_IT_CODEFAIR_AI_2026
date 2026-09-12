@@ -20,7 +20,7 @@ numbers).
 - [ ] Task-05: Feedback-loop simulation
 - [ ] Task-06: Explanation templates
 - [ ] Task-07: Audit log
-- [ ] Task-08: Extraction schema and source-phrase verification
+- [x] Task-08: Extraction schema and source-phrase verification
 - [ ] Task-09: CLI wrappers for the two subscription models
 - [ ] Task-10: Generate the synthetic report texts
 - [ ] Task-11: Extract typed fields from every report, plus the adversarial set
@@ -49,7 +49,7 @@ Summary of each task's Execution and Lane blocks; the task file wins on disagree
 | 05 | codex | no | high | 04 |
 | 06 | codex | no | high | 02 |
 | 07 | codex | no | medium | 02 |
-| 08 | codex | no | high | 02 |
+| 08 | claude | no | high | 02 |
 | 09 | claude | no | high | 08 |
 | 10 | claude | no | high | 03, 09 |
 | 11 | claude | no | high | 10 |

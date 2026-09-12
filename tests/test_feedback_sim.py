@@ -1,0 +1,127 @@
+"""Feedback-loop simulation over the committed labels (Task-05 acceptance criteria)."""
+
+import csv
+import json
+import time
+from datetime import date
+from functools import cache
+from pathlib import Path
+
+import pytest
+
+from fair_turn.core import capacity_sim, constants, feedback_sim
+from fair_turn.core.capacity_sim import Closure, Site
+from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
+
+BUILD_DIR = Path(__file__).resolve().parent.parent / "data" / "build"
+DECAY = 0.5
+
+
+@cache
+def artefacts() -> tuple[list[Job], dict[str, Site], list[Closure]]:
+    if not (BUILD_DIR / "labels.json").exists():
+        pytest.skip("data/build/labels.json absent")
+    with (BUILD_DIR / "communities.csv").open(newline="", encoding="utf-8") as f:
+        rows = {r["community_id"]: r for r in csv.DictReader(f)}
+    sites = {cid: Site(r["region"], float(r["km_to_base"])) for cid, r in rows.items()}
+    jobs = []
+    for label in json.loads((BUILD_DIR / "labels.json").read_text(encoding="utf-8")):
+        community = rows[label["community_id"]]
+        jobs.append(
+            Job(
+                job_id=label["job_id"],
+                community_id=label["community_id"],
+                is_remote=community["is_remote"] == "True",
+                reported_on=date.fromisoformat(label["reported_on"]),
+                fault_type=FaultType(label["fault_type"]),
+                safety_class=SafetyClass(label["safety_class"]),
+                health_risk=frozenset(HealthRiskFactor(h) for h in label["health_risk"]),
+                logistics_factor=float(community["logistics_factor"]),
+            )
+        )
+    closures = [
+        Closure(
+            c["community_id"],
+            date.fromisoformat(c["closed_from"]),
+            date.fromisoformat(c["closed_to"]),
+        )
+        for c in json.loads((BUILD_DIR / "closures.json").read_text(encoding="utf-8"))
+    ]
+    return jobs, sites, closures
+
+
+@cache
+def series(lam: float, decay: float, seed: int = constants.SEED) -> feedback_sim.WeeklySeries:
+    jobs, sites, closures = artefacts()
+    return feedback_sim.run(jobs, sites, lam, decay, seed, closures)
+
+
+def test_decay_zero_is_the_plain_capacity_run() -> None:
+    jobs, sites, closures = artefacts()
+    crews = {r: constants.CREWS_PER_REMOTE_REGION for r in constants.REMOTE_REGIONS}
+    crews[constants.TOWN_REGION] = constants.CREWS_TOWN
+    horizon = constants.WINDOW_DAYS + feedback_sim.COMPLETION_TAIL_DAYS
+    plain = capacity_sim.simulate(
+        jobs,
+        1.0,
+        constants.WINDOW_START,
+        horizon,
+        closures,
+        crews,
+        constants.JOBS_PER_CREW_DAY,
+        constants.TRAVEL_DAY_KM,
+        sites,
+    )
+    result = series(1.0, 0.0)
+    assert result.sim == plain
+    assert sum(result.reports_town) == sum(not j.is_remote for j in jobs)
+    assert sum(result.reports_remote) == sum(j.is_remote for j in jobs)
+    assert len(result.week_start) == 13
+    # Weekly medians are drawn from the plain run's waits, censored at the horizon end.
+    first_week = [
+        j for j in jobs if j.is_remote and (j.reported_on - constants.WINDOW_START).days < 7
+    ]
+    end = date.fromordinal(constants.WINDOW_START.toordinal() + horizon)
+    waits = sorted(
+        plain.wait_days[j.job_id]
+        if plain.wait_days[j.job_id] is not None
+        else (end - j.reported_on).days
+        for j in first_week
+    )
+    mid = len(waits) // 2
+    expected = waits[mid] if len(waits) % 2 else (waits[mid - 1] + waits[mid]) / 2
+    assert result.median_wait_remote[0] == expected
+
+
+def test_efficiency_only_makes_remote_demand_look_like_it_dried_up() -> None:
+    result = series(1.0, DECAY)
+    assert sum(result.reports_remote[-4:]) < sum(result.reports_remote[:4])
+    assert result.gap[11] > result.gap[0]
+
+
+def test_equity_setting_keeps_remote_reporting() -> None:
+    result = series(0.0, DECAY)
+    assert sum(result.reports_remote[-4:]) >= 0.9 * sum(result.reports_remote[:4])
+
+
+def test_decay_thins_only_where_reports_went_unserved() -> None:
+    plain, decayed = series(1.0, 0.0), series(1.0, DECAY)
+    assert decayed.reports_remote[0] == plain.reports_remote[0]  # no history in week 1
+    assert sum(decayed.reports_remote) < sum(plain.reports_remote)
+    assert all(d <= p for d, p in zip(decayed.reports_town, plain.reports_town, strict=True))
+
+
+def test_deterministic_for_a_seed_and_seed_changes_thinning() -> None:
+    jobs, sites, closures = artefacts()
+    again = feedback_sim.run(jobs, sites, 1.0, DECAY, constants.SEED, closures)
+    assert again == series(1.0, DECAY)
+    other = series(1.0, DECAY, constants.SEED + 1)
+    assert other.sim.completed_on.keys() != again.sim.completed_on.keys()
+
+
+@pytest.mark.parametrize("lam", [0.0, 1.0])
+def test_ninety_days_runs_under_twenty_seconds(lam: float) -> None:
+    jobs, sites, closures = artefacts()
+    began = time.perf_counter()
+    feedback_sim.run(jobs, sites, lam, 1.0, constants.SEED, closures)
+    assert time.perf_counter() - began < 20.0

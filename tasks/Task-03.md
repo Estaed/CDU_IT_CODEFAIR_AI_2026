@@ -1,5 +1,7 @@
 # Task-03: Synthetic labels, personas, closures and climate table
 
+Status: DONE
+
 > **Execution:** agent `claude` (main loop) · effort `high` · plan mode **yes**
 > *Why:* the skew design (which mechanisms differ town/remote and by how much) is the trust twist's evidence base; the how is still open in places and the choices go in the report.
 
@@ -26,8 +28,8 @@ plus the household personas the generator will be conditioned on.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] Four artefacts committed; `build_labels.py` twice yields byte-identical output.
-- [ ] `test_synth.py` passes, including the distribution assertions above.
-- [ ] Every provisional proportion used is listed in `constants.md` with "provisional, PRD §6.2".
-- [ ] `test_wording.py` and the real-name test still pass over the new artefacts.
-- [ ] Gate green.
+- [x] Four artefacts committed; `build_labels.py` twice yields byte-identical output.
+- [x] `test_synth.py` passes, including the distribution assertions above.
+- [x] Every provisional proportion used is listed in `constants.md` with "provisional, PRD §6.2".
+- [x] `test_wording.py` and the real-name test still pass over the new artefacts.
+- [x] Gate green.

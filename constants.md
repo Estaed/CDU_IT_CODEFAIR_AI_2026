@@ -24,3 +24,14 @@ is two logged-in CLIs).
 | `HEAT_SEASON_MONTHS` | Oct–Mar | Extreme-heat exposure factor | NT Health heat-health advice (reports/2026-09-12-research-data-and-stack.md) |
 | `WET_SEASON_MONTHS` | Oct–Apr | Road-logistics season | BoM NT seasonal summaries (same report) |
 | `ROAD_FACTORS` (in `fair_turn/data/geography.py`) | sealed 1.0, unsealed 1.4, barge_or_air 2.5 | Multiplier on haversine km giving `logistics_factor` | Provisional project assumption (Task-01); no NT source |
+| `REPORT_TARGET`, `REMOTE_REPORT_SHARE` (in `fair_turn/data/synth.py`) | 1500, 0.6 | Expected report count and remote share of the synthetic window | Provisional, PRD §6.2; NT work-order volumes are unpublished |
+| `REMOTE_REPORT_RATE_RATIO` (`synth.py`) | 0.8 | A remote fault becomes a report with this probability, town 1.0: mechanism 3, static part | Provisional, PRD §6.2 |
+| `HOLDOUT_COUNT` (`synth.py`) | 150 | Labels flagged for the evaluation set | PRD §6.4 |
+| `POPULATION_BAND_MIDPOINTS` (`synth.py`) | 50 / 175 / 375 / 750 / 1500; not recorded 100 | Weight of a remote community in the fault draw | Provisional, PRD §6.2 |
+| `TOWN_REPORT_WEIGHTS` (`synth.py`) | Darwin .55, Alice Springs .20, Katherine .12, Nhulunbuy .07, Tennant Creek .06 | Split of town reports across the five base towns (no population band in the table) | Provisional, PRD §6.2 |
+| `FAULT_MIX`, `HEAT_RAMP` (`synth.py`) | plumbing .20, electrical .14, doors .12, cooling .10, sewer .10, roof .08, hot water .07, stove .07, pests .06, other .06; cooling ×1.0/1.3/1.6 and hot water ×1.0/1.1/1.2 Oct/Nov/Dec | Fault-type mix and its within-window heat ramp | Provisional, PRD §6.2; categories from FS17 and reports/2026-09-12-research-housing.md item 4 |
+| `SAFETY_MIX_BY_FAULT` (`synth.py`) | per fault type, P(immediate, urgent, routine); overall about 8 / 45 / 47 % | Safety class conditional on fault type | Provisional, PRD §6.2; FS17 gives example faults per class, not proportions |
+| `NO_WATER_PROBABILITY` (`synth.py`) | 0.6 | Chance an immediate/urgent water or sewer fault leaves the household without water or sanitation | Provisional, PRD §6.2 |
+| `CLOSURES_PER_MONTH`, `CLOSURE_DAYS` (`synth.py`) | Poisson mean 0.15 / 0.4 / 0.9 per closable community Oct/Nov/Dec; 2–10 days each | Synthetic wet-season access closures: mechanism 2 | Provisional, PRD §6.2; no NT closure history exists |
+| `MONTHLY_MEAN_MAX` (`synth.py`) | five BoM stations, Oct/Nov/Dec mean maximum | Base of the daily climate table | BoM climate statistics pages, station ids in `synth.py`; UNVERIFIED, see `data/raw/PROVENANCE.md` |
+| `TEMP_AR_PHI`, `TEMP_ANOMALY_SD`, `HEAT_WARNING_EXCESS_C`, `HEAT_WARNING_DAYS` (`synth.py`) | 0.6, 2.5 °C, 2.0 °C, 3 days | Daily anomaly persistence and the relative heat-warning rule | Provisional, PRD §6.2; EHF-style relative framing from reports/2026-09-12-research-data-and-stack.md §3, thresholds ours |

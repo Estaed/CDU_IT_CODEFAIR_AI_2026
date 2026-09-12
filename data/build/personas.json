@@ -1,0 +1,352 @@
+[
+ {
+  "persona_id": "P-01",
+  "register": "terse",
+  "composition": "single adult, lives alone",
+  "tenure_years": 3,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-02",
+  "register": "terse",
+  "composition": "couple, no children",
+  "tenure_years": 7,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-03",
+  "register": "terse",
+  "composition": "two adults, two school-age children, house gets very hot by afternoon",
+  "tenure_years": 5,
+  "household_factors": [
+   "extreme_heat_exposure"
+  ]
+ },
+ {
+  "persona_id": "P-04",
+  "register": "terse",
+  "composition": "grandmother raising two grandchildren, youngest is four",
+  "tenure_years": 12,
+  "household_factors": [
+   "elderly",
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-05",
+  "register": "terse",
+  "composition": "young couple with a newborn",
+  "tenure_years": 1,
+  "household_factors": [
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-06",
+  "register": "terse",
+  "composition": "man in his seventies, lives alone",
+  "tenure_years": 20,
+  "household_factors": [
+   "elderly"
+  ]
+ },
+ {
+  "persona_id": "P-07",
+  "register": "terse",
+  "composition": "three adults, one on dialysis three days a week",
+  "tenure_years": 9,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-08",
+  "register": "terse",
+  "composition": "two adults, four children, extended family staying for the season",
+  "tenure_years": 6,
+  "household_factors": [
+   "overcrowding"
+  ]
+ },
+ {
+  "persona_id": "P-09",
+  "register": "terse",
+  "composition": "couple, one adult uses a wheelchair",
+  "tenure_years": 4,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-10",
+  "register": "terse",
+  "composition": "shift worker, lives alone, home mostly at night",
+  "tenure_years": 2,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-11",
+  "register": "detailed",
+  "composition": "two adults, three children under ten, the youngest eighteen months",
+  "tenure_years": 4,
+  "household_factors": [
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-12",
+  "register": "detailed",
+  "composition": "retired couple, both in their eighties",
+  "tenure_years": 25,
+  "household_factors": [
+   "elderly"
+  ]
+ },
+ {
+  "persona_id": "P-13",
+  "register": "detailed",
+  "composition": "single parent with two teenagers",
+  "tenure_years": 8,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-14",
+  "register": "detailed",
+  "composition": "woman seven months pregnant, partner and a toddler",
+  "tenure_years": 2,
+  "household_factors": [
+   "pregnancy_or_chronic_condition",
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-15",
+  "register": "detailed",
+  "composition": "eleven people across three generations in a three-bedroom house",
+  "tenure_years": 10,
+  "household_factors": [
+   "overcrowding",
+   "elderly",
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-16",
+  "register": "detailed",
+  "composition": "two adults, one with severe asthma, no children",
+  "tenure_years": 3,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-17",
+  "register": "detailed",
+  "composition": "couple with an adult son who has a disability and needs daily care",
+  "tenure_years": 15,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-18",
+  "register": "detailed",
+  "composition": "four adults sharing, all working",
+  "tenure_years": 1,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-19",
+  "register": "detailed",
+  "composition": "single adult caring for an elderly parent who lives there too",
+  "tenure_years": 6,
+  "household_factors": [
+   "elderly"
+  ]
+ },
+ {
+  "persona_id": "P-20",
+  "register": "detailed",
+  "composition": "two adults, two children, a relative recovering from surgery staying",
+  "tenure_years": 5,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-21",
+  "register": "second_language_english",
+  "composition": "two adults, five children, youngest under one",
+  "tenure_years": 7,
+  "household_factors": [
+   "infant_or_young_child",
+   "overcrowding"
+  ]
+ },
+ {
+  "persona_id": "P-22",
+  "register": "second_language_english",
+  "composition": "elderly woman, lives with her adult daughter",
+  "tenure_years": 18,
+  "household_factors": [
+   "elderly"
+  ]
+ },
+ {
+  "persona_id": "P-23",
+  "register": "second_language_english",
+  "composition": "large family, nine people, two of them under five",
+  "tenure_years": 11,
+  "household_factors": [
+   "overcrowding",
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-24",
+  "register": "second_language_english",
+  "composition": "couple expecting their first child next month",
+  "tenure_years": 1,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-25",
+  "register": "second_language_english",
+  "composition": "single man, works at the local store",
+  "tenure_years": 3,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-26",
+  "register": "second_language_english",
+  "composition": "two adults, three children in primary school, tin roof and no shade trees",
+  "tenure_years": 6,
+  "household_factors": [
+   "extreme_heat_exposure"
+  ]
+ },
+ {
+  "persona_id": "P-27",
+  "register": "second_language_english",
+  "composition": "grandfather with a heart condition, two grandchildren and one other adult",
+  "tenure_years": 14,
+  "household_factors": [
+   "elderly",
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-28",
+  "register": "second_language_english",
+  "composition": "couple, one adult with diabetes, one child aged two",
+  "tenure_years": 4,
+  "household_factors": [
+   "pregnancy_or_chronic_condition",
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-29",
+  "register": "second_language_english",
+  "composition": "three generations, seven people",
+  "tenure_years": 9,
+  "household_factors": [
+   "overcrowding"
+  ]
+ },
+ {
+  "persona_id": "P-30",
+  "register": "second_language_english",
+  "composition": "young couple, no children yet",
+  "tenure_years": 1,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-31",
+  "register": "phoned_in_via_cho",
+  "composition": "elderly man with limited mobility, lives alone",
+  "tenure_years": 22,
+  "household_factors": [
+   "elderly"
+  ]
+ },
+ {
+  "persona_id": "P-32",
+  "register": "phoned_in_via_cho",
+  "composition": "mother with newborn twins and a four-year-old",
+  "tenure_years": 3,
+  "household_factors": [
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-33",
+  "register": "phoned_in_via_cho",
+  "composition": "family of six, one adult with kidney disease",
+  "tenure_years": 8,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-34",
+  "register": "phoned_in_via_cho",
+  "composition": "eight people in a three-bedroom house, two of them infants",
+  "tenure_years": 5,
+  "household_factors": [
+   "overcrowding",
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-35",
+  "register": "phoned_in_via_cho",
+  "composition": "couple in their sixties, both retired, west-facing house with fans only",
+  "tenure_years": 16,
+  "household_factors": [
+   "extreme_heat_exposure"
+  ]
+ },
+ {
+  "persona_id": "P-36",
+  "register": "phoned_in_via_cho",
+  "composition": "single adult who is deaf and speaks through the housing officer",
+  "tenure_years": 4,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-37",
+  "register": "phoned_in_via_cho",
+  "composition": "pregnant woman living with her mother and two siblings",
+  "tenure_years": 2,
+  "household_factors": [
+   "pregnancy_or_chronic_condition"
+  ]
+ },
+ {
+  "persona_id": "P-38",
+  "register": "phoned_in_via_cho",
+  "composition": "two adults and one child; the adults do not read or write",
+  "tenure_years": 6,
+  "household_factors": []
+ },
+ {
+  "persona_id": "P-39",
+  "register": "phoned_in_via_cho",
+  "composition": "elderly couple caring for three grandchildren under six",
+  "tenure_years": 19,
+  "household_factors": [
+   "elderly",
+   "infant_or_young_child"
+  ]
+ },
+ {
+  "persona_id": "P-40",
+  "register": "phoned_in_via_cho",
+  "composition": "single adult, moved in last month",
+  "tenure_years": 0,
+  "household_factors": []
+ }
+]

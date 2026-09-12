@@ -1,0 +1,650 @@
+[
+ {
+  "community_id": "CENTRAL AUSTRALIA R-01",
+  "closed_from": "2025-10-10",
+  "closed_to": "2025-10-14",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-01",
+  "closed_from": "2025-10-16",
+  "closed_to": "2025-10-20",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-01",
+  "closed_from": "2025-11-05",
+  "closed_to": "2025-11-13",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-01",
+  "closed_from": "2025-12-06",
+  "closed_to": "2025-12-12",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-02",
+  "closed_from": "2025-11-25",
+  "closed_to": "2025-12-04",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-03",
+  "closed_from": "2025-11-26",
+  "closed_to": "2025-12-03",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-05",
+  "closed_from": "2025-11-12",
+  "closed_to": "2025-11-14",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-05",
+  "closed_from": "2025-12-02",
+  "closed_to": "2025-12-04",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-06",
+  "closed_from": "2025-12-01",
+  "closed_to": "2025-12-10",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-07",
+  "closed_from": "2025-11-14",
+  "closed_to": "2025-11-23",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-08",
+  "closed_from": "2025-10-30",
+  "closed_to": "2025-11-02",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-08",
+  "closed_from": "2025-12-10",
+  "closed_to": "2025-12-14",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-08",
+  "closed_from": "2025-12-16",
+  "closed_to": "2025-12-20",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-08",
+  "closed_from": "2025-12-29",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-09",
+  "closed_from": "2025-11-30",
+  "closed_to": "2025-12-06",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-11",
+  "closed_from": "2025-11-09",
+  "closed_to": "2025-11-14",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-12",
+  "closed_from": "2025-11-21",
+  "closed_to": "2025-11-27",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-12",
+  "closed_from": "2025-12-08",
+  "closed_to": "2025-12-11",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-12",
+  "closed_from": "2025-12-15",
+  "closed_to": "2025-12-17",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-14",
+  "closed_from": "2025-10-09",
+  "closed_to": "2025-10-15",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-14",
+  "closed_from": "2025-11-16",
+  "closed_to": "2025-11-24",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-14",
+  "closed_from": "2025-12-22",
+  "closed_to": "2025-12-26",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-16",
+  "closed_from": "2025-12-27",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-17",
+  "closed_from": "2025-12-01",
+  "closed_to": "2025-12-08",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-20",
+  "closed_from": "2025-12-08",
+  "closed_to": "2025-12-16",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-20",
+  "closed_from": "2025-12-26",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-21",
+  "closed_from": "2025-10-21",
+  "closed_to": "2025-10-22",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-21",
+  "closed_from": "2025-12-26",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-24",
+  "closed_from": "2025-12-10",
+  "closed_to": "2025-12-15",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-25",
+  "closed_from": "2025-11-30",
+  "closed_to": "2025-12-01",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "CENTRAL AUSTRALIA R-26",
+  "closed_from": "2025-12-02",
+  "closed_to": "2025-12-10",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-01",
+  "closed_from": "2025-12-20",
+  "closed_to": "2025-12-22",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-02",
+  "closed_from": "2025-12-29",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-03",
+  "closed_from": "2025-11-05",
+  "closed_to": "2025-11-11",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-03",
+  "closed_from": "2025-12-13",
+  "closed_to": "2025-12-16",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-04",
+  "closed_from": "2025-10-27",
+  "closed_to": "2025-10-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-04",
+  "closed_from": "2025-11-13",
+  "closed_to": "2025-11-22",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-04",
+  "closed_from": "2025-12-12",
+  "closed_to": "2025-12-17",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-06",
+  "closed_from": "2025-10-21",
+  "closed_to": "2025-10-30",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-06",
+  "closed_from": "2025-12-21",
+  "closed_to": "2025-12-28",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-08",
+  "closed_from": "2025-12-09",
+  "closed_to": "2025-12-14",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-11",
+  "closed_from": "2025-11-24",
+  "closed_to": "2025-11-26",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-12",
+  "closed_from": "2025-11-07",
+  "closed_to": "2025-11-21",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-12",
+  "closed_from": "2025-12-18",
+  "closed_to": "2025-12-26",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-13",
+  "closed_from": "2025-12-04",
+  "closed_to": "2025-12-10",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-13",
+  "closed_from": "2025-12-17",
+  "closed_to": "2025-12-20",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-14",
+  "closed_from": "2025-12-13",
+  "closed_to": "2025-12-18",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-15",
+  "closed_from": "2025-12-22",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-16",
+  "closed_from": "2025-11-30",
+  "closed_to": "2025-12-04",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-18",
+  "closed_from": "2025-12-01",
+  "closed_to": "2025-12-07",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-19",
+  "closed_from": "2025-10-20",
+  "closed_to": "2025-10-22",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-19",
+  "closed_from": "2025-12-14",
+  "closed_to": "2025-12-17",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-19",
+  "closed_from": "2025-12-26",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-21",
+  "closed_from": "2025-12-06",
+  "closed_to": "2025-12-13",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-23",
+  "closed_from": "2025-12-03",
+  "closed_to": "2025-12-09",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BIG RIVERS R-23",
+  "closed_from": "2025-12-25",
+  "closed_to": "2025-12-26",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-02",
+  "closed_from": "2025-12-03",
+  "closed_to": "2025-12-08",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-02",
+  "closed_from": "2025-12-14",
+  "closed_to": "2025-12-23",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-03",
+  "closed_from": "2025-12-21",
+  "closed_to": "2025-12-28",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-04",
+  "closed_from": "2025-10-14",
+  "closed_to": "2025-10-22",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-04",
+  "closed_from": "2025-12-16",
+  "closed_to": "2025-12-17",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-06",
+  "closed_from": "2025-11-14",
+  "closed_to": "2025-11-15",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-06",
+  "closed_from": "2025-12-17",
+  "closed_to": "2025-12-21",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-07",
+  "closed_from": "2025-12-11",
+  "closed_to": "2025-12-12",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-08",
+  "closed_from": "2025-11-23",
+  "closed_to": "2025-12-04",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-09",
+  "closed_from": "2025-11-04",
+  "closed_to": "2025-11-10",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-09",
+  "closed_from": "2025-12-16",
+  "closed_to": "2025-12-18",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-09",
+  "closed_from": "2025-12-22",
+  "closed_to": "2025-12-27",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-10",
+  "closed_from": "2025-12-22",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-12",
+  "closed_from": "2025-11-19",
+  "closed_to": "2025-11-27",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "BARKLY R-12",
+  "closed_from": "2025-12-11",
+  "closed_to": "2025-12-12",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-03",
+  "closed_from": "2025-10-09",
+  "closed_to": "2025-10-12",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-03",
+  "closed_from": "2025-12-03",
+  "closed_to": "2025-12-05",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-03",
+  "closed_from": "2025-12-13",
+  "closed_to": "2025-12-15",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-05",
+  "closed_from": "2025-10-20",
+  "closed_to": "2025-10-25",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-05",
+  "closed_from": "2025-12-27",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-07",
+  "closed_from": "2025-12-24",
+  "closed_to": "2025-12-25",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-08",
+  "closed_from": "2025-12-13",
+  "closed_to": "2025-12-18",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-09",
+  "closed_from": "2025-11-15",
+  "closed_to": "2025-11-30",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-09",
+  "closed_from": "2025-12-12",
+  "closed_to": "2025-12-17",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-09",
+  "closed_from": "2025-12-27",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-10",
+  "closed_from": "2025-12-06",
+  "closed_to": "2025-12-07",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-13",
+  "closed_from": "2025-10-25",
+  "closed_to": "2025-10-26",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-13",
+  "closed_from": "2025-11-08",
+  "closed_to": "2025-11-14",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-13",
+  "closed_from": "2025-12-02",
+  "closed_to": "2025-12-05",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-14",
+  "closed_from": "2025-12-28",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-15",
+  "closed_from": "2025-10-22",
+  "closed_to": "2025-10-31",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-16",
+  "closed_from": "2025-11-10",
+  "closed_to": "2025-11-19",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-17",
+  "closed_from": "2025-10-10",
+  "closed_to": "2025-10-17",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-17",
+  "closed_from": "2025-12-04",
+  "closed_to": "2025-12-05",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "TOP END R-17",
+  "closed_from": "2025-12-07",
+  "closed_to": "2025-12-22",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-01",
+  "closed_from": "2025-12-24",
+  "closed_to": "2025-12-26",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-02",
+  "closed_from": "2025-11-07",
+  "closed_to": "2025-11-16",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-03",
+  "closed_from": "2025-12-26",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-04",
+  "closed_from": "2025-12-27",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-07",
+  "closed_from": "2025-11-04",
+  "closed_to": "2025-11-06",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-08",
+  "closed_from": "2025-10-03",
+  "closed_to": "2025-10-10",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-08",
+  "closed_from": "2025-11-29",
+  "closed_to": "2025-12-04",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-11",
+  "closed_from": "2025-12-05",
+  "closed_to": "2025-12-11",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-12",
+  "closed_from": "2025-10-12",
+  "closed_to": "2025-10-14",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-13",
+  "closed_from": "2025-11-17",
+  "closed_to": "2025-11-25",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-13",
+  "closed_from": "2025-12-09",
+  "closed_to": "2025-12-11",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-14",
+  "closed_from": "2025-11-12",
+  "closed_to": "2025-11-21",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-15",
+  "closed_from": "2025-10-13",
+  "closed_to": "2025-10-15",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-16",
+  "closed_from": "2025-12-06",
+  "closed_to": "2025-12-12",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-17",
+  "closed_from": "2025-11-14",
+  "closed_to": "2025-11-23",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-18",
+  "closed_from": "2025-12-13",
+  "closed_to": "2025-12-22",
+  "source": "synthetic"
+ },
+ {
+  "community_id": "EAST ARNHEM R-18",
+  "closed_from": "2025-12-24",
+  "closed_to": "2025-12-29",
+  "source": "synthetic"
+ }
+]

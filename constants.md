@@ -22,3 +22,4 @@ is two logged-in CLIs).
 | `TOWN_REGION` | DARWIN, PALMERSTON, LITCHFIELD | The town region, BushTel spelling | Same field |
 | `HEAT_SEASON_MONTHS` | Oct–Mar | Extreme-heat exposure factor | NT Health heat-health advice (reports/2026-09-12-research-data-and-stack.md) |
 | `WET_SEASON_MONTHS` | Oct–Apr | Road-logistics season | BoM NT seasonal summaries (same report) |
+| `ROAD_FACTORS` (in `fair_turn/data/geography.py`) | sealed 1.0, unsealed 1.4, barge_or_air 2.5 | Multiplier on haversine km giving `logistics_factor` | Provisional project assumption (Task-01); no NT source |

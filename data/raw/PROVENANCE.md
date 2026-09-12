@@ -12,6 +12,7 @@ the report reproduce without network access. Research behind each source:
 | `roadreport_obstructions_2026-09-12.json` | `https://roadreport.nt.gov.au/api/Obstruction/GetAll` | 80 current obstructions: road, type (flooding, road damage, roadworks), restriction, dates, geometry. Snapshot only; no history exists. | TBD |
 | `ntgov_communities_mobile_coverage_2021.xlsx` | data.nt.gov.au "Remote Communities with 3G/4G Mobile Coverage 2021" | Community list with GPS coordinates and coverage tier; licence-clean cross-check for BushTel coordinates | Creative Commons Attribution (portal metadata, modified 2022-06-29) |
 | `..._data-quality-statement.pdf` | same dataset | Data quality statement | as above |
+| `../geo/nt_outline.geojson` | Natural Earth 1:10m admin-1 states/provinces, GeoJSON build at github.com/nvkelso/natural-earth-vector, fetched 2026-09-12 by `fetch_raw_sources.py --outline` | The Northern Territory feature only (`iso_3166_2` = AU-NT), geometry unchanged, 79 KB | Public domain (Natural Earth) |
 
 Not fetched yet: ABS ILOC 2021 boundaries (CC BY 4.0, large GeoPackage) — only if the
 region clustering needs official boundaries; BushTel `NTRegionName` may suffice.

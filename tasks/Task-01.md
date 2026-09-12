@@ -1,5 +1,7 @@
 # Task-01: Geography layer with pseudonymous community ids
 
+Status: DONE (2026-09-12)
+
 > **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
 > *Why:* decides how real places become ids and what a "road access class" is from BushTel prose; data judgement, not mechanics. PRD open question 1 (licence) does not block.
 
@@ -24,8 +26,8 @@ coordinates, distance and road-access factors, and the NT outline the map draws.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] `data/build/communities.csv` committed, 101 rows, columns as listed, no real community name.
-- [ ] `data/geo/nt_outline.geojson` committed, one NT feature, under 500 KB, source and licence noted in `data/raw/PROVENANCE.md`.
-- [ ] `build_communities` is deterministic: running it twice yields byte-identical CSV.
-- [ ] `test_geography.py` passes; the real-name helper is reused by later tests.
-- [ ] Gate green.
+- [x] `data/build/communities.csv` committed, 101 rows, columns as listed, no real community name.
+- [x] `data/geo/nt_outline.geojson` committed, one NT feature, under 500 KB, source and licence noted in `data/raw/PROVENANCE.md`.
+- [x] `build_communities` is deterministic: running it twice yields byte-identical CSV.
+- [x] `test_geography.py` passes; the real-name helper is reused by later tests.
+- [x] Gate green.

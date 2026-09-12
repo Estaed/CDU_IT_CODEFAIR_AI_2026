@@ -1,7 +1,8 @@
 """Freeze the public NT sources Fair Turn seeds its synthetic data from.
 
 Run once; commits the snapshots under data/raw/. The app never calls these at runtime.
-Usage: PYTHONUTF8=1 python scripts/fetch_raw_sources.py
+Usage: PYTHONUTF8=1 python scripts/fetch_raw_sources.py            # BushTel + road report
+       PYTHONUTF8=1 python scripts/fetch_raw_sources.py --outline  # NT outline only
 """
 
 import json
@@ -12,6 +13,12 @@ from datetime import date
 from pathlib import Path
 
 RAW = Path(__file__).resolve().parent.parent / "data" / "raw"
+GEO = Path(__file__).resolve().parent.parent / "data" / "geo"
+# Natural Earth 1:10m admin-1 (public domain), GeoJSON build from the project's own mirror.
+NE_ADMIN1 = (
+    "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/"
+    "ne_10m_admin_1_states_provinces.geojson"
+)
 TODAY = date.today().isoformat()
 UA = {"User-Agent": "FairTurn-research/0.1 (CDU IT Code Fair 2026; one-off snapshot)"}
 
@@ -59,5 +66,30 @@ def main() -> None:
     print(f"roadreport: {len(json.loads(roads))} records")
 
 
+def fetch_outline() -> None:
+    """Keep only the Northern Territory feature; 79 KB at 1:10m, so no simplification."""
+    GEO.mkdir(parents=True, exist_ok=True)
+    admin1 = json.loads(get(NE_ADMIN1))
+    nt = [
+        f
+        for f in admin1["features"]
+        if f["properties"].get("admin") == "Australia"
+        and f["properties"].get("iso_3166_2") == "AU-NT"
+    ]
+    assert len(nt) == 1, len(nt)
+    feature = {
+        "type": "Feature",
+        "properties": {"name": "Northern Territory", "iso_3166_2": "AU-NT"},
+        "geometry": nt[0]["geometry"],
+    }
+    out = GEO / "nt_outline.geojson"
+    out.write_bytes(
+        json.dumps(
+            {"type": "FeatureCollection", "features": [feature]}, separators=(",", ":")
+        ).encode()
+    )
+    print(f"outline: {out.stat().st_size // 1024} KB")
+
+
 if __name__ == "__main__":
-    main()
+    fetch_outline() if "--outline" in sys.argv[1:] else main()

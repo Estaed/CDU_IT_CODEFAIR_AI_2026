@@ -18,7 +18,7 @@ numbers).
 - [x] Task-03: Synthetic labels, personas, closures and climate table
 - [x] Task-04: Capacity simulation and wait metrics
 - [ ] Task-05: Feedback-loop simulation
-- [ ] Task-06: Explanation templates
+- [x] Task-06: Explanation templates
 - [ ] Task-07: Audit log
 - [x] Task-08: Extraction schema and source-phrase verification
 - [x] Task-09: CLI wrappers for the two subscription models

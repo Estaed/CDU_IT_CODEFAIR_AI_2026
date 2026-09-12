@@ -1,5 +1,7 @@
 # Task-06: Explanation templates: "why it sits here" and the tenant answer
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* templates over `ScoredJob` factors, fully specified by PRD §3.1, §3.4 and §7; checked by unit tests and the wording lint.
 
@@ -22,7 +24,7 @@ factors so they change instantly with λ and never come from a model.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] `tenant_answer` passes `wording.check` (no deficit term, FK grade at most 7) on all ten fixtures.
-- [ ] Factor-coverage test passes for every combination of health-risk factors.
-- [ ] No f-string reads any string field that could originate from a model; only enum labels and numbers.
-- [ ] Gate green.
+- [x] `tenant_answer` passes `wording.check` (no deficit term, FK grade at most 7) on all ten fixtures.
+- [x] Factor-coverage test passes for every combination of health-risk factors.
+- [x] No f-string reads any string field that could originate from a model; only enum labels and numbers.
+- [x] Gate green.

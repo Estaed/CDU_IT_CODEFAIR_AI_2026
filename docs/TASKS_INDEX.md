@@ -21,7 +21,7 @@ numbers).
 - [ ] Task-06: Explanation templates
 - [ ] Task-07: Audit log
 - [x] Task-08: Extraction schema and source-phrase verification
-- [ ] Task-09: CLI wrappers for the two subscription models
+- [x] Task-09: CLI wrappers for the two subscription models
 - [ ] Task-10: Generate the synthetic report texts
 - [ ] Task-11: Extract typed fields from every report, plus the adversarial set
 - [ ] Task-12: Evaluation: per-field metrics, baseline classifier, eval script

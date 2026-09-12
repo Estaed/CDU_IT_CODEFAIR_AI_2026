@@ -12,7 +12,7 @@ numbers).
 
 ## Tasks
 
-- [ ] Task-00: Package layout, constants, theme tokens, wording lint
+- [x] Task-00: Package layout, constants, theme tokens, wording lint
 - [ ] Task-01: Geography layer with pseudonymous community ids
 - [ ] Task-02: Core types and the ranking formula
 - [ ] Task-03: Synthetic labels, personas, closures and climate table

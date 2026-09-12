@@ -1,5 +1,7 @@
 # Task-00: Package layout, constants, theme tokens, wording lint
 
+Status: DONE (2026-09-12)
+
 > **Execution:** agent `claude` (main loop) · effort `medium` · plan mode **no**
 > *Why:* every constant needs a provenance row and a judgement about its source; the rest is mechanical but small.
 
@@ -25,8 +27,8 @@ every later task is written against them instead of retyping values.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] The five layer folders exist with `__init__.py`; `tests/test_layers.py` still passes.
-- [ ] `constants.py` defines every value listed above; `constants.md` has a provenance row for each and no template text.
-- [ ] `test_constants.py`, `test_wording.py`, `test_theme.py` pass.
-- [ ] `wording.check("The vulnerable tenant")` returns `["vulnerable"]`; a 30-word plain sentence returns `[]`.
-- [ ] Gate green.
+- [x] The five layer folders exist with `__init__.py`; `tests/test_layers.py` still passes.
+- [x] `constants.py` defines every value listed above; `constants.md` has a provenance row for each and no template text.
+- [x] `test_constants.py`, `test_wording.py`, `test_theme.py` pass.
+- [x] `wording.check("The vulnerable tenant")` returns `["vulnerable"]`; a 30-word plain sentence returns `[]`.
+- [x] Gate green.

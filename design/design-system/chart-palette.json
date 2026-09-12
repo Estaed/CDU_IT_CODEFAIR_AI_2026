@@ -1,0 +1,20 @@
+{
+  "regions": {
+    "Central Australia": "#8a6400",
+    "Big Rivers": "#007d79",
+    "Barkly": "#9f1853",
+    "Top End": "#198038",
+    "East Arnhem": "#2d5bbf",
+    "Darwin": "#4d5358"
+  },
+  "locality": { "Town": "#262626", "Remote": "#8a3ffc" },
+  "localityStroke": { "Town": "solid", "Remote": "dashed" },
+  "factors": {
+    "Urgency": "#da1e28",
+    "Safety": "#b35c00",
+    "Household health risk": "#6929c4",
+    "Logistics": "#0072c3"
+  },
+  "needsHuman": { "text": "#684e00", "background": "#fcf4d6" },
+  "chart": { "gridline": "#e0e0e0", "axisLabel": "#525252", "strokeWidth": 2 }
+}

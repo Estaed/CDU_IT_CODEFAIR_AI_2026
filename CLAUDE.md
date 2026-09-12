@@ -1,4 +1,4 @@
-# CLAUDE.md — CDU IT Code Fair 2026 — AI Challenge (Python; exact stack pinned in Part 2)
+# CLAUDE.md — Fair Turn (CDU IT Code Fair 2026, AI Challenge)
 
 > **Competition context lives in this repo, not in your memory.** Read `README.md`
 > at the root of this folder before doing anything, and the files under `docs/` that it
@@ -262,130 +262,184 @@ user's call, and `create-architecture` is what amends it.
 
 ## Part 2: Technical Architecture
 
-> ## ⚠️ Part 2 is a placeholder — write it for THIS project before anything else runs
->
-> Part 2 is the only project-specific section of this file, and once written it is
-> **binding on every task**. Do not adapt another project's Part 2 by editing values
-> inside it: a carried-over Part 2 silently imports that project's stack, its folder
-> layout and its verification commands, and every task written afterwards inherits them.
->
-> **Write it with `create-architecture`, from `docs/PRD.md`, before `generate-tasks`.**
-> Delete this whole block — the marker line below included — once it is written.
->
-> Two things decide whether the Verification Rules you write catch anything at all:
-> **the working directory** each command runs from (many tools only find their config
-> from the current directory), and **cross-platform commands** (a POSIX-only idiom fails
-> for whoever is on Windows). Name both explicitly.
-
-<!-- PART-2-PLACEHOLDER -->
-
-The headings below are the skeleton to fill. Keep them; replace every line under them.
-Delete a whole section only when this project genuinely has no such surface — and say
-that you deleted it, rather than leaving it empty.
-
-Apply one test to every line written here: **would removing it cause a mistake?** If not,
-cut it. Part 2 is loaded into every session, so anything that steers no decision is
-paying no rent.
+Written 2026-09-12 by `create-architecture` from `docs/PRD.md`. Binding (Part 1 rule 8).
 
 ### Stack
 
-The language/framework version, pinned, and **verified installed on this machine** — say
-so, with the date.
+**Python 3.13.5**, verified installed 2026-09-12 (`py -0`: 3.13 default, 3.12, 3.9 also
+present). `pyproject.toml` pins `>=3.13,<3.14`. Environment lives in **`venv/`** (not
+`.venv`, Tarik's call): create with `uv venv venv --python 3.13`, sync with
+`UV_PROJECT_ENVIRONMENT=venv uv sync`. uv is used only to lock and sync; **every run command
+uses `venv/Scripts/python` directly** (`venv/bin/python` on POSIX), so nothing depends on
+the env var being set. Versions below were read from the environment after `uv sync` on
+2026-09-12; `uv.lock` is the record.
 
-Then a table: `| Package | Version | Why it is here |`. Four rules survive from project to
-project:
+| Package | Version | Why it is here |
+|---|---|---|
+| uv | 0.12.13 | Lockfile and sync. Installed via `pip install uv`. |
+| streamlit | 1.63.0 | The six screens. Bundles Vega-Lite and deck.gl in its own static JS (verified in `site-packages/streamlit/static/static/js`, 2026-09-12), so charts need no CDN. `streamlit.testing.v1.AppTest` runs pages headless: that is the build check. Trap: `use_container_width` is deprecated, use `width="stretch"`. Trap: the script reruns on every widget change, so nothing slow or networked may sit in a page body. |
+| altair | 6.2.2 | Every chart **and the map**. Spike 2026-09-12: `mark_geoshape` over inline GeoJSON plus `mark_circle` at lon/lat renders through Streamlit's bundled Vega-Lite with no URL in the spec. Region zoom is a selectbox filter re-rendering the projection; Vega-Lite geo projections do not pan/zoom. |
+| pandas | 3.0.5 | Tables. pandas 3: strings are `str` dtype by default and copy-on-write is on, so chained assignment silently does nothing; assign with `.loc` or build new frames. |
+| numpy | 2.5.3 | Transitive; the seeded generator `numpy.random.default_rng(SEED)` is the only randomness source in synthesis and simulation. |
+| scikit-learn | 1.9.1 | Baseline bag-of-words classifier (TF-IDF + logistic regression) and per-field P/R/F1. |
+| statsmodels | 0.15.0 | `proportion_confint(method="wilson")` for every reported proportion. |
+| textstat | 0.7.13 | Flesch-Kincaid grade for tenant text (PRD §7). |
+| anthropic | 1.5.0 | **Build time only**, from `scripts/` through `fair_turn/llm`. Generator `claude-opus-5`, extractor `claude-sonnet-5` (different models, PRD §6.2). Extraction uses structured outputs (`client.messages.parse` with a pydantic model, enums only, `additionalProperties: false`); both jobs go through the Message Batches API (`client.messages.batches.create`, results keyed by `custom_id`, half price). Citations cannot combine with structured outputs (HTTP 400, report 3), so the source phrase is a schema field verified as a substring in Python. Estimated spend for 1,500 reports, both jobs, batched: about 10 USD. |
+| pydantic | 2.13.5 | Transitive of anthropic; the extraction schema is a pydantic model so the same class validates artefacts on load. |
+| openpyxl | 3.1.5 | Reads the NT open-data coverage XLSX in `data/raw/`. |
+| pytest | 9.1.1 | Test runner. `AppTest.run(timeout=60)`: the default 3 s times out on first Altair import (spike 2026-09-12). |
+| hypothesis | 6.168.0 | Property test: ranking at λ = 0 is invariant under permutation of distances and road status. |
+| ruff | 0.16.7 | Lint and format, rules `E F W B I UP N`, line length 100. |
 
-- **Versions are resolved, not invented.** Install first, then read the versions back out
-  of the real lockfile. A version written from memory is a guess that looks like a fact.
-- **What a lockfile cannot tell you, `research` can** — whether a package is still
-  maintained, whether the API still exists, whether the approach has a known trap. Carry
-  its dated sources into the reason column.
-- **Every deliberate pin or downgrade records its reason here** — what breaks otherwise.
-  Without the reason attached, a later session bumps it "helpfully".
-- **Every rejected option gets one line too.** A table listing only winners reads as
-  though there was never a choice, and the same option is re-proposed in three weeks.
+Rejected, with reason, all 2026-09-12:
+
+- **Dash**, **FastAPI + HTMX**: more code per screen; Streamlit chosen for speed and one-command run. Visual restyle stays a one-file change through the theme (Fidelity & UI).
+- **pydeck / `st.map`**: basemap styles are fetched from `basemaps.cartocdn.com` and the bundle carries Mapbox telemetry endpoints; bare layers with no basemap look worse than a geoshape outline. **folium**: iframe with CDN Leaflet, not offline. **plotly**: bundled, but a second chart grammar for nothing Altair lacks.
+- **mypy**: no typed boundary worth the friction in 18 days; ruff only. **pip-tools**: uv already gives the lockfile.
+- **Open-Meteo / BoM live weather, NT road-report live feed, OSRM distances**: no network at demo time; road distance is undefined for barge and air communities anyway. Distances are haversine from the crew base times a road-access factor from BushTel, frozen in a build artefact.
+- **Parquet / pickle artefacts**: judges read the files; JSON and CSV only.
+- **LLM fine-tuning, a Haiku injection pre-screen, LLM self-reported confidence**: rejected in the PRD (§5) with reasons; do not re-propose.
 
 ### Architecture
 
-- **Where the code lives** — the directory tree that matters, one line each.
-- **The layer rule** — the tiers, and which direction imports are allowed to run. State it
-  as something checkable ("no framework import ever appears in this folder"), not as an
-  aspiration.
-- **The seams** — the interfaces a *later phase* actually needs, named, with what sits
-  behind each one today. Nothing else gets an interface "for later": that is speculative
-  generality and Part 1 rule 2 forbids it.
-- **Entry points** — how the app is composed, and how a screen or endpoint is reached.
-- **Spikes** — where a risky, hard-to-reverse call was settled by running something rather
-  than by arguing, record the question, the spike and what it returned.
+```
+fair_turn/
+  core/    pure Python, no pandas: constants, types, scoring, capacity_sim, feedback_sim,
+           explain (sentence + tenant answer templates), verify_spans, wording (lexicon,
+           reading level), audit
+  data/    frozen raw files in, tables out: geography, synth labels (seeded), artefact I/O
+  llm/     anthropic client, generation prompts, extraction schema; imported by scripts only
+  eval/    metrics (P/R/F1, Wilson, SemEval spans), baseline classifier, result tables
+  app/     main.py (st.navigation), pages/ (one file per PRD section 3 screen), theme.py
+scripts/   fetch_raw_sources.py, build_labels.py, generate_text.py, extract.py,
+           run_eval.py, gate.py
+data/raw     frozen public sources, committed (PROVENANCE.md)
+data/geo     nt_outline.geojson from Natural Earth admin-1 (public domain), fetched by script
+data/build   generated artefacts (labels, report text, extraction, eval), committed so the
+             app runs with no key
+data/audit   audit log, JSONL; a seeded sample committed, runtime appends locally
+tests/
+```
+
+**Layer rule**, enforced by `tests/test_layers.py`: `core` imports nothing from
+`fair_turn` and never `streamlit`, `anthropic`, `pandas` or any network module; `data`
+may import `core`; `eval` and `llm` may import `core` and `data`; `app` may import
+`core`, `data`, `eval` and never `anthropic` or a network module. `scripts/` may import
+anything. A violation fails the gate.
+
+**Deterministic steps pushed out of the model:** label drawing, scoring, the capacity
+simulation, the feedback simulation, both explanation texts, span verification, reading
+level and lexicon checks are plain Python. Left with the model, on purpose: writing the
+tenant's words (natural variety is the point) and reading typed fields out of free text
+(the NLP task itself). Both run once, offline, from `scripts/`.
+
+**Seams** (the PRD's deferred pilot decisions need exactly these; one implementation each,
+no interface classes):
+
+- `data/artefacts.py` loads reports and extractions from `data/build/`. A pilot would read
+  intake instead. Today: JSON files.
+- `core/audit.py` appends and exports the log. A pilot would write to the agency system.
+  Today: JSONL under `data/audit/`.
+- `app` reads extraction from artefacts only. Build time: `claude-sonnet-5`; no-key
+  fallback for the report's comparison table: the baseline classifier in `eval/`.
+
+**Entry points.** App: `venv/Scripts/streamlit run fair_turn/app/main.py`; pages registered
+with `st.navigation` in `main.py`. Build pipeline, in order, each idempotent from the repo
+root: `fetch_raw_sources.py` (done, frozen), `build_labels.py`, `generate_text.py` (Opus 5,
+needs `ANTHROPIC_API_KEY`), `extract.py` (Sonnet 5, needs the key), `run_eval.py`. The app
+and the gate never need the key.
+
+**Spikes.**
+- *Question:* can the map render with no network? *Spike (2026-09-12):* Altair geoshape +
+  circles over inline GeoJSON through `AppTest`; the emitted Vega-Lite spec contains no
+  `url`, two layers, features inline; Streamlit serves Vega-Lite from its own bundle.
+  *Result:* Altair for the map, no basemap, NT outline from a local file.
+- *Question:* does `AppTest` work as the build check? *Spike:* same run; passes with
+  `timeout=60`, times out at the default 3 s. *Result:* AppTest is the build step, with the
+  explicit timeout.
 
 ### Fidelity & UI
 
-*Delete this section if nothing this project produces is ever looked at.*
-
-- **What the source of truth is** — a design file on disk, or the PRD's own prose. Say
-  which; task files get written against it. Where the output is an image rather than a
-  screen — a detection overlay, a generated frame, a plotted result — name the expected
-  result instead.
-- **Tokens are defined once and referenced by name** — where they live, plus the rule that
-  no component hardcodes a colour, size, radius or duration.
-- **Where deviations are recorded** — the one list that makes a visual difference legal
-  instead of a defect. Anything not on that list is a defect.
-- **What `review-visual` compares against, and whether it can ever gate.** It reads the two
-  lines above. Say here whether its findings stay advisory, or whether this project has
-  decided visual fidelity is verifiable at all — that ruling is the skill's ceiling.
+- **Source of truth:** `docs/PRD.md` section 3, per screen. No design file exists
+  (decision 2026-09-12). Visual fidelity is not a quality bar.
+- **Tokens, defined once:** `.streamlit/config.toml` `[theme]` (primary, background, text,
+  font) and `fair_turn/app/theme.py` (chart palette: region colours, town/remote pair,
+  factor colours, the "needs a human" colour). No page or chart carries a colour, size or
+  font literal; a test greps `fair_turn/app` for hex literals outside `theme.py`. This is
+  what makes a later restyle a one-file change.
+- **Deviations:** none recorded and none needed; there is nothing to deviate from.
+- **`review-visual`** compares a screen against PRD section 3 prose and stays advisory. It
+  never gates.
 
 ### Verification Rules
 
 #### Quality gate
 
-*Placeholder — `create-architecture` names the real command for this project's stack.*
-
-`verify-task` and `otopilot` call **exactly one command**, by name, from the directory
-named here — e.g. `npm run gate`, `make gate`, `python scripts/gate.py`. This template
-ships no working script on purpose: a stack-agnostic template that embeds a Node or
-Python script silently assumes every project is Node or Python. `create-architecture`
-either writes the real script for this stack and names it here, or names an existing
-command and lists what it must run internally.
-
-The gate command must:
-1. Run lint/static-analysis, unit tests, integration tests and the build, in that order,
-   stopping at the first failure.
-2. Exit non-zero on any failure and zero only when every step passed — `verify-task`
-   reads the exit code, not the output text.
-3. Be runnable with no arguments from the directory named here, so a lane or an
-   unattended `otopilot` run can call it without knowing the stack.
-
-**No DONE without a green gate.** `verify-task` runs it, fixes what fails, and re-runs
-it; nothing marks a task DONE on a red or unrun gate, and nothing marks DONE by reading
-the diff and reasoning that it "should" pass.
+From the repo root: `venv/Scripts/python scripts/gate.py` (run once, green, 2026-09-12).
+It refuses to run under any other interpreter, sets `PYTHONUTF8=1` for its children, and
+runs in order, stopping at the first failure: `ruff check .`, `ruff format --check .`,
+`pytest -q` (unit, property and AppTest smoke tests together). Exit code is the verdict.
+**No DONE without a green gate.**
 
 #### Per-check detail
 
-A numbered list of what must hold before a task is DONE — what the gate command above
-actually checks. Write real commands, each with **the directory it runs from**, and run
-each one once before writing it down:
-
-1. The static-analysis / lint command, and what "clean" means — zero errors *and* zero
-   warnings, never "only the pre-existing ones".
-2. What must have a unit test — name the actual functions and algorithms, not "the logic".
-3. What must have a runtime or integration test, and at what size or configuration.
-4. Resource rules — whatever is started must be stopped, and a test asserts it.
-5. What is explicitly **not** in the Definition of Done, and why. This line is
-   load-bearing: without it, every review re-litigates it.
+1. **Lint:** `ruff check .` and `ruff format --check .` from the repo root report nothing.
+   Zero findings, no `# noqa` without a reason on the same line.
+2. **Unit tests must exist for:** `core.scoring.score_job` and `rank`,
+   `core.capacity_sim.simulate`, `core.feedback_sim.run`, `core.explain.why_sentence` and
+   `tenant_answer` (every scored factor appears in the text), `core.verify_spans.verify`
+   (substring rule, empty on failure), `core.wording.check` (lexicon and FK grade at most
+   7), `core.audit` append/export round-trip, `data.synth.draw_labels` (same seed, same
+   output), `eval.metrics` (P/R/F1, Wilson CI, SemEval exact/partial). Property test with
+   hypothesis: at λ = 0 the ranking is unchanged under any permutation of distances and
+   road status. Any job with an empty required field is in the human queue and not in the
+   ranked list.
+3. **Integration:** `AppTest` opens every page in `fair_turn/app/pages/` against the
+   committed `data/build/` artefacts, `timeout=60`, asserts no exception and at least one
+   Vega-Lite chart on the board and simulation pages. The committed extraction artefact has
+   a 100 % substring-verification rate and the 20 adversarial items leave the rank
+   unchanged (asserted on the artefact, so the gate needs no API key). No real community
+   name from `data/raw/` appears in `data/build/`, `fair_turn/app/` or `docs/PRD.md`.
+4. **Resources:** the AppTest smoke test runs with `socket.socket` patched to raise, so any
+   network call fails the gate. Nothing else is started.
+5. **Not in the Definition of Done:** the F1 target of 0.85 (asserted by `run_eval.py`'s
+   exit code and quoted in the report, not by the gate, because it needs an API run);
+   visual fidelity; hosted deployment; the report PDF and slides (human checklist against
+   `docs/report-requirements.md`); licence confirmation for BushTel and the road report
+   (PRD open question 1).
 
 ### Key Constraints
 
-Forbidden, not preferred. Each line is a forbid-or-require sentence naming a concrete
-thing — never a slogan like "write clean code" or "keep it DRY", which changes no
-decision. Cover at least: what the project must not depend on, what must never be
-hardcoded, what is out of scope for this phase, and any hard platform limit.
-
-### Why this section exists
-
-`docs/PRD.md` says *what* to build and *why*. `tasks/Task-XX.md` says *how* to build one
-slice. Neither survives as ambient context — they are read on demand. `CLAUDE.md` is
-loaded into **every** session automatically, so Part 2 is the only place where the
-project's technical invariants are always present.
-
-Without it, each session re-derives the stack, and 30 tasks drift into 30 slightly
-different architectures. Part 2 is what makes task 27 look like task 3 wrote it.
+- **Forbid** `anthropic` and any network module in `fair_turn/app`, `core`, `data`,
+  `eval`. The app must start and render every page with no network and no
+  `ANTHROPIC_API_KEY`.
+- **Forbid** any model call in a Streamlit page body or callback. Model work happens in
+  `scripts/` only, writes to `data/build/`, and is committed.
+- **Require** the API key to come from the `ANTHROPIC_API_KEY` environment variable read
+  inside `fair_turn/llm`. Never in code, `.env`, `secrets.toml` or the zip.
+- **Forbid** the ranking function reading any model-produced string. Its inputs are the
+  typed fields of the extraction schema; explanations are templates over score factors.
+- **Forbid** displaying a field whose source phrase is not a literal substring of the
+  report; the field is empty and the job goes to the human queue.
+- **Forbid** model confidence anywhere in the UI or the score.
+- **Forbid** deficit language (`vulnerable`, `vulnerability`, `at-risk`, `non-compliant`,
+  `dysfunctional`; the list lives in `core/wording.py`) in identifiers, UI text, artefacts,
+  `docs/PRD.md` and the report. The official transcripts under `docs/` quote the
+  organiser verbatim and are exempt. The factor is "household health risk".
+- **Forbid** real community names outside `data/raw/`. Pseudonymous ids only; the
+  id-to-name key is never committed.
+- **Require** every NT policy number (window days, the 4 h make-safe, AUD 500), crew
+  capacities, the date window, region names and the seed to be defined once in
+  `fair_turn/core/constants.py`, with provenance rows in `constants.md`. No literal copies.
+- **Forbid** hex colours, sizes and fonts outside `.streamlit/config.toml` and
+  `fair_turn/app/theme.py`.
+- **Forbid** live weather, road or map-tile requests; frozen tables and the local outline
+  only.
+- **Forbid** parquet and pickle artefacts; JSON and CSV only.
+- **Forbid** pandas inside `fair_turn/core`; core takes and returns plain Python.
+- **Out of scope this phase:** everything in PRD section 8. Do not build a router, an
+  intake integration, the DIPL gate or a hosted deployment.
+- **Platform:** developed on Windows 11; every documented command must work from PowerShell
+  and Git Bash; paths through `pathlib`; text files written with `newline=""` or bytes.
+- `MODELS.md` stays empty until a delegation lane is actually measured here; the two API
+  models are stack decisions and live in the table above.

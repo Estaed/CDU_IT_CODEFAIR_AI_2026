@@ -180,3 +180,21 @@ Datasets is a judging criterion; every source below goes into the report.
 - **Raw data frozen 2026-09-12** in `data/raw/` (BushTel 797 places + 162 details, road
   report 80 obstructions, NT open data mobile-coverage XLSX). See `data/raw/PROVENANCE.md`.
   Fetch script: `scripts/fetch_raw_sources.py`. BushTel and road-report licences still TBD.
+
+## Decisions at PRD time (2026-09-12) — now recorded in docs/PRD.md
+
+- Equity lever: single λ on the logistics term, `score = need − λ·logistics`; no second
+  equity weight. Metrics = town/remote median wait gap + travel cost.
+- No model call inside the app: "why it sits here" and the tenant answer are templated
+  from the score's factors. LLM extracts offline only.
+- Pseudonymous ids keep real map coordinates; the report states the pseudonym does not
+  prevent geographic inference.
+- Per-job override with a reason exists; decide-before-reveal applies to the daily λ
+  setting (metrics hidden until first commit), not to individual jobs.
+- No design file; the PRD is the source of truth, visual fidelity is not a quality bar.
+- Baseline bag-of-words classifier is in v1. DIPL AUD 500 gate is out.
+- Provisional numbers (dataset window/volume, crew capacity, F1 target) are ours and
+  marked as such in the PRD.
+- Design (decided 2026-09-12): no design file now; a visual pass may follow after eval and
+  report are done. Precondition for Part 2: one theme definition (colours, font, chart
+  palette), no hardcoded values in any screen, so a later restyle is a one-file change.

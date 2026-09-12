@@ -3,6 +3,7 @@
 Run once; commits the snapshots under data/raw/. The app never calls these at runtime.
 Usage: PYTHONUTF8=1 python scripts/fetch_raw_sources.py
 """
+
 import json
 import sys
 import time
@@ -31,18 +32,25 @@ def main() -> None:
 
     # 1. BushTel community list (all 797 records), then detail for Major/Minor communities.
     communities = json.loads(get("https://bushtel.nt.gov.au/api/Community?community=&boundary=0"))
-    (RAW / f"bushtel_communities_{TODAY}.json").write_bytes(json.dumps(communities, indent=1).encode())
+    (RAW / f"bushtel_communities_{TODAY}.json").write_bytes(
+        json.dumps(communities, indent=1).encode()
+    )
     print(f"bushtel list: {len(communities)} records")
     # Types seen 2026-09-12: Family Outstation 635, Major 59, Town Camp 45, Minor 37,
     # Village 13, Town 6, City 2. Detail is pulled for the populated settlement types.
-    wanted = [c for c in communities
-              if c["CommunityTypeName"] in ("Major", "Minor", "Town Camp", "Village", "Town", "City")]
+    wanted = [
+        c
+        for c in communities
+        if c["CommunityTypeName"] in ("Major", "Minor", "Town Camp", "Village", "Town", "City")
+    ]
     print(f"fetching detail for {len(wanted)} communities")
     details = []
     for c in wanted:
         details.append(json.loads(get(f"https://bushtel.nt.gov.au/api/Community/{int(c['Id'])}")))
         time.sleep(0.3)
-    (RAW / f"bushtel_community_detail_{TODAY}.json").write_bytes(json.dumps(details, indent=1).encode())
+    (RAW / f"bushtel_community_detail_{TODAY}.json").write_bytes(
+        json.dumps(details, indent=1).encode()
+    )
     print(f"bushtel detail: {len(details)} records")
 
     # 2. NT road report obstruction snapshot (current only; no history exists).

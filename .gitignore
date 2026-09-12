@@ -6,3 +6,15 @@
 # Generated per clone by render_codex_hooks.py — carries an absolute, machine-specific
 # path, so it must never be committed (in the template or in a project cloned from it).
 .codex/hooks.json
+
+# Python
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+*.egg-info/
+
+# Streamlit secrets (API keys never enter the repo)
+.streamlit/secrets.toml

@@ -1,6 +1,6 @@
 # otopilot wave plan — 2026-09-12
 
-**Direction:** Claude main loop orchestrates, **Claude bees** (`claude -p --model sonnet`)
+**Direction:** Claude main loop orchestrates, **Claude bees** (`claude -p`, model per row)
 run the lanes. Codex is held back by operator decision (Claude window renews Sunday
 evening; spend it first). Preflight: `onkontrol.py . --tasks 04,05,06,07
 --orchestrator claude --delegate claude` → OVERALL OK, direction row
@@ -8,16 +8,16 @@ evening; spend it first). Preflight: `onkontrol.py . --tasks 04,05,06,07
 
 | Item | Value |
 |---|---|
-| `BASE_SHA` | `main` HEAD at launch (`709af21` when this plan was last checked, gate GREEN, 66 tests); the orchestrator reruns preflight and records the pinned SHA in the report |
+| `BASE_SHA` | `main` HEAD at launch: the commit that carries this plan revision (preflight OVERALL OK on `7e3301d` at 2026-09-13 00:35, gate GREEN); the orchestrator records the pinned SHA in the report |
 | Baseline gate | `venv/Scripts/python scripts/gate.py` (ruff check, ruff format --check, pytest) |
 | Stop markers | none in the four selected tasks |
-| Quota snapshot | Claude fullest window 56 % (`--quota-only` GO); Codex untouched by design |
+| Quota snapshot | 2026-09-13 00:35: Claude 5 h 14 %, 7 d 47 % (`GO`); Codex untouched by design |
 | Bee auth probe | `echo ping \| claude -p --model haiku` → `is_error: false`, no denials |
 | Timebox per bee | 30 min wall clock; 2 attempts max |
 | Lane roots | `..\..\.lanes\fair-turn\task-NN` (outside the repo), detached worktree at `BASE_SHA` |
 | Stack setup per lane | directory junction `<lane>\venv` → the repo's `venv\` (gitignored; `gate.py` resolves the junction so its interpreter check passes) |
 | Wake lock | overnight run: the orchestrator holds `SetThreadExecutionState` in a separate long-lived process (`powershell` started in the background, released at closeout); confirm it before wave 1 |
-| Model / tier | `sonnet` for every bee (claude-chef bee default; single Pro pool, so no `opus` lanes) |
+| Model / tier | operator decision 2026-09-13: `opus` for the two simulation lanes (04, 05: correctness-sensitive, day-by-day state), `sonnet` for 06 and 07. `fable` never a lane. |
 | Hooks in bees | `BEYIN_INVOKED_BY=bee`; house rules via `--append-system-prompt` (lane_preamble, 5,155 bytes) |
 
 ## Waves
@@ -27,9 +27,9 @@ re-measured before every pair (`--quota-only --orchestrator claude --delegate cl
 
 | Task | Wave | Agent | Model | Effort | OWNS | GATE | Attempts |
 |---|---:|---|---|---|---|---|---:|
-| Task-04 Capacity simulation and wait metrics | 1a | claude bee | sonnet | high | `fair_turn/core/capacity_sim.py`, `tests/test_capacity_sim.py` | `venv/Scripts/python scripts/gate.py` | 1–2 |
+| Task-04 Capacity simulation and wait metrics | 1a | claude bee | opus | high | `fair_turn/core/capacity_sim.py`, `tests/test_capacity_sim.py` | `venv/Scripts/python scripts/gate.py` | 1–2 |
 | Task-06 Explanation templates | 1a | claude bee | sonnet | high | `fair_turn/core/explain.py`, `tests/test_explain.py` | same | 1–2 |
-| Task-05 Feedback-loop simulation | 1b | claude bee | sonnet | high | `fair_turn/core/feedback_sim.py`, `tests/test_feedback_sim.py` | same | 1–2 |
+| Task-05 Feedback-loop simulation | 1b | claude bee | opus | high | `fair_turn/core/feedback_sim.py`, `tests/test_feedback_sim.py` | same | 1–2 |
 | Task-07 Audit log | 1b | claude bee | sonnet | medium | `fair_turn/core/audit.py`, `tests/test_audit.py`, `data/audit/.gitkeep` | same | 1–2 |
 
 Dependencies: 04, 06, 07 depend on Task-02 only (DONE). 05 depends on 04, so wave 1b

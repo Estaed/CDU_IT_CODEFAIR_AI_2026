@@ -15,9 +15,9 @@ is two logged-in CLIs).
 | `RESPONSE_BUSINESS_DAYS` | urgent 2 / 5, routine 10 / 25 (town / remote) | NT response windows by class and locality | FS17, 10/2025 |
 | `DIPL_APPROVAL_AUD` | 500 | Approval gate for non-urgent work; documented, unused in v1 | FS17, 10/2025; PRD §8 |
 | `CREW_BASES` | Darwin, Katherine, Tennant Creek, Alice Springs, Nhulunbuy | Crew home bases for distance | PRD §6.1, provisional |
-| `CREWS_PER_REMOTE_REGION` | 2 | Capacity model | PRD §6.3, provisional |
-| `CREWS_TOWN` | 3 | Capacity model | PRD §6.3, provisional |
-| `JOBS_PER_CREW_DAY` | 4 | Capacity model | PRD §6.3, provisional |
+| `CREWS_PER_REMOTE_REGION` | 1 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
+| `CREWS_TOWN` | 2 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
+| `JOBS_PER_CREW_DAY` | 2 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
 | `TRAVEL_DAY_KM` | 200 | Distance beyond which a visit costs a travel day | PRD §6.3, provisional |
 | `REMOTE_REGIONS` | CENTRAL AUSTRALIA, BIG RIVERS, BARKLY, TOP END, EAST ARNHEM | Region names, BushTel spelling | `NTRegionName` in `data/raw/bushtel_community_detail_2026-09-12.json` |
 | `TOWN_REGION` | DARWIN, PALMERSTON, LITCHFIELD | The town region, BushTel spelling | Same field |

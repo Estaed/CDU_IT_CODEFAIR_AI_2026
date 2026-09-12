@@ -26,9 +26,9 @@ DIPL_APPROVAL_AUD = 500  # documented gate for non-urgent work; unused by v1 cod
 
 # Capacity model, PRD section 6.3, all provisional.
 CREW_BASES = ("Darwin", "Katherine", "Tennant Creek", "Alice Springs", "Nhulunbuy")
-CREWS_PER_REMOTE_REGION = 2
-CREWS_TOWN = 3
-JOBS_PER_CREW_DAY = 4
+CREWS_PER_REMOTE_REGION = 1
+CREWS_TOWN = 2
+JOBS_PER_CREW_DAY = 2
 TRAVEL_DAY_KM = 200
 
 # Regions exactly as BushTel spells ``NTRegionName``.

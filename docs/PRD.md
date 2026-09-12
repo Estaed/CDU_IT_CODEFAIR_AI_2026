@@ -207,8 +207,11 @@ names anywhere.
 
 The wait-time metrics need a toy dispatch model, not a router:
 
-- Each region has a fixed number of crews (*provisional:* 2 per remote region, 3 in the
-  town region). A crew completes up to 4 jobs per day.
+- Each region has a fixed number of crews (*provisional:* 1 per remote region, 2 in the
+  town region). A crew completes up to 2 jobs per day. (Tightened 2026-09-13 from 2 / 3 / 4:
+  those values left the median remote wait at 2 days at every λ, so neither the equity
+  slider nor the feedback loop had anything to show; the sweep is in
+  `reports/otopilot-2026-09-13-report.md`.)
 - A crew visiting a remote community serves all its pending jobs up to capacity in one
   visit (batching). A community over 200 km from base costs the crew a travel day.
 - A closed road blocks the visit until the road reopens.

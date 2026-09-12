@@ -376,14 +376,20 @@ the gate never need either CLI.
 
 ### Fidelity & UI
 
-- **Source of truth:** `docs/PRD.md` section 3, per screen. No design file exists
-  (decision 2026-09-12). Visual fidelity is not a quality bar.
+- **Source of truth:** `docs/PRD.md` section 3 for what each screen shows;
+  `design/design-system/` (added 2026-09-12: `DESIGN.md`, `tokens.json`,
+  `chart-palette.json`) for how it looks. `tokens.json` maps 1:1 onto the `[theme]` keys
+  in `.streamlit/config.toml`; `chart-palette.json` is the source of `theme.py`. The
+  design's "Unverified" state does not exist in this product: an unverified field is
+  empty and the job goes to the human queue (Key Constraints). Visual fidelity is not a
+  quality bar.
 - **Tokens, defined once:** `.streamlit/config.toml` `[theme]` (primary, background, text,
   font) and `fair_turn/app/theme.py` (chart palette: region colours, town/remote pair,
   factor colours, the "needs a human" colour). No page or chart carries a colour, size or
   font literal; a test greps `fair_turn/app` for hex literals outside `theme.py`. This is
   what makes a later restyle a one-file change.
-- **Deviations:** none recorded and none needed; there is nothing to deviate from.
+- **Deviations:** the design's `Known Gaps` list (card padding, 48 px touch targets) is
+  accepted as-is; Streamlit fixes those and no custom CSS is used.
 - **`review-visual`** compares a screen against PRD section 3 prose and stays advisory. It
   never gates.
 

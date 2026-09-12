@@ -174,3 +174,9 @@ Datasets is a judging criterion; every source below goes into the report.
   "community in the loop" is a proposal extending an existing structure.
   Open (PRD): who exactly is the user - the regional tasking desk that holds the list
   (contractor scheduler, often an ABE) with agency oversight, vs the agency coordinator.
+- **Persona (decided 2026-09-12): the regional tasking desk that holds the list** — the
+  contractor's scheduler (often an Aboriginal Business Enterprise) with agency (TFHC/DIPL)
+  oversight. Title in the UI stays "maintenance coordinator", matching the brief.
+- **Raw data frozen 2026-09-12** in `data/raw/` (BushTel 797 places + 162 details, road
+  report 80 obstructions, NT open data mobile-coverage XLSX). See `data/raw/PROVENANCE.md`.
+  Fetch script: `scripts/fetch_raw_sources.py`. BushTel and road-report licences still TBD.

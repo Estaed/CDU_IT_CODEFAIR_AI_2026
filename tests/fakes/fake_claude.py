@@ -4,6 +4,7 @@
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -25,6 +26,13 @@ def main() -> int:
             return 0
     if mode == "is_error":
         print(json.dumps({"is_error": True, "result": "simulated model error"}))
+        return 0
+    if mode == "reports":  # one canned tenant report per job id found in the prompt
+        ids = sorted(set(re.findall(r"JR-\d{4}-\d{5}", prompt)))
+        reports = [
+            {"job_id": i, "text": f"Report {i}: the tap leaks all day and night."} for i in ids
+        ]
+        print(json.dumps({"is_error": False, "structured_output": {"reports": reports}}))
         return 0
     print(
         json.dumps(

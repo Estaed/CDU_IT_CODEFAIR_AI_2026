@@ -159,3 +159,18 @@ Datasets is a judging criterion; every source below goes into the report.
   judge's question we cannot answer.
 - Coordinator workflow: research bee 8 running (job ads, program docs, audits) so the PRD
   persona is sourced. Real-coordinator interview: ask at the September workshop.
+- **Persona correction (report 8).** Under Healthy Homes the daily repair list sits in the
+  contractor's tasking system (one contract per 1-3 communities; 25 of 31 contracts held
+  by 17 Aboriginal Business Enterprises). Intake: NT-wide 1800 line, in-community Housing
+  Maintenance Officer, Community Housing Officer who phones the contractor and records a
+  job registration number. Non-urgent works over AUD 500 need a DIPL contract
+  superintendent's approval; an exempt list (blocked toilets/drains, water into
+  electricals, fast dripping taps) can be fixed at triage. Five remote regions. Systems
+  (TMS, ASNEX, AIS, CBIS) are reporting/asset systems, none is a triage queue.
+  Menzies (Sep 2023): NT cannot currently determine timeliness of work-order completion;
+  data records invoice upload, not delivery. -> Fair Turn measures what NT cannot.
+  Work-order volumes unpublished; do not invent. Housing Reference Groups exist in policy
+  (allocation, provider selection) but have no published role in repair order: our
+  "community in the loop" is a proposal extending an existing structure.
+  Open (PRD): who exactly is the user - the regional tasking desk that holds the list
+  (contractor scheduler, often an ABE) with agency oversight, vs the agency coordinator.

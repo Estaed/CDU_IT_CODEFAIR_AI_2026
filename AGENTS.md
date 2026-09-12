@@ -6,8 +6,8 @@
 
 # CLAUDE.md — Fair Turn (CDU IT Code Fair 2026, AI Challenge)
 
-> **Competition context lives in this repo, not in your memory.** Read `README.md`
-> at the root of this folder before doing anything, and the files under `docs/` that it
+> **Competition context lives in this repo, not in your memory.** Read
+> `docs/competition-notes.md` before doing anything, and the files under `docs/` that it
 > points to: the official brief, the deliverables, the deadlines and the judging criteria
 > are all transcribed there from the organiser's website. They are the constraints this
 > project is graded against — treat them the way Part 2 treats the architecture.

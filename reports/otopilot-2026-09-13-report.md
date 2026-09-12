@@ -12,7 +12,7 @@ separate PowerShell process for the whole run.
 | Task-04 capacity sim | opus | 2 | **green** | attempt 1: files written, no command could run (recipe fault, see below), 0 fail on orchestrator gate → attempt 2: committed, gate GREEN worktree + main | 4.7 min + 0.8 min | `c2e3885` |
 | Task-06 explain | sonnet | 2 | **green** | attempt 1: same recipe fault, 1 fail (ruff F841) → attempt 2: 0 fail, gate GREEN worktree + main | ~6 min + 3 min | `e2ee0bd` |
 | Task-07 audit log | sonnet | 1 | **green** | 0 fail, gate GREEN worktree + main | 3 min | `9b1a45d` |
-| Task-05 feedback sim | opus | 1 | **blocked — operator decision** | code and tests written (untracked in lane `task-05`); 1 of 7 tests fails on the DoD assertion "remote reports last 4 weeks < first 4 weeks at decay 0.5, λ = 1" (253 vs 236); ruff E501 on one line | 5 min | none |
+| Task-05 feedback sim | opus | 2 | **green** | attempt 1: BLOCKED, 1 of 7 fail (remote reports last 4 weeks 253 not below first 4 weeks 236) + ruff E501 → operator tightened the capacity constants (`c274d5c`), orchestrator pre-check 1 fail (gap week 12 9.0 not above week 1 12.5: end-of-window censoring) → attempt 2 with a 28-day completion tail: 0 fail, gate GREEN worktree + main | 5 min + 1.5 min | `2c56a34` |
 
 ## Task-05: what the bee found (verified by the orchestrator)
 
@@ -33,12 +33,17 @@ labels (remote median / town median at λ = 1 → λ = 0, open at end):
 
 The same slack also flattens the board's equity slider (the gap does not move with λ at
 the current constants), so this is a Part 2 / constants decision, not a Task-05 fix.
-Options: (a) tighten the provisional capacity constants in `constants.py` + `constants.md`
+**Decision (operator, 2026-09-13): option (a).** Constants tightened to 1 / 2 / 2 in `c274d5c` with provenance rows in `constants.md` and the PRD §6.3 prose updated. Options as presented: (a) tighten the provisional capacity constants in `constants.py` + `constants.md`
 (PRD §6.3 already labels them provisional; Task-04's fixture tests are unaffected, its
 30-day artefact test checks only speed and consistency); (b) change the Task-05 assertion
 to a relative measure (share of the plain run's reports: 0.929 → 0.907 at λ = 1, weak);
-(c) accept the finding and drop the feedback-loop claim from the PRD. Left to the operator;
-lane `task-05` kept intact for attempt 2.
+(c) accept the finding and drop the feedback-loop claim from the PRD.
+
+Second finding after the constants change: the per-week gap collapsed in the last weeks because
+waits were censored at the window end (a week-12 report cannot wait more than about 7 days).
+Measured with a completion tail: gap by report-week at λ = 1 goes 13.5 → 35 (28-day tail), so
+the bee added `COMPLETION_TAIL_DAYS = 28` to the final capacity run; reporting decay still
+stops at the 90-day window.
 
 ## Recipe faults found this run (candidates for the `otopilot` / `claude-swarm` skill)
 
@@ -53,7 +58,21 @@ lane `task-05` kept intact for attempt 2.
 - `Start-Process -File` with a path containing spaces needs the path quoted inside the
   argument list, or the process exits at once with no error visible.
 
+- **`git worktree remove --force` followed the `venv` directory junction inside the lane and
+  deleted the contents of the repo's own `venv/`.** Rebuilt from `uv.lock` in about a minute
+  (`uv venv venv --python 3.13`, `UV_PROJECT_ENVIRONMENT=venv uv sync`), gate GREEN after.
+  One commit (`c274d5c`) was made while the interpreter was missing because `gate.py | tail`
+  hid the failure; the gate was rerun on it afterwards and is GREEN. Rule for the recipe:
+  `cmd /c rmdir <lane>env` (does not follow the junction) BEFORE `git worktree remove`,
+  and never pipe the gate through `tail` in a commit chain.
+
 ## Worktrees
 
-`task-04`, `task-06`, `task-07` removed after integration. `task-05` kept (uncommitted
-files) pending the decision above.
+All four lanes removed after integration; `git worktree list` shows only the main checkout.
+The wake lock was released at closeout.
+
+## Result
+
+4 of 4 approved tasks green and integrated: 04 `c2e3885`, 06 `e2ee0bd`, 07 `9b1a45d`,
+05 `2c56a34`. Main HEAD after the run: `2c56a34`, gate GREEN (164 tests). Next in
+`docs/TASKS_INDEX.md`: Task-11 (main loop, spends the Codex window) then 12 and 13.

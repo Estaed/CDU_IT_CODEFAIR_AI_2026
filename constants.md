@@ -6,6 +6,7 @@ is two logged-in CLIs).
 
 | Name | Value | What it is for | Source |
 |---|---|---|---|
+| `TEAM_NUMBER` | AIC014 | Submission file name, report cover, slide footer | CDU registration; confirmed by Tarik 2026-09-12. The sibling Data Innovation Challenge entry is DIC005, never this one. |
 | `SEED` | 20260912 | Only randomness source for synthesis and simulation | Project decision, the date Part 2 was written |
 | `WINDOW_START` | 2025-10-01 | First day of the synthetic event window | PRD §6.2 |
 | `WINDOW_DAYS` | 90 | Length of the window (to 29 Dec 2025) | PRD §6.2 |

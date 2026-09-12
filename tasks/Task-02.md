@@ -1,5 +1,7 @@
 # Task-02: Core types and the ranking formula
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* fully specified by PRD §4 and Part 2; pure Python; the criterion is tests plus a hypothesis property.
 
@@ -22,8 +24,8 @@ coordinator controls: `score = need − λ · logistics`, reading typed fields o
 
 ## Acceptance Criteria (DoD)
 
-- [ ] `score_job` returns factors for exactly `urgency`, `safety`, `health_risk`, `logistics`, and `score == urgency + safety + health_risk − lam * logistics` within 1e-9.
-- [ ] Hypothesis property (λ = 0 invariance) passes with at least 200 examples.
-- [ ] Human-queue exclusion and stable ordering tested.
-- [ ] `fair_turn/core` imports no pandas, streamlit, subprocess or network module (layer test).
-- [ ] Gate green.
+- [x] `score_job` returns factors for exactly `urgency`, `safety`, `health_risk`, `logistics`, and `score == urgency + safety + health_risk − lam * logistics` within 1e-9.
+- [x] Hypothesis property (λ = 0 invariance) passes with at least 200 examples.
+- [x] Human-queue exclusion and stable ordering tested.
+- [x] `fair_turn/core` imports no pandas, streamlit, subprocess or network module (layer test).
+- [x] Gate green.

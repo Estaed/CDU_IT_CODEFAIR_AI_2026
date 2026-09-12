@@ -14,7 +14,7 @@ numbers).
 
 - [x] Task-00: Package layout, constants, theme tokens, wording lint
 - [x] Task-01: Geography layer with pseudonymous community ids
-- [ ] Task-02: Core types and the ranking formula
+- [x] Task-02: Core types and the ranking formula
 - [ ] Task-03: Synthetic labels, personas, closures and climate table
 - [ ] Task-04: Capacity simulation and wait metrics
 - [ ] Task-05: Feedback-loop simulation

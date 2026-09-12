@@ -22,7 +22,18 @@ Two thin, tested subprocess wrappers so the build scripts never touch CLI flags 
 
 ## Acceptance Criteria (DoD)
 
-- [ ] Wrapper tests pass with the fake executables; no test invokes a real CLI.
-- [ ] Neither wrapper ever calls `subprocess.run` without a `timeout` and with stdin unresolved.
+- [x] Wrapper tests pass with the fake executables; no test invokes a real CLI.
+- [x] Neither wrapper ever calls `subprocess.run` without a `timeout` and with stdin unresolved.
 - [ ] One manual real call per wrapper on Tarik's machine is recorded in the task file's notes with the date (not gated).
-- [ ] Gate green.
+- [x] Gate green.
+
+## Notes
+
+- 2026-09-12 real call, Claude wrapper: `generate("Reply with the single word pong.",
+  <one-enum schema>, model="haiku", timeout=120)` returned `{"answer": "pong"}` in 16.6 s
+  (`claude` 2.1.269, logged in on Tarik's machine).
+- 2026-09-12 real call, Codex wrapper: pending. Codex is held back until the Claude window
+  renews (operator decision); one smoke call is owed before this task is DONE.
+- Trap found while gating: `%TEMP%\pytest-of-TARIK` (created 2026-09-10) was unreadable
+  and made every `tmp_path` fixture error with WinError 5. Renamed to
+  `pytest-of-TARIK.broken-2026-09-12`; pytest recreated a healthy one.

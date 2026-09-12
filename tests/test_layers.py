@@ -10,9 +10,9 @@ from pathlib import Path
 PKG = Path(__file__).resolve().parent.parent / "fair_turn"
 
 FORBIDDEN_LIBS = {
-    "core": r"streamlit|anthropic|requests|urllib|httpx|socket|pandas",
-    "data": r"streamlit|anthropic|requests|urllib|httpx|socket",
-    "eval": r"streamlit|anthropic|requests|urllib|httpx|socket",
+    "core": r"streamlit|anthropic|openai|subprocess|requests|urllib|httpx|socket|pandas",
+    "data": r"streamlit|anthropic|openai|subprocess|requests|urllib|httpx|socket",
+    "eval": r"streamlit|anthropic|openai|subprocess|requests|urllib|httpx|socket",
     "llm": r"streamlit",
     "app": r"anthropic|openai|subprocess|requests|urllib|httpx|socket",
 }

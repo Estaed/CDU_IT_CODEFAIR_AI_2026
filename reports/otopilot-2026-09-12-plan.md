@@ -2,7 +2,7 @@
 
 **Direction:** Claude main loop orchestrates, **Claude bees** (`claude -p --model sonnet`)
 run the lanes. Codex is held back by operator decision (Claude window renews Sunday
-evening; spend it first). Preflight: `onkontrol.py . --tasks 04,05,06,07,08
+evening; spend it first). Preflight: `onkontrol.py . --tasks 04,05,06,07
 --orchestrator claude --delegate claude` → OVERALL OK, direction row
 `orchestrator claude -> claude bees (same pool: watch pressure)`.
 
@@ -10,13 +10,13 @@ evening; spend it first). Preflight: `onkontrol.py . --tasks 04,05,06,07,08
 |---|---|
 | `BASE_SHA` | `main` HEAD at launch (`709af21` when this plan was last checked, gate GREEN, 66 tests); the orchestrator reruns preflight and records the pinned SHA in the report |
 | Baseline gate | `venv/Scripts/python scripts/gate.py` (ruff check, ruff format --check, pytest) |
-| Stop markers | none in the five selected tasks |
+| Stop markers | none in the four selected tasks |
 | Quota snapshot | Claude fullest window 56 % (`--quota-only` GO); Codex untouched by design |
 | Bee auth probe | `echo ping \| claude -p --model haiku` → `is_error: false`, no denials |
 | Timebox per bee | 30 min wall clock; 2 attempts max |
 | Lane roots | `..\..\.lanes\fair-turn\task-NN` (outside the repo), detached worktree at `BASE_SHA` |
 | Stack setup per lane | directory junction `<lane>\venv` → the repo's `venv\` (gitignored; `gate.py` resolves the junction so its interpreter check passes) |
-| Wake lock | operator at the desk; no overnight segment. Windows sleep timeout checked before wave 1 |
+| Wake lock | overnight run: the orchestrator holds `SetThreadExecutionState` in a separate long-lived process (`powershell` started in the background, released at closeout); confirm it before wave 1 |
 | Model / tier | `sonnet` for every bee (claude-chef bee default; single Pro pool, so no `opus` lanes) |
 | Hooks in bees | `BEYIN_INVOKED_BY=bee`; house rules via `--append-system-prompt` (lane_preamble, 5,155 bytes) |
 

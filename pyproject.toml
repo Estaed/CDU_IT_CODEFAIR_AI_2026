@@ -10,7 +10,7 @@ dependencies = [
     "scikit-learn",
     "statsmodels",
     "textstat",
-    "anthropic",
+    "pydantic",
     "openpyxl",
 ]
 

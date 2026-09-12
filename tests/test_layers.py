@@ -14,7 +14,7 @@ FORBIDDEN_LIBS = {
     "data": r"streamlit|anthropic|requests|urllib|httpx|socket",
     "eval": r"streamlit|anthropic|requests|urllib|httpx|socket",
     "llm": r"streamlit",
-    "app": r"anthropic|requests|urllib|httpx|socket",
+    "app": r"anthropic|openai|subprocess|requests|urllib|httpx|socket",
 }
 
 ALLOWED_SIBLINGS = {

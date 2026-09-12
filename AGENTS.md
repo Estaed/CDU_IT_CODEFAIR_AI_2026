@@ -277,8 +277,10 @@ present). `pyproject.toml` pins `>=3.13,<3.14`. Environment lives in **`venv/`**
 `.venv`, Tarik's call): create with `uv venv venv --python 3.13`, sync with
 `UV_PROJECT_ENVIRONMENT=venv uv sync`. uv is used only to lock and sync; **every run command
 uses `venv/Scripts/python` directly** (`venv/bin/python` on POSIX), so nothing depends on
-the env var being set. Versions below were read from the environment after `uv sync` on
-2026-09-12; `uv.lock` is the record.
+the env var being set. `requirements.txt` is exported from the lock (`uv export --no-dev
+--no-hashes --no-emit-project -o requirements.txt`) so a judge can `pip install -r
+requirements.txt` and never meet uv; re-export whenever `pyproject.toml` changes. Versions
+below were read from the environment after `uv sync` on 2026-09-12; `uv.lock` is the record.
 
 | Package | Version | Why it is here |
 |---|---|---|
@@ -290,8 +292,9 @@ the env var being set. Versions below were read from the environment after `uv s
 | scikit-learn | 1.9.1 | Baseline bag-of-words classifier (TF-IDF + logistic regression) and per-field P/R/F1. |
 | statsmodels | 0.15.0 | `proportion_confint(method="wilson")` for every reported proportion. |
 | textstat | 0.7.13 | Flesch-Kincaid grade for tenant text (PRD §7). |
-| anthropic | 1.5.0 | **Build time only**, from `scripts/` through `fair_turn/llm`. Generator `claude-opus-5`, extractor `claude-sonnet-5` (different models, PRD §6.2). Extraction uses structured outputs (`client.messages.parse` with a pydantic model, enums only, `additionalProperties: false`); both jobs go through the Message Batches API (`client.messages.batches.create`, results keyed by `custom_id`, half price). Citations cannot combine with structured outputs (HTTP 400, report 3), so the source phrase is a schema field verified as a substring in Python. Estimated spend for 1,500 reports, both jobs, batched: about 10 USD. |
-| pydantic | 2.13.5 | Transitive of anthropic; the extraction schema is a pydantic model so the same class validates artefacts on load. |
+| Claude Code CLI | 2.1.269 | **Generator**, build time only, on Tarik's Claude subscription: `claude -p --model opus --output-format json --json-schema <schema>` with the prompt on **stdin** (a variadic flag such as `--tools` swallows a trailing prompt argument, and the CLI waits 3 s then errors if stdin is open with nothing on it). The JSON result's `structured_output` field is the schema-valid object. Spike 2026-09-12: one call, about 10 s, 24k cached-prompt tokens of CLI overhead per call, so reports are generated 20 per call. |
+| Codex CLI | 0.154.0 | **Extractor**, build time only, on Tarik's Codex subscription: `codex exec --sandbox read-only --skip-git-repo-check --output-schema schema.json -o out.json "<prompt>"` with stdin closed (`< /dev/null`, or it blocks forever). No `-m` pin (MODELS.md rule). Spike 2026-09-12: one call returned a schema-valid object. Different vendor from the generator, stronger than the PRD's different-model rule. |
+| pydantic | 2.13.5 | The extraction schema is a pydantic model: it emits the JSON Schema both CLIs receive and validates every returned object and every artefact on load. Enums only, `additionalProperties: false`. |
 | openpyxl | 3.1.5 | Reads the NT open-data coverage XLSX in `data/raw/`. |
 | pytest | 9.1.1 | Test runner. `AppTest.run(timeout=60)`: the default 3 s times out on first Altair import (spike 2026-09-12). |
 | hypothesis | 6.168.0 | Property test: ranking at λ = 0 is invariant under permutation of distances and road status. |
@@ -304,6 +307,7 @@ Rejected, with reason, all 2026-09-12:
 - **mypy**: no typed boundary worth the friction in 18 days; ruff only. **pip-tools**: uv already gives the lockfile.
 - **Open-Meteo / BoM live weather, NT road-report live feed, OSRM distances**: no network at demo time; road distance is undefined for barge and air communities anyway. Distances are haversine from the crew base times a road-access factor from BushTel, frozen in a build artefact.
 - **Parquet / pickle artefacts**: judges read the files; JSON and CSV only.
+- **Anthropic API (`anthropic` SDK, Batch API)**: worked, about 10 USD for 1,500 reports, but the subscriptions already paid for cover the same two jobs at zero marginal cost. Decided 2026-09-12; the SDK was removed from `pyproject.toml`. **OpenRouter**: a new account and key for nothing the CLIs lack. **Ollama local models**: free but untested against the F1 target and weaker text variety; the fallback if a subscription window runs dry, not the plan.
 - **LLM fine-tuning, a Haiku injection pre-screen, LLM self-reported confidence**: rejected in the PRD (§5) with reasons; do not re-propose.
 
 ### Architecture
@@ -314,7 +318,8 @@ fair_turn/
            explain (sentence + tenant answer templates), verify_spans, wording (lexicon,
            reading level), audit
   data/    frozen raw files in, tables out: geography, synth labels (seeded), artefact I/O
-  llm/     anthropic client, generation prompts, extraction schema; imported by scripts only
+  llm/     subprocess wrappers for `claude -p` and `codex exec`, prompts, extraction schema;
+           imported by scripts only
   eval/    metrics (P/R/F1, Wilson, SemEval spans), baseline classifier, result tables
   app/     main.py (st.navigation), pages/ (one file per PRD section 3 screen), theme.py
 scripts/   fetch_raw_sources.py, build_labels.py, generate_text.py, extract.py,
@@ -330,8 +335,8 @@ tests/
 **Layer rule**, enforced by `tests/test_layers.py`: `core` imports nothing from
 `fair_turn` and never `streamlit`, `anthropic`, `pandas` or any network module; `data`
 may import `core`; `eval` and `llm` may import `core` and `data`; `app` may import
-`core`, `data`, `eval` and never `anthropic` or a network module. `scripts/` may import
-anything. A violation fails the gate.
+`core`, `data`, `eval` and never `subprocess`, a model SDK or a network module. `scripts/`
+may import anything. A violation fails the gate.
 
 **Deterministic steps pushed out of the model:** label drawing, scoring, the capacity
 simulation, the feedback simulation, both explanation texts, span verification, reading
@@ -346,20 +351,25 @@ no interface classes):
   intake instead. Today: JSON files.
 - `core/audit.py` appends and exports the log. A pilot would write to the agency system.
   Today: JSONL under `data/audit/`.
-- `app` reads extraction from artefacts only. Build time: `claude-sonnet-5`; no-key
-  fallback for the report's comparison table: the baseline classifier in `eval/`.
+- `app` reads extraction from artefacts only. Build time: Codex CLI; the no-model
+  fallback for the report's comparison table is the baseline classifier in `eval/`.
 
 **Entry points.** App: `venv/Scripts/streamlit run fair_turn/app/main.py`; pages registered
 with `st.navigation` in `main.py`. Build pipeline, in order, each idempotent from the repo
-root: `fetch_raw_sources.py` (done, frozen), `build_labels.py`, `generate_text.py` (Opus 5,
-needs `ANTHROPIC_API_KEY`), `extract.py` (Sonnet 5, needs the key), `run_eval.py`. The app
-and the gate never need the key.
+root: `fetch_raw_sources.py` (done, frozen), `build_labels.py`, `generate_text.py` (needs a
+logged-in `claude`), `extract.py` (needs a logged-in `codex`), `run_eval.py`. The app and
+the gate never need either CLI.
 
 **Spikes.**
 - *Question:* can the map render with no network? *Spike (2026-09-12):* Altair geoshape +
   circles over inline GeoJSON through `AppTest`; the emitted Vega-Lite spec contains no
   `url`, two layers, features inline; Streamlit serves Vega-Lite from its own bundle.
   *Result:* Altair for the map, no basemap, NT outline from a local file.
+- *Question:* can the two subscription CLIs return schema-valid JSON non-interactively?
+  *Spike (2026-09-12):* one call each with a three-field enum schema; both returned a valid
+  object (`structured_output` from `claude -p`, `-o out.json` from `codex exec`). Both
+  block when stdin is left open. *Result:* subscriptions replace the API; every wrapper
+  passes the prompt on stdin (Claude) or closes stdin (Codex) and validates with pydantic.
 - *Question:* does `AppTest` work as the build check? *Spike:* same run; passes with
   `timeout=60`, times out at the default 3 s. *Result:* AppTest is the build step, with the
   explicit timeout.
@@ -412,17 +422,18 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
    exit code and quoted in the report, not by the gate, because it needs an API run);
    visual fidelity; hosted deployment; the report PDF and slides (human checklist against
    `docs/report-requirements.md`); licence confirmation for BushTel and the road report
-   (PRD open question 1).
+   (PRD open question 1); rerunning generation or extraction (needs the subscriptions).
 
 ### Key Constraints
 
-- **Forbid** `anthropic` and any network module in `fair_turn/app`, `core`, `data`,
-  `eval`. The app must start and render every page with no network and no
-  `ANTHROPIC_API_KEY`.
+- **Forbid** `subprocess`, any model SDK and any network module in `fair_turn/app`,
+  `core`, `data`, `eval`. The app must start and render every page with no network, no
+  API key and neither CLI installed.
 - **Forbid** any model call in a Streamlit page body or callback. Model work happens in
   `scripts/` only, writes to `data/build/`, and is committed.
-- **Require** the API key to come from the `ANTHROPIC_API_KEY` environment variable read
-  inside `fair_turn/llm`. Never in code, `.env`, `secrets.toml` or the zip.
+- **Forbid** API keys anywhere in the repo or the zip. Model access is the two logged-in
+  CLIs on Tarik's machine, called only from `scripts/` through `fair_turn/llm`; a judge
+  rerunning the build needs their own `claude` or `codex` login, and the README says so.
 - **Forbid** the ranking function reading any model-produced string. Its inputs are the
   typed fields of the extraction schema; explanations are templates over score factors.
 - **Forbid** displaying a field whose source phrase is not a literal substring of the

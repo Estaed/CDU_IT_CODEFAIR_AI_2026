@@ -1,5 +1,7 @@
 # Task-07: Audit log
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* append-only JSONL with a fixed record shape (PRD §3.3, §3.6); round-trip tests decide.
 
@@ -22,6 +24,6 @@ with a reason, appended and exportable.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] Round-trip and byte-stability tests pass.
-- [ ] `read` on an empty or missing file returns `[]`.
-- [ ] Gate green.
+- [x] Round-trip and byte-stability tests pass.
+- [x] `read` on an empty or missing file returns `[]`.
+- [x] Gate green.

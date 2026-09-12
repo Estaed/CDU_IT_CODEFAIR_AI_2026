@@ -8,7 +8,7 @@ evening; spend it first). Preflight: `onkontrol.py . --tasks 04,05,06,07,08
 
 | Item | Value |
 |---|---|
-| `BASE_SHA` | `3622aa4` (Task-03 integrated; gate GREEN on that tree, 35 tests) |
+| `BASE_SHA` | `main` HEAD at launch (`709af21` when this plan was last checked, gate GREEN, 66 tests); the orchestrator reruns preflight and records the pinned SHA in the report |
 | Baseline gate | `venv/Scripts/python scripts/gate.py` (ruff check, ruff format --check, pytest) |
 | Stop markers | none in the five selected tasks |
 | Quota snapshot | Claude fullest window 56 % (`--quota-only` GO); Codex untouched by design |

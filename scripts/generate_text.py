@@ -16,18 +16,20 @@ import json
 import re
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
 
-from fair_turn.core.wording import check  # noqa: E402
+from fair_turn.core.wording import READING_LEVEL, check  # noqa: E402
 from fair_turn.llm import claude_cli, prompts  # noqa: E402
 
 BUILD = ROOT / "data" / "build"
 RAW_DETAIL = ROOT / "data" / "raw" / "bushtel_community_detail_2026-09-12.json"
 BATCH_SIZE = 20
 MAX_ROUNDS = 3  # passes over the still-missing labels before giving up
+WORKERS = 4  # concurrent CLI calls; each is a separate `claude -p` process
 
 
 def real_names(detail_path: Path = RAW_DETAIL) -> list[str]:
@@ -62,7 +64,9 @@ def validate(item: dict, wanted: set[str], names: list[str]) -> str | None:
         return "unknown or repeated job_id"
     if not prompts.REPORT_MIN_CHARS <= len(text) <= prompts.REPORT_MAX_CHARS:
         return f"length {len(text)}"
-    if problems := check(text):
+    # Reading level is a ceiling for text the tool writes to tenants (PRD section 7), not
+    # for the tenant's own words; only the deficit terms are rejected here.
+    if problems := [t for t in check(text) if t != READING_LEVEL]:
         return "wording: " + ", ".join(problems)
     for name in names:
         if re.search(rf"(?<![A-Za-z]){re.escape(name)}(?![A-Za-z])", text, re.I):
@@ -77,6 +81,7 @@ def run(
     batch_size: int = BATCH_SIZE,
     limit: int | None = None,
     names: list[str] | None = None,
+    workers: int = WORKERS,
 ) -> dict:
     """Generate every missing report; returns ``{"calls": n, "written": n, "rejected": [...]}``."""
     labels = json.loads((build_dir / "labels.json").read_text("utf-8"))
@@ -97,42 +102,47 @@ def run(
     have = {r["job_id"] for r in reports}
     calls, written, rejected = 0, 0, []
     started = time.monotonic()
+
+    def call(batch: list[dict]) -> dict:
+        return claude_cli.generate(
+            prompts.GENERATION_SYSTEM + "\n\n" + prompts.generation_prompt(batch, personas),
+            prompts.GENERATION_SCHEMA,
+            model=model,
+            executable=executable,
+        )
+
     for _ in range(MAX_ROUNDS):
         missing = [label for label in labels if label["job_id"] not in have]
         if not missing:
             break
-        for start in range(0, len(missing), batch_size):
-            if limit is not None and calls >= limit:
-                break
-            batch = missing[start : start + batch_size]
-            wanted = {label["job_id"] for label in batch}
-            result = claude_cli.generate(
-                prompts.GENERATION_SYSTEM + "\n\n" + prompts.generation_prompt(batch, personas),
-                prompts.GENERATION_SCHEMA,
-                model=model,
-                executable=executable,
-            )
-            calls += 1
-            for item in result.get("reports", []):
-                reason = validate(item, wanted - have, names)
-                if reason:
-                    rejected.append({"job_id": item.get("job_id"), "reason": reason})
-                    continue
-                reports.append({"job_id": item["job_id"], "text": item["text"]})
-                have.add(item["job_id"])
-                written += 1
-            reports.sort(key=lambda r: r["job_id"])
-            out_path.write_bytes(
-                (json.dumps(reports, indent=1, ensure_ascii=False) + "\n").encode("utf-8")
-            )
-            left = len(labels) - len(have)
-            elapsed = time.monotonic() - started
-            print(
-                f"generate_text: call {calls}, {written} written, {left} missing, {elapsed:.0f}s",
-                file=sys.stderr,
-            )
-        if limit is not None and calls >= limit:
+        batches = [missing[i : i + batch_size] for i in range(0, len(missing), batch_size)]
+        if limit is not None:
+            batches = batches[: max(limit - calls, 0)]
+        if not batches:
             break
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            for batch, result in zip(batches, pool.map(call, batches), strict=True):
+                calls += 1
+                wanted = {label["job_id"] for label in batch}
+                for item in result.get("reports", []):
+                    reason = validate(item, wanted - have, names)
+                    if reason:
+                        rejected.append({"job_id": item.get("job_id"), "reason": reason})
+                        continue
+                    reports.append({"job_id": item["job_id"], "text": item["text"]})
+                    have.add(item["job_id"])
+                    written += 1
+                reports.sort(key=lambda r: r["job_id"])
+                out_path.write_bytes(
+                    (json.dumps(reports, indent=1, ensure_ascii=False) + "\n").encode("utf-8")
+                )
+                left = len(labels) - len(have)
+                elapsed = time.monotonic() - started
+                print(
+                    f"generate_text: call {calls}, {written} written, {left} missing, "
+                    f"{elapsed:.0f}s",
+                    file=sys.stderr,
+                )
     return {
         "calls": calls,
         "written": written,
@@ -146,8 +156,11 @@ def main() -> int:
     parser.add_argument("--model", default="opus")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--limit", type=int, help="stop after this many CLI calls")
+    parser.add_argument("--workers", type=int, default=WORKERS)
     args = parser.parse_args()
-    summary = run(model=args.model, batch_size=args.batch_size, limit=args.limit)
+    summary = run(
+        model=args.model, batch_size=args.batch_size, limit=args.limit, workers=args.workers
+    )
     print(json.dumps({k: v for k, v in summary.items() if k != "rejected"}), file=sys.stderr)
     if summary["rejected"]:
         print(f"rejected {len(summary['rejected'])}: {summary['rejected'][:10]}", file=sys.stderr)

@@ -99,6 +99,17 @@ def test_failed_call_is_counted_and_other_batches_still_written(tmp_path, monkey
     assert retry == {"calls": 1, "failed_calls": 0, "written": 2, "rejected": [], "missing": 0}
 
 
+def test_timeout_is_counted_as_failed_and_others_still_written(tmp_path, monkeypatch) -> None:
+    build = _build_copy(tmp_path, keep=5)  # six reports with ADV-01: three batches of two
+    ids = sorted(["ADV-01", *(r["job_id"] for r in REPORTS[:5])])
+    monkeypatch.setenv("FAKE_MODE", "sleep_job")
+    monkeypatch.setenv("FAKE_SLEEP_JOB", ids[2])
+    monkeypatch.setenv("FAKE_SLEEP", "5")
+    summary = extract.run(build, executable=FAKE, batch_size=2, limit=3, timeout=1)
+    assert summary["calls"] == 3 and summary["failed_calls"] == 1
+    assert summary["written"] == 4 and summary["missing"] == 2
+
+
 def test_fake_extraction_fills_missing_resumes_and_verifies(tmp_path, monkeypatch) -> None:
     build = _build_copy(tmp_path, keep=5)
     monkeypatch.setenv("FAKE_MODE", "extract")

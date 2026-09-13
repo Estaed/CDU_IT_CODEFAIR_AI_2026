@@ -42,7 +42,7 @@ def test_rerun_with_complete_artefact_makes_zero_calls(tmp_path, monkeypatch) ->
     )
     monkeypatch.setenv("FAKE_MODE", "fail")  # any call would raise CliError
     summary = generate_text.run(build, executable=FAKE, names=[])
-    assert summary == {"calls": 0, "written": 0, "rejected": [], "missing": 0}
+    assert summary == {"calls": 0, "failed_calls": 0, "written": 0, "rejected": [], "missing": 0}
 
 
 def test_fake_generation_fills_missing_and_resumes(tmp_path, monkeypatch) -> None:
@@ -54,6 +54,17 @@ def test_fake_generation_fills_missing_and_resumes(tmp_path, monkeypatch) -> Non
     assert second["calls"] == 1 and second["written"] == 2 and second["missing"] == 0
     reports = json.loads((build / "reports.json").read_text("utf-8"))
     assert [r["job_id"] for r in reports] == [label["job_id"] for label in LABELS[:7]]
+
+
+def test_timeout_is_counted_as_failed_and_others_still_written(tmp_path, monkeypatch) -> None:
+    build = _build_copy(tmp_path, keep=6)  # six labels: three batches of two
+    monkeypatch.setenv("FAKE_MODE", "sleep_job")
+    monkeypatch.setenv("FAKE_MODE_FALLBACK", "reports")
+    monkeypatch.setenv("FAKE_SLEEP_JOB", LABELS[2]["job_id"])
+    monkeypatch.setenv("FAKE_SLEEP", "5")
+    summary = generate_text.run(build, executable=FAKE, batch_size=2, limit=3, names=[], timeout=1)
+    assert summary["calls"] == 3 and summary["failed_calls"] == 1
+    assert summary["written"] == 4 and summary["missing"] == 2
 
 
 def test_validate_rejects_bad_items() -> None:

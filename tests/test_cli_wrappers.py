@@ -39,7 +39,8 @@ def test_success_passes_prompt_and_schema(name, mode, capsys) -> None:
     result = call(name)
     assert result["echo"] == PROMPT
     assert result["schema_title"] == "Probe"
-    assert "call 1" in capsys.readouterr().out
+    captured = capsys.readouterr()  # claude times to stderr, codex to stdout
+    assert "call 1" in captured.out + captured.err
 
 
 def test_claude_flags() -> None:
@@ -59,7 +60,8 @@ def test_codex_flags_and_prompt_on_stdin() -> None:
 def test_invalid_json_then_success_retries_once(name, mode, capsys) -> None:
     mode("bad_then_ok")
     assert call(name)["echo"] == PROMPT
-    assert "call 2" in capsys.readouterr().out
+    captured = capsys.readouterr()  # claude times to stderr, codex to stdout
+    assert "call 2" in captured.out + captured.err
 
 
 @pytest.mark.parametrize("name", ["claude", "codex"])
@@ -76,21 +78,26 @@ def test_claude_is_error_raises(mode) -> None:
         call("claude")
 
 
-def test_claude_subprocess_call_has_timeout_and_resolved_stdin(mode, monkeypatch) -> None:
+def test_claude_communicate_has_timeout_and_writes_stdin(mode, monkeypatch) -> None:
     mode("ok")
     seen = []
-    real_run = subprocess.run
 
-    def spy(cmd, **kwargs):
-        seen.append(kwargs)
-        return real_run(cmd, **kwargs)
+    class Spy(subprocess.Popen):
+        def communicate(self, *args, **kwargs):
+            seen.append((self.stdin is not None, args, kwargs))
+            return super().communicate(*args, **kwargs)
 
-    monkeypatch.setattr(subprocess, "run", spy)
+    monkeypatch.setattr(subprocess, "Popen", Spy)
     call("claude", timeout=30)
-    assert seen
-    for kwargs in seen:
-        assert kwargs["timeout"] == 30
-        assert "input" in kwargs or kwargs.get("stdin") is subprocess.DEVNULL
+    assert seen == [(True, (PROMPT,), {"timeout": 30})]
+
+
+def test_claude_timeout_kills_the_call_and_raises(mode) -> None:
+    mode("sleep")
+    started = time.monotonic()
+    with pytest.raises(claude_cli.CliError, match="timed out after 1 s"):
+        call("claude", timeout=1)
+    assert time.monotonic() - started < 15  # the fake sleeps 30 s unless killed
 
 
 def test_codex_communicate_has_timeout_and_writes_stdin(mode, monkeypatch) -> None:

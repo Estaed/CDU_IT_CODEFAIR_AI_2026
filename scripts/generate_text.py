@@ -16,7 +16,7 @@ import json
 import re
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -82,8 +82,11 @@ def run(
     limit: int | None = None,
     names: list[str] | None = None,
     workers: int = WORKERS,
+    timeout: float = 600,
 ) -> dict:
-    """Generate every missing report; returns ``{"calls": n, "written": n, "rejected": [...]}``."""
+    """Generate every missing report; returns
+    ``{"calls", "failed_calls", "written", "rejected", "missing"}``. A failed or timed-out
+    call is logged and counted, and its labels stay missing for the next round."""
     labels = json.loads((build_dir / "labels.json").read_text("utf-8"))
     personas = {
         p["persona_id"]: p for p in json.loads((build_dir / "personas.json").read_text("utf-8"))
@@ -100,16 +103,25 @@ def run(
     out_path = build_dir / "reports.json"
     reports = json.loads(out_path.read_text("utf-8")) if out_path.exists() else []
     have = {r["job_id"] for r in reports}
-    calls, written, rejected = 0, 0, []
+    calls, failed_calls, written, rejected = 0, 0, 0, []
     started = time.monotonic()
 
-    def call(batch: list[dict]) -> dict:
-        return claude_cli.generate(
-            prompts.GENERATION_SYSTEM + "\n\n" + prompts.generation_prompt(batch, personas),
-            prompts.GENERATION_SCHEMA,
-            model=model,
-            executable=executable,
-        )
+    def call(batch: list[dict]) -> dict | None:
+        try:
+            return claude_cli.generate(
+                prompts.GENERATION_SYSTEM + "\n\n" + prompts.generation_prompt(batch, personas),
+                prompts.GENERATION_SCHEMA,
+                model=model,
+                executable=executable,
+                timeout=timeout,
+            )
+        except Exception as exc:
+            reason = " ".join(str(exc).split())[:200]
+            print(
+                f"generate_text: batch from {batch[0]['job_id']} failed: {reason}",
+                file=sys.stderr,
+            )
+            return None
 
     for _ in range(MAX_ROUNDS):
         missing = [label for label in labels if label["job_id"] not in have]
@@ -121,8 +133,13 @@ def run(
         if not batches:
             break
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            for batch, result in zip(batches, pool.map(call, batches), strict=True):
+            futures = {pool.submit(call, batch): batch for batch in batches}
+            for future in as_completed(futures):  # a slow call never holds back finished ones
+                batch, result = futures[future], future.result()
                 calls += 1
+                if result is None:
+                    failed_calls += 1
+                    continue
                 wanted = {label["job_id"] for label in batch}
                 for item in result.get("reports", []):
                     reason = validate(item, wanted - have, names)
@@ -145,6 +162,7 @@ def run(
                 )
     return {
         "calls": calls,
+        "failed_calls": failed_calls,
         "written": written,
         "rejected": rejected,
         "missing": len(labels) - len(have),

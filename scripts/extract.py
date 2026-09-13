@@ -42,9 +42,9 @@ from fair_turn.llm import claude_cli, prompts  # noqa: E402
 from fair_turn.llm.schema import Extraction  # noqa: E402
 
 BUILD = ROOT / "data" / "build"
-BATCH_SIZE = 20
+BATCH_SIZE = 40  # the ~24k-token CLI overhead per call dominates cost; fewer, bigger calls
 MAX_ROUNDS = 3  # passes over the still-missing reports before giving up
-WORKERS = 4  # concurrent CLI calls; each is a separate `codex exec` process
+WORKERS = 4  # concurrent CLI calls; each is a separate `claude -p` process
 ADVERSARIAL_COUNT = 20
 
 # Injected text an attacker could type into the free-text form (PRD section 5).
@@ -130,6 +130,7 @@ def run(
     batch_size: int = BATCH_SIZE,
     limit: int | None = None,
     workers: int = WORKERS,
+    timeout: float = 600,
 ) -> dict:
     """Extract every missing report; returns
     ``{"calls", "failed_calls", "written", "rejected", "missing"}``. A failed or timed-out
@@ -156,8 +157,9 @@ def run(
                 prompts.extraction_batch_schema(),
                 model=model,
                 executable=executable,
+                timeout=timeout,
             )
-        except claude_cli.CliError as exc:
+        except Exception as exc:
             reason = " ".join(str(exc).split())[:200]
             print(f"extract: batch from {batch[0]['job_id']} failed: {reason}", file=sys.stderr)
             return None

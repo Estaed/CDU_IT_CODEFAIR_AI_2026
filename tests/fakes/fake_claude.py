@@ -4,12 +4,15 @@
 (one canned extraction per report in the prompt's fenced JSON block: fault evidence is
 the report's first three words, so it verifies; every second report's safety evidence is
 not in the report, so it drops), ``fail_job`` (like ``fail`` when ``FAKE_FAIL_JOB``
-appears in the prompt, else ``extract``)."""
+appears in the prompt, else ``extract``), ``sleep`` (sleeps ``FAKE_SLEEP`` seconds,
+default 30), ``sleep_job`` (like ``sleep`` when ``FAKE_SLEEP_JOB`` appears in the prompt,
+else ``FAKE_MODE_FALLBACK``, default ``extract``)."""
 
 import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 
 
@@ -43,6 +46,12 @@ def main() -> int:
     schema = json.loads(argv[argv.index("--json-schema") + 1])
     if mode == "fail_job":
         mode = "fail" if os.environ["FAKE_FAIL_JOB"] in prompt else "extract"
+    if mode == "sleep_job":
+        fallback = os.environ.get("FAKE_MODE_FALLBACK", "extract")
+        mode = "sleep" if os.environ["FAKE_SLEEP_JOB"] in prompt else fallback
+    if mode == "sleep":
+        time.sleep(float(os.environ.get("FAKE_SLEEP", "30")))
+        return 0
     if mode == "fail":
         print("fake claude: simulated failure", file=sys.stderr)
         return 2

@@ -1,5 +1,7 @@
 # Task-14: Triage board: ranked list, equity slider, two rankings, human queue
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* PRD §3.1 prose is the source of truth and the smoke test plus element assertions are the criterion; no eye check is gated.
 

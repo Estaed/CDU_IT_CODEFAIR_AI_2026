@@ -1,0 +1,375 @@
+{
+  "source": {
+    "title": "NT DHLGCD fact sheet FS17 Repairs and maintenance (10/2025)",
+    "url": "https://dhlgcd.nt.gov.au/media/documents/fact-sheets/repairs-and-maintenance-fs17.pdf",
+    "effective_date": "2025-10",
+    "fetched": "2026-09-14"
+  },
+  "threshold": 0.55,
+  "embed_model": "bge-m3",
+  "keys": {
+    "immediate|town|electrical": [],
+    "immediate|town|plumbing_water": [],
+    "immediate|town|sewer_drainage": [],
+    "immediate|town|cooling": [],
+    "immediate|town|hot_water": [],
+    "immediate|town|roof_structure": [],
+    "immediate|town|doors_locks_security": [],
+    "immediate|town|stove_cooking": [],
+    "immediate|town|pests": [],
+    "immediate|town|other": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.558074
+      }
+    ],
+    "immediate|town|": [],
+    "immediate|remote|electrical": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.569945
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.561219
+      }
+    ],
+    "immediate|remote|plumbing_water": [],
+    "immediate|remote|sewer_drainage": [],
+    "immediate|remote|cooling": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.559683
+      }
+    ],
+    "immediate|remote|hot_water": [],
+    "immediate|remote|roof_structure": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.565778
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.561352
+      }
+    ],
+    "immediate|remote|doors_locks_security": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.555947
+      }
+    ],
+    "immediate|remote|stove_cooking": [],
+    "immediate|remote|pests": [],
+    "immediate|remote|other": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.577711
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.553101
+      }
+    ],
+    "immediate|remote|": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.571199
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.564567
+      }
+    ],
+    "urgent|town|electrical": [
+      {
+        "section": "Fact sheet",
+        "text": "Smoke alarms not working • Broken doors • Fans that are not working properly • Power points that are not working. • A dangerous electrical fault • Flooding or serious flood damage • A serious roof leak • Serious storm, fire or impact damage What happens after I report a maintenance issue to the Department? The Department will organise a contractor to fix the problem. The contractor will then contact you to organise a suitable time to come to your home. It is important you keep your appointment time. If you cannot keep your appointment, you need to let the Department know as soon as possible. The Department will then let the contractor know and reschedule the appointment for you.",
+        "score": 0.553073
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.552433
+      }
+    ],
+    "urgent|town|plumbing_water": [],
+    "urgent|town|sewer_drainage": [],
+    "urgent|town|cooling": [],
+    "urgent|town|hot_water": [],
+    "urgent|town|roof_structure": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.551639
+      }
+    ],
+    "urgent|town|doors_locks_security": [],
+    "urgent|town|stove_cooking": [],
+    "urgent|town|pests": [],
+    "urgent|town|other": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.56898
+      }
+    ],
+    "urgent|town|": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.557744
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.552557
+      }
+    ],
+    "urgent|remote|electrical": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.579821
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.570084
+      }
+    ],
+    "urgent|remote|plumbing_water": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.557325
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.553915
+      }
+    ],
+    "urgent|remote|sewer_drainage": [],
+    "urgent|remote|cooling": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.568511
+      }
+    ],
+    "urgent|remote|hot_water": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.55841
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.555229
+      }
+    ],
+    "urgent|remote|roof_structure": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.573483
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.571391
+      }
+    ],
+    "urgent|remote|doors_locks_security": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.563764
+      }
+    ],
+    "urgent|remote|stove_cooking": [],
+    "urgent|remote|pests": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.559198
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.555201
+      }
+    ],
+    "urgent|remote|other": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.590086
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.563313
+      }
+    ],
+    "urgent|remote|": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.582612
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.575052
+      }
+    ],
+    "routine|town|electrical": [],
+    "routine|town|plumbing_water": [],
+    "routine|town|sewer_drainage": [],
+    "routine|town|cooling": [],
+    "routine|town|hot_water": [],
+    "routine|town|roof_structure": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.551779
+      }
+    ],
+    "routine|town|doors_locks_security": [],
+    "routine|town|stove_cooking": [],
+    "routine|town|pests": [],
+    "routine|town|other": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.567513
+      }
+    ],
+    "routine|town|": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.553422
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.551189
+      }
+    ],
+    "routine|remote|electrical": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.582352
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.574179
+      }
+    ],
+    "routine|remote|plumbing_water": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.555777
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.555064
+      }
+    ],
+    "routine|remote|sewer_drainage": [],
+    "routine|remote|cooling": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.57228
+      }
+    ],
+    "routine|remote|hot_water": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.5599
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.557478
+      }
+    ],
+    "routine|remote|roof_structure": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.57669
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.571475
+      }
+    ],
+    "routine|remote|doors_locks_security": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.563645
+      }
+    ],
+    "routine|remote|stove_cooking": [],
+    "routine|remote|pests": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.560871
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.557862
+      }
+    ],
+    "routine|remote|other": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.592137
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.565659
+      }
+    ],
+    "routine|remote|": [
+      {
+        "section": "Repairs and maintenance",
+        "text": "part of the normal wear and tear of living in a home. You may need to pay for any intentional or negligent damage caused by you or another household member. This includes damage caused by visitors you allow to be at your home. If you don’t report damages in a reasonable time frame and additional damages occur, you may be held responsible and required to pay for the damages. Remote Housing maintenance? Community Housing officers and Housing maintenance officers are available in some remote communities in the Northern Territory. Maintenance issues can be reported to them or call the remote Housing hotline on 1800 104 076. The Housing maintenance officers will do general repairs to your home or will organise",
+        "score": 0.58646
+      },
+      {
+        "section": "Repairs and maintenance",
+        "text": "When will the contractor contact me? The Department will assess how to treat your maintenance issue. This will determine when a contractor contacts you. A contractor will contact you based on the following: • Immediate maintenance – response time within 4 hours. • Urgent maintenance – response time is within 2 business days. Remote housing response time is within 5 business days. • Routine maintenance – response time is within ten (10) business days. Remote housing response time is within 25 business days. In remote areas, Remote Housing Maintenance Officers will step in to assess and make safe if a contractor isn’t available Who pays for repairs and maintenance? The Department will pay for any repairs and maintenance that is",
+        "score": 0.579511
+      }
+    ]
+  }
+}

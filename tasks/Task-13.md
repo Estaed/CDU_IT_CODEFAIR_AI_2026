@@ -1,5 +1,7 @@
 # Task-13: App shell, artefact loader, session state, offline smoke test
 
+Status: DONE
+
 > **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
 > *Why:* sets the Streamlit patterns every page task copies (navigation, cached loading, session state keys, socket-blocked smoke test); an architecture-shaped task.
 

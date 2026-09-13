@@ -25,7 +25,7 @@ numbers).
 - [x] Task-10: Generate the synthetic report texts
 - [x] Task-11: Extract typed fields from every report, plus the adversarial set
 - [ ] Task-12: Evaluation: per-field metrics, baseline classifier, eval script
-- [ ] Task-13: App shell, artefact loader, session state, offline smoke test
+- [x] Task-13: App shell, artefact loader, session state, offline smoke test
 - [ ] Task-14: Triage board: ranked list, equity slider, two rankings, human queue
 - [ ] Task-15: Board map and metrics panel with decide-before-reveal
 - [ ] Task-16: Job card with source-phrase highlights and per-job override

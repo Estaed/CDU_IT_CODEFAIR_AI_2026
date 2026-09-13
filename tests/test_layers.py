@@ -13,7 +13,7 @@ FORBIDDEN_LIBS = {
     "core": r"streamlit|anthropic|openai|subprocess|requests|urllib|httpx|socket|pandas",
     "data": r"streamlit|anthropic|openai|subprocess|requests|urllib|httpx|socket",
     "eval": r"streamlit|anthropic|openai|subprocess|requests|urllib|httpx|socket",
-    "llm": r"streamlit",
+    "llm": r"streamlit",  # urllib is allowed here for the local Ollama wrapper.
     "app": r"anthropic|openai|subprocess|requests|urllib|httpx|socket",
 }
 
@@ -51,3 +51,17 @@ def test_import_direction() -> None:
             if targets - allowed:
                 bad[str(f.relative_to(PKG))] = sorted(targets - allowed)
     assert not bad, bad
+
+
+def _llm_imports(path: Path) -> bool:
+    return bool(re.search(r"^\s*(?:from|import)\s+fair_turn\.llm", path.read_text("utf-8"), re.M))
+
+
+def test_only_intake_imports_llm(tmp_path) -> None:
+    app_files = [path for path in (PKG / "app").rglob("*.py") if path.name != "intake.py"]
+    bad = [str(path.relative_to(PKG)) for path in app_files if _llm_imports(path)]
+    assert not bad, bad
+
+    offending = tmp_path / "offending.py"
+    offending.write_text("from fair_turn.llm import intake\n", encoding="utf-8", newline="")
+    assert _llm_imports(offending)

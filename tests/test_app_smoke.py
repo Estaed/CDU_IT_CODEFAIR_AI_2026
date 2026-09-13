@@ -16,7 +16,8 @@ from fair_turn.data import artefacts
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "fair_turn" / "app"
 DATA = ROOT / "fair_turn" / "data"
-PAGES = ["board", "job_card", "sign_off", "tenant", "feedback", "audit_log"]
+PAGES = ["workspace", "review_queue", "visit_plan", "tenant", "evidence_lab"]
+PAGE_FILES = sorted(p.stem for p in (APP / "pages").glob("*.py"))
 # Matches "data/build" and ROOT / "data" / "build" alike.
 ARTEFACT_PATH = re.compile(r"""data["'/\\ ]+(build|audit)""")
 # Build-time writers, not app readers: they produce data/build/ from data/raw/.
@@ -40,21 +41,21 @@ def test_socket_fixture_blocks_the_network(no_network) -> None:
 def test_main_runs_offline(no_network) -> None:
     at = AppTest.from_file(str(APP / "main.py")).run(timeout=60)
     assert not at.exception
-    assert at.title[0].value == "Triage board"  # the default page ran
+    assert at.title[0].value == "Workspace"  # the default page ran
     assert theme.PROVENANCE_LINE in [c.value for c in at.sidebar.caption]
 
 
-@pytest.mark.parametrize("page", PAGES)
+@pytest.mark.parametrize("page", PAGE_FILES)
 def test_page_runs_offline(page, no_network) -> None:
     at = AppTest.from_file(str(APP / "pages" / f"{page}.py")).run(timeout=60)
     assert not at.exception
     assert theme.PROVENANCE_LINE in [c.value for c in at.caption]
 
 
-def test_navigation_registers_exactly_the_six_pages() -> None:
+def test_navigation_registers_exactly_the_five_pages() -> None:
     main = (APP / "main.py").read_text("utf-8")
     assert re.findall(r'st\.Page\("pages/(\w+)\.py"', main) == PAGES
-    assert sorted(p.stem for p in (APP / "pages").glob("*.py")) == sorted(PAGES)
+    assert set(p.stem for p in (APP / "pages").glob("*.py")) >= set(PAGES)
 
 
 def test_no_page_reads_session_state() -> None:

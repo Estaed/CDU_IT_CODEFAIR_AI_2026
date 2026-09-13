@@ -16,12 +16,11 @@ state.artefacts()
 
 pg = st.navigation(
     [
-        st.Page("pages/board.py", title="Triage board", default=True),
-        st.Page("pages/job_card.py", title="Job card"),
-        st.Page("pages/sign_off.py", title="Sign-off"),
-        st.Page("pages/tenant.py", title="Tenant view"),
-        st.Page("pages/feedback.py", title="Feedback loop"),
-        st.Page("pages/audit_log.py", title="Audit log"),
+        st.Page("pages/workspace.py", title="Workspace", default=True),
+        st.Page("pages/review_queue.py", title="Review queue"),
+        st.Page("pages/visit_plan.py", title="Visit plan"),
+        st.Page("pages/tenant.py", title="Tenant answer"),
+        st.Page("pages/evidence_lab.py", title="Evidence lab"),
     ]
 )
 st.sidebar.caption(theme.PROVENANCE_LINE)

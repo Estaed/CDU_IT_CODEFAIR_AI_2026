@@ -21,3 +21,6 @@ __pycache__/
 
 # Runtime audit log: appended locally by the app and by the AppTest suite; only the seeded sample.jsonl is committed
 data/audit/audit.jsonl
+
+# Runtime intake and coordinator-set fields: appended locally by the app.
+data/runtime/

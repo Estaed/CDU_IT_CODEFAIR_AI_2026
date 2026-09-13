@@ -75,12 +75,21 @@ def load_all(build_dir: Path = BUILD_DIR, audit_dir: Path = AUDIT_DIR) -> Artefa
     )
 
 
-def _job(label: dict, row: ExtractionRow, community: dict[str, str]) -> Job:
-    """A row sent to the human queue yields no typed fault/safety, so ``Job.needs_human``
-    matches ``row.needs_human``."""
+def _job(
+    label: dict,
+    row: ExtractionRow,
+    community: dict[str, str],
+    human_set: dict[str, str] | None = None,
+) -> Job:
+    """Build a job from verified fields, replacing fault or safety with coordinator values."""
     kept = row.kept
-    fault = None if row.needs_human or "fault_type" not in kept else kept["fault_type"].value
-    safety = None if row.needs_human or "safety_class" not in kept else kept["safety_class"].value
+    values = human_set or {}
+    fault = values.get("fault_type")
+    safety = values.get("safety_class")
+    if fault is None:
+        fault = None if "fault_type" not in kept else kept["fault_type"].value
+    if safety is None:
+        safety = None if "safety_class" not in kept else kept["safety_class"].value
     return Job(
         job_id=label["job_id"],
         community_id=label["community_id"],
@@ -95,12 +104,40 @@ def _job(label: dict, row: ExtractionRow, community: dict[str, str]) -> Job:
     )
 
 
-def to_jobs(art: Artefacts) -> list[Job]:
-    """One job per label row; adversarial extraction rows are not jobs."""
-    return [
-        _job(label, art.extraction[label["job_id"]], art.communities[label["community_id"]])
+def to_jobs(art: Artefacts, human_set: dict | None = None, intake: list | None = None) -> list[Job]:
+    """One job per label row plus extracted runtime intake reports."""
+    human_set = human_set or {}
+    jobs = [
+        _job(
+            label,
+            art.extraction[label["job_id"]],
+            art.communities[label["community_id"]],
+            human_set.get(label["job_id"]),
+        )
         for label in art.labels
     ]
+    for report in intake or []:
+        if report.status != "extracted":
+            continue
+        if report.extraction is None:
+            raise ValueError(f"{report.job_id}: extracted intake report has no extraction")
+        extraction = report.extraction
+        community = art.communities[report.community_id]
+        jobs.append(
+            Job(
+                job_id=report.job_id,
+                community_id=report.community_id,
+                is_remote=community["is_remote"] == "True",
+                reported_on=report.reported_on,
+                fault_type=FaultType(extraction["fault_type"]),
+                safety_class=SafetyClass(extraction["safety_class"]),
+                health_risk=frozenset(
+                    HealthRiskFactor(value) for value in extraction["health_risk"]
+                ),
+                logistics_factor=float(community["logistics_factor"]),
+            )
+        )
+    return jobs
 
 
 def report_text(art: Artefacts, job_id: str) -> str:

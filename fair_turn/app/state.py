@@ -7,6 +7,7 @@ from pathlib import Path
 import streamlit as st
 
 from fair_turn.core import audit, constants
+from fair_turn.data import runtime
 from fair_turn.data.artefacts import Artefacts, load_all
 
 ALL_REGIONS = "All"
@@ -87,10 +88,70 @@ def set_audit_path(value: Path) -> None:
     st.session_state["audit_path"] = Path(value)
 
 
+def get_runtime_path() -> Path:
+    return _get("runtime_path", runtime.RUNTIME_DIR / "runtime.jsonl")
+
+
+def set_runtime_path(value: Path) -> None:
+    st.session_state["runtime_path"] = Path(value)
+
+
 def get_human_set(job_id: str) -> dict[str, str]:
-    return _get("human_set", {}).get(job_id, {})
+    return runtime.human_set_for(runtime.read(get_runtime_path())).get(job_id, {})
 
 
-def set_human_set(job_id: str, field: str, value: str) -> None:
-    all_human_set = _get("human_set", {})
-    all_human_set.setdefault(job_id, {})[field] = value
+def set_human_set(
+    job_id: str, field: str, value: str, actor: str = "coordinator", reason: str = ""
+) -> None:
+    runtime.append(
+        get_runtime_path(),
+        runtime.HumanSetField(job_id, field, value, actor, reason, datetime.now()),
+    )
+
+
+def get_preset() -> str:
+    return _get("preset", "Efficiency first")
+
+
+def set_preset(value: str) -> None:
+    st.session_state["preset"] = value
+
+
+def get_compare() -> bool:
+    return _get("compare", False)
+
+
+def set_compare(value: bool) -> None:
+    st.session_state["compare"] = bool(value)
+
+
+def get_batch():
+    return _get("batch", None)
+
+
+def set_batch(value) -> None:
+    st.session_state["batch"] = value
+
+
+def get_plan():
+    return _get("plan", None)
+
+
+def set_plan(value) -> None:
+    st.session_state["plan"] = value
+
+
+def get_intake_draft():
+    return _get("intake_draft", None)
+
+
+def set_intake_draft(value) -> None:
+    st.session_state["intake_draft"] = value
+
+
+def get_review_cursor() -> int:
+    return _get("review_cursor", 0)
+
+
+def set_review_cursor(value: int) -> None:
+    st.session_state["review_cursor"] = int(value)

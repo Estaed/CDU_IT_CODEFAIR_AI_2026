@@ -1,6 +1,6 @@
 # Task-23: Phase 2 shell: five surfaces, layer rule, runtime store, human-set fields reach the ranking
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* Part 2 names every file and rule; the work is plumbing with unit and layer tests as the criterion.

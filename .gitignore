@@ -18,3 +18,6 @@ __pycache__/
 
 # Streamlit secrets (API keys never enter the repo)
 .streamlit/secrets.toml
+
+# Runtime audit log: appended locally by the app and by the AppTest suite; only the seeded sample.jsonl is committed
+data/audit/audit.jsonl

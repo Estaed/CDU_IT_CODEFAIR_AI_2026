@@ -1,6 +1,6 @@
 # Task-22: Workspace interaction spike: pydeck map, selectable list, shared selection
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Part 2 fixed pydeck and the session-state selection seam (spike 2026-09-14); what is left is writing the two components and the tests. The click path is a human check listed as not gated.

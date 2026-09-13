@@ -1,9 +1,10 @@
 # Fair Turn Phase 2 — coordinator workspace wireframes
 
-**Status:** design draft v2, revised 2026-09-14 by Claude Fable 5.1 after the independent
-critique by GPT-6 Astra (`design/phase-2-critique.md`). Not binding until the PRD §3
-amendment lands. What the critique changed, and what it did not, is in §13. Next: the PRD
-amendment listed in §12.
+**Status:** v2, revised 2026-09-14 by Claude Fable 5.1 after the independent critique by
+GPT-6 Astra (`design/phase-2-critique.md`). **Binding for layout and interaction** since
+the PRD amendment of 2026-09-14: `docs/PRD.md` §3 fixes each surface's rules and points
+here for its layout; on a conflict the PRD wins. What the critique changed, and what it did
+not, is in §13. §12 records what the amendment changed.
 
 **Inputs:** `docs/phase-2-discovery.md` §2–3 (product definition, north star),
 `design/screenshots/` (the six Phase 1 screens, captured 2026-09-14), the visual review of

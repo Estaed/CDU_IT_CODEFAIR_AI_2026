@@ -1,6 +1,7 @@
-"""The audit history page (PRD 3.6). Moved from ``tests/test_pages_signoff_audit.py`` when
-the Phase 1 sign-off page was retired (Task-30); skipped until Task-34 builds the evidence lab
-and points them at it."""
+"""Evidence lab (Task-34, PRD 3.5/3.6, wireframes §8): three tabs — extraction quality, the
+feedback loop moved from the retired Phase 1 page, and the audit log with its two clocks.
+Network disabled as in ``tests/test_app_smoke.py``.
+"""
 
 import socket
 from pathlib import Path
@@ -9,7 +10,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 ROOT = Path(__file__).resolve().parent.parent
-AUDIT_LOG = ROOT / "fair_turn" / "app" / "pages" / "audit_log.py"
+PAGE = ROOT / "fair_turn" / "app" / "pages" / "evidence_lab.py"
 SAMPLE_PATH = ROOT / "data" / "audit" / "sample.jsonl"
 
 
@@ -37,21 +38,87 @@ def _wrapper_script(page: Path, tmp_path: Path, audit_path: Path) -> Path:
     return script
 
 
-@pytest.mark.skip(reason="Task-34")
-def test_audit_page_with_empty_runtime_log_shows_sample_history(tmp_path) -> None:
-    audit_path = tmp_path / "audit.jsonl"
-    script = _wrapper_script(AUDIT_LOG, tmp_path, audit_path)
-
+def _run(tmp_path, audit_path=None) -> AppTest:
+    audit_path = audit_path if audit_path is not None else tmp_path / "audit.jsonl"
+    script = _wrapper_script(PAGE, tmp_path, audit_path)
     at = AppTest.from_file(str(script)).run(timeout=60)
-
     assert not at.exception
-    assert len(at.get("vega_lite_chart")) == 1
+    return at
+
+
+def test_three_tabs_render(tmp_path) -> None:
+    at = _run(tmp_path)
+    assert [t.label for t in at.tabs] == ["Extraction quality", "Feedback loop", "Audit log"]
+
+
+def test_extraction_and_feedback_and_audit_each_show_a_chart(tmp_path) -> None:
+    at = _run(tmp_path)
+    charts = at.get("vega_lite_chart")
+    # Tab 2: three feedback-loop line charts (reports, wait, gap). Tab 3: one override-rate line.
+    assert len(charts) == 4
+
+
+def test_extraction_tab_shows_three_field_tables(tmp_path) -> None:
+    at = _run(tmp_path)
+    assert len(at.dataframe) == 4  # fault_type, safety_class, health_risk, then the audit table
+
+
+def test_audit_frame_first_row_is_the_newest_recorded_at(tmp_path) -> None:
+    at = _run(tmp_path)
+    audit_frame = at.dataframe[-1].value
+    recorded = list(audit_frame["recorded_at"])
+    assert recorded == sorted(recorded, reverse=True)
+
+
+def test_audit_column_list(tmp_path) -> None:
+    at = _run(tmp_path)
+    audit_frame = at.dataframe[-1].value
+    assert list(audit_frame.columns) == [
+        "kind",
+        "decision_day",
+        "recorded_at",
+        "audit_ref",
+        "job_id",
+        "previous_weighting",
+        "new_weighting",
+        "reason",
+        "signer",
+        "detail",
+        "hash",
+    ]
+
+
+def test_filtering_by_kind_matches_the_csv_export(tmp_path) -> None:
+    at = _run(tmp_path)
+    kind_widget = [w for w in at.multiselect if w.label == "Kind"][0]
+    only_kind = kind_widget.value[:1]
+    at = kind_widget.set_value(only_kind).run(timeout=60)
+    assert not at.exception
+
+    audit_frame = at.dataframe[-1].value
+    assert set(audit_frame["kind"]) <= set(only_kind)
+    assert audit_frame["kind"].eq(only_kind[0]).all()
+    download = [b for b in at.download_button if b.label == "Download CSV"]
+    assert len(download) == 1, "Download CSV button not found"
+
+
+def test_seeded_sample_shows_two_distinct_clocks(tmp_path) -> None:
+    at = _run(tmp_path)
+    audit_frame = at.dataframe[-1].value
+    pairs = zip(audit_frame["decision_day"], audit_frame["recorded_at"], strict=True)
+    for decision_day, recorded_at in pairs:
+        day_part, time_part = recorded_at.split("T", 1)
+        assert decision_day != day_part or not time_part.startswith("00:00:00")
+
+
+def test_audit_page_with_empty_runtime_log_shows_sample_history(tmp_path) -> None:
+    at = _run(tmp_path)
+    audit_frame = at.dataframe[-1].value
     sample_lines = SAMPLE_PATH.read_text("utf-8").splitlines()
     sample_line_count = sum(1 for line in sample_lines if line.strip())
-    assert len(at.dataframe[0].value) == sample_line_count
+    assert len(audit_frame) == sample_line_count
 
 
-@pytest.mark.skip(reason="Task-34")
 def test_seed_audit_script_is_idempotent(tmp_path, monkeypatch) -> None:
     import sys
 

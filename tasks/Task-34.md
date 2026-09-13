@@ -1,6 +1,6 @@
 # Task-34: Evidence lab: extraction quality, feedback loop, audit log with two clocks; retire the Phase 1 feedback and audit pages
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* Three existing surfaces move into tabs; the audit table's column and clock rules are fixed in PRD §3.5 and Part 2.

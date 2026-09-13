@@ -4,7 +4,7 @@
 > *Why:* two forms over `core.audit` with fixed records (PRD §3.3, §3.6); behaviour is asserted through the log file.
 
 **Lane**
-- OWNS: `fair_turn/app/pages/sign_off.py`, `fair_turn/app/pages/audit_log.py`, `scripts/seed_audit.py`, `data/audit/sample.jsonl`, `tests/test_pages_signoff_audit.py`
+- OWNS: `fair_turn/app/pages/sign_off.py`, `fair_turn/app/pages/audit_log.py`, `scripts/seed_audit.py`, `data/audit/sample.jsonl`, `tests/test_pages_signoff_audit.py`, `fair_turn/app/state.py` (the revision-on-λ-change hook inside `set_lam` only; added 2026-09-13 by the orchestrator because `board.py` and `state.py` are outside this lane and Task-13 is DONE)
 - MUST NOT TOUCH: `fair_turn/core/audit.py` (Task-07), `fair_turn/app/pages/board.py` (Task-14, Task-15)
 - GATE: `venv/Scripts/python scripts/gate.py` (repo root)
 - DEPENDS ON: Task-15, Task-16

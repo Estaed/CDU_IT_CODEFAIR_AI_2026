@@ -4,7 +4,7 @@
 > *Why:* PRD §3.2 fully specifies the card; highlight rendering is string work over verified spans; override writes an audit record; all assertable.
 
 **Lane**
-- OWNS: `fair_turn/app/pages/job_card.py`, `fair_turn/app/components/highlight.py`, `tests/test_page_job_card.py`
+- OWNS: `fair_turn/app/pages/job_card.py`, `fair_turn/app/components/highlight.py`, `tests/test_page_job_card.py`, `fair_turn/app/state.py` (append the human-set field accessors only; added 2026-09-13 by the orchestrator because no page may read `st.session_state` directly and Task-13 is DONE)
 - MUST NOT TOUCH: `fair_turn/core/audit.py` (Task-07), `fair_turn/app/state.py` (Task-13)
 - GATE: `venv/Scripts/python scripts/gate.py` (repo root)
 - DEPENDS ON: Task-14

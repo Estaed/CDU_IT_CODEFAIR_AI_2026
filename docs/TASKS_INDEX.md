@@ -1,14 +1,23 @@
 # Fair Turn — task index
 
-Generated 2026-09-12 from `docs/PRD.md` and `CLAUDE.md` Part 2. Status lives here and in
-each task file; `verify-task` is the only thing that ticks a box.
+Generated 2026-09-12 from `docs/PRD.md` and `CLAUDE.md` Part 2; Phase 2 tasks appended
+2026-09-14 from the amended PRD and Part 2. Status lives here and in each task file;
+`verify-task` is the only thing that ticks a box.
 
-**Phases.** This is the whole v1 entry for 30 September 2026. The PRD's deferred decisions
-(§11: key custody, Housing Reference Group role, tasking-system integration, merits review)
-belong to a pilot that is deferred, not cancelled; the seams that keep it cheap are named
-in Part 2 (`data/artefacts.py`, `core/audit.py`, artefact-only extraction). The report
-PDF and slide deck are hand-written deliverables outside this list (Task-21 exports their
-numbers).
+## Phases
+
+| Phase | Tasks | State | Owns it |
+|---|---|---|---|
+| **Phase 1** — six screens from committed artefacts, offline | 00–21 | DONE 2026-09-13 | PRD at `2d8c349` |
+| **Phase 2** — one coordinator workspace, live intake, cited policy passages, visit plan, network allowed | 22–36 | in progress | `docs/PRD.md` (amended 2026-09-14), `design/phase-2-wireframes.md`, Part 2 |
+| **Pilot** — key custody, Housing Reference Group role, tasking-system integration, merits review, hosted deployment | none | deferred, not cancelled | PRD §11 |
+
+The pilot's seams are already in Part 2: `data/artefacts.py` plus `data/runtime.py` (intake
+would replace the runtime file), `core/audit.py` (the agency system would replace the JSONL),
+`llm/intake.py` (the provider setting), `data/policy.py` (a live index behind the same
+lookup). Phase 2's last task, Task-36, is the only one that pulls or calls an Ollama chat
+model (Tarik, 2026-09-14): everything before it runs on Claude. The report PDF and slide
+deck stay hand-written deliverables outside this list.
 
 ## Tasks
 
@@ -34,6 +43,24 @@ numbers).
 - [x] Task-19: Feedback-loop simulation page
 - [x] Task-20: README, reproduction steps and submission zip
 - [x] Task-21: Report tables and figures export
+
+Phase 2:
+
+- [ ] Task-22: Workspace interaction spike: pydeck map, selectable list, shared selection
+- [ ] Task-23: Phase 2 shell: five surfaces, layer rule, runtime store, human-set fields reach the ranking
+- [ ] Task-24: Audit log, Phase 2: two clocks, batch versions, new record kinds
+- [ ] Task-25: Core: sign-off batch freeze and the two-stage effect sentence
+- [ ] Task-26: Core: visit plan in signed order with distance suggestions
+- [ ] Task-27: Policy index: FS17 passages as a build artefact keyed by typed fields
+- [ ] Task-28: Intake: provider seam and the in-page new-report action
+- [ ] Task-29: Workspace page: today's list, backlog, map, weighting, selected-job pane, overrides
+- [ ] Task-30: Sign-off form, decision states, metrics reveal; retire the Phase 1 board, job card and sign-off pages
+- [ ] Task-31: Review queue page
+- [ ] Task-32: Visit plan page
+- [ ] Task-33: Tenant answer: question-headed blocks, signed rank versus visit order, per-state copy
+- [ ] Task-34: Evidence lab: extraction quality, feedback loop, audit log with two clocks; retire the Phase 1 feedback and audit pages
+- [ ] Task-35: Integration: five-surface smoke, offline proof, README, submission package, docstring citations
+- [ ] Task-36: Ollama extractor benchmark (last step): qwen3:8b against the build extractor, default decided by the table
 
 ## Routing
 
@@ -63,8 +90,30 @@ Summary of each task's Execution and Lane blocks; the task file wins on disagree
 | 19 | codex | no | high | 13, 05 |
 | 20 | claude | no | medium | 12, 19 |
 | 21 | codex | no | medium | 12, 05 |
+| 22 | codex | no | high | none |
+| 23 | codex | no | medium | none |
+| 24 | codex | no | high | none |
+| 25 | codex | no | high | 24 |
+| 26 | codex | no | high | 25 |
+| 27 | codex | no | high | none (real build run: main loop, needs Ollama `bge-m3`) |
+| 28 | codex | no | high | 23, 24 |
+| 29 | codex | no | high | 22, 23, 25, 27, 28 |
+| 30 | codex | no | high | 29 |
+| 31 | codex | no | medium | 23, 24, 28 |
+| 32 | codex | no | medium | 26, 30 |
+| 33 | codex | no | high | 26, 30 |
+| 34 | codex | no | medium | 24, 30 |
+| 35 | codex | no | medium | 31, 32, 33, 34 |
+| 36 | codex | no | high | 28, 35 (real benchmark run: main loop, pulls `qwen3:8b`) |
 
 **Parallel waves** (from the dependency graph, for `otopilot`): after 00 → {01, 02}; after
 02 → {04, 06, 07, 08}; then {03, 05, 09}; 10 → 11 → {12, 13}; after 13 → {14, 19}; 14 →
 {15, 16} → 17 → 18; finally {20, 21}. Tasks 09, 10 and 11 spend subscription windows and
 run in the main loop, one at a time.
+
+**Phase 2 parallel waves** (from the DEPENDS ON lines): wave A {22, 23, 24, 27}; wave B
+{25, 28, 31 after 23+24+28}; wave C {26, 29}; then 30; wave D {32, 33, 34}; then 35; then
+36 alone. `agent codex` means a bee; which pool the bee runs in (Codex or a Claude
+sub-agent) is the chef's call at spawn time from the live limits, never the main loop
+typing the code. Tasks 27 and 36 have a real run the main loop performs on Tarik's
+machine after the bee's gate is green.

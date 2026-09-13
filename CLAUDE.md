@@ -289,7 +289,7 @@ below were read from the environment after `uv sync` on 2026-09-12; `uv.lock` is
 | textstat | 0.7.13 | Flesch-Kincaid grade for tenant text (PRD §7). |
 | Claude Code CLI | 2.1.269 | **Generator**, build time only, on Tarik's Claude subscription: `claude -p --model opus --output-format json --json-schema <schema>` with the prompt on **stdin** (a variadic flag such as `--tools` swallows a trailing prompt argument, and the CLI waits 3 s then errors if stdin is open with nothing on it). The JSON result's `structured_output` field is the schema-valid object. Spike 2026-09-12: one call, about 10 s, 24k cached-prompt tokens of CLI overhead per call, so reports are generated 20 per call. |
 | Codex CLI | 0.154.0 | Wrapper kept (`fair_turn/llm/codex_cli.py`, tested with a fake) but **not used by the build since 2026-09-13**: Tarik chose to preserve the Codex weekly window, so the extractor is `claude -p --model sonnet` through the same wrapper as the generator (generator Opus, extractor Sonnet: the PRD's different-model rule holds, the different-vendor strengthening does not, and the report says so). Traps learned on the real run: the prompt must go on **stdin** with the positional `-` (through the `codex.CMD` shim an argv prompt is cut at its first newline); `subprocess` timeouts must kill the process tree (`taskkill /T`) or the node children hold the pipes forever; one call costs ~70-200 s whatever its size, so batch 20 reports per call. |
-| Ollama | 0.34.0 | **Added 2026-09-14.** Local model server, already installed on Tarik's machine (`ollama --version`), reached over plain `urllib` at `http://localhost:11434` from `fair_turn/llm` only. Two jobs: embeddings for the policy index at build time (`bge-m3`, already pulled, 1024 dims, spike 2026-09-14: 7 s first call including model load) and, once measured, an intake extractor (`qwen3:8b`, 5.2 GB, **not pulled yet**; Task 24 pulls and scores it). No Python client package: the two endpoints are a 30-line function each. |
+| Ollama | 0.34.0 | **Added 2026-09-14.** Local model server, already installed on Tarik's machine (`ollama --version`), reached over plain `urllib` at `http://localhost:11434` from `fair_turn/llm` only. Two jobs: embeddings for the policy index at build time (`bge-m3`, already pulled, 1024 dims, spike 2026-09-14: 7 s first call including model load) and, **as the last Phase 2 step only**, an intake extractor benchmark (`qwen3:8b`, 5.2 GB, **not pulled until then**, Tarik's call 2026-09-14: every earlier task runs on Claude). No Python client package: the two endpoints are a 30-line function each. |
 | pypdf | 6.18.1 | **Added 2026-09-14** via `uv add pypdf`; `requirements.txt` re-exported. Reads FS17 (and any later fact sheet with a provenance row) into text for the policy index. Scripts only. |
 | pydantic | 2.13.5 | The extraction schema is a pydantic model: it emits the JSON Schema both CLIs receive and validates every returned object and every artefact on load. Enums only, `additionalProperties: false`. |
 | openpyxl | 3.1.5 | Reads the NT open-data coverage XLSX in `data/raw/`. |
@@ -376,9 +376,10 @@ no interface classes):
   artefact loader merges both, and a pilot would replace the runtime file with intake.
 - *Added 2026-09-14:* `llm/intake.py` reads `FAIR_TURN_PROVIDER` (`claude`, `ollama`, or
   unset = no provider, intake disabled with the reason) and calls one wrapper. Default
-  `claude` (Sonnet through the existing wrapper) until Task 24 scores `qwen3:8b` on the
-  same 150-item and adversarial tables; Ollama becomes the default only if it is not
-  below Claude on both required fields (PRD §5, "running is not acceptance"). Not a
+  `claude` (Sonnet through the existing wrapper) for every Phase 2 task; the last task
+  scores `qwen3:8b` on the same 150-item and adversarial tables, and Ollama becomes the
+  default only if it is not below Claude on both required fields (PRD §5, "running is
+  not acceptance"). Nothing before that task pulls or calls an Ollama chat model. Not a
   secret, so an environment variable, documented in the README, never `secrets.toml`.
 - *Added 2026-09-14:* `data/policy.py` reads `policy_passages.json`. A pilot with a
   bigger corpus would swap the build script for a live index behind the same lookup;
@@ -414,7 +415,7 @@ Ollama; with `FAIR_TURN_PROVIDER` set, intake needs the named one.
 - *Question (2026-09-14):* is Ollama usable from the standard library? *Spike:* one
   `urllib` POST to `/api/embed` with `bge-m3`, two inputs. *Result:* 1024-dim vectors, 7 s
   including model load. *Not spiked yet:* `/api/chat` with `format=<JSON schema>` for
-  extraction; Task 24 owns it, with the decision rule above.
+  extraction; the last Phase 2 task owns it, with the decision rule above.
 - *Question (2026-09-14):* can a dialog be tested? *Spike:* grep of the AppTest element
   tree. *Result:* no dialog node; sign-off and intake are in-page containers.
 
@@ -492,7 +493,7 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
    `docs/report-requirements.md`); licence confirmation for BushTel and the road report
    (PRD open question 1); rerunning generation or extraction (needs the subscriptions).
    *Added 2026-09-14:* the click path of list ↔ map ↔ pane selection (no AppTest API; a
-   human check in Task 22 and `review-visual`); the Ollama extraction benchmark (Task 24's
+   human check in Task 22 and `review-visual`); the Ollama extraction benchmark (the last task's
    exit code, quoted in the report); rebuilding the policy index (needs Ollama); the
    basemap actually loading (needs network; a human check before the demo).
 

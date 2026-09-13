@@ -28,7 +28,7 @@ numbers).
 - [x] Task-13: App shell, artefact loader, session state, offline smoke test
 - [x] Task-14: Triage board: ranked list, equity slider, two rankings, human queue
 - [x] Task-15: Board map and metrics panel with decide-before-reveal
-- [ ] Task-16: Job card with source-phrase highlights and per-job override
+- [x] Task-16: Job card with source-phrase highlights and per-job override
 - [ ] Task-17: Sign-off page and audit log page
 - [ ] Task-18: Tenant view
 - [x] Task-19: Feedback-loop simulation page

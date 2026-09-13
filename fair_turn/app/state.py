@@ -72,3 +72,12 @@ def get_audit_path() -> Path:
 
 def set_audit_path(value: Path) -> None:
     st.session_state["audit_path"] = Path(value)
+
+
+def get_human_set(job_id: str) -> dict[str, str]:
+    return _get("human_set", {}).get(job_id, {})
+
+
+def set_human_set(job_id: str, field: str, value: str) -> None:
+    all_human_set = _get("human_set", {})
+    all_human_set.setdefault(job_id, {})[field] = value

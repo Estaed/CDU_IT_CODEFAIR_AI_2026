@@ -1,5 +1,7 @@
 # Task-16: Job card with source-phrase highlights and per-job override
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* PRD §3.2 fully specifies the card; highlight rendering is string work over verified spans; override writes an audit record; all assertable.
 

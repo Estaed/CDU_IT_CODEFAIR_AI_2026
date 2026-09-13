@@ -1,6 +1,6 @@
 # Task-32: Visit plan page
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* Rendering over `core/visit_plan.py`; states and copy fixed in wireframes §6 and PRD §3.3.

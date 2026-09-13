@@ -1,6 +1,6 @@
 # Task-28: Intake: provider seam and the in-page new-report action
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* The provider contract, the states and the persistence rules are written; tests run against a fake provider so no subscription is spent.

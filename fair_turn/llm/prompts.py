@@ -156,3 +156,16 @@ def extraction_prompt(reports_batch: list[dict]) -> str:
         f"Extract the fields for each of the {len(reports_batch)} reports below.\n\n"
         f"```json\n{payload}\n```"
     )
+
+
+# --- intake (Task-28) -----------------------------------------------------------------
+
+INTAKE_PROMPT_VERSION = "intake-1"
+
+
+def intake_prompt(text: str) -> str:
+    """Frame one untrusted intake report without assigning its registration id."""
+    payload = json.dumps({"text": text}, indent=1, ensure_ascii=False).replace("`", "\\u0060")
+    return (
+        f"{EXTRACTION_SYSTEM}\n\nExtract the fields for this one report.\n\n```json\n{payload}\n```"
+    )

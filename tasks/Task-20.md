@@ -24,6 +24,6 @@ the zip contains exactly what the submission rules ask for.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] README commands verified by running them in a fresh `venv` (manual, dated note in this file).
+- [x] README commands verified by running them in a fresh `venv` (manual, dated note in this file). 2026-09-13, orchestrator: `py -3.13 -m venv` + `pip install -r requirements.txt` in a temp dir succeeded; `AppTest` of `main.py` and all six pages ran with `socket.socket` blocked and no exception (the interactive `streamlit run` itself was not opened).
 - [ ] `test_package.py` passes; the script refuses on a dirty tree (tested with a temp file).
 - [ ] Gate green.

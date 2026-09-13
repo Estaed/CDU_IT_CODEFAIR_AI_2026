@@ -36,6 +36,41 @@ def test_zip_contains_include_roots_and_excludes_forbidden_segments(tmp_path, mo
         assert not name.endswith(".pyc"), name
 
 
+def test_zip_includes_policy_artefact_and_fs17_pdf(monkeypatch):
+    monkeypatch.setattr(ps, "dirty_paths", lambda root=ps.ROOT: "")
+    monkeypatch.setattr(ps, "gate_exit_code", lambda root=ps.ROOT: 0)
+
+    names = {p.relative_to(ps.ROOT).as_posix() for p in ps._iter_include_paths(ps.ROOT)}
+
+    assert "data/build/policy_passages.json" in names
+    fs17 = "data/raw/nt_fs17_repairs_and_maintenance_2025-10.pdf"
+    if (ps.ROOT / fs17).is_file():
+        assert fs17 in names
+    else:
+        pytest.skip(f"{fs17} absent in this worktree")
+
+
+def test_zip_excludes_runtime_directory(tmp_path, monkeypatch):
+    monkeypatch.setattr(ps, "dirty_paths", lambda root=ps.ROOT: "")
+    monkeypatch.setattr(ps, "gate_exit_code", lambda root=ps.ROOT: 0)
+
+    fake_root = tmp_path / "repo"
+    for rel_dir in ps.INCLUDE_DIRS:
+        (fake_root / rel_dir).mkdir(parents=True, exist_ok=True)
+        (fake_root / rel_dir / "keep.txt").write_text("x", encoding="utf-8")
+    runtime_dir = fake_root / "data" / "runtime"
+    runtime_dir.mkdir(parents=True, exist_ok=True)
+    (runtime_dir / "runtime.jsonl").write_text("{}\n", encoding="utf-8")
+
+    out_dir = tmp_path / "dist"
+    zip_path = ps.build_zip(out_dir, "9", root=fake_root)
+    with zipfile.ZipFile(zip_path) as zf:
+        names = zf.namelist()
+
+    assert not any("data/runtime" in name for name in names)
+    assert "data/runtime/runtime.jsonl" not in names
+
+
 def test_main_refuses_on_dirty_tree(tmp_path, monkeypatch):
     monkeypatch.setattr(ps, "dirty_paths", lambda root=ps.ROOT: "M some/file.py")
     monkeypatch.setattr(ps, "gate_exit_code", lambda root=ps.ROOT: 0)

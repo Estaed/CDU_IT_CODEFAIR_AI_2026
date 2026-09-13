@@ -1,4 +1,4 @@
-"""The decision-maker's reasoning record (PRD sections 3.3 and 3.6).
+"""The decision-maker's reasoning record (PRD sections 3.1 and 3.5).
 
 Each append is one JSON line, so a later decision cannot rewrite an earlier one. ``day`` is
 the dataset decision day; ``recorded_at`` is the real, timezone-aware wall-clock timestamp.

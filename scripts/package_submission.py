@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 INCLUDE_DIRS = ("fair_turn", "scripts", "tests", "data/build", "data/geo")
 INCLUDE_FILES = (
     "data/raw/PROVENANCE.md",
+    "data/raw/nt_fs17_repairs_and_maintenance_2025-10.pdf",
     "data/audit/sample.jsonl",
     "docs/PRD.md",
     "README.md",
@@ -26,7 +27,15 @@ INCLUDE_FILES = (
     "uv.lock",
     ".streamlit/config.toml",
 )
-EXCLUDE_SEGMENTS = {"__pycache__", ".pytest_cache", ".ruff_cache", ".hypothesis", "venv", ".venv"}
+EXCLUDE_SEGMENTS = {
+    "__pycache__",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".hypothesis",
+    "venv",
+    ".venv",
+    "runtime",
+}
 ZIP_DATE_TIME = (2026, 1, 1, 0, 0, 0)
 
 

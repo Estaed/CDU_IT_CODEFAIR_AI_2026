@@ -59,7 +59,7 @@ Phase 2:
 - [x] Task-32: Visit plan page
 - [x] Task-33: Tenant answer: question-headed blocks, signed rank versus visit order, per-state copy
 - [x] Task-34: Evidence lab: extraction quality, feedback loop, audit log with two clocks; retire the Phase 1 feedback and audit pages
-- [ ] Task-35: Integration: five-surface smoke, offline proof, README, submission package, docstring citations
+- [x] Task-35: Integration: five-surface smoke, offline proof, README, submission package, docstring citations
 - [ ] Task-36: Ollama extractor benchmark (last step): qwen3:8b against the build extractor, default decided by the table
 
 ## Routing

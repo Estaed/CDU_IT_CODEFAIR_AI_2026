@@ -1,6 +1,6 @@
 # Task-35: Integration: five-surface smoke, offline proof, README, submission package, docstring citations
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* Cross-cutting checks and documentation with a command for every item; the "Runs in the room" bar in PRD §7 is the criterion.

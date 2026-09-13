@@ -294,3 +294,5 @@ else:
 status_slot.markdown(
     f"Day {today} · Region {region} · {review_count} need review · Status: {status_text}"
 )
+today_rate = next((rate for day, rate in audit.override_rate(records) if day == today), 0.0)
+st.caption(f"Override rate: {today_rate:.0%} — see Evidence lab → Audit log")

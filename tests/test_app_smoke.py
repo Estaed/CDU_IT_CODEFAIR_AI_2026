@@ -117,6 +117,75 @@ def test_to_jobs_joins_label_extraction_and_community(art) -> None:
     assert artefacts.report_text(art, job.job_id) == art.reports[job.job_id]
 
 
+# --- Task-35: offline five-surface proof with no provider configured ------------------------
+
+TEXT_KINDS = ("title", "subheader", "markdown", "caption", "info", "warning", "success", "error")
+
+
+def _all_text(at) -> list[str]:
+    return [e.value for kind in TEXT_KINDS for e in getattr(at.main, kind)]
+
+
+def test_no_prd_3_6_citation_remains() -> None:
+    hits = [
+        str(f.relative_to(ROOT))
+        for f in (ROOT / "fair_turn").rglob("*.py")
+        if "PRD 3.6" in f.read_text("utf-8")
+    ]
+    assert not hits, hits
+
+
+@pytest.mark.parametrize("page", PAGE_FILES)
+def test_page_runs_offline_with_no_provider(page, no_network, monkeypatch) -> None:
+    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+    at = AppTest.from_file(str(APP / "pages" / f"{page}.py")).run(timeout=60)
+    assert not at.exception
+    assert theme.PROVENANCE_LINE in [c.value for c in at.caption]
+
+
+def test_workspace_intake_disabled_without_provider(tmp_path, no_network, monkeypatch) -> None:
+    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+    script = tmp_path / "workspace_with_open_intake.py"
+    script.write_text(
+        "from fair_turn.app import intake, state\n"
+        "state.set_intake_draft(intake.new_draft())\n"
+        + (APP / "pages" / "workspace.py").read_text("utf-8"),
+        encoding="utf-8",
+        newline="",
+    )
+    at = AppTest.from_file(str(script)).run(timeout=60)
+    assert not at.exception
+    assert any("FAIR_TURN_PROVIDER" in i.value for i in at.info)
+
+
+def test_visit_plan_shows_unsigned_message(no_network) -> None:
+    at = AppTest.from_file(str(APP / "pages" / "visit_plan.py")).run(timeout=60)
+    assert not at.exception
+    assert "Sign today's list first" in [i.value for i in at.info]
+
+
+def test_workspace_hides_median_wait_before_signature(no_network) -> None:
+    at = AppTest.from_file(str(APP / "pages" / "workspace.py")).run(timeout=60)
+    assert not at.exception
+    assert not any("median wait" in text for text in _all_text(at))
+
+
+def test_evidence_lab_has_a_vega_lite_chart(no_network) -> None:
+    at = AppTest.from_file(str(APP / "pages" / "evidence_lab.py")).run(timeout=60)
+    assert not at.exception
+    assert len(at.get("vega_lite_chart")) >= 1
+
+
+def test_workspace_shows_override_rate_caption_linking_to_evidence_lab(no_network) -> None:
+    at = AppTest.from_file(str(APP / "pages" / "workspace.py")).run(timeout=60)
+    assert not at.exception
+    captions = [c.value for c in at.caption]
+    assert any(
+        c.startswith("Override rate: 0%") and "Evidence lab" in c and "Audit log" in c
+        for c in captions
+    ), captions
+
+
 def test_bad_extraction_row_raises(tmp_path) -> None:
     for name in ("communities.csv", "climate.csv", "labels.json", "reports.json", "closures.json"):
         (tmp_path / name).write_bytes((artefacts.BUILD_DIR / name).read_bytes())

@@ -1,4 +1,4 @@
-"""PRD 3.5/3.6 Evidence lab: extraction quality, the feedback-loop simulation and the audit
+"""PRD 3.5 Evidence lab: extraction quality, the feedback-loop simulation and the audit
 log with its two clocks, in three tabs for judges and governance, outside the coordinator's
 flow (wireframes §8).
 

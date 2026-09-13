@@ -210,6 +210,9 @@ status. Empty queue: "All reports reviewed" and a button back to the workspace. 
 queue with an unsaved choice discards nothing: the choice is applied only by "Mark
 rankable".
 
+**New report intake**, despite the "dialog" language below, is implemented as an in-page
+bordered container toggled from session state, not `st.dialog` (Part 2 spike, 2026-09-14: `AppTest` has no dialog node).
+
 **New report intake** opens a dialog from the workspace header: a text area, community
 (selectbox over pseudonymous ids), reported date (defaults to the dataset day and says so),
 "Extract". The registration id is assigned by the system. Validation keeps the entered text:

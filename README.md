@@ -79,6 +79,57 @@ subscription CLI already logged in on the machine that runs them; no API key is 
 accepted anywhere in this repository. The app and the test suite never call a model or
 open a network connection.
 
+## Live intake (optional)
+
+Nothing above requires it: the app runs and every surface renders with no provider set. To
+enable the workspace's "New report" extraction against a live model, set `FAIR_TURN_PROVIDER`
+before starting Streamlit.
+
+PowerShell:
+
+```
+$env:FAIR_TURN_PROVIDER = "claude"
+venv\Scripts\streamlit run fair_turn/app/main.py
+```
+
+Git Bash:
+
+```
+export FAIR_TURN_PROVIDER=claude
+venv/Scripts/streamlit run fair_turn/app/main.py
+```
+
+`claude` requires a logged-in `claude` CLI on the machine (Sonnet, the same wrapper the build
+uses); `ollama` is wired but disabled until Task-36's benchmark accepts it. A submitted report,
+its extraction, and any coordinator-set field are appended to `data/runtime/runtime.jsonl`
+(gitignored, never committed) and merged into the ranking alongside the committed artefacts.
+
+## Policy index
+
+`data/build/policy_passages.json` is committed, so a judge never needs to rebuild it. To
+regenerate it after changing the source fact sheet or the retrieval threshold, a running
+Ollama with the `bge-m3` model pulled is required:
+
+PowerShell:
+
+```
+venv\Scripts\python scripts\build_policy_index.py
+```
+
+Git Bash:
+
+```
+venv/Scripts/python scripts/build_policy_index.py
+```
+
+The indexed source, `data/raw/nt_fs17_repairs_and_maintenance_2025-10.pdf`, is © NT Government
+and is quoted with attribution in the app; its licence for this use is PRD open question 6
+(not yet confirmed).
+
+Ollama chat extraction (`qwen3:8b`) is a separate, later benchmark (Task-36) against the same
+150-item and adversarial tables Claude is scored on; it is not the default provider unless that
+benchmark shows it is not below Claude on both required fields.
+
 ## Checks
 
 `venv/Scripts/python scripts/gate.py` runs `ruff check`, `ruff format --check` and the

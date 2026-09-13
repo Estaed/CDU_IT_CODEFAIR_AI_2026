@@ -80,3 +80,14 @@ is running.
 
 Quota after wave D: Claude 5 h 84 % (resets 05:39), Codex 5 h 95 % (resets 07:20). Wave E
 runs narrow: Task-34 (`sonnet`) alone at 04:48; 32 and 33 after the Claude reset.
+
+### Wave E (32, 33, 34) — Claude bees, narrow (one at a time)
+
+| Task | Model | Attempts | Outcome | Bee elapsed | Main commit |
+|---|---|---:|---|---|---|
+| Task-34 evidence lab | sonnet | 1 | **green, review-visual pending** (317 tests; the Task-30 skipped tests unskipped) | 8.2 min | `2f1d127` |
+| Task-32 visit plan page | sonnet | 1 | **green, review-visual pending**; the suggestion test uses the contract's fallback (monkeypatched `suggestions`) because no adjacent swap in the synthetic geography saves 50 km inside one region | 10.7 min | see below |
+| Task-33 tenant answer | opus | — | **waiting for the Claude 5 h reset** (window at 90 % = `NARROW` at 05:08, wall 95 %; reset 05:39) | — | — |
+
+Quota at 05:10: Claude 5 h 90 % (resets 05:39), 7 d 8 %; Codex 5 h 95 % (resets 07:20).
+The orchestrator schedules a wake-up for the reset and resumes with 33, then 35, then 36.

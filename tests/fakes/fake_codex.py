@@ -2,12 +2,15 @@
 ``ok``, ``bad_then_ok`` (garbage in the output file on the first call, counted in
 ``FAKE_COUNTER``), ``fail`` (exit 2 with stderr), ``extract`` (one canned extraction per
 report in the prompt's fenced JSON block: fault evidence is the report's first three words,
-so it verifies; every second report's safety evidence is not in the report, so it drops)."""
+so it verifies; every second report's safety evidence is not in the report, so it drops),
+``fail_job`` (like ``fail`` when ``FAKE_FAIL_JOB`` appears in the prompt, else ``extract``),
+``sleep`` (sleeps ``FAKE_SLEEP`` seconds, default 30, and spawns nothing)."""
 
 import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 
 
@@ -41,6 +44,11 @@ def main() -> int:
     prompt = sys.stdin.read() if on_stdin else argv[-1]  # the wrapper passes "-" and stdin
     schema = json.loads(Path(argv[argv.index("--output-schema") + 1]).read_text("utf-8"))
     out_path = Path(argv[argv.index("-o") + 1])
+    if mode == "sleep":
+        time.sleep(float(os.environ.get("FAKE_SLEEP", "30")))
+        return 0
+    if mode == "fail_job":
+        mode = "fail" if os.environ["FAKE_FAIL_JOB"] in prompt else "extract"
     if mode == "fail":
         print("fake codex: simulated failure", file=sys.stderr)
         return 2

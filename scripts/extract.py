@@ -23,7 +23,7 @@ import argparse
 import json
 import sys
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import numpy as np
@@ -125,7 +125,9 @@ def run(
     limit: int | None = None,
     workers: int = WORKERS,
 ) -> dict:
-    """Extract every missing report; returns ``{"calls", "written", "rejected", "missing"}``."""
+    """Extract every missing report; returns
+    ``{"calls", "failed_calls", "written", "rejected", "missing"}``. A failed or timed-out
+    call is logged and counted, and its reports stay missing for the next round."""
     adversarial_path = build_dir / "adversarial.json"
     if not adversarial_path.exists():
         _write(adversarial_path, build_adversarial(build_dir))
@@ -138,15 +140,20 @@ def run(
     out_path = build_dir / "extraction.json"
     rows = _load(out_path)
     have = {r["job_id"] for r in rows}
-    calls, written, rejected = 0, 0, []
+    calls, failed_calls, written, rejected = 0, 0, 0, []
     started = time.monotonic()
 
-    def call(batch: list[dict]) -> dict:
-        return codex_cli.extract(
-            prompts.EXTRACTION_SYSTEM + "\n\n" + prompts.extraction_prompt(batch),
-            prompts.extraction_batch_schema(),
-            executable=executable,
-        )
+    def call(batch: list[dict]) -> dict | None:
+        try:
+            return codex_cli.extract(
+                prompts.EXTRACTION_SYSTEM + "\n\n" + prompts.extraction_prompt(batch),
+                prompts.extraction_batch_schema(),
+                executable=executable,
+            )
+        except codex_cli.CliError as exc:
+            reason = " ".join(str(exc).split())[:200]
+            print(f"extract: batch from {batch[0]['job_id']} failed: {reason}", file=sys.stderr)
+            return None
 
     for _ in range(MAX_ROUNDS):
         missing = [r for r in reports if r["job_id"] not in have]
@@ -158,8 +165,13 @@ def run(
         if not batches:
             break
         with ThreadPoolExecutor(max_workers=workers) as pool:
-            for batch, result in zip(batches, pool.map(call, batches), strict=True):
+            futures = {pool.submit(call, batch): batch for batch in batches}
+            for future in as_completed(futures):  # a slow call never holds back finished ones
+                batch, result = futures[future], future.result()
                 calls += 1
+                if result is None:
+                    failed_calls += 1
+                    continue
                 wanted = {r["job_id"] for r in batch} - have
                 for item in result.get("items", []):
                     job_id = item.get("job_id") if isinstance(item, dict) else None
@@ -185,6 +197,7 @@ def run(
                 )
     return {
         "calls": calls,
+        "failed_calls": failed_calls,
         "written": written,
         "rejected": rejected,
         "missing": len(reports) - len(have),

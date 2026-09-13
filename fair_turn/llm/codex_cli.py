@@ -2,9 +2,13 @@
 
 The prompt goes on stdin behind the positional ``-``: on Windows ``codex`` resolves to a
 ``codex.CMD`` shim that truncates a positional prompt at its first newline, and an open
-stdin with nothing on it blocks forever. ``subprocess.run(input=...)`` writes and closes it.
+stdin with nothing on it blocks forever. ``communicate(input=...)`` writes and closes it.
 The object is read back from ``-o out.json``. No ``-m`` pin: the model follows the
 operator's Codex config (MODELS.md rule).
+
+A timeout kills the whole process tree: on Windows the direct child is ``cmd.exe`` running
+the shim, and killing only that leaves ``node.exe``/``codex.exe`` holding the pipes, so
+the read after ``subprocess.run``'s own kill blocks forever (measured 2026-09-13).
 """
 
 import json
@@ -16,16 +20,28 @@ import time
 from pathlib import Path
 
 RETRIES = 1  # one more attempt after invalid JSON, then give up
+KILL_GRACE = 30  # seconds to reap a killed tree's pipes before abandoning them
 
 
 class CliError(RuntimeError):
     pass
 
 
+def _kill_tree(proc: subprocess.Popen) -> None:
+    if sys.platform == "win32":
+        subprocess.run(
+            ["taskkill", "/T", "/F", "/PID", str(proc.pid)],
+            capture_output=True,
+            timeout=KILL_GRACE,
+        )
+    else:
+        proc.kill()
+
+
 def extract(
     prompt: str,
     schema: dict,
-    timeout: float = 300,
+    timeout: float = 420,
     executable: list[str] | None = None,
 ) -> dict:
     """One structured call. ``executable`` overrides the resolved ``codex`` for tests."""
@@ -47,17 +63,26 @@ def extract(
         for attempt in range(1, RETRIES + 2):
             out_path.unlink(missing_ok=True)
             started = time.monotonic()
-            run = subprocess.run(
+            proc = subprocess.Popen(
                 cmd,
-                input=prompt,
-                capture_output=True,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
                 encoding="utf-8",
-                timeout=timeout,
             )
+            try:
+                _, stderr = proc.communicate(prompt, timeout=timeout)
+            except subprocess.TimeoutExpired:
+                _kill_tree(proc)
+                try:
+                    proc.communicate(timeout=KILL_GRACE)
+                except subprocess.TimeoutExpired:
+                    pass  # a survivor still holds a pipe; abandon it rather than hang the run
+                raise CliError(f"codex timed out after {timeout:g} s") from None
             print(f"codex: call {attempt}, {time.monotonic() - started:.1f}s", file=sys.stdout)
-            if run.returncode:
-                raise CliError(f"codex exited {run.returncode}: {run.stderr.strip()}")
+            if proc.returncode:
+                raise CliError(f"codex exited {proc.returncode}: {stderr.strip()}")
             try:
                 result = json.loads(out_path.read_text(encoding="utf-8"))
                 if not isinstance(result, dict):

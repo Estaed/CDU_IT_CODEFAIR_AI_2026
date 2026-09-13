@@ -2,6 +2,7 @@
 
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -75,8 +76,7 @@ def test_claude_is_error_raises(mode) -> None:
         call("claude")
 
 
-@pytest.mark.parametrize("name", ["claude", "codex"])
-def test_every_subprocess_call_has_timeout_and_resolved_stdin(name, mode, monkeypatch) -> None:
+def test_claude_subprocess_call_has_timeout_and_resolved_stdin(mode, monkeypatch) -> None:
     mode("ok")
     seen = []
     real_run = subprocess.run
@@ -86,8 +86,30 @@ def test_every_subprocess_call_has_timeout_and_resolved_stdin(name, mode, monkey
         return real_run(cmd, **kwargs)
 
     monkeypatch.setattr(subprocess, "run", spy)
-    call(name, timeout=30)
+    call("claude", timeout=30)
     assert seen
     for kwargs in seen:
         assert kwargs["timeout"] == 30
         assert "input" in kwargs or kwargs.get("stdin") is subprocess.DEVNULL
+
+
+def test_codex_communicate_has_timeout_and_writes_stdin(mode, monkeypatch) -> None:
+    mode("ok")
+    seen = []
+
+    class Spy(subprocess.Popen):
+        def communicate(self, *args, **kwargs):
+            seen.append((self.stdin is not None, args, kwargs))
+            return super().communicate(*args, **kwargs)
+
+    monkeypatch.setattr(subprocess, "Popen", Spy)
+    call("codex", timeout=30)
+    assert seen == [(True, (PROMPT,), {"timeout": 30})]
+
+
+def test_codex_timeout_kills_the_call_and_raises(mode, monkeypatch) -> None:
+    mode("sleep")
+    started = time.monotonic()
+    with pytest.raises(codex_cli.CliError, match="timed out after 1 s"):
+        call("codex", timeout=1)
+    assert time.monotonic() - started < 15  # the fake sleeps 30 s unless killed

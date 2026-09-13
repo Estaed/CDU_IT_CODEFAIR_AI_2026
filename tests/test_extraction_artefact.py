@@ -81,7 +81,22 @@ def test_rerun_with_complete_artefact_makes_zero_calls(tmp_path, monkeypatch) ->
     (build / "extraction.json").write_text(json.dumps([{"job_id": i} for i in ids]), "utf-8")
     monkeypatch.setenv("FAKE_MODE", "fail")  # any call would raise CliError
     summary = extract.run(build, executable=FAKE)
-    assert summary == {"calls": 0, "written": 0, "rejected": [], "missing": 0}
+    assert summary == {"calls": 0, "failed_calls": 0, "written": 0, "rejected": [], "missing": 0}
+
+
+def test_failed_call_is_counted_and_other_batches_still_written(tmp_path, monkeypatch) -> None:
+    build = _build_copy(tmp_path, keep=5)  # six reports with ADV-01: three batches of two
+    ids = sorted(["ADV-01", *(r["job_id"] for r in REPORTS[:5])])
+    monkeypatch.setenv("FAKE_MODE", "fail_job")
+    monkeypatch.setenv("FAKE_FAIL_JOB", ids[2])
+    summary = extract.run(build, executable=FAKE, batch_size=2, limit=3)
+    assert summary["calls"] == 3 and summary["failed_calls"] == 1
+    assert summary["written"] == 4 and summary["missing"] == 2
+    rows = json.loads((build / "extraction.json").read_text("utf-8"))
+    assert ids[2] not in {r["job_id"] for r in rows} and len(rows) == 4
+    monkeypatch.setenv("FAKE_MODE", "extract")
+    retry = extract.run(build, executable=FAKE, batch_size=2)
+    assert retry == {"calls": 1, "failed_calls": 0, "written": 2, "rejected": [], "missing": 0}
 
 
 def test_fake_extraction_fills_missing_resumes_and_verifies(tmp_path, monkeypatch) -> None:

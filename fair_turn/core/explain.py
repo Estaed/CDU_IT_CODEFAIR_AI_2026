@@ -1,7 +1,11 @@
 """Two texts assembled from ``ScoredJob`` factors: the coordinator's rank sentence and the
 tenant's answer (PRD sections 3.1, 3.4, 7). Both read enum labels and numbers only, so they
-change with ``lam`` and never depend on any model-produced string.
+change with ``lam`` and never depend on any model-produced string; the only free text the
+tenant answer carries is the coordinator's recorded reason.
 """
+
+from dataclasses import dataclass
+from typing import Literal, Protocol, get_args
 
 from fair_turn.core import constants, scoring
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass, ScoredJob
@@ -121,47 +125,257 @@ def why_sentence(scored: ScoredJob, lam: float) -> str:
     return f"Ranked {_ordinal(scored.rank)}: {clauses[0]} and {clauses[1]}; {logistics_clause}."
 
 
-def tenant_answer(
-    scored: ScoredJob,
-    rank_at_lambda0: int,
-    window_days: float,
-    coordinator_reason: str,
-    lam: float,
-) -> str:
-    """Paragraphs for what was understood, where the job sits and why, where it would
-    sit if distance were ignored, the NT window for its class, and the coordinator's
-    reason for the day's setting. Requires a ranked, scored job."""
-    if scored.needs_human or scored.rank is None or scored.score is None:
-        raise ValueError("tenant_answer requires a ranked job")
-    job = scored.job
+# --- the tenant answer (PRD 3.4, wireframes §7) ---------------------------------------------
 
-    fault_label = LABELS[job.fault_type.value]
-    safety_label = LABELS[job.safety_class.value]
+TenantState = Literal["ranked", "review", "backlog", "unsigned", "manual", "superseded", "unknown"]
+TENANT_STATES: tuple[TenantState, ...] = get_args(TenantState)
+
+QUESTIONS = (
+    "What did we understand from your report?",
+    "Where is your repair in the queue, and why?",
+    "What happens next?",
+    "Who can you ask?",
+)
+
+# What a registration number looks like, shown on the empty page and for an unknown id.
+JOB_ID_PREFIX = "JR-2025-"
+JOB_ID_EXAMPLE = f"{JOB_ID_PREFIX}00001"
+
+# The policy source named when no indexed passage is available for the job's key.
+DEFAULT_POLICY_SOURCE = "NT fact sheet FS17, Repairs and maintenance, October 2025"
+
+# Plain words for a reordered visit when the recorded plan change carries no reason text.
+DEFAULT_VISIT_REASON = (
+    "the coordinator accepted a shorter drive that keeps the repairs on the same day"
+)
+
+MISSING_FIELD_SENTENCES = {
+    "fault_type": "We could not read what is broken from the report.",
+    "safety_class": "We could not read how urgent it is.",
+}
+
+_ORDINAL_WORDS = ("first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth")
+
+
+@dataclass(frozen=True)
+class Block:
+    question: str
+    paragraphs: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class TenantAnswer:
+    blocks: tuple[Block, ...]
+
+    @property
+    def text(self) -> str:
+        """Every paragraph of every block, joined; what the wording lint reads."""
+        return "\n\n".join(p for block in self.blocks for p in block.paragraphs)
+
+
+class PolicySource(Protocol):
+    title: str
+    section: str
+    effective_date: str
+
+
+def _article(word: str) -> str:
+    return "an" if word[:1].lower() in "aeiou" else "a"
+
+
+def _ordinal_word(n: int) -> str:
+    return _ORDINAL_WORDS[n - 1] if 1 <= n <= len(_ORDINAL_WORDS) else _ordinal(n)
+
+
+def _understood(job: Job | None, missing_fields: tuple[str, ...]) -> list[str]:
+    if job is None:
+        return ["We could not find that job number."]
+    sentences = []
+    if job.fault_type is not None:
+        sentences.append(f"We read your report as {LABELS[job.fault_type.value]}.")
+    if job.safety_class is not None:
+        label = LABELS[job.safety_class.value]
+        sentences.append(f"We class it as {_article(label)} {label} repair.")
+    sentences += [MISSING_FIELD_SENTENCES[f] for f in missing_fields]
     risk_labels = _health_risk_labels(job)
     if risk_labels:
-        risk_items = " ".join(f"{label}." for label in risk_labels)
-        risk_sentence = f"We recorded these household health risks. {risk_items}"
+        items = " ".join(f"We noted {label}." for label in risk_labels)
+        risk = f"These count as {FACTOR_LABELS['health_risk']}. {items}"
     else:
-        risk_sentence = "No household health risk factor was recorded for the house."
-    understood = (
-        f"We understood your report as {fault_label}, classed {safety_label}. {risk_sentence}"
-    )
+        risk = f"We did not note any {FACTOR_LABELS['health_risk']} for your home."
+    return [" ".join(sentences), risk]
 
-    where_it_sits = (
-        f"Your job is ranked {scored.rank} today. This rank weighs {FACTOR_LABELS['urgency']}, "
+
+def _why(rank_at_lambda0: int | None, lam: float | None) -> list[str]:
+    paragraphs = [
+        f"The number comes from four things: {FACTOR_LABELS['urgency']}, "
         f"{FACTOR_LABELS['safety']}, {FACTOR_LABELS['health_risk']} and "
-        f"{FACTOR_LABELS['logistics']} together, at the current setting for travel cost."
+        f"{FACTOR_LABELS['logistics']}."
+    ]
+    if lam is not None:
+        clause = _logistics_clause(lam)
+        paragraphs[0] += f" {clause[0].upper()}{clause[1:]}."
+    if rank_at_lambda0 is not None:
+        paragraphs.append(
+            f"If distance did not count, your repair would be number {rank_at_lambda0}. "
+            f"That is the same formula with {FACTOR_LABELS['logistics']} left out."
+        )
+    return paragraphs
+
+
+def _visit(visit_order: tuple[int, str] | None) -> list[str]:
+    if visit_order is None:
+        return []
+    position, reason = visit_order
+    words = reason.strip().rstrip(".") or DEFAULT_VISIT_REASON
+    return [f"The crew will visit it {_ordinal_word(position)} on the day, because {words}."]
+
+
+def _where(
+    state: TenantState,
+    scored: ScoredJob | None,
+    rank_at_lambda0: int | None,
+    lam: float | None,
+    signed_rank: int | None,
+    visit_order: tuple[int, str] | None,
+    decision_version: int | None,
+) -> list[str]:
+    draft_rank = scored.rank if scored is not None else None
+    if state == "unknown":
+        return [
+            "Check the number and try again.",
+            f"A job number starts with {JOB_ID_PREFIX} and ends with five digits, "
+            f"like {JOB_ID_EXAMPLE}. You can find it on your report receipt.",
+        ]
+    if state == "review":
+        return [
+            "A person is checking your report before it is ranked.",
+            "Your repair does not have a place in the queue yet.",
+        ]
+    if state == "manual":
+        return [
+            "Your home is reached by air or barge, not by a road crew.",
+            "A person is arranging freight for your repair. There is no date for it yet.",
+        ]
+    if state == "unsigned":
+        place = [
+            "Today's list is still a draft. The coordinator has not signed it, "
+            "so we cannot promise a place yet."
+        ]
+        if draft_rank is not None:
+            place.append(f"On the draft, your repair is number {draft_rank}.")
+        return place + _why(rank_at_lambda0, lam)
+    if state == "backlog":
+        number = signed_rank if signed_rank is not None else draft_rank
+        return [
+            f"Your repair is number {number} in the queue, but it is not on today's list.",
+            "It waits for the next free crew day. There is no visit date for it yet.",
+            *_why(rank_at_lambda0, lam),
+        ]
+    # ranked and superseded
+    if signed_rank is not None:
+        place = [f"Your repair is number {signed_rank} on the signed list."]
+    else:
+        place = [f"Your repair is number {draft_rank} on today's draft list."]
+    if state == "superseded":
+        place.insert(0, f"This answer uses the signed list version {decision_version}.")
+    return place + _visit(visit_order) + _why(rank_at_lambda0, lam)
+
+
+def _next(
+    state: TenantState,
+    job: Job | None,
+    policy: PolicySource | None,
+    visit_order: tuple[int, str] | None,
+) -> list[str]:
+    if job is None:
+        return ["We can tell you what happens next once we find your job number."]
+    if job.safety_class is None:
+        return [
+            "We can tell you the NT policy target once a person has read your report.",
+            "We do not have a visit date yet.",
+        ]
+    label = LABELS[job.safety_class.value]
+    if job.safety_class is SafetyClass.IMMEDIATE:
+        target = (
+            f"For an {label} repair like yours, the NT policy target is to make it safe "
+            f"within {constants.MAKE_SAFE_HOURS} hours of the report."
+        )
+    else:
+        days = constants.RESPONSE_BUSINESS_DAYS[(job.safety_class.value, job.is_remote)]
+        target = (
+            f"For {_article(label)} {label} repair like yours, the NT policy target is "
+            f"{days} business days from the report date."
+        )
+    target += " That is a policy target, not a promised visit time."
+    if visit_order is not None and state in ("ranked", "superseded"):
+        date_line = "The crew plans to visit on the day of the signed list."
+    else:
+        date_line = "We do not have a visit date yet."
+    if policy is not None:
+        source = (
+            f"Policy source: {policy.title}, {policy.section}, effective {policy.effective_date}."
+        )
+    else:
+        source = f"Policy source: {DEFAULT_POLICY_SOURCE}."
+    return [target, date_line, source]
+
+
+def _ask(state: TenantState, coordinator_reason: str | None) -> list[str]:
+    if state == "unknown":
+        return ["Your Community Housing Officer can help you find your job number."]
+    officer = "Your Community Housing Officer can look up this job for you."
+    if coordinator_reason:
+        return [officer, f"The coordinator's reason for today's setting: {coordinator_reason}"]
+    return [officer, "The coordinator has not signed today's setting yet."]
+
+
+def tenant_answer(
+    *legacy,
+    state: TenantState | None = None,
+    scored: ScoredJob | None = None,
+    rank_at_lambda0: int | None = None,
+    window_days: float | None = None,
+    coordinator_reason: str | None = None,
+    lam: float | None = None,
+    signed_rank: int | None = None,
+    visit_order: tuple[int, str] | None = None,
+    policy: PolicySource | None = None,
+    decision_version: int | None = None,
+    missing_fields: tuple[str, ...] = (),
+) -> TenantAnswer:
+    """Four question-headed blocks, in ``QUESTIONS`` order, for one tenant state.
+
+    ``window_days`` is accepted for the Phase 1 form and not read: the window is stated in
+    the class's own unit from ``constants``. The Phase 1 positional form
+    ``tenant_answer(scored, rank_at_lambda0, window_days, coordinator_reason, lam)`` still
+    works for one release and answers in the ``ranked`` state."""
+    if legacy:
+        if len(legacy) != 5 or state is not None:
+            raise TypeError("the positional form takes exactly the five Phase 1 arguments")
+        scored, rank_at_lambda0, window_days, coordinator_reason, lam = legacy
+    if state is None:
+        state = "ranked"
+    if state not in TENANT_STATES:
+        raise ValueError(f"unknown tenant state: {state}")
+    ranked_like = state in ("ranked", "superseded", "backlog", "unsigned")
+    if ranked_like and (scored is None or scored.needs_human or scored.rank is None):
+        raise ValueError(f"tenant_answer in the {state} state requires a ranked job")
+    if state == "superseded" and decision_version is None:
+        raise ValueError("a superseded answer names the signed list version it uses")
+    if state != "unknown" and scored is None:
+        raise ValueError(f"tenant_answer in the {state} state requires a job")
+
+    job = scored.job if scored is not None and state != "unknown" else None
+    sections = (
+        _understood(job, missing_fields if state == "review" else ()),
+        _where(state, scored, rank_at_lambda0, lam, signed_rank, visit_order, decision_version),
+        _next(state, job, policy, visit_order),
+        _ask(state, coordinator_reason),
     )
-
-    without_distance = (
-        f"If travel cost were left out of the count, your job would rank {rank_at_lambda0} instead."
+    return TenantAnswer(
+        tuple(
+            Block(question, tuple(p for p in paragraphs if p))
+            for question, paragraphs in zip(QUESTIONS, sections, strict=True)
+        )
     )
-
-    window = (
-        f"For a {safety_label} job like yours, the NT policy window is {window_days:g} "
-        f"days from the report date."
-    )
-
-    reason = f"The coordinator's reason for today's setting: {coordinator_reason}"
-
-    return "\n\n".join([understood, where_it_sits, without_distance, window, reason])

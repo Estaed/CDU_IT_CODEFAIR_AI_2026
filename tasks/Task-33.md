@@ -1,6 +1,6 @@
 # Task-33: Tenant answer: question-headed blocks, signed rank versus visit order, per-state copy
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Template work with a machine-checked reading level and factor coverage; PRD §3.4 and wireframes §7 fix every block and state.

@@ -6,7 +6,7 @@ Status: TODO
 > *Why:* The code (chat wrapper, benchmark script, eval table) is specified and tested with fakes; the pull and the real run are the main loop's on Tarik's machine, and the decision rule is written in Part 2. Tarik's call 2026-09-14: this is the last Phase 2 step; nothing before it pulls or calls an Ollama chat model.
 
 **Lane**
-- OWNS: `fair_turn/llm/ollama.py` (`chat` function), `fair_turn/llm/intake.py` (remove `NotAcceptedYet`, route `ollama`), `scripts/benchmark_provider.py`, `tests/test_ollama.py`, `data/build/eval_ollama.json`, `MODELS.md`
+- OWNS: `fair_turn/llm/ollama.py` (`chat` function), `fair_turn/llm/intake.py` (remove `NotAcceptedYet`, route `ollama`), `scripts/benchmark_provider.py`, `tests/test_ollama.py`, `data/build/eval_ollama.json`, `MODELS.md`, plus (added by the orchestrator 2026-09-14, attempt 2) the `ollama` case in `tests/test_intake.py`, the `NotAcceptedYet` reference in `fair_turn/app/intake.py`, and the README sentence that says Ollama is not accepted yet
 - MUST NOT TOUCH: `fair_turn/eval/` (reuse as is), `scripts/run_eval.py`, `fair_turn/app/`
 - GATE: `venv/Scripts/python scripts/gate.py` (repo root) (the real benchmark run is the main loop's; its exit code is quoted in the report, not gated)
 - DEPENDS ON: Task-28, Task-35

@@ -30,6 +30,14 @@ CREWS_PER_REMOTE_REGION = 1
 CREWS_TOWN = 2
 JOBS_PER_CREW_DAY = 2
 TRAVEL_DAY_KM = 200
+CREW_BASE_COORDS = {
+    "Darwin": (-12.461534, 130.842442),
+    "Katherine": (-14.46676, 132.266768),
+    "Tennant Creek": (-19.6478, 134.1902),
+    "Alice Springs": (-23.6994, 133.8807),
+    "Nhulunbuy": (-12.187, 136.7763),
+}
+SUGGESTION_MIN_SAVING_KM = 50
 
 # Regions exactly as BushTel spells ``NTRegionName``.
 REMOTE_REGIONS = ("CENTRAL AUSTRALIA", "BIG RIVERS", "BARKLY", "TOP END", "EAST ARNHEM")

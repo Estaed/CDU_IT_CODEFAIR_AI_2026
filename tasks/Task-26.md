@@ -1,6 +1,6 @@
 # Task-26: Core: visit plan in signed order with distance suggestions
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Deterministic planner with property tests; PRD §3.3 and Part 2's constraint fix the rule (signed order is the plan, distance only suggests).

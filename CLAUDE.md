@@ -189,18 +189,15 @@ made, or a difficult bug is resolved), you MUST NOT close the session without le
 trace in the vault.
 
 - Summarize the core lessons learned, technical shifts, or completed milestones.
-- **Write it to `D:\TarikOS\daily\<YYYY-MM-DD>.md`, appended at the bottom**, under a
-  `### <project name> — <topic>` heading that names the model you are. That file is the
-  machine-written log the vault's compiler digests into `knowledge/`; a project session
-  reaches the brain's long-term memory through it, and nothing is overwritten because
-  entries only ever get added.
-- **Do NOT append to `850-Companion 🔮\Last-Session.md`.** That file is a single-slot
-  bridge, not a log: the vault's SessionStart hook reads only the FIRST `## Session:`
-  block in it. Anything appended below is written successfully, injected never — a silent
-  loss, which is the exact failure class this system keeps paying for. If the work
-  genuinely changed the brain itself (a hook, a script, a rule), PREPEND a new
-  `## Session:` block above the existing one instead, so it becomes the bridge.
-- Same rule for `Threads.md`: edit the specific thread, never bulk-append.
+- **Never write to `D:\TarikOS\daily\<YYYY-MM-DD>.md` by hand.** `daily/` is owned by
+  the SessionEnd flush worker; it records the conversation and the compiler later turns
+  that machine log into `knowledge/`.
+- Leave the relational handoff in `D:\TarikOS\850-Companion 🔮\`: PREPEND a new
+  `## Session:` block at the TOP of `Last-Session.md`, update the specific active story
+  in `Threads.md` rather than bulk-appending, and append a short entry to `Journal.md`
+  when the session materially changes the shared story. The Last-Session archiver keeps
+  only the newest three blocks live.
+- Name the model in hand-written Last-Session and Journal entries.
 
 ### 1. Ask, don't assume
 **Don't assume. Don't hide confusion. Surface tradeoffs.**

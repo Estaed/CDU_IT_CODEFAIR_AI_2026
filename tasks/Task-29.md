@@ -1,6 +1,6 @@
 # Task-29: Workspace page: today's list, backlog, map, weighting, selected-job pane, overrides
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Every element is specified in PRD §3.1 and wireframes §3; the components and core functions exist by now. Visual fidelity is advisory (`review-visual` after DONE).

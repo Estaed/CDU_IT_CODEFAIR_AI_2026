@@ -15,7 +15,7 @@ from fair_turn.app.components.highlight import render, spans
 from fair_turn.core import audit, constants, scoring, verify_spans
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 from fair_turn.data import runtime
-from fair_turn.data.artefacts import Artefacts, extraction_for
+from fair_turn.data.artefacts import Artefacts, extraction_for, to_jobs
 
 NOT_FOUND_REASON = "the proposed source phrase was not found in the report"
 NOT_EXTRACTED_REASON = "the field was not extracted"
@@ -160,6 +160,11 @@ def _table_records(item: QueueItem, human_set: dict[str, str]) -> list[dict[str,
 def _job_for_rank(
     art: Artefacts, item: QueueItem, chosen: dict[str, str], today: date
 ) -> tuple[Job, list[Job]]:
+    """The job to score for the "Mark rankable" success line, and the pool to rank it
+    against: today's open jobs plus itself. ``item`` may no longer be in ``open_jobs``
+    once its human-set fields make it dispatchable (PRD 3.2), so the source is looked up
+    in order: today's open jobs, a runtime intake report, the build labels; the job built
+    from ``item`` alone is the last resort so the page always renders."""
     open_today = ranking_table.open_jobs(today)
     jobs_by_id = {j.job_id: j for j in open_today}
     if item.job_id in jobs_by_id:
@@ -170,23 +175,47 @@ def _job_for_rank(
         return job, jobs
 
     record = next(
-        r
-        for r in runtime.read(state.get_runtime_path())
-        if isinstance(r, runtime.IntakeReport) and r.job_id == item.job_id
+        (
+            r
+            for r in runtime.read(state.get_runtime_path())
+            if isinstance(r, runtime.IntakeReport) and r.job_id == item.job_id
+        ),
+        None,
     )
-    community = art.communities[record.community_id]
-    verified = verify_spans.verify(record.text, record.extraction or {})
-    fault = chosen.get("fault_type", verified.fault_type)
-    safety = chosen.get("safety_class", verified.safety_class)
+    if record is not None:
+        community = art.communities[record.community_id]
+        verified = verify_spans.verify(record.text, record.extraction or {})
+        fault = chosen.get("fault_type", verified.fault_type)
+        safety = chosen.get("safety_class", verified.safety_class)
+        job = Job(
+            job_id=item.job_id,
+            community_id=record.community_id,
+            is_remote=community["is_remote"] == "True",
+            reported_on=record.reported_on,
+            fault_type=FaultType(fault) if fault else None,
+            safety_class=SafetyClass(safety) if safety else None,
+            health_risk=frozenset(HealthRiskFactor(v) for v in verified.health_risk),
+            logistics_factor=float(community["logistics_factor"]),
+        )
+        return job, [*open_today, job]
+
+    build_job = next((j for j in to_jobs(art) if j.job_id == item.job_id), None)
+    if build_job is not None:
+        if chosen:
+            build_job = replace(build_job, **chosen)
+        return build_job, [*open_today, build_job]
+
+    fault = chosen.get("fault_type")
+    safety = chosen.get("safety_class")
     job = Job(
         job_id=item.job_id,
-        community_id=record.community_id,
-        is_remote=community["is_remote"] == "True",
-        reported_on=record.reported_on,
+        community_id=item.community_id,
+        is_remote=False,
+        reported_on=today,
         fault_type=FaultType(fault) if fault else None,
         safety_class=SafetyClass(safety) if safety else None,
-        health_risk=frozenset(HealthRiskFactor(v) for v in verified.health_risk),
-        logistics_factor=float(community["logistics_factor"]),
+        health_risk=frozenset(),
+        logistics_factor=0.0,
     )
     return job, [*open_today, job]
 

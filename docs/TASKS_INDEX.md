@@ -53,7 +53,7 @@ Phase 2:
 - [x] Task-26: Core: visit plan in signed order with distance suggestions
 - [x] Task-27: Policy index: FS17 passages as a build artefact keyed by typed fields
 - [x] Task-28: Intake: provider seam and the in-page new-report action
-- [ ] Task-29: Workspace page: today's list, backlog, map, weighting, selected-job pane, overrides
+- [x] Task-29: Workspace page: today's list, backlog, map, weighting, selected-job pane, overrides
 - [ ] Task-30: Sign-off form, decision states, metrics reveal; retire the Phase 1 board, job card and sign-off pages
 - [x] Task-31: Review queue page
 - [ ] Task-32: Visit plan page

@@ -6,7 +6,7 @@ Status: TODO
 > *Why:* Part 2 names every file and rule; the work is plumbing with unit and layer tests as the criterion.
 
 **Lane**
-- OWNS: `fair_turn/app/main.py`, `fair_turn/app/pages/workspace.py`, `fair_turn/app/pages/review_queue.py`, `fair_turn/app/pages/visit_plan.py`, `fair_turn/app/pages/evidence_lab.py` (stubs only), `fair_turn/app/state.py`, `fair_turn/data/runtime.py`, `fair_turn/data/artefacts.py` (`to_jobs` merge only), `.gitignore` (append `data/runtime/`), `tests/test_layers.py`, `tests/test_runtime.py`, `tests/test_app_smoke.py` (default-page assertion only)
+- OWNS: `fair_turn/app/main.py`, `fair_turn/app/pages/workspace.py`, `fair_turn/app/pages/review_queue.py`, `fair_turn/app/pages/visit_plan.py`, `fair_turn/app/pages/evidence_lab.py` (stubs only), `fair_turn/app/state.py`, `fair_turn/data/runtime.py`, `fair_turn/data/artefacts.py` (`to_jobs` merge only), `.gitignore` (append `data/runtime/`), `tests/test_layers.py`, `tests/test_runtime.py`, `tests/test_app_smoke.py` (page registration and default-page assertions), `tests/conftest.py` (new: autouse fixture isolating `data/runtime/`; added by the orchestrator 2026-09-14)
 - MUST NOT TOUCH: `fair_turn/app/pages/board.py`, `job_card.py`, `sign_off.py`, `feedback.py`, `audit_log.py` (retired by Task-30 and Task-34), `fair_turn/core/` (Task-24 to Task-26)
 - GATE: `venv/Scripts/python scripts/gate.py` (repo root)
 - DEPENDS ON: none

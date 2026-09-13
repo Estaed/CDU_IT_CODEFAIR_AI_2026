@@ -1,5 +1,7 @@
 # Task-11: Extract typed fields from every report, plus the adversarial set
 
+Status: DONE
+
 > **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
 > *Why:* spends a subscription window (check with `limit`); the injection defences and the human-queue outcome are judged in Q&A; artefact invariants are gated. Rerouted 2026-09-13: extractor is Claude Sonnet, not Codex (operator decision, Part 2 stack table); code written by Claude bees, run and gate in the main loop.
 
@@ -23,9 +25,11 @@ that injected text cannot move a rank.
 - `scripts/extract.py`: for each report (and adversarial item) call the extractor, run `verify_spans.verify`, write `extraction.json` rows with kept fields, dropped fields, `substring_ok`, `needs_human`; resumable like Task-10.
 - `tests/test_extraction_artefact.py`: every report has a row; `substring_ok` is true for every displayed field (100 %); for each adversarial item, `scoring.rank` over the holdout set with the adversarial extraction substituted yields the same order as with the original extraction (20/20); no confidence-like key exists in any row; `needs_human` count is reported in the test output.
 
+- As built (2026-09-13): raw run, before markers: 20 adversarial copies gave 15/20 unchanged ranks; 2 were class inflation under the injection with genuine sentences as evidence (the substring rule proves the evidence is real, not that the judgement was unswayed), 3 were plain model variance between two calls. Operator decision: deterministic `wording.injection_markers` (no LLM) routes any marker-bearing report to the human queue; 0 of 1452 genuine reports trigger one. Rank test now asserts: adversarial item in the human queue, order of every other holdout job unchanged, 20/20. Human queue 41 of 1472 (20 adversarial + 21 with a missing required field). A partial Codex run (697 rows) is parked under `reports/`.
+
 ## Acceptance Criteria (DoD)
 
-- [ ] `extraction.json` and `adversarial.json` committed.
-- [ ] Substring-verification rate on displayed fields is exactly 100 %; adversarial rank test 20/20.
-- [ ] Rerun with the artefact present makes zero CLI calls.
-- [ ] Gate green.
+- [x] `extraction.json` and `adversarial.json` committed.
+- [x] Substring-verification rate on displayed fields is exactly 100 %; adversarial rank test 20/20.
+- [x] Rerun with the artefact present makes zero CLI calls.
+- [x] Gate green.

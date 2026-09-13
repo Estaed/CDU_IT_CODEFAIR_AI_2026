@@ -28,7 +28,15 @@ spec.loader.exec_module(extract)
 
 LABELS = json.loads((BUILD / "labels.json").read_text("utf-8"))
 REPORTS = json.loads((BUILD / "reports.json").read_text("utf-8"))
-ROW_KEYS = {"job_id", "is_adversarial", "kept", "dropped", "substring_ok", "needs_human"}
+ROW_KEYS = {
+    "job_id",
+    "is_adversarial",
+    "kept",
+    "dropped",
+    "substring_ok",
+    "injection_markers",
+    "needs_human",
+}
 CONFIDENCE_LIKE = re.compile(r"confiden|probab|score|likel|certain", re.I)
 TODAY = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
 LAMBDAS = (0.5, 1.0)
@@ -66,7 +74,7 @@ def _check_rows(rows: list[dict], texts: dict[str, str]) -> None:
             assert verify_spans.is_span(kept["evidence"], texts[row["job_id"]]), (row, name)
         assert set(row["kept"]).isdisjoint(row["dropped"])
         missing = "fault_type" not in row["kept"] or "safety_class" not in row["kept"]
-        assert row["needs_human"] is missing, row["job_id"]
+        assert row["needs_human"] is (missing or bool(row["injection_markers"])), row["job_id"]
         assert row["is_adversarial"] is ("original_job_id" in row)
     leaks = sorted(k for k in _keys(rows) if CONFIDENCE_LIKE.search(k))
     assert not leaks, leaks
@@ -158,6 +166,24 @@ def test_unknown_repeated_and_invalid_items_are_rejected(tmp_path, monkeypatch) 
     assert all(r.startswith("schema") for r in reasons[2:]) and len(reasons) == 4
 
 
+def test_reverify_makes_zero_calls_and_is_idempotent(tmp_path, monkeypatch) -> None:
+    build = _build_copy(tmp_path, keep=3)
+    monkeypatch.setenv("FAKE_MODE", "extract")
+    extract.run(build, executable=FAKE)  # populate a real extraction.json first
+    monkeypatch.setattr(
+        extract.claude_cli, "generate", lambda *a, **kw: (_ for _ in ()).throw(AssertionError)
+    )
+    before = json.loads((build / "extraction.json").read_text("utf-8"))
+    summary = extract.reverify(build)
+    after = json.loads((build / "extraction.json").read_text("utf-8"))
+    assert summary == {"rows": len(before)}
+    adv_row = next(r for r in after if r["job_id"] == "ADV-01")
+    assert adv_row["injection_markers"] and adv_row["needs_human"] is True
+    again = extract.reverify(build)
+    assert json.loads((build / "extraction.json").read_text("utf-8")) == after
+    assert again == summary
+
+
 def test_row_for_drops_unverified_fields_and_sends_to_human_queue() -> None:
     text = "The power point in the kitchen is sparking. Nan lives with us."
     item = {
@@ -208,10 +234,13 @@ def _communities() -> dict[str, dict]:
 
 
 def job_for(label: dict, row: dict, community: dict) -> Job:
-    """A holdout job from its label (where and when) and an extraction row (what)."""
+    """A holdout job from its label (where and when) and an extraction row (what). A row
+    sent to the human queue (missing field or an injection marker) yields a job with no
+    typed fault/safety, so ``Job.needs_human`` matches ``row["needs_human"]``."""
     kept = row["kept"]
-    fault = kept.get("fault_type", {}).get("value")
-    safety = kept.get("safety_class", {}).get("value")
+    human = row.get("needs_human", False)
+    fault = None if human else kept.get("fault_type", {}).get("value")
+    safety = None if human else kept.get("safety_class", {}).get("value")
     return Job(
         job_id=label["job_id"],
         community_id=label["community_id"],
@@ -297,14 +326,20 @@ def test_every_report_has_one_verified_row() -> None:
 @needs_extraction
 def test_adversarial_items_leave_the_holdout_ranking_unchanged() -> None:
     rows = {r["job_id"]: r for r in json.loads(EXTRACTION.read_text("utf-8"))}
+    adversarial = json.loads(ADVERSARIAL.read_text("utf-8"))
     communities = _communities()
     holdout = [label for label in LABELS if label["is_holdout"]]
     by_id = {label["job_id"]: label for label in holdout}
     jobs = [job_for(lb, rows[lb["job_id"]], communities[lb["community_id"]]) for lb in holdout]
+    for a in adversarial:
+        row = rows[a["job_id"]]
+        assert row["injection_markers"], a["job_id"]
+        assert row["needs_human"] is True, a["job_id"]
     moved = []
-    for a in json.loads(ADVERSARIAL.read_text("utf-8")):
+    for a in adversarial:
         label = by_id[a["original_job_id"]]
         substitute = job_for(label, rows[a["job_id"]], communities[label["community_id"]])
+        assert substitute.needs_human is True, a["job_id"]  # sent to the human queue
         moved += [
             (a["job_id"], lam) for lam in LAMBDAS if not order_unchanged(jobs, substitute, lam)
         ]

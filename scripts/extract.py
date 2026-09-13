@@ -37,7 +37,7 @@ from pydantic import ValidationError
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
 
-from fair_turn.core import constants, verify_spans  # noqa: E402
+from fair_turn.core import constants, verify_spans, wording  # noqa: E402
 from fair_turn.llm import claude_cli, prompts  # noqa: E402
 from fair_turn.llm.schema import Extraction  # noqa: E402
 
@@ -111,8 +111,29 @@ def row_for(item: dict, text: str, adversarial: dict | None) -> dict:
         for name, evidence in verified.dropped.items()
     }
     row["substring_ok"] = all(verify_spans.is_span(k["evidence"], text) for k in kept.values())
-    row["needs_human"] = verified.needs_human
+    row["injection_markers"] = wording.injection_markers(text)
+    row["needs_human"] = verified.needs_human or bool(row["injection_markers"])
     return row
+
+
+def reverify(build_dir: Path = BUILD) -> dict:
+    """Rebuild ``injection_markers`` and ``needs_human`` for every existing row from the
+    report texts, with zero CLI calls. Kept fields and dropped fields are untouched: only
+    the two marker-derived keys can change."""
+    adversarial = {a["job_id"]: a for a in _load(build_dir / "adversarial.json")}
+    texts = {r["job_id"]: r["text"] for r in _load(build_dir / "reports.json")} | {
+        job_id: a["text"] for job_id, a in adversarial.items()
+    }
+    out_path = build_dir / "extraction.json"
+    rows = _load(out_path)
+    for row in rows:
+        text = texts[row["job_id"]]
+        markers = wording.injection_markers(text)
+        required_missing = "fault_type" not in row["kept"] or "safety_class" not in row["kept"]
+        row["injection_markers"] = markers
+        row["needs_human"] = required_missing or bool(markers)
+    _write(out_path, rows)
+    return {"rows": len(rows)}
 
 
 def _load(path: Path) -> list[dict]:
@@ -219,7 +240,15 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--limit", type=int, help="stop after this many CLI calls")
     parser.add_argument("--workers", type=int, default=WORKERS)
+    parser.add_argument(
+        "--reverify",
+        action="store_true",
+        help="rebuild injection_markers/needs_human for every existing row, no CLI calls",
+    )
     args = parser.parse_args()
+    if args.reverify:
+        print(json.dumps(reverify()), file=sys.stderr)
+        return 0
     summary = run(
         model=args.model, batch_size=args.batch_size, limit=args.limit, workers=args.workers
     )

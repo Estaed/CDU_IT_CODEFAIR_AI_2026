@@ -1,0 +1,107 @@
+extract: call 1, 20 written, 1452 missing, 130s
+extract: call 2, 40 written, 1432 missing, 135s
+extract: call 3, 60 written, 1412 missing, 160s
+extract: call 4, 80 written, 1392 missing, 227s
+extract: call 5, 100 written, 1372 missing, 255s
+extract: call 6, 120 written, 1352 missing, 261s
+extract: call 7, 140 written, 1332 missing, 279s
+exit=127
+claude: call 1, 174.9s
+extract: call 1, 40 written, 1272 missing, 175s
+claude: call 1, 182.3s
+extract: call 2, 80 written, 1232 missing, 182s
+claude: call 1, 190.4s
+extract: call 3, 120 written, 1192 missing, 190s
+claude: call 1, 213.6s
+extract: call 4, 160 written, 1152 missing, 214s
+claude: call 1, 188.4s
+extract: call 5, 200 written, 1112 missing, 379s
+claude: call 1, 217.4s
+extract: call 6, 240 written, 1072 missing, 392s
+claude: call 1, 212.4s
+extract: call 7, 280 written, 1032 missing, 395s
+claude: call 1, 215.4s
+extract: call 8, 320 written, 992 missing, 429s
+claude: call 1, 188.0s
+extract: call 9, 360 written, 952 missing, 567s
+claude: call 1, 183.9s
+extract: call 10, 400 written, 912 missing, 579s
+claude: call 1, 261.7s
+extract: call 11, 440 written, 872 missing, 654s
+claude: call 1, 296.6s
+extract: call 12, 480 written, 832 missing, 726s
+claude: call 1, 161.1s
+extract: call 13, 520 written, 792 missing, 728s
+exit=127
+Traceback (most recent call last):
+  File "D:\Charles Darwin University\6 - Year 2 - Semester 2\CODE IT FAIR 2026\AI Challenge 2026\scripts\extract.py", line 41, in <module>
+    from fair_turn.llm import claude_cli, prompts  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Charles Darwin University\6 - Year 2 - Semester 2\CODE IT FAIR 2026\AI Challenge 2026\fair_turn\llm\claude_cli.py", line 62
+    env={**os.environ, \"BEYIN_INVOKED_BY\": \"fair-turn\"},
+                        ^
+SyntaxError: unexpected character after line continuation character
+exit=1
+Traceback (most recent call last):
+  File "D:\Charles Darwin University\6 - Year 2 - Semester 2\CODE IT FAIR 2026\AI Challenge 2026\scripts\extract.py", line 41, in <module>
+    from fair_turn.llm import claude_cli, prompts  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Charles Darwin University\6 - Year 2 - Semester 2\CODE IT FAIR 2026\AI Challenge 2026\fair_turn\llm\claude_cli.py", line 62
+    env={**os.environ, \"BEYIN_INVOKED_BY\": \"fair-turn\"},
+                        ^
+SyntaxError: unexpected character after line continuation character
+exit=1
+Traceback (most recent call last):
+  File "D:\Charles Darwin University\6 - Year 2 - Semester 2\CODE IT FAIR 2026\AI Challenge 2026\scripts\extract.py", line 41, in <module>
+    from fair_turn.llm import claude_cli, prompts  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Charles Darwin University\6 - Year 2 - Semester 2\CODE IT FAIR 2026\AI Challenge 2026\fair_turn\llm\claude_cli.py", line 62
+    env={**os.environ, \"BEYIN_INVOKED_BY\": \"fair-turn\"},
+                        ^
+SyntaxError: unexpected character after line continuation character
+exit=1
+claude: call 1, 149.1s
+extract: call 1, 40 written, 752 missing, 149s
+claude: call 1, 190.7s
+extract: call 2, 80 written, 712 missing, 191s
+claude: call 1, 220.9s
+extract: call 3, 120 written, 672 missing, 221s
+claude: call 1, 266.2s
+extract: call 4, 160 written, 632 missing, 266s
+claude: call 1, 147.2s
+extract: call 5, 200 written, 592 missing, 296s
+claude: call 1, 155.5s
+extract: call 6, 240 written, 552 missing, 346s
+claude: call 1, 181.6s
+extract: call 7, 280 written, 512 missing, 403s
+claude: call 1, 183.3s
+extract: call 8, 320 written, 472 missing, 480s
+claude: call 1, 217.3s
+extract: call 9, 360 written, 432 missing, 484s
+claude: call 1, 212.7s
+extract: call 10, 400 written, 392 missing, 559s
+claude: call 1, 234.6s
+extract: call 11, 440 written, 352 missing, 637s
+claude: call 1, 201.3s
+extract: call 12, 480 written, 312 missing, 681s
+claude: call 1, 141.6s
+extract: call 13, 520 written, 272 missing, 701s
+claude: call 1, 244.9s
+extract: call 14, 560 written, 232 missing, 728s
+claude: call 1, 201.0s
+extract: call 15, 599 written, 193 missing, 838s
+claude: call 1, 178.6s
+extract: call 16, 639 written, 153 missing, 860s
+claude: call 1, 211.1s
+extract: call 17, 679 written, 113 missing, 912s
+claude: call 1, 219.4s
+extract: call 18, 719 written, 73 missing, 948s
+claude: call 1, 190.6s
+extract: call 19, 751 written, 41 missing, 1050s
+claude: call 1, 220.3s
+extract: call 20, 791 written, 1 missing, 1058s
+claude: call 1, 21.9s
+extract: call 21, 792 written, 0 missing, 1080s
+{"calls": 21, "failed_calls": 0, "written": 792, "missing": 0}
+rejected 1: [{'job_id': 'JR-2025-01278', 'reason': "schema: [{'type': 'value_error', 'loc': (), 'msg': 'Value error, health_risk and health_risk_evidence must have the same length', 'input': {'fault_type': 'cooling', 'fault_type_evidence': 'not blowing cold no more', 'safety_class': 'urgent', 'safety_class_evidence': 'The aircon in the back room not blowing cold no more, just warm air coming out of it.', 'health_risk': ['elderly', 'pregnancy_or_chronic_condition', 'extreme_heat_exposure'], 'health_risk_evidence': ['My old father he got a bad heart', 'this heat making him tired all day long'], 'location_mentioned': True, 'location_evidence': 'back room', 'crew_or_access_note': 'Road out here still open now, but it get cut off when the big rain come'}, 'ctx': {'error': ValueError('health_risk and health_risk_evidence must have the same length')}, 'url': 'https://errors.pydantic.dev/2.13/v/value_error'}]"}]
+exit=0

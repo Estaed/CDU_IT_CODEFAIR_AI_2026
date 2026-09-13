@@ -1,5 +1,7 @@
 # Task-15: Board map and metrics panel with decide-before-reveal
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Altair map pattern is fixed by the Part 2 spike; the reveal rule is a boolean in `state`; assertions on chart presence and hidden state decide.
 

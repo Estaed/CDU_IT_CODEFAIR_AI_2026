@@ -6,7 +6,8 @@ from datetime import timedelta
 import streamlit as st
 
 from fair_turn.app import state, theme
-from fair_turn.app.components import ranking_table
+from fair_turn.app.components import map as nt_map_component
+from fair_turn.app.components import metrics, ranking_table
 from fair_turn.core import constants, scoring
 
 JOB_CARD = "pages/job_card.py"
@@ -86,3 +87,15 @@ for column, (heading, key, scored, other, table_lam) in zip(st.columns(2), table
         )
         if event.selection.rows:
             _open_job_card(frame.iloc[event.selection.rows[0]]["job id"])
+
+st.subheader("Map")
+open_counts: dict[str, int] = {}
+for job in jobs:
+    open_counts[job.community_id] = open_counts.get(job.community_id, 0) + 1
+st.altair_chart(nt_map_component.nt_map(art.communities, open_counts, region), width="stretch")
+
+st.subheader("Wait metrics")
+if state.get_signed_today():
+    metrics.metrics_panel(today, region, lam)
+else:
+    st.info("Wait metrics appear after today's sign-off (decide before reveal).")

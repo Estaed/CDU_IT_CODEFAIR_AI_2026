@@ -1,6 +1,6 @@
 # Task-30: Sign-off form, decision states, metrics reveal; retire the Phase 1 board, job card and sign-off pages
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* `core/batch.py` carries the rules; this task is the form, the header status and the wiring, all assertable through AppTest.

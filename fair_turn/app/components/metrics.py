@@ -1,18 +1,20 @@
-"""The board's wait metrics (PRD 3.1), shown only after today's sign-off.
+"""The workspace's wait metrics and outcome sentence (PRD 3.1), shown only after today's
+sign-off.
 
 ``sim_inputs``, ``panel_values`` and ``formatted`` are pure, so a test can compare the panel
 with ``capacity_sim.simulate`` directly.
 """
 
+from collections.abc import Callable
 from datetime import date, timedelta
 from statistics import median
 
 import streamlit as st
 
 from fair_turn.app import state
-from fair_turn.core import capacity_sim, constants
+from fair_turn.core import capacity_sim, constants, effect
 from fair_turn.core.capacity_sim import Closure, SimResult, Site
-from fair_turn.core.types import Job
+from fair_turn.core.types import Job, ScoredJob
 from fair_turn.data.artefacts import Artefacts, to_jobs
 
 LABELS = {
@@ -124,13 +126,38 @@ def deltas(values: dict[str, float | None], baseline: dict[str, float | None]) -
     }
 
 
-def metrics_panel(today: date, region: str, lam: float) -> None:
+def metrics_panel(
+    today: date,
+    region: str,
+    lam: float,
+    current: list[ScoredJob],
+    baseline: list[ScoredJob],
+    cap: int,
+    is_remote: Callable[[str], bool],
+    label: str,
+) -> None:
+    """The outcome sentence and the four metrics; nothing at all before today's signature
+    (decide before reveal). ``current`` and ``baseline`` are the workspace's rankings."""
+    if not state.get_signed_today():
+        return
     art = state.artefacts()
     jobs = to_jobs(art)
     values = panel_values(simulation(today, lam), jobs, art.communities, region)
-    baseline = panel_values(simulation(today, 1.0), jobs, art.communities, region)
+    baseline_values = panel_values(simulation(today, 1.0), jobs, art.communities, region)
+    st.markdown(
+        effect.sentence(
+            "after_signature",
+            current,
+            baseline,
+            cap,
+            is_remote,
+            label,
+            current_metrics=values,
+            baseline_metrics=baseline_values,
+        )
+    )
     shown = formatted(values)
-    changes = deltas(values, baseline)
+    changes = deltas(values, baseline_values)
     travel_help = "Whole NT." if region != state.ALL_REGIONS else None
     for column, key in zip(st.columns(len(LABELS)), LABELS, strict=True):
         column.metric(

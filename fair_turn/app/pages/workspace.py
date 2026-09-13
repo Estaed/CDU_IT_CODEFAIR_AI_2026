@@ -1,6 +1,18 @@
 """PRD 3.1 Workspace: today's list within capacity, the backlog and the map, the weighting
-with its effect sentence, and the selected-job pane with the coordinator's hand moves.
-Sign-off, metrics and decision states arrive in Task-30."""
+with its effect sentence, the selected-job pane with the coordinator's hand moves, and the
+sign-off (wireframes §5, §9): a frozen batch reviewed in place, the decision state in the
+header, and the metrics revealed only after the signature.
+
+The decision state is not stored; it is derived on every rerun from what session state and
+the audit log already hold: "draft" with no frozen batch, "review_open" while the frozen batch
+is unsigned, "signed" when its version is signed today and its fingerprint still matches,
+"changed_since_signature" when it no longer does. "saving" and "save_failed" live only inside
+the rerun that submits: a failed audit write shows ``st.error`` in that rerun and the status
+stays "review_open" with the batch kept, because nothing survives the rerun to say otherwise.
+``batch.next_status`` validates each transition this page takes, so an impossible one raises.
+"""
+
+from datetime import datetime
 
 import streamlit as st
 
@@ -8,11 +20,14 @@ from fair_turn.app import intake, state, theme
 from fair_turn.app.components import (
     details_pane,
     job_list,
+    metrics,
     ranking_table,
+    sign_off_form,
     weighting,
     workspace_map,
 )
-from fair_turn.core import audit, effect, scoring
+from fair_turn.core import audit, batch, effect, scoring
+from fair_turn.data import runtime
 
 DISPLAY = [
     "rank",
@@ -56,7 +71,7 @@ effect_slot.markdown(
 )
 
 header, new_report = st.columns([4, 1])
-header.markdown(f"Day {today} · Region {region} · {review_count} need review · Status: Draft")
+status_slot = header.empty()  # filled at the end, once a submit in this rerun has settled
 if new_report.button("New report"):
     state.set_intake_draft(intake.new_draft())
 st.caption(theme.PROVENANCE_LINE)
@@ -163,5 +178,119 @@ st.markdown(
     f"Backlog {len(backlog)} · {len(state.get_hand_moves())} moved by hand · "
     f"{review_count} in review"
 )
-st.button("Review and sign", disabled=True)
-st.caption("Sign-off arrives in Task-30")
+
+STALE = "The list changed since you opened this review; open it again."
+
+
+def signed_today() -> list[audit.SignOff]:
+    return [
+        r
+        for r in audit.read(state.get_audit_path())
+        if isinstance(r, audit.SignOff) and r.day == today
+    ]
+
+
+human_set = runtime.human_set_for(runtime.read(state.get_runtime_path()))
+current_fp = batch.fingerprint_of(
+    lam, [s.job.job_id for s in current], state.get_hand_moves(), human_set
+)
+signed_versions = {r.batch_version for r in signed_today()}
+
+
+def decision_status(frozen: batch.Batch | None, versions: set[int]) -> batch.Status:
+    if frozen is None:
+        return "draft"
+    if state.get_signed_today() and frozen.version in versions:
+        return "changed_since_signature" if batch.is_stale(frozen, current_fp) else "signed"
+    return "review_open"
+
+
+def open_review(status: batch.Status) -> None:
+    if status == "review_open":  # a stale review is dropped before a new one opens
+        status = batch.next_status(status, "change")
+    batch.next_status(status, "open_review")
+    preset = label if label in weighting.PRESETS else None
+    frozen = batch.freeze(
+        today,
+        1 + len(signed_today()),
+        lam,
+        preset,
+        current,
+        cap,
+        state.get_hand_moves(),
+        human_set=human_set,
+    )
+    state.set_batch(frozen)
+    st.rerun()
+
+
+def on_submit(signer: str, decision: str, reason: str) -> None:
+    frozen = state.get_batch()
+    ok, why = batch.can_submit(frozen, current_fp, signed_versions)
+    if not ok:
+        st.error(why)
+        return
+    saving = batch.next_status(status, "submit")
+    record = audit.SignOff(
+        day=today,
+        lam=frozen.lam,
+        reason=reason,
+        signer=signer,
+        signed_at=datetime.now(),
+        ranked_job_ids=frozen.ranked_job_ids,
+        batch_version=frozen.version,
+        today_job_ids=frozen.today_job_ids,
+        decision=decision,
+    )
+    try:
+        audit.append(state.get_audit_path(), record)
+    except OSError as exc:
+        batch.next_status(saving, "submit_fail")
+        st.error(f"Could not write the audit log: {exc}")
+        return
+    batch.next_status(saving, "submit_ok")
+    state.set_signed_today(True)
+    st.success(f"Signed batch v{frozen.version}. Audit reference `{record.audit_ref}`")
+
+
+status = decision_status(state.get_batch(), signed_versions)
+if st.button("Review and sign", key="workspace_review_and_sign", disabled=status == "review_open"):
+    open_review(status)
+
+frozen = state.get_batch()
+if frozen is not None:
+    if batch.is_stale(frozen, current_fp):
+        st.warning(STALE)
+        if st.button("Open again", key="workspace_open_again"):
+            open_review(status)
+    else:
+        by_id = {s.job.job_id: s for s in current}
+        frozen_rows = ranking_table.rows_for(
+            [by_id[job_id] for job_id in frozen.today_job_ids],
+            None,
+            frozen.lam,
+            today,
+            baseline=baseline,
+        )[DISPLAY]
+        sign_off_form.render(frozen, status, on_submit, review_count, is_remote, frozen_rows)
+
+metrics.metrics_panel(today, region, lam, current, baseline, cap, is_remote, label)
+
+records = signed_today()
+status = decision_status(state.get_batch(), {r.batch_version for r in records})
+if status == "review_open":
+    status_text = f"Review open (batch v{state.get_batch().version})"
+elif status == "signed":
+    latest = records[-1]
+    status_text = (
+        f"Signed v{latest.batch_version} {latest.recorded_at.astimezone():%H:%M} by {latest.signer}"
+    )
+elif status == "changed_since_signature":
+    status_text = (
+        f"Changed since signature (signed v{records[-1].batch_version} stays authoritative)"
+    )
+else:
+    status_text = "Draft"
+status_slot.markdown(
+    f"Day {today} · Region {region} · {review_count} need review · Status: {status_text}"
+)

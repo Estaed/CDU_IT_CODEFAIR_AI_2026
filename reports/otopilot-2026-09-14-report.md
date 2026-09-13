@@ -16,3 +16,16 @@ stderr, so `codex-bee.ps1` sets `$ErrorActionPreference = "Continue"` around the
 ## Checkpoints
 
 _(appended after every wave)_
+
+### Wave A (22, 23, 24, 27) — launched 03:26, Codex `terra`
+
+| Task | Effort | Attempts | Outcome | Bee elapsed | Main commit |
+|---|---|---:|---|---|---|
+| Task-23 Phase 2 shell, runtime store | medium | 1 | **green** (worktree gate GREEN, main gate GREEN) | 8.5 min | `2c8e6e2` |
+| Task-22 workspace map + list spike | high | 1 | **green, review-visual pending** (criterion 5, the click path, is a human check) | 10.2 min | `9fe1785` |
+| Task-24 audit log Phase 2 | high | 1 | **green** | 10.5 min | `f94db31` |
+| Task-27 policy index code | high | 1 | bee reported BLOCKED on two `test_cli_wrappers` timeout tests that failed only under the load of four concurrent gates; orchestrator gate rerun pending; real Ollama build pending | 15 min | — |
+
+Quota delta, wave A: Codex 5 h 33 % → 65 % (+32 for four bees, i.e. ~8 per bee, against the
+plan's 20 estimate); Claude 5 h 38 % → 61 % (orchestrator only). Wave B (25, 28) launched
+03:42 at Codex 65 % (`GO`).

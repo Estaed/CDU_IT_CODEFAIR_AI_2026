@@ -33,7 +33,7 @@ numbers).
 - [ ] Task-18: Tenant view
 - [x] Task-19: Feedback-loop simulation page
 - [ ] Task-20: README, reproduction steps and submission zip
-- [ ] Task-21: Report tables and figures export
+- [x] Task-21: Report tables and figures export
 
 ## Routing
 

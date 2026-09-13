@@ -1,5 +1,7 @@
 # Task-21: Report tables and figures export
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* exports numbers already computed (eval, simulations) into the tables the report quotes; file presence and value equality are asserted. The report and slides themselves are written by hand and are not a task.
 

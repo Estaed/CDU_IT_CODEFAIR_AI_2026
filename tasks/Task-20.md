@@ -1,5 +1,7 @@
 # Task-20: README, reproduction steps and submission zip
 
+Status: DONE
+
 > **Execution:** agent `claude` (main loop) · effort `medium` · plan mode **no**
 > *Why:* the README is judge-facing prose and the zip contents are a submission decision; the packaging script itself is mechanical and tested.
 

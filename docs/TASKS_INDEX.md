@@ -48,7 +48,7 @@ Phase 2:
 
 - [x] Task-22: Workspace interaction spike: pydeck map, selectable list, shared selection
 - [x] Task-23: Phase 2 shell: five surfaces, layer rule, runtime store, human-set fields reach the ranking
-- [ ] Task-24: Audit log, Phase 2: two clocks, batch versions, new record kinds
+- [x] Task-24: Audit log, Phase 2: two clocks, batch versions, new record kinds
 - [ ] Task-25: Core: sign-off batch freeze and the two-stage effect sentence
 - [ ] Task-26: Core: visit plan in signed order with distance suggestions
 - [ ] Task-27: Policy index: FS17 passages as a build artefact keyed by typed fields

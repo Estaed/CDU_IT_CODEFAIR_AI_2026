@@ -1,6 +1,6 @@
 # Task-24: Audit log, Phase 2: two clocks, batch versions, new record kinds
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Pure core with a fixed schema and round-trip tests; the constraint list in Part 2 is the spec.

@@ -1,15 +1,34 @@
-"""Round-trip, byte-stability and override-rate tests for the audit log."""
+"""Round-trip, two-clock and export-schema tests for the audit log."""
 
 from datetime import date, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import pytest
 
 from fair_turn.core import audit
+
+DARWIN = ZoneInfo("Australia/Darwin")
+SAMPLE_PATH = Path(__file__).resolve().parent.parent / "data" / "audit" / "sample.jsonl"
+EXPORT_KEYS = [
+    "kind",
+    "decision_day",
+    "recorded_at",
+    "audit_ref",
+    "job_id",
+    "previous_weighting",
+    "new_weighting",
+    "reason",
+    "signer",
+    "detail",
+    "hash",
+]
 
 
 def _sign_off(
     day: date = date(2026, 9, 1),
     ranked: tuple[str, ...] = ("job-1", "job-2", "job-3", "job-4"),
-):
+) -> audit.SignOff:
     return audit.SignOff(
         day=day,
         lam=1.5,
@@ -17,10 +36,11 @@ def _sign_off(
         signer="coordinator",
         signed_at=datetime(2026, 9, 1, 9, 0),
         ranked_job_ids=ranked,
+        today_job_ids=ranked[:2],
     )
 
 
-def _revision(day: date = date(2026, 9, 1)):
+def _revision(day: date = date(2026, 9, 1)) -> audit.Revision:
     return audit.Revision(
         day=day,
         old_lam=1.0,
@@ -30,7 +50,7 @@ def _revision(day: date = date(2026, 9, 1)):
     )
 
 
-def _override(day: date = date(2026, 9, 1), job_id: str = "job-3"):
+def _override(day: date = date(2026, 9, 1), job_id: str = "job-3") -> audit.Override:
     return audit.Override(
         day=day,
         job_id=job_id,
@@ -41,33 +61,102 @@ def _override(day: date = date(2026, 9, 1), job_id: str = "job-3"):
     )
 
 
-def test_round_trip_preserves_all_three_kinds(tmp_path: Path) -> None:
+def _records() -> list[audit.Record]:
+    recorded_at = datetime(2026, 9, 1, 9, 15, tzinfo=DARWIN)
+    return [
+        _sign_off(),
+        _revision(),
+        _override(),
+        audit.HumanSet(
+            date(2026, 9, 1),
+            "job-4",
+            "fault_type",
+            "plumbing_water",
+            "coordinator",
+            "checked",
+            recorded_at,
+        ),
+        audit.Intake(
+            date(2026, 9, 1),
+            "job-5",
+            "claude",
+            "sonnet",
+            "v1",
+            1.2,
+            "valid",
+            "extracted",
+            recorded_at,
+        ),
+        audit.Promotion(date(2026, 9, 1), "job-6", "job-7", "reason", recorded_at),
+        audit.PlanDecision(date(2026, 9, 1), 2, "accept", "route accepted", "reason", recorded_at),
+    ]
+
+
+def test_round_trip_preserves_all_seven_kinds(tmp_path: Path) -> None:
     path = tmp_path / "log.jsonl"
-    records = [_sign_off(), _revision(), _override()]
-    for r in records:
-        audit.append(path, r)
+    records = _records()
+    for record in records:
+        audit.append(path, record)
     assert audit.read(path) == records
 
 
-def test_read_on_missing_file_returns_empty_list(tmp_path: Path) -> None:
+def test_recorded_at_is_timezone_aware_after_naive_phase1_input() -> None:
+    for record in (_sign_off(), _revision(), _override()):
+        assert record.recorded_at.tzinfo is not None
+    assert _sign_off().signed_at.tzinfo is not None
+    assert _revision().at.tzinfo is not None
+    assert _override().at.tzinfo is not None
+
+
+def test_phase1_positional_signoff_keeps_its_signature_and_gets_audit_ref() -> None:
+    record = audit.SignOff(
+        date(2026, 9, 1), 1.0, "reason", "signer", datetime(2026, 9, 1, 9), ("job-1",)
+    )
+    assert record.audit_ref == "20260901-v1"
+
+
+def test_read_on_missing_or_empty_file_returns_empty_list(tmp_path: Path) -> None:
     assert audit.read(tmp_path / "missing.jsonl") == []
-
-
-def test_read_on_empty_file_returns_empty_list(tmp_path: Path) -> None:
+    assert audit.read_with_skipped(tmp_path / "missing.jsonl") == ([], 0)
     path = tmp_path / "empty.jsonl"
-    path.write_text("", encoding="utf-8")
+    path.write_bytes(b"")
     assert audit.read(path) == []
 
 
-def test_export_rows_has_same_count_and_flat_fields(tmp_path: Path) -> None:
-    records = [_sign_off(), _revision(), _override()]
+def test_unknown_kind_is_skipped_and_counted(tmp_path: Path) -> None:
+    path = tmp_path / "log.jsonl"
+    audit.append(path, _sign_off())
+    with path.open("ab") as f:
+        f.write(b'{"kind":"future_event","day":"2026-09-01"}\n')
+    records, skipped = audit.read_with_skipped(path)
+    assert records == [_sign_off()]
+    assert skipped == 1
+    assert audit.read(path) == records
+
+
+def test_export_rows_has_exact_string_only_schema_and_stable_hash() -> None:
+    records = _records()
     rows = audit.export_rows(records)
     assert len(rows) == len(records)
-    assert rows[0]["kind"] == "sign_off"
-    assert rows[0]["day"] == "2026-09-01"
-    assert rows[0]["ranked_job_ids"] == ["job-1", "job-2", "job-3", "job-4"]
-    assert rows[2]["kind"] == "override"
-    assert rows[2]["job_id"] == "job-3"
+    assert all(list(row) == EXPORT_KEYS for row in rows)
+    assert all(isinstance(value, str) for row in rows for value in row.values())
+    assert rows[0]["audit_ref"] == "20260901-v1"
+    assert rows[0]["detail"] == "approve; 2 in today's list of 4 ranked"
+    assert rows[2]["detail"] == "rank 3 -> 1"
+    assert rows[3]["detail"] == "fault_type = plumbing_water"
+    assert rows[4]["detail"] == "claude/sonnet prompt v1: extracted (valid), 1.2 s"
+    assert rows[5]["detail"] == "displaced job-7"
+    assert rows[6]["detail"] == "accept v2: route accepted"
+    assert [row["hash"] for row in rows] == [row["hash"] for row in audit.export_rows(records)]
+
+
+def test_hash_is_identical_across_two_reads(tmp_path: Path) -> None:
+    path = tmp_path / "log.jsonl"
+    audit.append(path, _sign_off())
+    assert (
+        audit.export_rows(audit.read(path))[0]["hash"]
+        == audit.export_rows(audit.read(path))[0]["hash"]
+    )
 
 
 def test_override_rate_fixture() -> None:
@@ -77,22 +166,44 @@ def test_override_rate_fixture() -> None:
         _override(date(2026, 9, 1), "job-4"),
         _sign_off(date(2026, 9, 2), ranked=("job-5", "job-6")),
     ]
-    assert audit.override_rate(records) == [
-        (date(2026, 9, 1), 0.5),
-        (date(2026, 9, 2), 0.0),
-    ]
+    assert audit.override_rate(records) == [(date(2026, 9, 1), 0.5), (date(2026, 9, 2), 0.0)]
 
 
 def test_override_rate_ignores_a_day_with_no_sign_off() -> None:
-    records = [_override(date(2026, 9, 3), "job-9")]
-    assert audit.override_rate(records) == []
+    assert audit.override_rate([_override(date(2026, 9, 3), "job-9")]) == []
 
 
 def test_second_append_does_not_alter_earlier_lines(tmp_path: Path) -> None:
     path = tmp_path / "log.jsonl"
     audit.append(path, _sign_off())
     first_bytes = path.read_bytes()
-
     audit.append(path, _revision())
-
     assert path.read_bytes()[: len(first_bytes)] == first_bytes
+
+
+def test_seeded_sample_has_aware_non_midnight_recorded_timestamps() -> None:
+    records = audit.read(SAMPLE_PATH)
+    assert records
+    for record in records:
+        assert record.recorded_at.tzinfo is not None
+        midnight = datetime(
+            record.day.year, record.day.month, record.day.day, tzinfo=record.recorded_at.tzinfo
+        )
+        assert record.recorded_at != midnight
+
+
+def test_decision_status_and_plan_action_are_validated() -> None:
+    with pytest.raises(ValueError):
+        audit.SignOff(
+            date(2026, 9, 1),
+            1.0,
+            "reason",
+            "signer",
+            datetime(2026, 9, 1, 9),
+            (),
+            decision="invalid",
+        )
+    with pytest.raises(ValueError):
+        audit.Intake(date(2026, 9, 1), "job", "provider", "model", "v1", 1.0, "valid", "unknown")
+    with pytest.raises(ValueError):
+        audit.PlanDecision(date(2026, 9, 1), 1, "invalid", "detail", "reason")

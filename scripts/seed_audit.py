@@ -1,16 +1,18 @@
 """Write data/audit/sample.jsonl: three signed days, one revision and two overrides, so the
 audit log has history for the demo with no runtime interaction.
 
-Run from the repo root with the project interpreter; deterministic and idempotent (fixed
-datetimes, no ``now()``), so a rerun is byte-identical:
+Run from the repo root with the project interpreter; deterministic and idempotent. Wall-clock
+timestamps are seed-derived rather than real, so a rerun is byte-identical:
     venv/Scripts/python scripts/seed_audit.py
 """
 
 import csv
 import json
+import random
 import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
@@ -22,6 +24,7 @@ from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass  
 BUILD = ROOT / "data" / "build"
 AUDIT = ROOT / "data" / "audit"
 SIGNER = "R. Coordinator"
+DARWIN = ZoneInfo("Australia/Darwin")
 
 
 def _load_json(path: Path):
@@ -84,6 +87,20 @@ def _open_jobs(jobs: list[Job], sites: dict[str, Site], closures: list[Closure],
     return [j for j in jobs if j.reported_on <= today and result.completed_on[j.job_id] is None]
 
 
+def _human_queue_job_id() -> str:
+    """A committed non-adversarial extraction that still needs coordinator review."""
+    for row in _load_json(BUILD / "extraction.json"):
+        if row.get("needs_human") and not row.get("is_adversarial"):
+            return row["job_id"]
+    raise RuntimeError("the committed extraction artefact has no human-queue job")
+
+
+def _recorded_at(day: date, rng: random.Random) -> datetime:
+    """A reproducible local wall-clock timestamp after 09:00 Darwin time."""
+    start = datetime(day.year, day.month, day.day, 9, tzinfo=DARWIN)
+    return start + timedelta(minutes=rng.randint(1, 420))
+
+
 def main() -> int:
     # Step 1: load the community/job/closure rows the capacity simulation needs.
     communities = _communities()
@@ -100,6 +117,7 @@ def main() -> int:
         "logistics weighted higher after a fuel-price rise",
         "logistics weighted lower to clear the remote backlog",
     )
+    rng = random.Random(constants.SEED)
 
     path = AUDIT / "sample.jsonl"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -109,7 +127,9 @@ def main() -> int:
     # Step 3: rank the open jobs for each day and append a signed-off entry per day.
     for day, lam, reason in zip(days, lams, reasons, strict=True):
         ranked = scoring.rank(_open_jobs(jobs, sites, closures, day), day, lam)
-        ranked_ids = tuple(s.job.job_id for s in ranked[:10])
+        ranked_ids = tuple(s.job.job_id for s in ranked)
+        today_ids = ranked_ids[:10]
+        recorded_at = _recorded_at(day, rng)
         audit.append(
             path,
             audit.SignOff(
@@ -117,14 +137,17 @@ def main() -> int:
                 lam=lam,
                 reason=reason,
                 signer=SIGNER,
-                signed_at=datetime.combine(day, datetime.min.time()),
+                signed_at=recorded_at,
                 ranked_job_ids=ranked_ids,
+                recorded_at=recorded_at,
+                today_job_ids=today_ids,
             ),
         )
 
     # Step 4: on the middle day, append one lambda revision and two rank overrides, so the
     # log shows both kinds of after-the-fact change an auditor would look for.
     middle_day = days[1]
+    revision_at = _recorded_at(middle_day, rng)
     audit.append(
         path,
         audit.Revision(
@@ -132,7 +155,8 @@ def main() -> int:
             old_lam=lams[0],
             new_lam=lams[1],
             reason="logistics weighted higher after a fuel-price rise",
-            at=datetime.combine(middle_day, datetime.min.time()) + timedelta(minutes=5),
+            at=revision_at,
+            recorded_at=revision_at,
         ),
     )
 
@@ -141,7 +165,8 @@ def main() -> int:
         (ranked_middle[2], 1, "crew already on site"),
         (ranked_middle[4], 2, "tenant escalated to the coordinator directly"),
     )
-    for i, (scored, to_rank, reason) in enumerate(overrides):
+    for scored, to_rank, reason in overrides:
+        recorded_at = _recorded_at(middle_day, rng)
         audit.append(
             path,
             audit.Override(
@@ -150,9 +175,61 @@ def main() -> int:
                 from_rank=scored.rank,
                 to_rank=to_rank,
                 reason=reason,
-                at=datetime.combine(middle_day, datetime.min.time()) + timedelta(minutes=10 + i),
+                at=recorded_at,
+                recorded_at=recorded_at,
             ),
         )
+
+    # Step 5: add one event of each Phase 2 kind. The first event names a job still in the
+    # human queue, so the audit sample also shows the required human intervention trail.
+    human_job_id = _human_queue_job_id()
+    audit.append(
+        path,
+        audit.HumanSet(
+            day=middle_day,
+            job_id=human_job_id,
+            field="fault_type",
+            value="plumbing_water",
+            actor=SIGNER,
+            reason="confirmed from the tenant report",
+            recorded_at=_recorded_at(middle_day, rng),
+        ),
+    )
+    audit.append(
+        path,
+        audit.Intake(
+            day=days[2],
+            job_id=human_job_id,
+            provider="claude",
+            model="sonnet",
+            prompt_version="v1",
+            latency_s=2.4,
+            validation="missing fault type evidence",
+            status="needs_review",
+            recorded_at=_recorded_at(days[2], rng),
+        ),
+    )
+    audit.append(
+        path,
+        audit.Promotion(
+            day=days[2],
+            job_id=ranked_middle[0].job.job_id,
+            displaced_job_id=ranked_middle[-1].job.job_id,
+            reason="coordinator confirmed immediate access",
+            recorded_at=_recorded_at(days[2], rng),
+        ),
+    )
+    audit.append(
+        path,
+        audit.PlanDecision(
+            day=days[2],
+            batch_version=1,
+            action="accept",
+            detail="signed order retained for crew allocation",
+            reason="coordinator accepted the proposed visit plan",
+            recorded_at=_recorded_at(days[2], rng),
+        ),
+    )
 
     print(f"wrote {path}", file=sys.stderr)
     return 0

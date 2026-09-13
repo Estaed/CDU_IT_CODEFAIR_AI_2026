@@ -22,14 +22,14 @@ if not records:
 else:
     rows = audit.export_rows(records)
     kinds = sorted({r["kind"] for r in rows})
-    days = sorted({r["day"] for r in rows})
+    days = sorted({r["decision_day"] for r in rows})
     kind_filter = st.multiselect("Kind", kinds, default=kinds)
     day_filter = st.selectbox("Day", ["All", *days])
 
     filtered = [
         r
         for r in rows
-        if r["kind"] in kind_filter and (day_filter == "All" or r["day"] == day_filter)
+        if r["kind"] in kind_filter and (day_filter == "All" or r["decision_day"] == day_filter)
     ]
     frame = pd.DataFrame(filtered)
     st.dataframe(frame, width="stretch")

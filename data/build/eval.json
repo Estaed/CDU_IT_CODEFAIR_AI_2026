@@ -1,0 +1,542 @@
+{
+ "n_holdout": 150,
+ "extractor": {
+  "fault_type": {
+   "n": 150,
+   "accuracy": 0.9133,
+   "accuracy_ci": [
+    0.8574,
+    0.9487
+   ],
+   "macro_precision": 0.9554,
+   "macro_recall": 0.9042,
+   "macro_f1": 0.9187,
+   "per_class": {
+    "electrical": {
+     "precision": 0.9444,
+     "precision_ci": [
+      0.7424,
+      0.9901
+     ],
+     "recall": 0.9444,
+     "recall_ci": [
+      0.7424,
+      0.9901
+     ],
+     "f1": 0.9444,
+     "support": 18
+    },
+    "plumbing_water": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8794,
+      1.0
+     ],
+     "recall": 0.9032,
+     "recall_ci": [
+      0.751,
+      0.9665
+     ],
+     "f1": 0.9492,
+     "support": 31
+    },
+    "sewer_drainage": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.7412,
+      1.0
+     ],
+     "recall": 0.7857,
+     "recall_ci": [
+      0.5241,
+      0.9243
+     ],
+     "f1": 0.88,
+     "support": 14
+    },
+    "cooling": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8157,
+      1.0
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.8157,
+      1.0
+     ],
+     "f1": 1.0,
+     "support": 17
+    },
+    "hot_water": {
+     "precision": 0.8667,
+     "precision_ci": [
+      0.6212,
+      0.9626
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.7719,
+      1.0
+     ],
+     "f1": 0.9286,
+     "support": 13
+    },
+    "roof_structure": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.7575,
+      1.0
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.7575,
+      1.0
+     ],
+     "f1": 1.0,
+     "support": 12
+    },
+    "doors_locks_security": {
+     "precision": 0.8333,
+     "precision_ci": [
+      0.6078,
+      0.9416
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.7961,
+      1.0
+     ],
+     "f1": 0.9091,
+     "support": 15
+    },
+    "stove_cooking": {
+     "precision": 0.9091,
+     "precision_ci": [
+      0.6226,
+      0.9838
+     ],
+     "recall": 0.9091,
+     "recall_ci": [
+      0.6226,
+      0.9838
+     ],
+     "f1": 0.9091,
+     "support": 11
+    },
+    "pests": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.7009,
+      1.0
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.7009,
+      1.0
+     ],
+     "f1": 1.0,
+     "support": 9
+    },
+    "other": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.5655,
+      1.0
+     ],
+     "recall": 0.5,
+     "recall_ci": [
+      0.2366,
+      0.7634
+     ],
+     "f1": 0.6667,
+     "support": 10
+    }
+   }
+  },
+  "safety_class": {
+   "n": 150,
+   "accuracy": 0.6067,
+   "accuracy_ci": [
+    0.5268,
+    0.6812
+   ],
+   "macro_precision": 0.6021,
+   "macro_recall": 0.672,
+   "macro_f1": 0.5641,
+   "per_class": {
+    "immediate": {
+     "precision": 0.2708,
+     "precision_ci": [
+      0.1657,
+      0.41
+     ],
+     "recall": 0.9286,
+     "recall_ci": [
+      0.6853,
+      0.9873
+     ],
+     "f1": 0.4194,
+     "support": 14
+    },
+    "urgent": {
+     "precision": 0.5526,
+     "precision_ci": [
+      0.3971,
+      0.6985
+     ],
+     "recall": 0.375,
+     "recall_ci": [
+      0.2601,
+      0.5059
+     ],
+     "f1": 0.4468,
+     "support": 56
+    },
+    "routine": {
+     "precision": 0.9828,
+     "precision_ci": [
+      0.9086,
+      0.9969
+     ],
+     "recall": 0.7125,
+     "recall_ci": [
+      0.6054,
+      0.8001
+     ],
+     "f1": 0.8261,
+     "support": 80
+    }
+   }
+  },
+  "health_risk": {
+   "n": 150,
+   "exact_set_match": 0.8733,
+   "exact_set_match_ci": [
+    0.8106,
+    0.9174
+   ],
+   "macro_precision": 0.9956,
+   "macro_recall": 0.8422,
+   "macro_f1": 0.9093,
+   "per_class": {
+    "infant_or_young_child": {
+     "precision": 0.9737,
+     "precision_ci": [
+      0.8651,
+      0.9953
+     ],
+     "recall": 0.9487,
+     "recall_ci": [
+      0.8311,
+      0.9858
+     ],
+     "f1": 0.961,
+     "support": 39
+    },
+    "elderly": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8794,
+      1.0
+     ],
+     "recall": 0.9032,
+     "recall_ci": [
+      0.751,
+      0.9665
+     ],
+     "f1": 0.9492,
+     "support": 31
+    },
+    "pregnancy_or_chronic_condition": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8928,
+      1.0
+     ],
+     "recall": 0.8,
+     "recall_ci": [
+      0.6524,
+      0.895
+     ],
+     "f1": 0.8889,
+     "support": 40
+    },
+    "overcrowding": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8513,
+      1.0
+     ],
+     "recall": 0.9167,
+     "recall_ci": [
+      0.7415,
+      0.9768
+     ],
+     "f1": 0.9565,
+     "support": 24
+    },
+    "extreme_heat_exposure": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8241,
+      1.0
+     ],
+     "recall": 0.8182,
+     "recall_ci": [
+      0.6148,
+      0.9269
+     ],
+     "f1": 0.9,
+     "support": 22
+    },
+    "no_water_or_sanitation": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.7575,
+      1.0
+     ],
+     "recall": 0.6667,
+     "recall_ci": [
+      0.4375,
+      0.8372
+     ],
+     "f1": 0.8,
+     "support": 18
+    }
+   }
+  }
+ },
+ "baseline": {
+  "fault_type": {
+   "n": 150,
+   "accuracy": 0.9,
+   "accuracy_ci": [
+    0.8416,
+    0.9385
+   ],
+   "macro_precision": 0.9262,
+   "macro_recall": 0.8762,
+   "macro_f1": 0.8793,
+   "per_class": {
+    "electrical": {
+     "precision": 0.7826,
+     "precision_ci": [
+      0.581,
+      0.9034
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.8241,
+      1.0
+     ],
+     "f1": 0.878,
+     "support": 18
+    },
+    "plumbing_water": {
+     "precision": 0.8824,
+     "precision_ci": [
+      0.7338,
+      0.9533
+     ],
+     "recall": 0.9677,
+     "recall_ci": [
+      0.8381,
+      0.9943
+     ],
+     "f1": 0.9231,
+     "support": 31
+    },
+    "sewer_drainage": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.7575,
+      1.0
+     ],
+     "recall": 0.8571,
+     "recall_ci": [
+      0.6006,
+      0.9599
+     ],
+     "f1": 0.9231,
+     "support": 14
+    },
+    "cooling": {
+     "precision": 0.9375,
+     "precision_ci": [
+      0.7167,
+      0.9889
+     ],
+     "recall": 0.8824,
+     "recall_ci": [
+      0.6566,
+      0.9671
+     ],
+     "f1": 0.9091,
+     "support": 17
+    },
+    "hot_water": {
+     "precision": 0.9167,
+     "precision_ci": [
+      0.6461,
+      0.9851
+     ],
+     "recall": 0.8462,
+     "recall_ci": [
+      0.5777,
+      0.9567
+     ],
+     "f1": 0.88,
+     "support": 13
+    },
+    "roof_structure": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.7575,
+      1.0
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.7575,
+      1.0
+     ],
+     "f1": 1.0,
+     "support": 12
+    },
+    "doors_locks_security": {
+     "precision": 0.8333,
+     "precision_ci": [
+      0.6078,
+      0.9416
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.7961,
+      1.0
+     ],
+     "f1": 0.9091,
+     "support": 15
+    },
+    "stove_cooking": {
+     "precision": 0.9091,
+     "precision_ci": [
+      0.6226,
+      0.9838
+     ],
+     "recall": 0.9091,
+     "recall_ci": [
+      0.6226,
+      0.9838
+     ],
+     "f1": 0.9091,
+     "support": 11
+    },
+    "pests": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.7009,
+      1.0
+     ],
+     "recall": 1.0,
+     "recall_ci": [
+      0.7009,
+      1.0
+     ],
+     "f1": 1.0,
+     "support": 9
+    },
+    "other": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.4385,
+      1.0
+     ],
+     "recall": 0.3,
+     "recall_ci": [
+      0.1078,
+      0.6032
+     ],
+     "f1": 0.4615,
+     "support": 10
+    }
+   }
+  },
+  "safety_class": {
+   "n": 150,
+   "accuracy": 0.8467,
+   "accuracy_ci": [
+    0.7804,
+    0.8956
+   ],
+   "macro_precision": 0.5624,
+   "macro_recall": 0.6238,
+   "macro_f1": 0.5881,
+   "per_class": {
+    "immediate": {
+     "precision": 0.0,
+     "precision_ci": [
+      0.0,
+      1.0
+     ],
+     "recall": 0.0,
+     "recall_ci": [
+      0.0,
+      0.2153
+     ],
+     "f1": 0.0,
+     "support": 14
+    },
+    "urgent": {
+     "precision": 0.726,
+     "precision_ci": [
+      0.6144,
+      0.8151
+     ],
+     "recall": 0.9464,
+     "recall_ci": [
+      0.8539,
+      0.9816
+     ],
+     "f1": 0.8217,
+     "support": 56
+    },
+    "routine": {
+     "precision": 0.961,
+     "precision_ci": [
+      0.8916,
+      0.9867
+     ],
+     "recall": 0.925,
+     "recall_ci": [
+      0.8459,
+      0.9652
+     ],
+     "f1": 0.9427,
+     "support": 80
+    }
+   }
+  }
+ },
+ "substring_rate": {
+  "rate": 1.0,
+  "rate_ci": [
+   0.9974,
+   1.0
+  ],
+  "n": 1472
+ },
+ "span_scores": null,
+ "f1_target": 0.85,
+ "target_met": {
+  "fault_type": true,
+  "safety_class": false
+ },
+ "notes": [
+  "location_mentioned and crew_or_access_note have no gold label in labels.json, so they get no precision, recall or F1.",
+  "6 of 150 holdout rows went to the human queue; their fields count as empty predictions (false negatives).",
+  "Macro precision, recall and F1 are means over classes, not proportions, so they carry no Wilson interval; each per-class precision and recall, accuracy, exact-set match and the substring rate do.",
+  "The baseline is scored for fault_type and safety_class only.",
+  "The substring rate is over every extraction row, adversarial items included.",
+  "span_scores is null: no gold spans exist (labels were drawn first and the generator returned text only), and none were invented."
+ ]
+}

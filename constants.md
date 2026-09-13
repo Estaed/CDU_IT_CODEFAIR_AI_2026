@@ -27,6 +27,7 @@ is two logged-in CLIs).
 | `REPORT_TARGET`, `REMOTE_REPORT_SHARE` (in `fair_turn/data/synth.py`) | 1500, 0.6 | Expected report count and remote share of the synthetic window | Provisional, PRD §6.2; NT work-order volumes are unpublished |
 | `REMOTE_REPORT_RATE_RATIO` (`synth.py`) | 0.8 | A remote fault becomes a report with this probability, town 1.0: mechanism 3, static part | Provisional, PRD §6.2 |
 | `HOLDOUT_COUNT` (`synth.py`) | 150 | Labels flagged for the evaluation set | PRD §6.4 |
+| `F1_TARGET` (`eval/metrics.py`) | 0.85 | Macro-F1 pass mark for fault_type and safety_class; provisional, reported either way | PRD §7 |
 | `POPULATION_BAND_MIDPOINTS` (`synth.py`) | 50 / 175 / 375 / 750 / 1500; not recorded 100 | Weight of a remote community in the fault draw | Provisional, PRD §6.2 |
 | `TOWN_REPORT_WEIGHTS` (`synth.py`) | Darwin .55, Alice Springs .20, Katherine .12, Nhulunbuy .07, Tennant Creek .06 | Split of town reports across the five base towns (no population band in the table) | Provisional, PRD §6.2 |
 | `FAULT_MIX`, `HEAT_RAMP` (`synth.py`) | plumbing .20, electrical .14, doors .12, cooling .10, sewer .10, roof .08, hot water .07, stove .07, pests .06, other .06; cooling ×1.0/1.3/1.6 and hot water ×1.0/1.1/1.2 Oct/Nov/Dec | Fault-type mix and its within-window heat ramp | Provisional, PRD §6.2; categories from FS17 and reports/2026-09-12-research-housing.md item 4 |

@@ -24,7 +24,7 @@ numbers).
 - [x] Task-09: CLI wrappers for the two subscription models
 - [x] Task-10: Generate the synthetic report texts
 - [x] Task-11: Extract typed fields from every report, plus the adversarial set
-- [ ] Task-12: Evaluation: per-field metrics, baseline classifier, eval script
+- [x] Task-12: Evaluation: per-field metrics, baseline classifier, eval script
 - [x] Task-13: App shell, artefact loader, session state, offline smoke test
 - [ ] Task-14: Triage board: ranked list, equity slider, two rankings, human queue
 - [ ] Task-15: Board map and metrics panel with decide-before-reveal

@@ -1,5 +1,7 @@
 # Task-17: Sign-off page and audit log page
 
+Status: DONE
+
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* two forms over `core.audit` with fixed records (PRD §3.3, §3.6); behaviour is asserted through the log file.
 

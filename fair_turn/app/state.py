@@ -1,12 +1,12 @@
 """Typed accessors for session state. No page reads ``st.session_state`` directly: the keys
 and their defaults are defined here once."""
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import streamlit as st
 
-from fair_turn.core import constants
+from fair_turn.core import audit, constants
 from fair_turn.data.artefacts import Artefacts, load_all
 
 ALL_REGIONS = "All"
@@ -47,7 +47,20 @@ def get_lam() -> float:
 
 
 def set_lam(value: float) -> None:
-    st.session_state["lam"] = float(value)
+    """A board lambda change after today's sign-off is a revision, not a silent edit."""
+    value = float(value)
+    if get_signed_today() and value != get_lam():
+        audit.append(
+            get_audit_path(),
+            audit.Revision(
+                day=get_today(),
+                old_lam=get_lam(),
+                new_lam=value,
+                reason="lambda changed on the board after sign-off",
+                at=datetime.now(),
+            ),
+        )
+    st.session_state["lam"] = value
 
 
 def get_signed_today() -> bool:

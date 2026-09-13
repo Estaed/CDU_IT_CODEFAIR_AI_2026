@@ -100,7 +100,9 @@ venv/Scripts/streamlit run fair_turn/app/main.py
 ```
 
 `claude` requires a logged-in `claude` CLI on the machine (Sonnet, the same wrapper the build
-uses); `ollama` is wired but disabled until Task-36's benchmark accepts it. A submitted report,
+uses); `ollama` is selectable with `FAIR_TURN_PROVIDER=ollama` and runs `qwen3:8b` locally
+(`ollama pull qwen3:8b` first). The default stays `claude` until Task-36's benchmark
+(`scripts/benchmark_provider.py`) says otherwise. A submitted report,
 its extraction, and any coordinator-set field are appended to `data/runtime/runtime.jsonl`
 (gitignored, never committed) and merged into the ranking alongside the committed artefacts.
 

@@ -54,8 +54,7 @@ def test_configured_provider_states(monkeypatch) -> None:
     monkeypatch.setenv("FAIR_TURN_PROVIDER", "claude")
     assert intake_llm.configured() == "claude"
     monkeypatch.setenv("FAIR_TURN_PROVIDER", "ollama")
-    with pytest.raises(intake_llm.NotAcceptedYet, match="Task-36"):
-        intake_llm.configured()
+    assert intake_llm.configured() == "ollama"
     monkeypatch.setenv("FAIR_TURN_PROVIDER", "junk")
     with pytest.raises(ValueError, match="junk"):
         intake_llm.configured()

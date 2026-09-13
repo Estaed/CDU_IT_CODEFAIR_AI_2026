@@ -10,14 +10,13 @@ from pydantic import ValidationError
 
 from fair_turn.core import verify_spans
 from fair_turn.core.verify_spans import VerifiedExtraction
-from fair_turn.llm import claude_cli, prompts, schema
+from fair_turn.llm import claude_cli, ollama, prompts, schema
 
 Provider = Literal["claude", "ollama"]
-MODEL_FOR = {"claude": "sonnet"}
-
-
-class NotAcceptedYet(RuntimeError):  # noqa: N818
-    """Raised for a provider that has not passed the required benchmark."""
+# qwen3:8b is the benchmarked local extractor (Task-36); gemma3:4b is the documented smaller
+# fallback, selected with FAIR_TURN_OLLAMA_MODEL=gemma3:4b.
+OLLAMA_EXTRACT_MODEL = os.environ.get("FAIR_TURN_OLLAMA_MODEL", "qwen3:8b")
+MODEL_FOR = {"claude": "sonnet", "ollama": OLLAMA_EXTRACT_MODEL}
 
 
 @dataclass(frozen=True)
@@ -41,7 +40,7 @@ def configured() -> Provider | None:
     if provider == "claude":
         return "claude"
     if provider == "ollama":
-        raise NotAcceptedYet("Ollama extraction is benchmarked in Task-36")
+        return "ollama"
     raise ValueError(f"unknown FAIR_TURN_PROVIDER value: {provider}")
 
 
@@ -55,7 +54,12 @@ def extract(
     model = MODEL_FOR.get(provider, provider)
     prompt = prompts.intake_prompt(text)
 
-    if call is None:
+    if call is None and provider == "ollama":
+
+        def call(prompt: str, json_schema: dict) -> dict:
+            return ollama.chat(prompt, json_schema, model=model, timeout=timeout)
+
+    elif call is None:
 
         def call(prompt: str, json_schema: dict) -> dict:
             return claude_cli.generate(prompt, json_schema, model=model, timeout=timeout)
@@ -63,7 +67,13 @@ def extract(
     started = time.monotonic()
     try:
         raw = call(prompt, schema.json_schema())
-    except (claude_cli.CliError, TimeoutError, OSError) as exc:
+    except (
+        claude_cli.CliError,
+        ollama.OllamaUnavailable,
+        ollama.OllamaInvalidOutput,
+        TimeoutError,
+        OSError,
+    ) as exc:
         return IntakeResult(
             extraction=None,
             verified=None,

@@ -12,6 +12,7 @@ decision's clothes.
 
 | Lane / surface | Model | Effort | Why chosen | Measured on | Evidence |
 |---|---|---|---|---|---|
+| Intake extractor benchmark (Task-36) | ollama / qwen3:8b against the build extractor (claude / sonnet) | temperature 0 | pending: F1 per field (fault_type, safety_class, health_risk), latency p50 / p90 / max and the decision (`default` = ollama only if not below the build extractor on both required fields and 20/20 adversarial leave the rank unchanged) come from the real run | 2026-09-14: code and fakes only, real run pending | pending: run `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b` after `ollama pull qwen3:8b`; writes `data/build/eval_ollama.json` |
 <!-- | Codex gate lane | Codex | high | Held a 40-file spec over a 3h unattended run without drifting; the Opus sub-agent tried on the same task lost the thread after ~90min. | 2026-01-01 | otopilot report daily/2026-01-01.md, run log reports/2026-01-01-gate-lane.md | -->
 
 ## Notes

@@ -154,16 +154,12 @@ def render(container) -> None:
         if CALL_OVERRIDE is not None:
             provider, model = "fake", "fake"
         else:
-            try:
-                provider = intake_llm.configured()
-                model = intake_llm.MODEL_FOR.get(provider, "") if provider else ""
-                if provider is None:
-                    provider_reason = (
-                        "Live intake is off: set FAIR_TURN_PROVIDER=claude "
-                        "and restart to enable it."
-                    )
-            except intake_llm.NotAcceptedYet as exc:
-                provider_reason = str(exc)
+            provider = intake_llm.configured()
+            model = intake_llm.MODEL_FOR.get(provider, "") if provider else ""
+            if provider is None:
+                provider_reason = (
+                    "Live intake is off: set FAIR_TURN_PROVIDER=claude and restart to enable it."
+                )
 
         if provider_reason:
             st.info(provider_reason)

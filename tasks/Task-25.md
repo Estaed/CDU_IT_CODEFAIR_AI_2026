@@ -1,6 +1,6 @@
 # Task-25: Core: sign-off batch freeze and the two-stage effect sentence
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Two pure modules with exhaustive unit tests; PRD §3.1 and wireframes §3/§5 fix every rule.

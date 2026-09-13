@@ -6,8 +6,8 @@ Status: TODO
 > *Why:* Every element is specified in PRD §3.1 and wireframes §3; the components and core functions exist by now. Visual fidelity is advisory (`review-visual` after DONE).
 
 **Lane**
-- OWNS: `fair_turn/app/pages/workspace.py`, `fair_turn/app/components/details_pane.py`, `fair_turn/app/components/weighting.py`, `fair_turn/app/components/ranking_table.py` (extend `rows_for` with delta, score and window-fraction columns), `tests/test_page_workspace.py`
-- MUST NOT TOUCH: `fair_turn/app/components/metrics.py` (Task-30), `fair_turn/app/intake.py` (Task-28), `fair_turn/app/state.py` (Task-23), `fair_turn/core/`
+- OWNS: `fair_turn/app/pages/workspace.py`, `fair_turn/app/components/details_pane.py`, `fair_turn/app/components/weighting.py`, `fair_turn/app/components/ranking_table.py` (extend `rows_for` with delta, score and window-fraction columns), `tests/test_page_workspace.py`, `fair_turn/app/state.py` (append-only: `get_hand_moves`, `set_hand_moves`, `clear_hand_moves`; added by the orchestrator 2026-09-14 because hand moves before a signature need a session home and Task-23 defined none)
+- MUST NOT TOUCH: `fair_turn/app/components/metrics.py` (Task-30), `fair_turn/app/intake.py` (Task-28), `fair_turn/app/state.py` beyond the three appended accessors (Task-23), `fair_turn/core/`
 - GATE: `venv/Scripts/python scripts/gate.py` (repo root)
 - DEPENDS ON: Task-22, Task-23, Task-25, Task-27, Task-28
 

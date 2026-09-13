@@ -6,7 +6,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from fair_turn.core import audit, constants
+from fair_turn.core import audit, batch, constants
 from fair_turn.data import runtime
 from fair_turn.data.artefacts import Artefacts, load_all
 
@@ -155,3 +155,15 @@ def get_review_cursor() -> int:
 
 def set_review_cursor(value: int) -> None:
     st.session_state["review_cursor"] = int(value)
+
+
+def get_hand_moves() -> tuple[batch.HandMove, ...]:
+    return _get("hand_moves", ())
+
+
+def set_hand_moves(moves) -> None:
+    st.session_state["hand_moves"] = tuple(moves)
+
+
+def clear_hand_moves() -> None:
+    st.session_state["hand_moves"] = ()

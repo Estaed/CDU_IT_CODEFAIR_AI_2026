@@ -4,30 +4,53 @@
 with ``scoring.rank`` directly.
 """
 
+from dataclasses import replace
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 from fair_turn.app import state
-from fair_turn.core import capacity_sim, constants, explain, scoring
+from fair_turn.core import audit, capacity_sim, constants, explain, scoring
+from fair_turn.core.batch import HandMove
 from fair_turn.core.capacity_sim import Closure, Site
-from fair_turn.core.types import Job, ScoredJob
+from fair_turn.core.types import Job, SafetyClass, ScoredJob
+from fair_turn.data import runtime
 from fair_turn.data.artefacts import to_jobs
 
 UNCHANGED = "·"
+REVIEW_REQUESTED = "review_requested"
 
 
-@st.cache_data
+def _runtime_stamp(path: Path) -> tuple[int, int]:
+    """``(size, mtime_ns)`` of the runtime file, ``(0, 0)`` when it does not exist."""
+    try:
+        stat = path.stat()
+    except FileNotFoundError:
+        return (0, 0)
+    return (stat.st_size, stat.st_mtime_ns)
+
+
 def open_jobs(today: date) -> list[Job]:
-    """Jobs reported by ``today`` that are still open after efficiency-first dispatch.
+    """Jobs reported by ``today`` that are still open after efficiency-first dispatch,
+    with coordinator-set fields and extracted intake reports from the runtime file applied.
 
     Provisional: which jobs are open comes from the toy capacity model run at lam = 1.0
     from the window start to ``today``, standing in for what the contractor's system does
     today (PRD 4). A pilot would read open jobs from intake instead.
     """
+    path = state.get_runtime_path()
+    return _open_jobs_cached(today, _runtime_stamp(path), path)
+
+
+@st.cache_data
+def _open_jobs_cached(today: date, runtime_stamp: tuple[int, int], _runtime_path: Path):
+    """Cached on ``(today, runtime_stamp)``; the path is not hashed (leading underscore)."""
     art = state.artefacts()
-    jobs = to_jobs(art)
+    records = runtime.read(_runtime_path)
+    intake = [r for r in records if isinstance(r, runtime.IntakeReport)]
+    jobs = to_jobs(art, human_set=runtime.human_set_for(records), intake=intake)
     sites = {
         cid: Site(row["region"], float(row["km_to_base"])) for cid, row in art.communities.items()
     }
@@ -55,6 +78,42 @@ def open_jobs(today: date) -> list[Job]:
     return [j for j in jobs if j.reported_on <= today and result.completed_on[j.job_id] is None]
 
 
+def capacity(region: str) -> int:
+    """Today's job-count capacity: crews for the region times jobs per crew per day; the
+    sum over every region for ``state.ALL_REGIONS`` (PRD 6.3)."""
+    if region == state.ALL_REGIONS:
+        return sum(capacity(r) for r in constants.REGIONS)
+    remote = region in constants.REMOTE_REGIONS
+    crews = constants.CREWS_PER_REMOTE_REGION if remote else constants.CREWS_TOWN
+    return crews * constants.JOBS_PER_CREW_DAY
+
+
+def apply_hand_moves(ranked: list[ScoredJob], moves) -> list[ScoredJob]:
+    """Apply each move in order (take the job out, insert it at ``to_rank``), then renumber.
+    A move naming a job that is not in ``ranked`` is ignored."""
+    order = list(ranked)
+    for move in moves:
+        position = next((i for i, s in enumerate(order) if s.job.job_id == move.job_id), None)
+        if position is None:
+            continue
+        item = order.pop(position)
+        order.insert(min(max(move.to_rank - 1, 0), len(order)), item)
+    return [replace(s, rank=i) for i, s in enumerate(order, start=1)]
+
+
+def without_moves_for(moves, job_id: str) -> tuple[HandMove, ...]:
+    return tuple(m for m in moves if m.job_id != job_id)
+
+
+def review_requested_ids(records: list[audit.Record], today: date) -> set[str]:
+    """Jobs a coordinator sent to the review queue on ``today``."""
+    return {
+        r.job_id
+        for r in records
+        if isinstance(r, audit.HumanSet) and r.field == REVIEW_REQUESTED and r.day == today
+    }
+
+
 def _label(value: str) -> str:
     return value.replace("_", " ")
 
@@ -68,13 +127,28 @@ def rank_change(places: int) -> str:
     return UNCHANGED
 
 
+def window_text(job: Job, today: date) -> str:
+    """Days used of the NT window, ``3 of 5 d``; the 4 h make-safe window in hours."""
+    used = (today - job.reported_on).days
+    if job.safety_class is SafetyClass.IMMEDIATE:
+        return f"{used} d of {constants.MAKE_SAFE_HOURS} h"
+    return f"{used} of {round(scoring.window_days(job))} d"
+
+
 def rows_for(
-    scored: list[ScoredJob], other: list[ScoredJob] | None, lam: float, today: date
+    scored: list[ScoredJob],
+    other: list[ScoredJob] | None,
+    lam: float,
+    today: date,
+    *,
+    baseline: list[ScoredJob] | None = None,
 ) -> pd.DataFrame:
     """One row per ranked job in ``scored`` (ranked at ``lam``). When ``other`` (the ranking
-    at the current lam) is given, a rank-change column compares the two."""
+    at the current lam) is given, a rank-change column compares the two. When ``scored`` is
+    itself the current ranking, pass the efficiency-first ranking as ``baseline`` instead."""
     factor_names = list(scored[0].factors) if scored else list(scoring.FACTOR_NAMES)
     other_rank = {s.job.job_id: s.rank for s in other} if other is not None else {}
+    baseline_rank = {s.job.job_id: s.rank for s in baseline} if baseline is not None else {}
     records = []
     for s in scored:
         job = s.job
@@ -85,15 +159,19 @@ def rows_for(
             "community id": job.community_id,
             "fault type": _label(job.fault_type.value),
             "safety class": job.safety_class.value,
+            "window": window_text(job, today),
             "health risk": ", ".join(sorted(_label(f.value) for f in job.health_risk)),
             "days open": days_open,
             "days left in window": round(scoring.window_days(job) - days_open, 1),
             "score": round(s.score, 1),
+            "score_bar": float(s.score),
             **{name: s.factors[name] for name in factor_names},
             "why": explain.why_sentence(s, lam),
         }
         if other is not None:
             record["rank change"] = rank_change(s.rank - other_rank[job.job_id])
+        elif baseline is not None:
+            record["rank change"] = rank_change(baseline_rank.get(job.job_id, s.rank) - s.rank)
         records.append(record)
     columns = [
         "rank",
@@ -101,21 +179,24 @@ def rows_for(
         "community id",
         "fault type",
         "safety class",
+        "window",
         "health risk",
         "days open",
         "days left in window",
         "score",
+        "score_bar",
         *factor_names,
         "why",
     ]
-    if other is not None:
+    if other is not None or baseline is not None:
         columns.insert(1, "rank change")
     return pd.DataFrame(records, columns=columns)
 
 
 def column_config(frame: pd.DataFrame) -> dict:
-    """A progress bar per factor column, scaled to the largest value in the frame."""
-    factors = [c for c in frame.columns if c in scoring.FACTOR_NAMES]
+    """A progress bar per factor column and for the total score, each scaled to the largest
+    value in the frame."""
+    bars = [c for c in frame.columns if c in scoring.FACTOR_NAMES or c == "score_bar"]
     return {
         name: st.column_config.ProgressColumn(
             _label(name),
@@ -123,5 +204,5 @@ def column_config(frame: pd.DataFrame) -> dict:
             max_value=max(float(frame[name].max()), 1.0) if len(frame) else 1.0,
             format="%.2f",
         )
-        for name in factors
+        for name in bars
     }

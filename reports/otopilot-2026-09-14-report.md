@@ -29,3 +29,28 @@ _(appended after every wave)_
 Quota delta, wave A: Codex 5 h 33 % → 65 % (+32 for four bees, i.e. ~8 per bee, against the
 plan's 20 estimate); Claude 5 h 38 % → 61 % (orchestrator only). Wave B (25, 28) launched
 03:42 at Codex 65 % (`GO`).
+
+**Task-27 real build (03:44–03:48, main loop):** the NT site returns 403 to plain `urllib`
+(same as BoM on 2026-09-12), so the PDF was fetched once with `curl` and a browser user
+agent and committed; `build_policy_index.py` then ran against Ollama `bge-m3`: 66 keys, 32
+non-empty, 53 passages, cosine scores 0.55–0.59 against the provisional 0.55 threshold
+(bge-m3 scores cluster tightly; the threshold deserves a look before the report quotes
+retrieval quality). `verify` holds against the PDF text (`tests/test_policy.py`, 5 passed,
+none skipped). Commit `3f98952`. Task-27 lane itself: orchestrator gate GREEN, `bdc4727`.
+
+### Wave B (25, 28) — launched 03:42, Codex `terra`/high
+
+| Task | Attempts | Outcome | Bee elapsed | Main commit |
+|---|---:|---|---|---|
+| Task-25 batch freeze, effect sentence | 1 | **green** | 8.3 min | `8924e5a` |
+| Task-28 intake seam and action | 1 | **green** after one orchestrator fix outside the lane: `tests/test_layers.py::test_import_direction` still forbade `app -> llm`; the Task-23 contract had put the exception only in the new by-file test. Part 2 names `app/intake.py` as the one allowed importer, so the direction check now exempts that file (`6a9950a`). The bee reported BLOCKED correctly rather than editing a file it did not own. | 11.8 min | `7d04c4a` |
+
+Quota delta, wave B: Codex 5 h 65 % → 82 % (two bees plus Task-26 launched at 03:53, which
+is still running); Claude 5 h 61 % → 66 %. Codex bee gates see `test_cli_wrappers` timeout
+flakes whenever three or more gates run at once on this laptop; the orchestrator's gate is
+the verdict and was green every time.
+
+**Handover decision (03:59):** Task-26 runs to completion on Codex (a wave never mixes
+delegates). Tasks 29 and 31 then start as **Claude bees** (`bee.ps1`, `opus` for 29,
+`sonnet` for 31): Codex will sit at about 90 % once 26 returns, which is `NARROW`, and both
+Claude windows are clear (5 h 66 %, 7 d 7 %). Per the plan's fallback row.

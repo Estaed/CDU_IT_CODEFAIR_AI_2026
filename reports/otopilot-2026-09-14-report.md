@@ -91,3 +91,90 @@ runs narrow: Task-34 (`sonnet`) alone at 04:48; 32 and 33 after the Claude reset
 
 Quota at 05:10: Claude 5 h 90 % (resets 05:39), 7 d 8 %; Codex 5 h 95 % (resets 07:20).
 The orchestrator schedules a wake-up for the reset and resumes with 33, then 35, then 36.
+
+### Waves F and G (35, 36) — Claude bees after the 05:39 reset
+
+| Task | Model | Attempts | Outcome | Bee elapsed | Main commit |
+|---|---|---:|---|---|---|
+| Task-33 tenant answer | opus | 1 | **green, review-visual pending** (363 tests) | 9.7 min | `263a360` |
+| Task-35 integration, README, package | sonnet | 1 | **green** (385 tests); the override-rate caption test covers the 0 % case only | 8.2 min | `bb98301` |
+| Task-36 Ollama benchmark code | opus, then sonnet | 2 | attempt 1 stopped correctly at `tests/test_intake.py` (Task-28's file still expected `NotAcceptedYet`; `0 -> 1 fail`); OWNS widened to that test, `app/intake.py` and the README sentence; attempt 2 `1 -> 0 fail`, 405 tests. **Code integrated, task NOT ticked DONE**: its DoD includes the real `ollama pull qwen3:8b` and benchmark run, left for the morning by the plan | 6.7 + 2.6 min | `fed924b` |
+
+## Final tally (06:18)
+
+Main HEAD `fed924b`, gate GREEN (405 tests, up from 253). `docs/TASKS_INDEX.md`: 36 of 37
+ticked; Task-36 stays open for its real run. Run 03:15 → 06:18, 17 lanes (15 tasks, one
+integration fix, one second attempt), zero red integrations left on main.
+
+| Task | Delegate | Attempts | Outcome | Main commit |
+|---|---|---:|---|---|
+| 22 | Codex terra | 1 | green, review-visual pending (click path) | `9fe1785` |
+| 23 | Codex terra | 1 | green | `2c8e6e2` |
+| 24 | Codex terra | 1 | green | `f94db31` |
+| 27 | Codex terra + main-loop real build | 1 | green; artefact committed | `bdc4727`, `3f98952` |
+| 25 | Codex terra | 1 | green | `8924e5a` |
+| 28 | Codex terra | 1 | green after the layer-test fix `6a9950a` | `7d04c4a` |
+| 26 | Codex terra | 1 | green | `5191b99` |
+| 31 | Claude sonnet | 1 | green, review-visual pending | `890c180` |
+| 29 | Claude opus + sonnet fix | 1 + fix | green, review-visual pending; deviations in BACKLOG | `fdb5575` |
+| 30 | Claude opus | 1 | green, review-visual pending | `ad732fb` |
+| 34 | Claude sonnet | 1 | green, review-visual pending | `2f1d127` |
+| 32 | Claude sonnet | 1 | green, review-visual pending | `388bd01` |
+| 33 | Claude opus | 1 | green, review-visual pending | `263a360` |
+| 35 | Claude sonnet | 1 | green | `bb98301` |
+| 36 | Claude opus + sonnet | 2 | code green; **real run pending** | `fed924b` |
+
+Quota over the run: Codex 5 h 33 % → 95 % (seven terra bees, ~9 points each; the wall was
+reached exactly as Task-26 returned, and the plan's fallback row took over); Codex 7 d 30 %
+→ 40 %. Claude 5 h 38 % → 90 % across the orchestrator plus five Claude bees, reset at
+05:39, then 0 % → 11 % for the last three lanes. Claude 7 d 4 % → 9 %.
+
+## Awaiting eye check (`review-visual`, advisory)
+
+Every Phase 2 screen shipped against `AppTest` only. Run `venv/Scripts/streamlit run
+fair_turn/app/main.py` and look at, against PRD §3 and `design/phase-2-wireframes.md`:
+Workspace (22 click path list ↔ map ↔ pane, 29 layout and pane, 30 sign-off form and
+decision states), Review queue (31), Visit plan (32), Tenant answer (33), Evidence lab (34).
+Task-22 criterion 5 (a real click changes the selected id) is recorded in the task file only
+after a human sees it; if it fails, the framework question opens before more UI work.
+
+## Left for the operator (in order)
+
+1. **Task-36 real run:** `ollama pull qwen3:8b` (5.2 GB) then
+   `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b`;
+   commit `data/build/eval_ollama.json` and the `MODELS.md` row; if the decision is `ollama`,
+   the README default and the Part 2 seam line change in the same commit (Part 2 edit is
+   rule 8: raise it first). Then `verify-task` ticks Task-36.
+2. `review-visual` over the five surfaces (above).
+3. `BACKLOG.md` night entries: Task-29's five deviations, the policy-index threshold, the
+   Task-31 `review_requested` edge.
+4. Locked directories under `..\..\.lanes\fair-turn\task-NN\` (Codex sandbox ACLs on
+   `.pytest_cache`, `.ruff_cache`, `__pycache__`): `takeown /F <dir> /R /D Y` then delete
+   from an elevated shell. Git worktree records are already pruned; the repo `venv` is intact.
+5. FS17 licence (PRD open question 6) before the report quotes the passages.
+
+## Recipe notes (candidates for the `otopilot` / `codex-swarm` skills)
+
+- Codex bees cannot `git commit` in a detached worktree under `--sandbox workspace-write`
+  (the worktree's metadata lives in the main repo's `.git`). Recipe used: bee leaves the
+  tree, orchestrator commits after checking the diff against OWNS. Same brief text worked
+  for Claude bees unchanged, which is what made the handover cheap.
+- `codex exec` streams events to stderr; a PowerShell wrapper with `$ErrorActionPreference =
+  "Stop"` aborts on the first line while the bee keeps running. Set `Continue` around the call.
+- Codex bees write in the preamble's language unless told: the first probe reported in
+  Turkish. "Write everything in English" belongs in the brief header.
+- Codex bee gates flake on `test_cli_wrappers` timeouts when three or more gates share the
+  laptop; the orchestrator's gate is the verdict and never flaked. Two bees reported BLOCKED
+  on those flakes and were green on the orchestrator's run.
+- Files a Codex sandbox creates in the lane (`.pytest_cache`, `__pycache__`) come back
+  ACL-locked for the user; `git worktree remove --force` fails on them. Prune the record,
+  delete the directory later from an elevated shell.
+- Claude bees print one JSON at the end, so a log-growth liveness check reports STALE; read
+  the worktree's `git status` instead. `claude-bee.ps1` now writes a `.last.md` like Codex's
+  `-o`, so one watcher serves both delegates.
+- Two integration breaks came from the orchestrator's contracts, not from the bees:
+  Task-23's layer-test exception was written for one test and not the other, and Task-36's
+  OWNS omitted the three files that named the exception it removes. Both bees stopped at
+  the boundary and said why, which is the behaviour the brief asks for.
+- Never commit on main while `integrate.sh` has a cherry-pick staged (the BACKLOG commit
+  swallowed Task-29's files; split afterwards).

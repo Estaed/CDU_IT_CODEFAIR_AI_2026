@@ -70,3 +70,13 @@ plan's fallback row. Quota after wave C: Codex 5 h 95 % (resets 07:20), Claude 5
 cherry-pick was staged, which folded Task-29's code into it; split afterwards into
 `9e9eadf` (BACKLOG) and `e47ae2e` (code). Lesson: never commit on main while `integrate.sh`
 is running.
+
+### Wave D (30) — Claude `opus`, 04:37
+
+| Task | Attempts | Outcome | Bee elapsed | Main commit |
+|---|---:|---|---|---|
+| Task-29 integration fix (`task-29fix`, `sonnet`) | 1 | **green**; cause verified by the bee: after "Mark rankable" the typed job is dispatched by the capacity model and leaves `open_jobs`; `_job_for_rank` now falls through open jobs → intake record → build label → the item itself | 2.5 min | `fdb5575` (Task-29 DONE) |
+| Task-30 sign-off form, decision states, metrics reveal, Phase 1 pages retired | 1 | **green, review-visual pending** (313 tests + 2 skipped for Task-34); one contract deviation reported: `sign_off_form.render` takes the frozen rows as a sixth argument | 8.2 min | `ad732fb` |
+
+Quota after wave D: Claude 5 h 84 % (resets 05:39), Codex 5 h 95 % (resets 07:20). Wave E
+runs narrow: Task-34 (`sonnet`) alone at 04:48; 32 and 33 after the Claude reset.

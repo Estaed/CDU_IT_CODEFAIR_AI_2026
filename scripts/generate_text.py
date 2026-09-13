@@ -87,6 +87,8 @@ def run(
     """Generate every missing report; returns
     ``{"calls", "failed_calls", "written", "rejected", "missing"}``. A failed or timed-out
     call is logged and counted, and its labels stay missing for the next round."""
+    # Step 1: load the labels to write text for, plus the personas and community rows a
+    # prompt needs to describe the setting without naming the real place.
     labels = json.loads((build_dir / "labels.json").read_text("utf-8"))
     personas = {
         p["persona_id"]: p for p in json.loads((build_dir / "personas.json").read_text("utf-8"))
@@ -100,6 +102,8 @@ def run(
         label["setting"] = setting_for(communities[label["community_id"]])
     names = real_names() if names is None else names
 
+    # Step 2: resume from whatever reports.json already has, so an interrupted run
+    # continues instead of re-spending calls on labels that already have text.
     out_path = build_dir / "reports.json"
     reports = json.loads(out_path.read_text("utf-8")) if out_path.exists() else []
     have = {r["job_id"] for r in reports}
@@ -123,6 +127,8 @@ def run(
             )
             return None
 
+    # Step 3: batch and call, for up to MAX_ROUNDS passes — a later round only retries the
+    # labels a prior round's rejections or failures left missing.
     for _ in range(MAX_ROUNDS):
         missing = [label for label in labels if label["job_id"] not in have]
         if not missing:
@@ -140,6 +146,9 @@ def run(
                 if result is None:
                     failed_calls += 1
                     continue
+                # Step 4: validate each returned item (length, wording, no real names) and
+                # keep only what passes; a rejected item's job_id stays missing and is
+                # retried next round.
                 wanted = {label["job_id"] for label in batch}
                 for item in result.get("reports", []):
                     reason = validate(item, wanted - have, names)
@@ -149,6 +158,8 @@ def run(
                     reports.append({"job_id": item["job_id"], "text": item["text"]})
                     have.add(item["job_id"])
                     written += 1
+                # Step 5: write the artefact after every batch so an interrupted run loses
+                # at most one batch of work, not the whole call.
                 reports.sort(key=lambda r: r["job_id"])
                 out_path.write_bytes(
                     (json.dumps(reports, indent=1, ensure_ascii=False) + "\n").encode("utf-8")
@@ -176,6 +187,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, help="stop after this many CLI calls")
     parser.add_argument("--workers", type=int, default=WORKERS)
     args = parser.parse_args()
+    # Step 6: run the batched generation, then report the summary and exit non-zero only if
+    # labels are still missing after MAX_ROUNDS — a caller (otopilot, a human) can retry.
     summary = run(
         model=args.model, batch_size=args.batch_size, limit=args.limit, workers=args.workers
     )

@@ -16,16 +16,19 @@ VENV = ROOT / "venv"
 
 
 def main() -> int:
+    # Step 1: refuse to run under any interpreter but the project venv's.
     exe = Path(sys.executable).resolve()
     if VENV.resolve() not in exe.parents:
         print(f"gate: run with {VENV / 'Scripts' / 'python'}, not {exe}", file=sys.stderr)
         return 2
     env = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+    # Step 2: lint, format check, then the test suite, in that order (cheapest first).
     steps = [
         ("ruff check", [sys.executable, "-m", "ruff", "check", "."]),
         ("ruff format --check", [sys.executable, "-m", "ruff", "format", "--check", "."]),
         ("pytest", [sys.executable, "-m", "pytest", "-q"]),
     ]
+    # Step 3: stop at the first failure and return its exit code as the verdict.
     for name, cmd in steps:
         print(f"gate: {name}")
         code = subprocess.run(cmd, cwd=ROOT, env=env).returncode

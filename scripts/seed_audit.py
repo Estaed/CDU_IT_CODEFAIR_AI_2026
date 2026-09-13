@@ -85,11 +85,14 @@ def _open_jobs(jobs: list[Job], sites: dict[str, Site], closures: list[Closure],
 
 
 def main() -> int:
+    # Step 1: load the community/job/closure rows the capacity simulation needs.
     communities = _communities()
     sites = {cid: Site(r["region"], float(r["km_to_base"])) for cid, r in communities.items()}
     jobs = _jobs(communities)
     closures = _closures()
 
+    # Step 2: pick three fixed sign-off days near the end of the event window, each with its
+    # own lambda and reason, so the seeded log has a believable history for the demo.
     days = [constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS - n) for n in (3, 2, 1)]
     lams = (1.0, 0.7, 0.5)
     reasons = (
@@ -103,6 +106,7 @@ def main() -> int:
     if path.exists():
         path.unlink()
 
+    # Step 3: rank the open jobs for each day and append a signed-off entry per day.
     for day, lam, reason in zip(days, lams, reasons, strict=True):
         ranked = scoring.rank(_open_jobs(jobs, sites, closures, day), day, lam)
         ranked_ids = tuple(s.job.job_id for s in ranked[:10])
@@ -118,6 +122,8 @@ def main() -> int:
             ),
         )
 
+    # Step 4: on the middle day, append one lambda revision and two rank overrides, so the
+    # log shows both kinds of after-the-fact change an auditor would look for.
     middle_day = days[1]
     audit.append(
         path,

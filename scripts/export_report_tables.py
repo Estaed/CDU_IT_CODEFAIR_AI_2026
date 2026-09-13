@@ -252,6 +252,7 @@ def dataset_summary_md(
 
 
 def main(output_dir: Path = OUT) -> int:
+    # Step 1: load every committed build artefact this report needs; no CLI, no network.
     output_dir.mkdir(parents=True, exist_ok=True)
     ev = _load_json(BUILD / "eval.json")
     labels = _load_json(BUILD / "labels.json")
@@ -261,6 +262,7 @@ def main(output_dir: Path = OUT) -> int:
     jobs = _jobs(BUILD, communities)
     closures = _closures(BUILD)
 
+    # Step 2: write the five markdown tables (evaluation numbers, dataset summary).
     (output_dir / "extraction_vs_baseline.md").write_text(
         extraction_vs_baseline_md(ev), "utf-8", newline=""
     )
@@ -270,6 +272,8 @@ def main(output_dir: Path = OUT) -> int:
     (output_dir / "dataset_summary.md").write_text(
         dataset_summary_md(labels, communities, extraction), "utf-8", newline=""
     )
+    # Step 3: write the two simulation CSVs (capacity_sim across lambda, feedback_sim over
+    # the event window) by re-running the same core simulations the app pages call.
     _write_csv(
         output_dir / "price_of_fairness.csv",
         ["lam", "median_wait_remote", "median_wait_town", "gap", "travel_cost"],

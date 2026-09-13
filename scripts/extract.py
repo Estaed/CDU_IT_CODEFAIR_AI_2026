@@ -156,6 +156,8 @@ def run(
     """Extract every missing report; returns
     ``{"calls", "failed_calls", "written", "rejected", "missing"}``. A failed or timed-out
     call is logged and counted, and its reports stay missing for the next round."""
+    # Step 1: build (once) or load the 20-item adversarial holdout, then extract over the
+    # real reports plus the adversarial texts together, so both go through the same path.
     adversarial_path = build_dir / "adversarial.json"
     if not adversarial_path.exists():
         _write(adversarial_path, build_adversarial(build_dir))
@@ -165,6 +167,7 @@ def run(
     ]
     texts = {r["job_id"]: r["text"] for r in reports}
 
+    # Step 2: resume from whatever extraction.json already has.
     out_path = build_dir / "extraction.json"
     rows = _load(out_path)
     have = {r["job_id"] for r in rows}
@@ -185,6 +188,7 @@ def run(
             print(f"extract: batch from {batch[0]['job_id']} failed: {reason}", file=sys.stderr)
             return None
 
+    # Step 3: batch and call, for up to MAX_ROUNDS passes over whatever is still missing.
     for _ in range(MAX_ROUNDS):
         missing = [r for r in reports if r["job_id"] not in have]
         if not missing:
@@ -202,6 +206,9 @@ def run(
                 if result is None:
                     failed_calls += 1
                     continue
+                # Step 4: validate each returned item against the pydantic schema, then
+                # verify_spans against its own report text (row_for); a schema failure or
+                # an unknown job_id is rejected and retried next round.
                 wanted = {r["job_id"] for r in batch} - have
                 for item in result.get("items", []):
                     job_id = item.get("job_id") if isinstance(item, dict) else None
@@ -217,6 +224,8 @@ def run(
                     have.add(job_id)
                     wanted.discard(job_id)
                     written += 1
+                # Step 5: write the artefact after every batch so an interrupted run loses
+                # at most one batch of work.
                 rows.sort(key=lambda r: r["job_id"])
                 _write(out_path, rows)
                 left = len(reports) - len(have)
@@ -247,6 +256,9 @@ def main() -> int:
     )
     args = parser.parse_args()
     if args.reverify:
+        # Step: --reverify rebuilds only the marker-derived fields from the report texts,
+        # no CLI calls, for when wording.injection_markers changes but the extraction
+        # itself does not need to be redone.
         print(json.dumps(reverify()), file=sys.stderr)
         return 0
     summary = run(

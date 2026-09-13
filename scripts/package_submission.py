@@ -80,17 +80,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skip-gate", action="store_true")
     args = parser.parse_args(argv)
 
+    # Step 1: refuse on an uncommitted change, so the zip always matches a committed state.
     dirty = dirty_paths()
     if dirty:
         print(f"package_submission: working tree is dirty:\n{dirty}", file=sys.stderr)
         return 1
 
+    # Step 2: refuse on a red gate, unless explicitly skipped.
     if not args.skip_gate:
         code = gate_exit_code()
         if code:
             print(f"package_submission: gate is red (exit {code})", file=sys.stderr)
             return 1
 
+    # Step 3: walk the fixed include list and write the deterministic zip.
     zip_path = build_zip(args.out, args.team)
     size = zip_path.stat().st_size
     print(f"{zip_path} ({size} bytes)")

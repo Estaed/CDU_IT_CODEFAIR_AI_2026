@@ -15,6 +15,8 @@ from fair_turn.data.synth import write_all  # noqa: E402  (needs the sys.path li
 
 
 def main() -> int:
+    # Step 1: draw every synthetic artefact (labels, personas, closures, climate) and write
+    # each to data/build/ in one pass; write_all() owns the seed and the ordering.
     for path in write_all():
         print(f"wrote {path.relative_to(ROOT)}", file=sys.stderr)
     return 0

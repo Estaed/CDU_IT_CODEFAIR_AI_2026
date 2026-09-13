@@ -60,6 +60,8 @@ def _rounded(node):
 
 
 def evaluate(build: Path = BUILD) -> dict:
+    # Step 1: load labels, report texts and non-adversarial extraction rows, then split the
+    # labels into the holdout set (scored) and the training set (fits the baseline only).
     labels = _load(build, "labels.json")
     texts = {r["job_id"]: r["text"] for r in _load(build, "reports.json")}
     rows = {r["job_id"]: r for r in _load(build, "extraction.json") if not r["is_adversarial"]}
@@ -68,6 +70,8 @@ def evaluate(build: Path = BUILD) -> dict:
     scored = [rows[lb["job_id"]] for lb in holdout]
     holdout_texts = [texts[lb["job_id"]] for lb in holdout]
 
+    # Step 2: score the extractor and the no-model baseline (TF-IDF + logistic regression,
+    # fit fresh on the training split) on the same holdout gold labels for each field.
     extractor, reference = {}, {}
     for field, classes in FIELDS.items():
         gold = [lb[field] for lb in holdout]
@@ -76,6 +80,7 @@ def evaluate(build: Path = BUILD) -> dict:
             [texts[lb["job_id"]] for lb in train], [lb[field] for lb in train], holdout_texts
         )
         reference[field] = metrics.prf(gold, predicted, classes)
+    # Step 3: health_risk is multi-label, scored separately (no baseline for this field).
     gold_sets = [set(lb["health_risk"]) for lb in holdout]
     factors = [str(f) for f in HealthRiskFactor if any(str(f) in g for g in gold_sets)]
     extractor["health_risk"] = metrics.multilabel_prf(
@@ -93,6 +98,7 @@ def evaluate(build: Path = BUILD) -> dict:
         "The baseline is scored for fault_type and safety_class only.",
         "The substring rate is over every extraction row, adversarial items included.",
     ]
+    # Step 4: span scoring is optional — only if a gold_spans.json artefact exists.
     gold_spans_path = build / "gold_spans.json"
     if gold_spans_path.exists():
         gold_spans = _load(build, "gold_spans.json")
@@ -154,6 +160,8 @@ def tables(result: dict) -> str:
 
 
 def main() -> int:
+    # Step 1: compute the metrics, write both artefacts, then print a summary and exit
+    # non-zero if either target field misses the macro-F1 target (the report quotes this).
     result = evaluate()
     (BUILD / "eval.json").write_text(json.dumps(result, indent=1) + "\n", "utf-8", newline="")
     (BUILD / "eval_tables.md").write_text(tables(result), "utf-8", newline="")

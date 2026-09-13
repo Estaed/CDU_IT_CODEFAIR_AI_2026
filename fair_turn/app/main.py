@@ -1,8 +1,15 @@
 """Fair Turn entry point: ``venv/Scripts/streamlit run fair_turn/app/main.py``."""
 
-import streamlit as st
+import sys
+from pathlib import Path
 
-from fair_turn.app import state, theme
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))  # `streamlit run` puts only this folder on sys.path
+
+import streamlit as st  # noqa: E402 -- sys.path shim above must run first
+
+from fair_turn.app import state, theme  # noqa: E402 -- sys.path shim above must run first
 
 st.set_page_config(page_title="Fair Turn", layout="wide")
 state.artefacts()

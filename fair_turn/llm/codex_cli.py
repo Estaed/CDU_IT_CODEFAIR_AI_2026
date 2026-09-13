@@ -13,6 +13,7 @@ the read after ``subprocess.run``'s own kill blocks forever (measured 2026-09-13
 
 import json
 import shutil
+import os
 import subprocess
 import sys
 import tempfile
@@ -65,6 +66,9 @@ def extract(
             started = time.monotonic()
             proc = subprocess.Popen(
                 cmd,
+                # Marks this as a bee for TarikOS brain hooks: they exit early and do not
+                # write a daily/ entry for it. Only the main loop/chef session is flushed.
+                env={**os.environ, \"BEYIN_INVOKED_BY\": \"fair-turn\"},
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,

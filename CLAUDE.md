@@ -287,7 +287,7 @@ below were read from the environment after `uv sync` on 2026-09-12; `uv.lock` is
 | statsmodels | 0.15.0 | `proportion_confint(method="wilson")` for every reported proportion. |
 | textstat | 0.7.13 | Flesch-Kincaid grade for tenant text (PRD §7). |
 | Claude Code CLI | 2.1.269 | **Generator**, build time only, on Tarik's Claude subscription: `claude -p --model opus --output-format json --json-schema <schema>` with the prompt on **stdin** (a variadic flag such as `--tools` swallows a trailing prompt argument, and the CLI waits 3 s then errors if stdin is open with nothing on it). The JSON result's `structured_output` field is the schema-valid object. Spike 2026-09-12: one call, about 10 s, 24k cached-prompt tokens of CLI overhead per call, so reports are generated 20 per call. |
-| Codex CLI | 0.154.0 | **Extractor**, build time only, on Tarik's Codex subscription: `codex exec --sandbox read-only --skip-git-repo-check --output-schema schema.json -o out.json "<prompt>"` with stdin closed (`< /dev/null`, or it blocks forever). No `-m` pin (MODELS.md rule). Spike 2026-09-12: one call returned a schema-valid object. Different vendor from the generator, stronger than the PRD's different-model rule. |
+| Codex CLI | 0.154.0 | Wrapper kept (`fair_turn/llm/codex_cli.py`, tested with a fake) but **not used by the build since 2026-09-13**: Tarik chose to preserve the Codex weekly window, so the extractor is `claude -p --model sonnet` through the same wrapper as the generator (generator Opus, extractor Sonnet: the PRD's different-model rule holds, the different-vendor strengthening does not, and the report says so). Traps learned on the real run: the prompt must go on **stdin** with the positional `-` (through the `codex.CMD` shim an argv prompt is cut at its first newline); `subprocess` timeouts must kill the process tree (`taskkill /T`) or the node children hold the pipes forever; one call costs ~70-200 s whatever its size, so batch 20 reports per call. |
 | pydantic | 2.13.5 | The extraction schema is a pydantic model: it emits the JSON Schema both CLIs receive and validates every returned object and every artefact on load. Enums only, `additionalProperties: false`. |
 | openpyxl | 3.1.5 | Reads the NT open-data coverage XLSX in `data/raw/`. |
 | pytest | 9.1.1 | Test runner. `AppTest.run(timeout=60)`: the default 3 s times out on first Altair import (spike 2026-09-12). |
@@ -351,7 +351,7 @@ no interface classes):
 **Entry points.** App: `venv/Scripts/streamlit run fair_turn/app/main.py`; pages registered
 with `st.navigation` in `main.py`. Build pipeline, in order, each idempotent from the repo
 root: `fetch_raw_sources.py` (done, frozen), `build_labels.py`, `generate_text.py` (needs a
-logged-in `claude`), `extract.py` (needs a logged-in `codex`), `run_eval.py`. The app and
+logged-in `claude`), `extract.py` (needs a logged-in `claude`; Sonnet), `run_eval.py`. The app and
 the gate never need either CLI.
 
 **Spikes.**

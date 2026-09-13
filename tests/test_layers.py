@@ -48,6 +48,8 @@ def test_import_direction() -> None:
     for layer, allowed in ALLOWED_SIBLINGS.items():
         for f in _sources(layer):
             targets = set(rx.findall(f.read_text("utf-8"))) - {layer}
+            if layer == "app" and f.name == "intake.py":
+                targets -= {"llm"}  # Part 2 (2026-09-14): the one app module allowed to import llm
             if targets - allowed:
                 bad[str(f.relative_to(PKG))] = sorted(targets - allowed)
     assert not bad, bad

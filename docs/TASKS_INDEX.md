@@ -55,7 +55,7 @@ Phase 2:
 - [x] Task-28: Intake: provider seam and the in-page new-report action
 - [ ] Task-29: Workspace page: today's list, backlog, map, weighting, selected-job pane, overrides
 - [ ] Task-30: Sign-off form, decision states, metrics reveal; retire the Phase 1 board, job card and sign-off pages
-- [ ] Task-31: Review queue page
+- [x] Task-31: Review queue page
 - [ ] Task-32: Visit plan page
 - [ ] Task-33: Tenant answer: question-headed blocks, signed rank versus visit order, per-state copy
 - [ ] Task-34: Evidence lab: extraction quality, feedback loop, audit log with two clocks; retire the Phase 1 feedback and audit pages

@@ -54,3 +54,19 @@ the verdict and was green every time.
 delegates). Tasks 29 and 31 then start as **Claude bees** (`bee.ps1`, `opus` for 29,
 `sonnet` for 31): Codex will sit at about 90 % once 26 returns, which is `NARROW`, and both
 Claude windows are clear (5 h 66 %, 7 d 7 %). Per the plan's fallback row.
+
+### Wave C (26 on Codex; 29, 31 on Claude after the handover) — 03:53 / 04:14
+
+| Task | Delegate | Attempts | Outcome | Bee elapsed | Main commit |
+|---|---|---:|---|---|---|
+| Task-26 visit plan core | Codex `terra`/high | 1 | **green** (312 tests in the lane) | 19.8 min | `5191b99` |
+| Task-31 review queue page | Claude `sonnet` | 1 | **green, review-visual pending**; one permission denial, self-recovered | 8.8 min | `890c180` |
+| Task-29 workspace page | Claude `opus` | 1 | lane gate GREEN (326 tests); **main gate RED on integration** with Task-31: `open_jobs` now applies human-set fields, so a job marked rankable is dispatched by the capacity simulation and leaves the open set, and the review-queue page's `_job_for_rank` then assumes it is an intake report (`StopIteration`). Neither lane could see the other. Fix bee (`sonnet`, lane `task-29fix`) launched 04:32 on the exact cause; the code sits on main at `e47ae2e` with the gate red until the fix lands. Five contract deviations the bee reported honestly are in `BACKLOG.md`. | 15 min | pending |
+
+**Handover executed 04:14:** Codex 5 h reached 95 % (the wall) as Task-26 returned; both
+Claude windows were clear (5 h 67 %, 7 d 7 %), so 29 and 31 ran as Claude bees per the
+plan's fallback row. Quota after wave C: Codex 5 h 95 % (resets 07:20), Claude 5 h 78 %
+(resets 05:39). Orchestrator error to note: a `BACKLOG.md` commit was made while a
+cherry-pick was staged, which folded Task-29's code into it; split afterwards into
+`9e9eadf` (BACKLOG) and `e47ae2e` (code). Lesson: never commit on main while `integrate.sh`
+is running.

@@ -1,18 +1,23 @@
 """Read typed fields out of every report: data/build/extraction.json, plus the adversarial
 set it is proven against, data/build/adversarial.json.
 
-Run from the repo root with a logged-in ``codex`` (spends the Codex subscription window;
+Run from the repo root with a logged-in ``claude`` (spends the Claude subscription window;
 check ``limit`` first). Resumable: reports that already have a row are skipped and the file
 is written after every batch, so an interrupted run continues where it stopped.
 
     venv/Scripts/python scripts/extract.py              # everything still missing
     venv/Scripts/python scripts/extract.py --limit 1    # one batch, to read the output
 
-Deviation from the task's "one report per call": one ``codex exec`` costs about 70 s
-whatever its size (measured 2026-09-13), so 1,472 single calls would take many hours.
-Reports go 20 per call under a wrapper schema ``{"items": [...]}``; each item is still
-validated on its own with the pydantic ``Extraction`` model and verified against its own
-report, and an unknown or repeated job_id is rejected and retried next round.
+Operator decision (2026-09-13): the extractor is ``claude -p --model sonnet``, not
+``codex exec`` — the generator (generate_text.py) is Opus, so the PRD's different-model
+rule still holds, and this keeps the Codex weekly window untouched for other work. The
+``codex_cli`` wrapper stays in the repo but is unused here.
+
+Deviation from the task's "one report per call": one call costs tens of seconds whatever
+its size (measured 2026-09-13), so 1,472 single calls would take many hours. Reports go 20
+per call under a wrapper schema ``{"items": [...]}``; each item is still validated on its
+own with the pydantic ``Extraction`` model and verified against its own report, and an
+unknown or repeated job_id is rejected and retried next round.
 
 Every evidence phrase is checked with ``core.verify_spans``: a field whose phrase is not a
 literal substring of the report is dropped, and a job missing a required field goes to
@@ -33,7 +38,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
 
 from fair_turn.core import constants, verify_spans  # noqa: E402
-from fair_turn.llm import codex_cli, prompts  # noqa: E402
+from fair_turn.llm import claude_cli, prompts  # noqa: E402
 from fair_turn.llm.schema import Extraction  # noqa: E402
 
 BUILD = ROOT / "data" / "build"
@@ -121,6 +126,7 @@ def _write(path: Path, rows: list[dict]) -> None:
 def run(
     build_dir: Path = BUILD,
     executable: list[str] | None = None,
+    model: str = "sonnet",
     batch_size: int = BATCH_SIZE,
     limit: int | None = None,
     workers: int = WORKERS,
@@ -145,12 +151,13 @@ def run(
 
     def call(batch: list[dict]) -> dict | None:
         try:
-            return codex_cli.extract(
+            return claude_cli.generate(
                 prompts.EXTRACTION_SYSTEM + "\n\n" + prompts.extraction_prompt(batch),
                 prompts.extraction_batch_schema(),
+                model=model,
                 executable=executable,
             )
-        except codex_cli.CliError as exc:
+        except claude_cli.CliError as exc:
             reason = " ".join(str(exc).split())[:200]
             print(f"extract: batch from {batch[0]['job_id']} failed: {reason}", file=sys.stderr)
             return None
@@ -206,11 +213,14 @@ def run(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--model", default="sonnet")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--limit", type=int, help="stop after this many CLI calls")
     parser.add_argument("--workers", type=int, default=WORKERS)
     args = parser.parse_args()
-    summary = run(batch_size=args.batch_size, limit=args.limit, workers=args.workers)
+    summary = run(
+        model=args.model, batch_size=args.batch_size, limit=args.limit, workers=args.workers
+    )
     print(json.dumps({k: v for k, v in summary.items() if k != "rejected"}), file=sys.stderr)
     if summary["rejected"]:
         print(f"rejected {len(summary['rejected'])}: {summary['rejected'][:10]}", file=sys.stderr)

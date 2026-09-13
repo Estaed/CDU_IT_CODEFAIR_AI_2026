@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BUILD = ROOT / "data" / "build"
 EXTRACTION = BUILD / "extraction.json"
 ADVERSARIAL = BUILD / "adversarial.json"
-FAKE = [sys.executable, str(ROOT / "tests" / "fakes" / "fake_codex.py")]
+FAKE = [sys.executable, str(ROOT / "tests" / "fakes" / "fake_claude.py")]
 
 spec = importlib.util.spec_from_file_location("extract", ROOT / "scripts" / "extract.py")
 extract = importlib.util.module_from_spec(spec)
@@ -139,7 +139,7 @@ def test_unknown_repeated_and_invalid_items_are_rejected(tmp_path, monkeypatch) 
         {**good, "job_id": b["job_id"], "safety_class": "top priority"},  # not an enum
         {**good, "job_id": b["job_id"], "confidence": 0.9},  # extra key
     ]
-    monkeypatch.setattr(extract.codex_cli, "extract", lambda *args, **kw: {"items": items})
+    monkeypatch.setattr(extract.claude_cli, "generate", lambda *args, **kw: {"items": items})
     summary = extract.run(build, batch_size=10, limit=1)
     assert summary["written"] == 1 and summary["missing"] == 2
     reasons = [r["reason"] for r in summary["rejected"]]

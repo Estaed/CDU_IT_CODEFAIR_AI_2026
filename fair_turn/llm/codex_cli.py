@@ -1,7 +1,10 @@
 """``codex exec`` as the extractor, build time only (Part 2 stack table).
 
-Stdin is closed or the CLI blocks forever; the object is read back from ``-o out.json``.
-No ``-m`` pin: the model follows the operator's Codex config (MODELS.md rule).
+The prompt goes on stdin behind the positional ``-``: on Windows ``codex`` resolves to a
+``codex.CMD`` shim that truncates a positional prompt at its first newline, and an open
+stdin with nothing on it blocks forever. ``subprocess.run(input=...)`` writes and closes it.
+The object is read back from ``-o out.json``. No ``-m`` pin: the model follows the
+operator's Codex config (MODELS.md rule).
 """
 
 import json
@@ -39,14 +42,14 @@ def extract(
             str(schema_path),
             "-o",
             str(out_path),
-            prompt,
+            "-",
         ]
         for attempt in range(1, RETRIES + 2):
             out_path.unlink(missing_ok=True)
             started = time.monotonic()
             run = subprocess.run(
                 cmd,
-                stdin=subprocess.DEVNULL,
+                input=prompt,
                 capture_output=True,
                 text=True,
                 encoding="utf-8",

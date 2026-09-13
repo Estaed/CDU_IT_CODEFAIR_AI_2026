@@ -47,11 +47,11 @@ def test_claude_flags() -> None:
     assert flags[5] == "--json-schema"
 
 
-def test_codex_flags_and_closed_stdin() -> None:
+def test_codex_flags_and_prompt_on_stdin() -> None:
     result = codex_cli.extract(PROMPT, SCHEMA, executable=fake("codex"))
     assert result["flags"][:4] == ["exec", "--sandbox", "read-only", "--skip-git-repo-check"]
     assert "-m" not in result["flags"]
-    assert result["stdin_was_empty"] is True
+    assert result["prompt_on_stdin"] is True  # positional "-", full multi-line prompt on stdin
 
 
 @pytest.mark.parametrize("name", ["claude", "codex"])

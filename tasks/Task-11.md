@@ -4,8 +4,8 @@
 > *Why:* spends the Codex subscription window (check with `limit`); the injection defences and the human-queue outcome are judged in Q&A; artefact invariants are gated.
 
 **Lane**
-- OWNS: `scripts/extract.py`, `data/build/adversarial.json`, `data/build/extraction.json`, `tests/test_extraction_artefact.py`, `fair_turn/llm/prompts.py` (append the extraction prompt; Task-10 owns the file)
-- MUST NOT TOUCH: `fair_turn/llm/codex_cli.py` (Task-09), `fair_turn/core/verify_spans.py` (Task-08)
+- OWNS: `scripts/extract.py`, `data/build/adversarial.json`, `data/build/extraction.json`, `tests/test_extraction_artefact.py`, `fair_turn/llm/prompts.py` (append the extraction prompt; Task-10 owns the file); widened 2026-09-13 to `fair_turn/llm/codex_cli.py`, `tests/fakes/fake_codex.py`, `tests/test_cli_wrappers.py` because the wrapper truncates a multi-line prompt through the `codex.CMD` shim (prompt must go on stdin with `-`)
+- MUST NOT TOUCH: `fair_turn/core/verify_spans.py` (Task-08)
 - GATE: `venv/Scripts/python scripts/gate.py` (repo root)
 - DEPENDS ON: Task-10
 

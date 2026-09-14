@@ -81,6 +81,18 @@ Presentation wave 2 (added 2026-09-14 evening, Tarik's requests):
 - [x] Task-49: Map markers show their job count
 - [x] Task-50: User guide in English and an in-app "How to use" popover
 
+Presentation wave 3 (2026-09-14 night, from Tarik's live review of the running app; no task
+files were written, each change landed with a green gate and is recorded in the PRD and Part 2
+amendments dated that night):
+
+- [x] Map on the workspace page, stale map pick fix, "How to use" popover in the main area
+- [x] Selected-job pane report first, short job numbers, readable policy passages and actions
+- [x] Evidence lab in percentages and plain labels
+- [x] Clustered MapLibre map that splits on zoom (Part 2 JavaScript amendment)
+- [x] One reason box per job; "Needs a human" tab in the daily view; region filter as a view
+- [x] Crews as one NT-wide pool in the list, simulation and visit plan; distance picks the crew, never the job
+- [x] Crew reach in the visit plan and simulation: a crew serves its region or within a day's drive of its base
+
 ## Routing
 
 Summary of each task's Execution and Lane blocks; the task file wins on disagreement.

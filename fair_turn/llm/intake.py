@@ -32,16 +32,23 @@ class IntakeResult:
     error: str | None
 
 
-def configured() -> Provider | None:
-    """Return the accepted configured provider, if live intake is enabled."""
-    provider = os.environ.get("FAIR_TURN_PROVIDER", "").strip()
-    if not provider:
+def _accept(value: str) -> Provider | None:
+    if not value or value == "none":
         return None
-    if provider == "claude":
+    if value == "claude":
         return "claude"
-    if provider == "ollama":
+    if value == "ollama":
         return "ollama"
-    raise ValueError(f"unknown FAIR_TURN_PROVIDER value: {provider}")
+    raise ValueError(f"unknown FAIR_TURN_PROVIDER value: {value}")
+
+
+def configured(override: str | None = None) -> Provider | None:
+    """Return the accepted provider: a session override if given, else the environment
+    default (Part 2, Task-48: the UI may override the variable for the session only)."""
+    value = (override or "").strip()
+    if value:
+        return _accept(value)
+    return _accept(os.environ.get("FAIR_TURN_PROVIDER", "").strip())
 
 
 def extract(

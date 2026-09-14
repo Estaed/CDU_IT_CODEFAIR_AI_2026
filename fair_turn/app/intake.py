@@ -15,6 +15,16 @@ from fair_turn.llm import intake as intake_llm
 
 CALL_OVERRIDE: Callable | None = None
 
+# Example ids for the intake demo (Task-48), picked by hand from the 2026-09-14 synthetic
+# labels: one job whose label is a fault_type=cooling report in a town community (Alice
+# Springs, is_remote=False), one fault_type=hot_water report in a remote community, and
+# one fault_type=electrical report with safety_class immediate.
+EXAMPLE_REPORTS = {
+    "Cooling, Alice Springs": "JR-2025-00407",
+    "Hot water, remote": "JR-2025-00030",
+    "Electrical, urgent": "JR-2025-00011",
+}
+
 
 def new_draft() -> dict:
     """Return the one stateful draft that makes a retry idempotent."""
@@ -24,7 +34,12 @@ def new_draft() -> dict:
         "community_id": None,
         "reported_on": None,
         "result": None,
+        "loaded_example": None,
     }
+
+
+def _community_for(art, job_id: str) -> str:
+    return next(label["community_id"] for label in art.labels if label["job_id"] == job_id)
 
 
 def _capacity_all() -> int:
@@ -128,6 +143,34 @@ def render(container) -> None:
     community_ids = sorted(art.communities)
     with container:
         st.subheader("New report")
+
+        env_default = "none"
+        try:
+            env_default = intake_llm.configured() or "none"
+        except ValueError:
+            env_default = "none"
+        options = ["none", "claude", "ollama"]
+        provider_override = st.selectbox(
+            "Extractor",
+            options,
+            index=options.index(st.session_state.get("intake_provider", env_default)),
+            help=(
+                "claude = Claude Sonnet through the logged-in claude CLI; ollama = the "
+                "local model named in FAIR_TURN_OLLAMA_MODEL; none = intake disabled. "
+                "The environment variable FAIR_TURN_PROVIDER sets the default."
+            ),
+        )
+        st.session_state["intake_provider"] = provider_override
+
+        example = st.pills("Load an example", list(EXAMPLE_REPORTS), selection_mode="single")
+        if example is not None and example != draft["loaded_example"]:
+            job_id = EXAMPLE_REPORTS[example]
+            draft["text"] = art.reports[job_id]
+            draft["community_id"] = _community_for(art, job_id)
+            draft["reported_on"] = state.get_today()
+            draft["result"] = None
+            draft["loaded_example"] = example
+
         draft["text"] = st.text_area("Report text", value=draft["text"])
         selected = draft["community_id"] or community_ids[0]
         draft["community_id"] = st.selectbox(
@@ -152,9 +195,12 @@ def render(container) -> None:
         model = ""
         provider_reason = None
         if CALL_OVERRIDE is not None:
-            provider, model = "fake", "fake"
+            # A test call takes the selected provider's name, defaulting to claude so the
+            # Extract button is not blocked on the environment being unset in a test.
+            provider = provider_override if provider_override != "none" else "claude"
+            model = intake_llm.MODEL_FOR.get(provider, provider)
         else:
-            provider = intake_llm.configured()
+            provider = intake_llm.configured(override=provider_override)
             model = intake_llm.MODEL_FOR.get(provider, "") if provider else ""
             if provider is None:
                 provider_reason = (

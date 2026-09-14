@@ -60,6 +60,17 @@ def test_configured_provider_states(monkeypatch) -> None:
         intake_llm.configured()
 
 
+def test_configured_override_wins_over_environment(monkeypatch) -> None:
+    monkeypatch.setenv("FAIR_TURN_PROVIDER", "claude")
+    assert intake_llm.configured(override="ollama") == "ollama"
+    assert intake_llm.configured(override="none") is None
+    with pytest.raises(ValueError, match="junk"):
+        intake_llm.configured(override="junk")
+    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+    assert intake_llm.configured(override=None) is None
+    assert intake_llm.configured(override="") is None
+
+
 def _script(tmp_path) -> str:
     path = tmp_path / "intake_app.py"
     path.write_text(
@@ -114,6 +125,62 @@ def test_fake_submission_is_idempotent(tmp_path, monkeypatch) -> None:
     at.button[1].click().run(timeout=60)
     assert len(runtime_path.read_text("utf-8").splitlines()) == 1
     assert len(audit_path.read_text("utf-8").splitlines()) == 1
+
+
+def test_provider_selectbox_and_example_pills_render(tmp_path, monkeypatch) -> None:
+    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+    at = AppTest.from_file(_script(tmp_path))
+    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
+    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
+    at.run(timeout=60)
+    assert at.selectbox[0].label == "Extractor"
+    assert at.selectbox[0].options == ["none", "claude", "ollama"]
+    assert at.button_group[0].options == list(intake.EXAMPLE_REPORTS)
+
+
+def test_loading_an_example_fills_text_and_community(tmp_path, monkeypatch) -> None:
+    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+    at = AppTest.from_file(_script(tmp_path))
+    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
+    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
+    at.run(timeout=60)
+    label = "Cooling, Alice Springs"
+    at.button_group[0].select(label).run(timeout=60)
+    assert "aircon" in at.text_area[0].value
+    assert at.selectbox[1].value == "Alice Springs"
+    # The text stays editable after the example loads.
+    at.text_area[0].input(at.text_area[0].value + " Edited.").run(timeout=60)
+    assert at.text_area[0].value.endswith("Edited.")
+
+
+def test_switching_provider_to_none_disables_extract(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("FAIR_TURN_PROVIDER", "claude")
+    at = AppTest.from_file(_script(tmp_path))
+    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
+    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
+    at.run(timeout=60)
+    at.text_area[0].input(SAMPLE_TEXT).run(timeout=60)
+    assert not at.button[0].disabled
+    at.selectbox[0].select("none").run(timeout=60)
+    assert at.button[0].disabled
+    assert "FAIR_TURN_PROVIDER" in at.info[0].value
+
+
+def test_runtime_record_carries_the_chosen_provider(tmp_path, monkeypatch) -> None:
+    monkeypatch.setattr(
+        socket, "socket", lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError())
+    )
+    monkeypatch.setattr(intake, "CALL_OVERRIDE", valid_call)
+    at = AppTest.from_file(_script(tmp_path))
+    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
+    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
+    at.run(timeout=60)
+    at.selectbox[0].select("ollama").run(timeout=60)
+    at.text_area[0].input(SAMPLE_TEXT).run(timeout=60)
+    at.button[0].click().run(timeout=60)
+    at.button[1].click().run(timeout=60)
+    row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
+    assert row["provider"] == "ollama"
 
 
 def test_whitespace_error_keeps_text(tmp_path, monkeypatch) -> None:

@@ -21,6 +21,7 @@ from fair_turn.app.components import (
     details_pane,
     intro,
     job_list,
+    job_rows,
     metrics,
     ranking_table,
     sign_off_form,
@@ -43,6 +44,7 @@ DISPLAY = [
     "community id",
     "fault type",
 ]
+TODAY_ROWS_KEY = "workspace_today"
 
 art = state.artefacts()
 today = state.get_today()
@@ -125,6 +127,29 @@ def view(scored, other=None, table_lam=lam, against=None):
     return frame[DISPLAY].rename(columns={"job id": "job_id"})
 
 
+def today_rows(frame, scored) -> list[dict]:
+    """One dict per row of today's frame for ``job_rows.render``. Every value comes from the
+    frame the table would have shown, so nothing is scored or ranked twice."""
+    needs_human = {s.job.job_id: s.job.needs_human for s in scored}
+    score_max = max(float(frame["score_bar"].max()), 1.0) if len(frame) else 1.0
+    return [
+        {
+            "job_id": row["job_id"],
+            "rank": int(row["rank"]),
+            "rank_change": row["rank change"],
+            "community_id": row["community id"],
+            "is_remote": is_remote(row["community id"]),
+            "fault_type": row["fault type"],
+            "safety_class": row["safety class"],
+            "window": row["window"],
+            "score": float(row["score"]),
+            "score_max": score_max,
+            "human_queue": needs_human[row["job_id"]],
+        }
+        for _, row in frame.iterrows()
+    ]
+
+
 selected = state.get_selected_job_id()
 if not jobs:
     st.info("No open reports for this day and region. Try widening the region.")
@@ -170,18 +195,32 @@ with centre:
                 )
                 continue
             frame = view(scored, against=baseline)
-            # The key follows the selection so a stale row pick never re-applies itself.
-            event = st.dataframe(
-                frame,
-                on_select="rerun",
-                selection_mode="single-row",
-                hide_index=True,
-                column_config=ranking_table.column_config(frame),
-                key=f"workspace_{name}_{selected}",
-                width="stretch",
-                height=ranking_table.table_height(len(scored)),
-            )
-            picked = job_list.selected_job_id(frame, event.selection.rows)
+            if name == "today":
+                # A short list is read, not scanned: bordered rows with an explicit Open.
+                picked = job_rows.render(today_rows(frame, scored), selected, TODAY_ROWS_KEY)
+            else:
+                query = st.text_input(
+                    "Find in backlog",
+                    placeholder="Job id or community",
+                    key="workspace_backlog_search",
+                )
+                if query:  # display only: the ranking and the capacity split are untouched
+                    frame = frame[
+                        frame["job_id"].str.contains(query, case=False, regex=False)
+                        | frame["community id"].str.contains(query, case=False, regex=False)
+                    ]
+                # The key follows the selection so a stale row pick never re-applies itself.
+                event = st.dataframe(
+                    frame,
+                    on_select="rerun",
+                    selection_mode="single-row",
+                    hide_index=True,
+                    column_config=ranking_table.column_config(frame),
+                    key=f"workspace_{name}_{selected}",
+                    width="stretch",
+                    height=ranking_table.table_height(len(frame)),
+                )
+                picked = job_list.selected_job_id(frame, event.selection.rows)
             if picked is not None and picked != selected:
                 state.set_selected_job_id(picked)
                 st.rerun()

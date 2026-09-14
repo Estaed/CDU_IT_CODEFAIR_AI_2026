@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from fair_turn.app.components import details_pane, ranking_table
+from fair_turn.app.components import details_pane, job_rows, ranking_table
 from fair_turn.core import audit, constants, scoring
 from fair_turn.core.batch import HandMove
 from fair_turn.data import artefacts, policy
@@ -30,6 +30,7 @@ COLUMNS = [
     "fault type",
 ]
 OUTCOME_WORDS = ("wait", "travel", "median", "cost")
+TODAY_ROWS_KEY = "workspace_today"  # workspace.TODAY_ROWS_KEY; importing the page would run it
 
 
 def _refuse(*args, **kwargs):
@@ -75,6 +76,16 @@ def _frame(at: AppTest, tab: int):
     return at.tabs[tab].dataframe[0].value
 
 
+def _today_ids(at: AppTest) -> list[str]:
+    """Job ids of today's bordered rows, in rendered order: the only code-styled markdown
+    each row emits is its job id (``job_rows.render``)."""
+    return [
+        markdown.value.strip("`")
+        for markdown in at.tabs[0].markdown
+        if markdown.value.startswith("`")
+    ]
+
+
 def _markdown(at: AppTest) -> list[str]:
     return [m.value for m in at.markdown]
 
@@ -101,26 +112,68 @@ def _open_needs_human(art, missing) -> str:
 
 def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    today, backlog = _frame(at, 0), _frame(at, 1)
+    today, backlog = _today_ids(at), _frame(at, 1)
     cap = ranking_table.capacity("All")
     crews = len(constants.REMOTE_REGIONS) * constants.CREWS_PER_REMOTE_REGION
     assert cap == (crews + constants.CREWS_TOWN) * constants.JOBS_PER_CREW_DAY
     ranked = _ranked()
     assert len(today) == cap
-    assert list(today["job_id"]) == [s.job.job_id for s in ranked[:cap]]
+    assert today == [s.job.job_id for s in ranked[:cap]]
     assert list(backlog["job_id"]) == [s.job.job_id for s in ranked[cap:]]
-    assert list(today.columns) == COLUMNS == list(backlog.columns)
+    assert list(backlog.columns) == COLUMNS
     queue = {j.job_id for j in ranking_table.open_jobs(LAST_DAY) if j.needs_human}
     assert queue
-    assert not queue & (set(today["job_id"]) | set(backlog["job_id"]))
+    assert not queue & (set(today) | set(backlog["job_id"]))
     top = _ranked()[0].job
     assert f"{top.job_id} · {top.community_id}" in [s.value for s in at.subheader]
     assert details_pane.NOTHING_SELECTED not in [i.value for i in at.info]
 
 
-def test_todays_list_has_display_config_and_bounded_height(tmp_path) -> None:
+def test_todays_list_is_rows_not_a_table_and_the_backlog_keeps_the_table(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    proto = at.tabs[0].dataframe[0].proto
+    cap = ranking_table.capacity("All")
+    assert at.tabs[0].dataframe.len == 0
+    assert at.tabs[1].dataframe.len == 1
+    opens = [button for button in at.tabs[0].button if button.label == job_rows.OPEN]
+    assert len(opens) == cap
+    assert [button.proto.type for button in opens].count("primary") == 1
+    values = [markdown.value for markdown in at.tabs[0].markdown]
+    top = _ranked()[0]
+    assert f"`{top.job.job_id}`" in values
+    assert f":orange-badge[{job_rows.SELECTED}]" in values
+    assert ranking_table.window_text(top.job, LAST_DAY) in [c.value for c in at.tabs[0].caption]
+    assert len([node for node in at.tabs[0] if getattr(node, "type", None) == "progress"]) == cap
+
+
+def test_opening_a_row_selects_that_job(tmp_path) -> None:
+    second = _ranked()[1].job
+    at = _run(_script(tmp_path))
+    at.button(key=f"{TODAY_ROWS_KEY}_open_{second.job_id}").click().run(timeout=60)
+    assert not at.exception
+    assert f"{second.job_id} · {second.community_id}" in [s.value for s in at.subheader]
+    values = [markdown.value for markdown in at.tabs[0].markdown]
+    position = values.index(f"`{second.job_id}`")
+    assert f":orange-badge[{job_rows.SELECTED}]" in values[:position]
+
+
+def test_backlog_search_narrows_the_frame_only(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    full = _frame(at, 1)
+    community = str(full.iloc[0]["community id"])
+    at.text_input(key="workspace_backlog_search").set_value(community).run(timeout=60)
+    assert not at.exception
+    narrowed = _frame(at, 1)
+    assert 0 < len(narrowed) < len(full)
+    assert set(narrowed["community id"]) == {community}
+    assert list(narrowed["rank"]) == [
+        row["rank"] for _, row in full.iterrows() if row["community id"] == community
+    ]
+    assert _today_ids(at) == [s.job.job_id for s in _ranked()[: ranking_table.capacity("All")]]
+
+
+def test_backlog_table_has_display_config_and_bounded_height(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    proto = at.tabs[1].dataframe[0].proto
     config = json.loads(proto.columns)
     assert set(COLUMNS) <= set(config)
     assert {
@@ -151,7 +204,7 @@ def test_todays_list_has_display_config_and_bounded_height(tmp_path) -> None:
         "type": "progress",
         "format": "%.1f",
         "min_value": 0.0,
-        "max_value": float(_frame(at, 0)["score_bar"].max()),
+        "max_value": float(_frame(at, 1)["score_bar"].max()),
     }
     assert ranking_table.table_height(ranking_table.capacity("All")) == 528
     assert ranking_table.table_height(21) == ranking_table.table_height(20)
@@ -159,7 +212,7 @@ def test_todays_list_has_display_config_and_bounded_height(tmp_path) -> None:
 
 def test_compare_renders_two_frames_with_identical_columns(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    assert len(at.tabs[0].dataframe) == 1
+    assert at.tabs[0].dataframe.len == 0
     at.checkbox[0].check().run(timeout=60)
     assert not at.exception
     frames = [frame.value for frame in at.tabs[0].dataframe]
@@ -177,10 +230,10 @@ def test_filter_pills_clear_to_the_full_list(tmp_path) -> None:
     fault = at.sidebar.pills[0]
     fault.select("cooling").run(timeout=60)
     assert not at.exception
-    filtered_count = len(_frame(at, 0)) + len(_frame(at, 1))
+    filtered_count = len(_today_ids(at)) + len(_frame(at, 1))
     at.sidebar.button(key="workspace_clear_filters").click().run(timeout=60)
     assert not at.exception
-    full_count = len(_frame(at, 0)) + len(_frame(at, 1))
+    full_count = len(_today_ids(at)) + len(_frame(at, 1))
     assert filtered_count < full_count
 
 
@@ -330,7 +383,7 @@ def test_promote_backlog_job_writes_one_promotion(tmp_path) -> None:
     assert len(records) == 1 and isinstance(records[0], audit.Promotion)
     assert (records[0].job_id, records[0].displaced_job_id) == (promoted, displaced)
     assert records[0].reason == "crew already in the community"
-    today = list(_frame(at, 0)["job_id"])
+    today = _today_ids(at)
     assert len(today) == cap and today[-1] == promoted and displaced not in today
 
 
@@ -344,11 +397,11 @@ def test_move_undo_and_send_to_review(tmp_path) -> None:
     records = audit.read(audit_path)
     assert len(records) == 1 and isinstance(records[0], audit.Override)
     assert (records[0].job_id, records[0].from_rank, records[0].to_rank) == (first, 1, 2)
-    assert list(_frame(at, 0)["job_id"])[:2] == [second, first]
+    assert _today_ids(at)[:2] == [second, first]
 
     at.button(key=f"undo_{first}").click().run(timeout=60)
     assert not at.exception
-    assert list(_frame(at, 0)["job_id"])[:2] == [first, second]
+    assert _today_ids(at)[:2] == [first, second]
     assert len(audit.read(audit_path)) == 1
 
     _submit(at, f"review_{first}", "tenant describes a different fault")
@@ -358,7 +411,7 @@ def test_move_undo_and_send_to_review(tmp_path) -> None:
         "review_requested",
         "tenant describes a different fault",
     )
-    shown = set(_frame(at, 0)["job_id"]) | set(_frame(at, 1)["job_id"])
+    shown = set(_today_ids(at)) | set(_frame(at, 1)["job_id"])
     assert first not in shown
     assert details_pane.IN_REVIEW in [w.value for w in at.warning]
 

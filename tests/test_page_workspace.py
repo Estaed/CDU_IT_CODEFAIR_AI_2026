@@ -248,7 +248,14 @@ def test_human_set_field_shows_the_coordinator_badge(art, tmp_path) -> None:
 
 
 def _factor_line(at: AppTest, name: str) -> str:
-    return next(value for value in _markdown(at) if value.startswith(f"**{name}**"))
+    """The summary-list row for a factor, joined back into one line: the pane renders the
+    label, the value and the source as three consecutive markdown cells (Task-42)."""
+    values = _markdown(at)
+    index = next(i for i, value in enumerate(values) if value == f"**{name}**")
+    value, source = values[index + 1], values[index + 2]
+    if source == details_pane.NO_PHRASE:
+        return f"**{name}** {source}"
+    return f"**{name}** {value} {source}"
 
 
 def test_no_source_phrase_only_on_extracted_factors(art, tmp_path) -> None:

@@ -104,12 +104,77 @@ def _map_choice(map_choice: tuple[str, list[str]] | None, selected: str | None) 
 
 
 def _human_set_badges(human_set: dict[str, str]) -> None:
-    for field, value in sorted(human_set.items()):
-        st.markdown(f"{_label(field)}: {_label(value)}")
-        st.badge(SET_BY_COORDINATOR)
+    for _field in sorted(human_set):
+        st.badge(SET_BY_COORDINATOR, color="gray")
 
 
-def _factor_lines(
+def _header_badges(job: Job, in_review: bool, human_set: dict[str, str]) -> None:
+    """Render the non-interactive job statuses immediately below the pane heading."""
+    colours = {"immediate": "red", "urgent": "orange", "routine": "gray"}
+    with st.container(horizontal=True):
+        if job.safety_class is not None:
+            st.badge(job.safety_class.value.capitalize(), color=colours[job.safety_class.value])
+        st.badge("Remote" if job.is_remote else "Town", color="gray")
+        if in_review:
+            st.badge("Needs a human", color="yellow")
+        _human_set_badges(human_set)
+
+
+def _factor_rows(
+    art: Artefacts,
+    job: Job,
+    scored: ScoredJob | None,
+    today: date,
+    evidence: dict[str, str],
+    human_set: dict[str, str],
+) -> list[tuple[str, str, str]]:
+    """Return the label, numeric value and provenance for the score summary list."""
+    used = (today - job.reported_on).days
+    rows = []
+    if job.safety_class is None:
+        rows.append(
+            ("urgency", "—", "from NT window: Based on 1 of 2 fields (safety class missing)")
+        )
+    else:
+        total = ranking_table.window_text(job, today).split(" of ", 1)[1].removesuffix(" d")
+        rows.append(
+            (
+                "urgency",
+                f"{scoring.urgency(job, today):.2f}",
+                f"from NT window: {job.safety_class.value.capitalize()}, day {used} of {total}",
+            )
+        )
+
+    safety_value = f"{scored.factors['safety']:.2f}" if scored is not None else "—"
+    if "safety_class" in human_set:
+        safety_source = _label(human_set["safety_class"])
+    elif "safety_class" in evidence:
+        safety_source = f'"{_text(evidence["safety_class"])}"'
+    else:
+        safety_source = NO_PHRASE
+    rows.append(("safety", safety_value, safety_source))
+
+    phrases = [phrase for field, phrase in sorted(evidence.items()) if field.startswith("health")]
+    if phrases:
+        health_source = "; ".join(f'"{_text(phrase)}"' for phrase in phrases)
+    else:
+        health_source = NO_PHRASE
+    rows.append(("household health risk", f"{scoring.health_risk(job):.2f}", health_source))
+
+    community = art.communities[job.community_id]
+    access = "closed" if _closed(art, job.community_id, today) else "open"
+    rows.append(
+        (
+            "logistics",
+            f"{scoring.logistics(job):.2f}",
+            f"from geography: {float(community['km_to_base']):.0f} km "
+            f"{community['road_access']}, {access}",
+        )
+    )
+    return rows
+
+
+def _summary_list(
     art: Artefacts,
     job: Job,
     scored: ScoredJob | None,
@@ -117,38 +182,22 @@ def _factor_lines(
     evidence: dict[str, str],
     human_set: dict[str, str],
 ) -> None:
-    used = (today - job.reported_on).days
-    if job.safety_class is None:
-        st.markdown("**urgency** — from NT window: Based on 1 of 2 fields (safety class missing)")
-    else:
-        total = ranking_table.window_text(job, today).split(" of ", 1)[1].removesuffix(" d")
-        st.markdown(
-            f"**urgency** {scoring.urgency(job, today):.2f} from NT window: "
-            f"{job.safety_class.value.capitalize()}, day {used} of {total}"
-        )
-
-    safety_value = f"{scored.factors['safety']:.2f}" if scored is not None else "—"
-    if "safety_class" in human_set:
-        st.markdown(f"**safety** {safety_value} {_label(human_set['safety_class'])}")
-        st.badge(SET_BY_COORDINATOR)
-    elif "safety_class" in evidence:
-        st.markdown(f'**safety** {safety_value} "{_text(evidence["safety_class"])}"')
-    else:
-        st.markdown(f"**safety** {NO_PHRASE}")
-
-    phrases = [phrase for field, phrase in sorted(evidence.items()) if field.startswith("health")]
-    if phrases:
-        quoted = "; ".join(f'"{_text(p)}"' for p in phrases)
-        st.markdown(f"**household health risk** {scoring.health_risk(job):.2f} {quoted}")
-    else:
-        st.markdown(f"**household health risk** {NO_PHRASE}")
-
-    community = art.communities[job.community_id]
-    access = "closed" if _closed(art, job.community_id, today) else "open"
-    st.markdown(
-        f"**logistics** {scoring.logistics(job):.2f} from geography: "
-        f"{float(community['km_to_base']):.0f} km {community['road_access']}, {access}"
-    )
+    """Render the score and its factors as a scannable, bordered summary list."""
+    score = f"{scored.score:.1f}" if scored is not None and scored.score is not None else "—"
+    rows = [
+        (
+            "Score",
+            score,
+            "urgency + safety + household health risk - logistics",
+        ),
+        *_factor_rows(art, job, scored, today, evidence, human_set),
+    ]
+    with st.container(border=True):
+        for label, value, source in rows:
+            label_column, value_column, source_column = st.columns([2, 1, 4])
+            label_column.markdown(f"**{label}**")
+            value_column.markdown(value)
+            source_column.markdown(source)
 
 
 def _evidence_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -> None:
@@ -219,58 +268,63 @@ def _reason_form(key: str, label: str) -> str | None:
 
 
 def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_review: bool) -> None:
-    st.markdown("**Actions**")
-    if in_review:
-        st.caption("Actions are disabled: this job is in the review queue.")
-        return
-    ids = [s.job.job_id for s in current]
-    if job.job_id not in ids:
-        st.caption("Actions are disabled: this job is not in today's ranking.")
-        return
-    job_id = job.job_id
-    rank = ids.index(job_id) + 1
-    moves = state.get_hand_moves()
-    audit_path = state.get_audit_path()
+    with st.container(border=True):
+        st.markdown("**Actions**")
+        if in_review:
+            st.caption("Actions are disabled: this job is in the review queue.")
+            return
+        ids = [s.job.job_id for s in current]
+        if job.job_id not in ids:
+            st.caption("Actions are disabled: this job is not in today's ranking.")
+            return
+        job_id = job.job_id
+        rank = ids.index(job_id) + 1
+        moves = state.get_hand_moves()
+        audit_path = state.get_audit_path()
 
-    def move(to_rank: int, reason: str) -> None:
-        audit.append(
-            audit_path,
-            audit.Override(today, job_id, rank, to_rank, reason, at=datetime.now()),
-        )
-        state.set_hand_moves((*moves, HandMove(job_id, rank, to_rank, reason)))
-        st.rerun()
-
-    if rank <= cap:
-        if rank > 1 and (reason := _reason_form(f"move_up_{job_id}", "Move up")):
-            move(rank - 1, reason)
-        if rank < len(ids) and (reason := _reason_form(f"move_down_{job_id}", "Move down")):
-            move(rank + 1, reason)
-    elif cap > 0:
-        displaced = ids[cap - 1]
-        st.caption(f"Promoting puts this job at rank {cap} and moves {displaced} to the backlog.")
-        if reason := _reason_form(f"promote_{job_id}", "Promote to today's list"):
-            audit.append(audit_path, audit.Promotion(today, job_id, displaced, reason))
-            state.set_hand_moves((*moves, HandMove(job_id, rank, cap, reason)))
+        def move(to_rank: int, reason: str) -> None:
+            audit.append(
+                audit_path,
+                audit.Override(today, job_id, rank, to_rank, reason, at=datetime.now()),
+            )
+            state.set_hand_moves((*moves, HandMove(job_id, rank, to_rank, reason)))
             st.rerun()
 
-    if reason := _reason_form(f"review_{job_id}", "Send to review"):
-        audit.append(
-            audit_path,
-            audit.HumanSet(
-                day=today,
-                job_id=job_id,
-                field=ranking_table.REVIEW_REQUESTED,
-                value=reason,
-                actor="coordinator",
-                reason=reason,
-            ),
-        )
-        state.set_hand_moves(ranking_table.without_moves_for(moves, job_id))
-        st.rerun()
+        if rank <= cap:
+            if rank > 1 and (reason := _reason_form(f"move_up_{job_id}", "Move up")):
+                move(rank - 1, reason)
+            if rank < len(ids) and (reason := _reason_form(f"move_down_{job_id}", "Move down")):
+                move(rank + 1, reason)
+        elif cap > 0:
+            displaced = ids[cap - 1]
+            st.caption(
+                f"Promoting puts this job at rank {cap} and moves {displaced} to the backlog."
+            )
+            if reason := _reason_form(f"promote_{job_id}", "Promote to today's list"):
+                audit.append(audit_path, audit.Promotion(today, job_id, displaced, reason))
+                state.set_hand_moves((*moves, HandMove(job_id, rank, cap, reason)))
+                st.rerun()
 
-    if any(m.job_id == job_id for m in moves) and st.button("Undo hand move", key=f"undo_{job_id}"):
-        state.set_hand_moves(ranking_table.without_moves_for(moves, job_id))
-        st.rerun()
+        if reason := _reason_form(f"review_{job_id}", "Send to review"):
+            audit.append(
+                audit_path,
+                audit.HumanSet(
+                    day=today,
+                    job_id=job_id,
+                    field=ranking_table.REVIEW_REQUESTED,
+                    value=reason,
+                    actor="coordinator",
+                    reason=reason,
+                ),
+            )
+            state.set_hand_moves(ranking_table.without_moves_for(moves, job_id))
+            st.rerun()
+
+        if any(m.job_id == job_id for m in moves) and st.button(
+            "Undo hand move", key=f"undo_{job_id}"
+        ):
+            state.set_hand_moves(ranking_table.without_moves_for(moves, job_id))
+            st.rerun()
 
 
 def render(
@@ -305,15 +359,15 @@ def render(
     safety = job.safety_class.value if job.safety_class is not None else "—"
     window = ranking_table.window_text(job, today) if job.safety_class is not None else "—"
     st.subheader(f"{selected} · {job.community_id}")
+    _header_badges(job, in_review, human_set)
     st.caption(f"{fault} · {safety} · {window}")
 
     if in_review or scored is None:
         st.warning(IN_REVIEW)
     else:
+        st.markdown("**Why it sits here.**")
         st.write(explain.why_sentence(scored, lam))
-        st.markdown(f"Score {scored.score:.1f}")
-    _factor_lines(art, job, scored, today, _evidence(art, selected), human_set)
-    _human_set_badges(human_set)
+    _summary_list(art, job, scored, today, _evidence(art, selected), human_set)
     _evidence_expander(art, selected, human_set)
     _policy_expander(art, job)
     _actions(job, current, cap, today, in_review)

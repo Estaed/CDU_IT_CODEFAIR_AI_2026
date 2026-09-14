@@ -77,8 +77,34 @@ def test_page_has_purpose_about_footer_and_one_stylesheet(page, tmp_path, no_net
 
 def test_navigation_registers_exactly_the_five_pages() -> None:
     main = (APP / "main.py").read_text("utf-8")
-    assert re.findall(r'st\.Page\("pages/(\w+)\.py"', main) == PAGES
+    # \s*: Task-46 wraps the first st.Page over several lines to stay under 100 columns.
+    assert re.findall(r'st\.Page\(\s*"pages/(\w+)\.py"', main) == PAGES
     assert set(p.stem for p in (APP / "pages").glob("*.py")) >= set(PAGES)
+
+
+# --- Task-46: logo, grouped icon navigation and the sidebar legend --------------------------
+
+
+def test_navigation_groups_the_pages_and_gives_each_a_material_icon() -> None:
+    main = (APP / "main.py").read_text("utf-8")
+    assert re.findall(r'"(Today\'s work|Evidence)":', main) == ["Today's work", "Evidence"]
+    assert re.findall(r'icon=":material/(\w+):"', main) == [
+        "dashboard",
+        "rule",
+        "route",
+        "question_answer",
+        "analytics",
+    ]
+
+
+def test_main_renders_the_logo_and_the_legend_offline(no_network) -> None:
+    # st.logo reads and validates both files at call time, so a green run proves they loaded.
+    at = AppTest.from_file(str(APP / "main.py")).run(timeout=60)
+    assert not at.exception
+    assert theme.LEGEND_LINE in [c.value for c in at.sidebar.caption]
+    for name in ("logo.svg", "logo-mark.svg"):
+        assert f'"{name}"' in (APP / "main.py").read_text("utf-8")
+        assert (APP / "static" / name).exists()
 
 
 def test_no_page_reads_session_state() -> None:

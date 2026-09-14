@@ -75,7 +75,7 @@ Presentation wave (added 2026-09-14 from `reports/research-ui-*-2026-09-14.md`, 
 Presentation wave 2 (added 2026-09-14 evening, Tarik's requests):
 
 - [x] Task-45: Today's list as readable job rows with one-click open
-- [ ] Task-46: Visual identity: logo, page icons, dark sidebar, tinted tiles
+- [x] Task-46: Visual identity: logo, page icons, dark sidebar, tinted tiles
 - [ ] Task-47: Review queue with less typing: reason chips, remembered name, drafted clarification
 - [x] Task-48: Provider switch and example reports for intake, from the UI
 - [x] Task-49: Map markers show their job count

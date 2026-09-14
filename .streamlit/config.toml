@@ -23,6 +23,8 @@ showSidebarBorder = true
 baseRadius = "0px"
 buttonRadius = "0px"
 font = "IBM Plex Sans, sans-serif"
+# primaryColor token; the accent doubles as the link colour
+linkColor = "#b4462a"
 headingFont = "IBM Plex Sans, sans-serif"
 codeFont = "Source Code Pro"
 chartCategoricalColors = ["#8a6400", "#007d79", "#9f1853", "#198038", "#2d5bbf", "#4d5358"]
@@ -50,11 +52,19 @@ grayColor = "#8d8d8d"
 grayBackgroundColor = "#f4f4f4"
 grayTextColor = "#525252"
 
-# Surface 1 / secondaryBackgroundColor token
+# Dark chrome: all 5 keys verified in streamlit.config._config_options_template (1.63.0).
+# showSidebarBorder is app-level only and stays in [theme] above.
 [theme.sidebar]
-backgroundColor = "#f4f4f4"
-# Border / borderColor token
-borderColor = "#e0e0e0"
+# textColor token, used as the sidebar ground
+backgroundColor = "#161616"
+# secondaryBackgroundColor token, used as the sidebar ink
+textColor = "#f4f4f4"
+# chart-palette locality.Town token (Carbon gray-90)
+secondaryBackgroundColor = "#262626"
+# grayTextColor token; the research note's Carbon gray-80 is in no token file, this is nearest
+borderColor = "#525252"
+# primaryColor token: the active-page indicator
+primaryColor = "#b4462a"
 
 [[theme.fontFaces]]
 family = "IBM Plex Sans"

@@ -17,3 +17,15 @@ button[data-baseweb="tab"][aria-selected="true"]::after {
 [data-testid="stMetricLabel"] {
   font-size: 0.875rem;
 }
+
+/* checked against Streamlit 1.63.0; unofficial */
+[data-testid="stMetric"] {
+  background-color: #f4f4f4;
+  border-top: 3px solid #b4462a;
+  padding: 0.75rem 1rem;
+}
+
+/* checked against Streamlit 1.63.0; unofficial */
+[data-testid="stCaptionContainer"] {
+  color: #525252;
+}

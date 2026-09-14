@@ -1,6 +1,6 @@
 # Task-46: Visual identity: logo, page icons, dark sidebar, contrast, legend
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `claude` · effort `high` · plan mode **no**
 > *Why:* Tarik (2026-09-14): "more colour, a real identity, logos and icons", still a government internal tool. The direction is fixed by `reports/research-ui-visual-examples-2026-09-14.md` ("Recommended visual direction"): dark sidebar chrome through `[theme.sidebar]` keys, white canvas, terracotta used structurally, a text-based wordmark (no crest), bundled Material icons.

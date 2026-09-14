@@ -28,9 +28,19 @@ GRIDLINE = "#e0e0e0"
 AXIS_LABEL = "#525252"
 STROKE_WIDTH = 2
 PROVENANCE_LINE = "Geography real (BushTel/ABS); events synthetic"
+LEGEND_LINE = (
+    "Colour key — class: Immediate red, Urgent orange, Routine grey · "
+    "badges: Needs a human yellow, Set by coordinator grey · "
+    "map: one dot per community, size = open jobs, colour = region."
+)
 
 
 def inject_css() -> None:
     """Add the scoped application stylesheet after page configuration."""
     css = (Path(__file__).parent / "static" / "theme.css").read_text("utf-8")
     st.html(f"<style>{css}</style>")
+
+
+def legend() -> None:
+    """Render the one-line colour key; main.py puts it in the sidebar for every page."""
+    st.caption(LEGEND_LINE)

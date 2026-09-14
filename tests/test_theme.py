@@ -4,6 +4,10 @@ import json
 import re
 import tomllib
 from pathlib import Path
+from xml.etree import ElementTree
+
+import streamlit
+from streamlit import config as st_config
 
 from fair_turn.app import theme
 from fair_turn.core import constants
@@ -50,3 +54,64 @@ def test_only_theme_injects_styles_and_stylesheet_is_self_contained() -> None:
     assert not style_hits, style_hits
     assert "url(" not in css
     assert "@import" not in css
+
+
+# --- Task-46: dark sidebar chrome, logo files, bundled icon font -----------------------------
+
+SIDEBAR_KEYS = (
+    "backgroundColor",
+    "textColor",
+    "secondaryBackgroundColor",
+    "borderColor",
+    "primaryColor",
+)
+SVG_NAMESPACE = "http://www.w3.org/2000/svg"
+
+
+def _allowed_hexes() -> set[str]:
+    design = ROOT / "design" / "design-system"
+    text = (design / "tokens.json").read_text("utf-8") + (design / "chart-palette.json").read_text(
+        "utf-8"
+    )
+    return set(HEX.findall(text))
+
+
+def test_sidebar_is_dark_chrome_through_config_keys_traced_to_tokens() -> None:
+    sidebar = tomllib.loads((ROOT / ".streamlit" / "config.toml").read_text("utf-8"))["theme"][
+        "sidebar"
+    ]
+    assert set(sidebar) == set(SIDEBAR_KEYS)
+    for key in SIDEBAR_KEYS:
+        assert f"theme.sidebar.{key}" in st_config._config_options_template
+        assert sidebar[key] in _allowed_hexes()
+    assert sidebar["backgroundColor"] == "#161616"  # dark ground, not the old #f4f4f4
+    assert "theme.sidebar.showSidebarBorder" not in st_config._config_options_template
+
+
+def test_link_colour_is_the_accent_token() -> None:
+    theme_config = tomllib.loads((ROOT / ".streamlit" / "config.toml").read_text("utf-8"))["theme"]
+    assert theme_config["linkColor"] == theme_config["primaryColor"]
+
+
+def test_logo_svgs_are_hand_written_offline_xml() -> None:
+    for name, box in (("logo.svg", "0 0 160 32"), ("logo-mark.svg", "0 0 32 32")):
+        text = (APP / "static" / name).read_text("utf-8")
+        root = ElementTree.fromstring(text)
+        assert root.tag == f"{{{SVG_NAMESPACE}}}svg"
+        assert root.get("viewBox") == box
+        assert not list(root.iter(f"{{{SVG_NAMESPACE}}}script"))
+        assert "xlink" not in text and "url(" not in text
+        assert "http" not in text.replace(SVG_NAMESPACE, "")  # only the XML namespace
+        assert len(text.splitlines()) < 25
+
+
+def test_material_icon_font_ships_with_streamlit() -> None:
+    media = Path(streamlit.__file__).parent / "static" / "static" / "media"
+    assert list(media.glob("MaterialSymbols-Rounded.*.woff2"))
+
+
+def test_stylesheet_rules_the_kpi_tile_and_raises_caption_contrast() -> None:
+    css = (APP / "static" / "theme.css").read_text("utf-8")
+    assert "border-top: 3px solid #b4462a" in css
+    assert '[data-testid="stCaptionContainer"]' in css and "color: #525252;" in css
+    assert len(css.splitlines()) < 60

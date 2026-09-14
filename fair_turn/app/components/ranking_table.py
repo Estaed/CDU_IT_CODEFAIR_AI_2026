@@ -129,6 +129,15 @@ def short_id(job_id: str) -> str:
     return f"#{int(number)}"
 
 
+def community_label(community_id: str) -> str:
+    """Region words in title case, the pseudonymous code as it is:
+    ``CENTRAL AUSTRALIA R-01`` shows as ``Central Australia R-01``."""
+    return " ".join(
+        word.capitalize() if word.rstrip(",").isalpha() else word
+        for word in community_id.split(" ")
+    )
+
+
 def rank_change(places: int) -> str:
     """``places`` is how many places higher the job sits at the current lam."""
     if places > 0:

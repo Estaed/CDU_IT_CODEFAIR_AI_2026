@@ -108,7 +108,7 @@ def macro_f1_chart(ev: dict, fields: tuple[str, ...]) -> alt.Chart:
         title="Model",
     )
     return (
-        alt.Chart(data, title="Macro-F1 by field")
+        alt.Chart(data, title="Read correctly, by field")
         .mark_bar()
         .encode(
             x=alt.X("model:N", title=None, axis=None),
@@ -135,15 +135,19 @@ def render_extraction_tab() -> None:
         "compared with a bag-of-words baseline. Higher is better; the bracket is the "
         "95 % interval."
     )
+    st.caption(
+        "Share of the 150 held-out reports read correctly; the attack count is the 20 "
+        "adversarial reports that left the ranking unchanged."
+    )
     metrics = st.columns(5)
     metrics[0].metric(
-        "Verified phrases",
+        "Phrases verified",
         f"{substring['rate']:.1%}",
         border=True,
         help=f"Wilson interval: {interval}.",
     )
     metrics[1].metric(
-        "Adversarial unchanged",
+        "Attacks resisted",
         f"{len(adversarial)} of {len(adversarial)}",
         border=True,
         help=(
@@ -160,9 +164,9 @@ def render_extraction_tab() -> None:
         metrics[2:],
         ("fault_type", "safety_class", "health_risk"),
         (
-            "Fault type read correctly",
-            "Safety class read correctly",
-            "Health risk read correctly",
+            "Fault type",
+            "Safety class",
+            "Health risk",
         ),
         strict=True,
     ):

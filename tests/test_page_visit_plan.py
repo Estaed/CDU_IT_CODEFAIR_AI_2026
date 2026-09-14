@@ -25,7 +25,7 @@ RULE = "Distance chooses which crew goes, never which job is served. The jobs ar
 KM_METRICS = (
     "Road km, this signed list",
     "Road km, efficiency-first list",
-    "Road km cost of today's weighting",
+    "Extra road km for today's weighting",
 )
 
 
@@ -216,6 +216,19 @@ def test_a_new_signature_supersedes_an_accepted_plan(tmp_path, art) -> None:
     text = _page_text(at)
     assert "Plan status: Superseded" in text
     assert "Built on v1; sign-off v2 supersedes it — rebuild" in text
+
+
+def test_efficiency_first_side_compares_only_the_jobs_still_open(tmp_path, art) -> None:
+    audit_path = tmp_path / "audit.jsonl"
+    road_a, road_b = _road_pair(art)
+    _sign(audit_path, 1, [road_a, road_b, "JR-2025-99999"], "A. Coordinator")
+
+    at = _open(tmp_path, audit_path)
+    text = _page_text(at)
+    assert "1 signed jobs are no longer open, so both sides compare the 2 jobs still open." in text
+    plan = at.session_state["plan"]
+    signed_road_stops = sum(len(cp.stops) for cp in plan.crews)
+    assert signed_road_stops == 2
 
 
 def test_no_hours_appear_anywhere_on_the_page(tmp_path, art) -> None:

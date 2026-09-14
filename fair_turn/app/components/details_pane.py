@@ -48,11 +48,6 @@ def _text(value: str) -> str:
     return highlight.render(value, [])
 
 
-def _community_label(community_id: str) -> str:
-    """``CENTRAL AUSTRALIA R-01`` reads as ``Central Australia R-01``; the code stays."""
-    return " ".join(word.title() if word.isalpha() else word for word in community_id.split())
-
-
 def _closed(art: Artefacts, community_id: str, today: date) -> bool:
     return any(
         c["community_id"] == community_id
@@ -76,13 +71,22 @@ def _report_text(art: Artefacts, job_id: str) -> str:
     )
 
 
-def _select(options: list[str], selected: str | None) -> str | None:
+def _select_label(job: Job) -> str:
+    fault = _label(job.fault_type.value) if job.fault_type is not None else "fault type not set"
+    return (
+        f"{ranking_table.short_id(job.job_id)} · "
+        f"{ranking_table.community_label(job.community_id)} · {fault}"
+    )
+
+
+def _select(options: list[str], selected: str | None, by_id: dict[str, Job]) -> str | None:
     """The keyboard path into the pane: one selectbox over every open job."""
     choice = st.selectbox(
         "Select job",
         options,
         index=options.index(selected) if selected in options else None,
         placeholder="Choose a job",
+        format_func=lambda job_id: _select_label(by_id[job_id]),
     )
     if choice is not None and choice != selected:
         state.set_selected_job_id(choice)
@@ -393,7 +397,7 @@ def render(
     """The pane for the selected job; ``jobs`` are the open jobs in the region, ``current``
     the ranking after hand moves, ``map_choice`` a community picked on the map."""
     by_id = {j.job_id: j for j in jobs}
-    selected = _select(sorted(by_id), state.get_selected_job_id())
+    selected = _select(sorted(by_id), state.get_selected_job_id(), by_id)
     _map_choice(map_choice, selected)
     if selected is None:
         st.info(NOTHING_SELECTED)
@@ -411,7 +415,8 @@ def render(
     fault = _label(job.fault_type.value) if job.fault_type is not None else "—"
     safety = job.safety_class.value if job.safety_class is not None else "—"
     window = _window_label(job, today)
-    st.subheader(f"Job {ranking_table.short_id(selected)} · {_community_label(job.community_id)}")
+    community = ranking_table.community_label(job.community_id)
+    st.subheader(f"Job {ranking_table.short_id(selected)} · {community}")
     _header_badges(job, in_review, human_set)
     st.caption(f"Registration {selected} · {fault} · {safety} · {window}")
 

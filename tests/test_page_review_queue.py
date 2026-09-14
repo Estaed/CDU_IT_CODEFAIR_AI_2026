@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
+from fair_turn.app.components import ranking_table
 from fair_turn.core import audit, wording
 from fair_turn.data import artefacts, runtime
 
@@ -62,6 +63,10 @@ def _wrapper_script(tmp_path: Path) -> Path:
     return script
 
 
+def _short(job_id: str) -> str:
+    return ranking_table.short_id(job_id)
+
+
 def _click_next(at: AppTest) -> AppTest:
     return next(b for b in at.button if b.label == "Next").click().run(timeout=60)
 
@@ -85,10 +90,55 @@ def test_dropped_value_never_appears_on_the_page(art, tmp_path) -> None:
     at = AppTest.from_file(str(script)).run(timeout=60)
     assert not at.exception
 
-    while job_id not in at.header[0].value:
+    while _short(job_id) not in at.header[0].value:
         at = _click_next(at)
 
     assert dropped_value not in _page_text(at)
+
+
+FAULT_WORDS = {
+    v.replace("_", " ")
+    for v in (
+        "electrical",
+        "plumbing_water",
+        "sewer_drainage",
+        "cooling",
+        "hot_water",
+        "roof_structure",
+        "doors_locks_security",
+        "stove_cooking",
+        "pests",
+        "other",
+    )
+}
+SAFETY_WORDS = {"immediate", "urgent", "routine"}
+
+
+def test_value_column_shows_the_verified_value_not_the_source_phrase(tmp_path) -> None:
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+    n = int(at.header[0].value.split(" of ")[1].split(" — ")[0])
+    found = False
+    for _ in range(n):
+        frame = at.dataframe[0].value
+        for _, row in frame.iterrows():
+            if row["Status"] != "Verified":
+                continue
+            if row["Field"] == "fault type":
+                assert row["Value"] in FAULT_WORDS
+                found = True
+            elif row["Field"] == "safety class":
+                assert row["Value"] in SAFETY_WORDS
+                found = True
+        if found:
+            break
+        at = _click_next(at)
+    assert found, "no verified fault type or safety class field found in the queue"
+
+
+def test_report_and_table_are_full_width_not_two_columns() -> None:
+    text = REVIEW_QUEUE.read_text(encoding="utf-8")
+    assert "left, right = st.columns(2)" not in text
+    assert 'width="stretch"' in text
 
 
 def test_queue_shows_progress_membership_rule_and_field_cue(tmp_path) -> None:
@@ -121,7 +171,7 @@ def test_mark_rankable_writes_one_runtime_and_one_audit_record_and_reports_rank(
     runtime_path = tmp_path / "runtime.jsonl"
 
     at = AppTest.from_file(str(script)).run(timeout=60)
-    while job_id not in at.header[0].value:
+    while _short(job_id) not in at.header[0].value:
         at = _click_next(at)
 
     at.selectbox(key=f"set_{field}_{job_id}").select_index(1).run(timeout=60)
@@ -149,7 +199,7 @@ def test_mark_rankable_with_empty_reason_writes_nothing_and_shows_error(art, tmp
     runtime_path = tmp_path / "runtime.jsonl"
 
     at = AppTest.from_file(str(script)).run(timeout=60)
-    while job_id not in at.header[0].value:
+    while _short(job_id) not in at.header[0].value:
         at = _click_next(at)
 
     at.selectbox(key=f"set_{field}_{job_id}").select_index(1).run(timeout=60)
@@ -184,7 +234,7 @@ def test_review_requested_job_without_missing_fields_reports_rank(art, tmp_path)
     )
 
     at = AppTest.from_file(str(script)).run(timeout=60)
-    assert job_id in at.header[0].value
+    assert _short(job_id) in at.header[0].value
 
     at.text_input(key=f"reason_{job_id}").set_value("Review complete.").run(timeout=60)
     at.button(key=f"mark_{job_id}").click().run(timeout=60)
@@ -247,13 +297,17 @@ def test_previous_and_next_wrap_at_both_ends(art, tmp_path) -> None:
     assert "1 of" in at.header[0].value
 
 
-def test_a_focus_from_the_workspace_moves_the_cursor_once(tmp_path) -> None:
+def test_a_focus_from_the_workspace_moves_the_cursor_once(art, tmp_path) -> None:
     at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
     n = int(at.header[0].value.split(" of ")[1].split(" — ")[0])
     if n < 3:
         pytest.skip("fewer than three committed jobs need review; focus cannot be exercised")
     at = _click_next(_click_next(at))
-    third = at.header[0].value.split(" — ")[0]
+    header_prefix = at.header[0].value.split(" — ")[0]  # "Job #644 · Top End R-02"
+    short = header_prefix.split(" ")[1]
+    third = next(
+        label["job_id"] for label in art.labels if ranking_table.short_id(label["job_id"]) == short
+    )
 
     script = _wrapper_script(tmp_path)
     body = script.read_text(encoding="utf-8")
@@ -261,7 +315,7 @@ def test_a_focus_from_the_workspace_moves_the_cursor_once(tmp_path) -> None:
     script.write_text(body.replace("exec(", focus + "exec(", 1), encoding="utf-8")
     focused = AppTest.from_file(str(script)).run(timeout=60)
     assert not focused.exception
-    assert focused.header[0].value.startswith(f"{third} — ")
+    assert focused.header[0].value.startswith(f"{header_prefix} — ")
     assert focused.session_state["review_cursor"] == 2
     assert focused.session_state["review_focus"] is None
 
@@ -296,7 +350,7 @@ def test_chip_is_the_reason_when_the_free_text_is_empty(art, tmp_path) -> None:
     runtime_path = tmp_path / "runtime.jsonl"
 
     at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
-    while job_id not in at.header[0].value:
+    while _short(job_id) not in at.header[0].value:
         at = _click_next(at)
 
     chip = REASON_PRESETS[2]
@@ -313,7 +367,7 @@ def test_free_text_overrides_the_chip(art, tmp_path) -> None:
     runtime_path = tmp_path / "runtime.jsonl"
 
     at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
-    while job_id not in at.header[0].value:
+    while _short(job_id) not in at.header[0].value:
         at = _click_next(at)
 
     at.selectbox(key=f"set_{field}_{job_id}").select_index(1).run(timeout=60)
@@ -347,7 +401,7 @@ def test_request_clarification_drafts_the_message_and_sends_it_as_the_reason(art
     audit_path = tmp_path / "audit.jsonl"
 
     at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
-    while job_id not in at.header[0].value:
+    while _short(job_id) not in at.header[0].value:
         at = _click_next(at)
 
     assert any(e.label == "Request clarification" for e in at.get("expander"))
@@ -394,7 +448,7 @@ def test_clarification_draft_falls_back_when_no_required_field_is_missing(tmp_pa
 
     at = AppTest.from_file(str(script)).run(timeout=60)
     assert not at.exception
-    assert job_id in at.header[0].value
+    assert _short(job_id) in at.header[0].value
 
     draft = at.text_area(key=f"clarify_msg_{job_id}").value
     assert "enough about the repair" in draft

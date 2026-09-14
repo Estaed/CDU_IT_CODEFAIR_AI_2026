@@ -27,7 +27,15 @@ st.caption(theme.PROVENANCE_LINE)
 
 
 def _fault_label(job) -> str:
-    return job.fault_type.value.replace("_", " ") if job.fault_type else "—"
+    if not job.fault_type:
+        return "—"
+    text = job.fault_type.value.replace("_", " ")
+    return text[0].upper() + text[1:]
+
+
+def _signed_km(value: float) -> str:
+    sign = "+" if value >= 0 else "−"
+    return f"{sign}{abs(value):,.0f} km"
 
 
 def _stop_access(road_access: str) -> str:
@@ -117,8 +125,9 @@ else:
         current_plan = visit_plan.plan(signoff.batch_version, stops, crews)
         state.set_plan(current_plan)
 
+    n_open = len(stops)
     efficiency_ids = [s.job.job_id for s in scoring.rank(open_today, today, EFFICIENCY_LAM)][
-        : len(signoff.today_job_ids)
+        :n_open
     ]
     efficiency_plan = visit_plan.plan(signoff.batch_version, _stops(efficiency_ids)[0], crews)
 
@@ -133,12 +142,18 @@ else:
         border=True,
     )
     cost_col.metric(
-        "Road km cost of today's weighting",
-        f"{current_plan.road_km - efficiency_plan.road_km:+,.0f} km",
+        "Extra road km for today's weighting",
+        _signed_km(current_plan.road_km - efficiency_plan.road_km),
+        help="Positive means today's signed list drives further than the efficiency-first "
+        "list. It is the travel price of the equity choice: shown, never optimised away.",
         border=True,
     )
 
     if no_longer_open:
+        st.caption(
+            f"{len(no_longer_open)} signed jobs are no longer open, so both sides compare "
+            f"the {n_open} jobs still open."
+        )
         st.caption(
             f"No longer open: {len(no_longer_open)} "
             f"({', '.join(_job_label(j) for j in no_longer_open)})"
@@ -147,27 +162,28 @@ else:
     for crew_plan in current_plan.crews:
         crew = crew_plan.crew
         with st.container(border=True):
-            st.markdown(f"**Crew {crew.crew_id}** (base {crew.base}, {len(crew_plan.stops)} stops)")
+            n_stops = len(crew_plan.stops)
+            stops_word = "stop" if n_stops == 1 else "stops"
+            st.markdown(f"**Crew {crew.crew_id}** · {n_stops} {stops_word}")
             if not crew_plan.stops:
                 st.markdown("No signed road jobs for this crew")
                 continue
             for index, stop in enumerate(crew_plan.stops, start=1):
                 job = jobs_by_id[stop.job_id]
                 leg = crew_plan.legs_km[index - 1]
-                flag = (
-                    " — travel day (capacity model)" if crew_plan.travel_day_legs[index - 1] else ""
-                )
+                flag = " · travel day" if crew_plan.travel_day_legs[index - 1] else ""
                 row_text, row_button = st.columns([6, 1])
                 row_text.markdown(
-                    f"{index}. {_job_label(stop.job_id)}  {stop.community_id}  "
-                    f"{_fault_label(job)}  signed rank {stop.signed_rank}  "
+                    f"{index}. {_job_label(stop.job_id)} · "
+                    f"{ranking_table.community_label(stop.community_id)} · "
+                    f"{_fault_label(job)} · signed rank {stop.signed_rank} · "
                     f"{leg:,.0f} km{flag}"
                 )
                 if row_button.button("Select", key=f"visit_select_{crew.crew_id}_{stop.job_id}"):
                     state.set_selected_job_id(stop.job_id)
-            back_flag = " — travel day (capacity model)" if crew_plan.travel_day_legs[-1] else ""
-            st.markdown(f"Back to {crew.base}  {crew_plan.legs_km[-1]:,.0f} km{back_flag}")
-            st.markdown(f"Crew total {crew_plan.km:,.0f} km")
+            back_flag = " · travel day" if crew_plan.travel_day_legs[-1] else ""
+            st.markdown(f"Back to {crew.base} · {crew_plan.legs_km[-1]:,.0f} km{back_flag}")
+            st.markdown(f"Crew total: {crew_plan.km:,.0f} km")
             st.caption("Registrations: " + ", ".join(stop.job_id for stop in crew_plan.stops))
 
     st.subheader("Signed work needing manual coordination")

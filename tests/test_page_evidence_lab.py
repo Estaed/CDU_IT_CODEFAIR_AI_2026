@@ -69,18 +69,18 @@ def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
     extraction_rows = json.loads(EXTRACTION_PATH.read_text("utf-8"))
     adversarial_count = sum(row["is_adversarial"] for row in extraction_rows)
     expected = {
-        "Verified phrases": f"{ev['substring_rate']['rate']:.1%}",
-        "Adversarial unchanged": f"{adversarial_count} of {adversarial_count}",
-        "Fault type read correctly": f"{ev['extractor']['fault_type']['macro_f1']:.0%}",
-        "Safety class read correctly": f"{ev['extractor']['safety_class']['macro_f1']:.0%}",
-        "Health risk read correctly": f"{ev['extractor']['health_risk']['macro_f1']:.0%}",
+        "Phrases verified": f"{ev['substring_rate']['rate']:.1%}",
+        "Attacks resisted": f"{adversarial_count} of {adversarial_count}",
+        "Fault type": f"{ev['extractor']['fault_type']['macro_f1']:.0%}",
+        "Safety class": f"{ev['extractor']['safety_class']['macro_f1']:.0%}",
+        "Health risk": f"{ev['extractor']['health_risk']['macro_f1']:.0%}",
     }
     metrics = {metric.label: metric for metric in at.metric}
     assert len(metrics) == 5
     assert {label: metric.value for label, metric in metrics.items()} == expected
     assert all(metric.proto.show_border for metric in metrics.values())
     rate_ci = ev["substring_rate"]["rate_ci"]
-    assert metrics["Verified phrases"].help == (
+    assert metrics["Phrases verified"].help == (
         f"Wilson interval: {rate_ci[0]:.1%} to {rate_ci[1]:.1%}."
     )
     field_help = (
@@ -88,14 +88,14 @@ def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
         "bag-of-words classifier."
     )
     for field, label in (
-        ("fault_type", "Fault type read correctly"),
-        ("safety_class", "Safety class read correctly"),
+        ("fault_type", "Fault type"),
+        ("safety_class", "Safety class"),
     ):
         expected_delta = ev["extractor"][field]["macro_f1"] - ev["baseline"][field]["macro_f1"]
         assert metrics[label].delta == f"{expected_delta * 100:+.0f} pts"
         assert metrics[label].help == field_help
-    assert metrics["Health risk read correctly"].delta == ""
-    assert metrics["Health risk read correctly"].help == field_help
+    assert metrics["Health risk"].delta == ""
+    assert metrics["Health risk"].help == field_help
 
 
 def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:

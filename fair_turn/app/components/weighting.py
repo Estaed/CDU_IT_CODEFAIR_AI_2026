@@ -53,6 +53,11 @@ def clear_filters() -> None:
     st.session_state[SAFETY_FILTER_KEY] = []
 
 
+def _pill_label(value: str) -> str:
+    """``plumbing_water`` reads as ``Plumbing water``; the stored value stays the enum."""
+    return value.replace("_", " ").capitalize()
+
+
 def filters() -> tuple[str, list[str], list[str]]:
     """Region, fault types and safety classes; returns ``(region, faults, safeties)``."""
     regions = [state.ALL_REGIONS, *constants.REGIONS]
@@ -63,12 +68,14 @@ def filters() -> tuple[str, list[str], list[str]]:
         [f.value for f in FaultType],
         selection_mode="multi",
         key=FAULT_FILTER_KEY,
+        format_func=_pill_label,
     )
     safeties = st.pills(
         "Safety class",
         list(constants.SAFETY_CLASSES),
         selection_mode="multi",
         key=SAFETY_FILTER_KEY,
+        format_func=_pill_label,
     )
     st.button("Clear filters", on_click=clear_filters, key="workspace_clear_filters")
     st.caption(

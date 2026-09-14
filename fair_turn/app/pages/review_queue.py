@@ -65,8 +65,31 @@ class QueueItem:
     community_id: str
     text: str
     kept: dict[str, str]  # field -> verified phrase
+    values: dict[str, str | bool]  # field -> verified value, for the fields in kept
     missing: dict[str, str]  # required field -> reason it is not set
     source: Literal["build", "intake", "review_requested"]
+
+
+def _field_words(field: str, value: str | bool) -> str:
+    """A verified value in words: an enum's underscore joined with spaces, a boolean spelled
+    out, free text left as it is."""
+    if isinstance(value, bool):
+        return "yes" if value else "no"
+    return value.replace("_", " ")
+
+
+def _kept_values(row) -> dict[str, str | bool]:
+    return {field: evidence.value for field, evidence in row.kept.items() if ":" not in field}
+
+
+def _kept_values_intake(verified: verify_spans.VerifiedExtraction) -> dict[str, str | bool]:
+    candidates = {
+        "fault_type": verified.fault_type,
+        "safety_class": verified.safety_class,
+        "location_mentioned": verified.location_mentioned,
+        "crew_or_access_note": verified.crew_or_access_note,
+    }
+    return {field: value for field, value in candidates.items() if field in verified.kept}
 
 
 def clarification_draft(missing_fields: tuple[str, ...], job_id: str) -> str:
@@ -105,7 +128,15 @@ def _build_items(art: Artefacts, today: date) -> list[QueueItem]:
         if not missing:
             continue
         items.append(
-            QueueItem(job.job_id, job.community_id, art.reports[job.job_id], kept, missing, "build")
+            QueueItem(
+                job.job_id,
+                job.community_id,
+                art.reports[job.job_id],
+                kept,
+                _kept_values(row),
+                missing,
+                "build",
+            )
         )
     return items
 
@@ -119,9 +150,11 @@ def _intake_items() -> list[QueueItem]:
             reason = f"not extracted: {rec.validation}"
             missing = dict.fromkeys(verify_spans.REQUIRED_FIELDS, reason)
             kept: dict[str, str] = {}
+            values: dict[str, str | bool] = {}
         elif rec.status == "needs_review":
             verified = verify_spans.verify(rec.text, rec.extraction or {})
             kept = dict(verified.kept)
+            values = _kept_values_intake(verified)
             missing = {
                 field: _reason(field, verified.dropped)
                 for field in verify_spans.REQUIRED_FIELDS
@@ -129,7 +162,9 @@ def _intake_items() -> list[QueueItem]:
             }
         else:
             continue
-        items.append(QueueItem(rec.job_id, rec.community_id, rec.text, kept, missing, "intake"))
+        items.append(
+            QueueItem(rec.job_id, rec.community_id, rec.text, kept, values, missing, "intake")
+        )
     return items
 
 
@@ -154,6 +189,7 @@ def _review_requested_items(art: Artefacts, today: date) -> list[QueueItem]:
                 job.community_id,
                 art.reports[job.job_id],
                 kept,
+                _kept_values(row),
                 {"review_requested": f"sent to review: {record.reason}"},
                 "review_requested",
             )
@@ -182,7 +218,8 @@ def _table_records(item: QueueItem, human_set: dict[str, str]) -> list[dict[str,
             phrase = "; ".join(sorted(factors.values())) or "—"
             badge = "Verified" if factors else "—"
         elif field in item.kept:
-            value = phrase = item.kept[field]
+            phrase = item.kept[field]
+            value = _field_words(field, item.values.get(field, phrase))
             badge = "Verified"
         elif field in human_set:
             value, phrase, badge = human_set[field], "—", "Set by coordinator"
@@ -292,7 +329,9 @@ else:
 
     fields_label = ", ".join(FIELD_LABELS.get(f, f) for f in item.missing) or "fields"
     st.header(
-        f"{item.job_id} — {item.community_id} — {cursor + 1} of {n} — {fields_label} needs review"
+        f"Job {ranking_table.short_id(item.job_id)} · "
+        f"{ranking_table.community_label(item.community_id)}"
+        f" — {cursor + 1} of {n} — {fields_label} needs review"
     )
 
     nav_prev, nav_next = st.columns(2)
@@ -305,18 +344,15 @@ else:
             state.set_review_cursor((cursor + 1) % n)
             st.rerun()
 
-    left, right = st.columns(2)
-    with left:
-        st.markdown(render(item.text, spans(item.text, item.kept)))
-    with right:
-        st.dataframe(
-            pd.DataFrame(_table_records(item, human_set)),
-            column_config={
-                "Phrase or reason": st.column_config.TextColumn("Phrase or reason", width="large")
-            },
-            hide_index=True,
-            width="stretch",
-        )
+    st.markdown(render(item.text, spans(item.text, item.kept)))
+    st.dataframe(
+        pd.DataFrame(_table_records(item, human_set)),
+        column_config={
+            "Phrase or reason": st.column_config.TextColumn("Phrase or reason", width="large")
+        },
+        hide_index=True,
+        width="stretch",
+    )
 
     settable_missing = [f for f in item.missing if f in HUMAN_SETTABLE]
     chosen: dict[str, str] = {}

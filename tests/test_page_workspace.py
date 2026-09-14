@@ -153,7 +153,8 @@ def test_opening_a_row_selects_that_job(tmp_path) -> None:
     assert f"{second.job_id} · {second.community_id}" in [s.value for s in at.subheader]
     values = [markdown.value for markdown in at.tabs[0].markdown]
     position = values.index(f"`{second.job_id}`")
-    assert f":orange-badge[{job_rows.SELECTED}]" in values[:position]
+    # The Selected badge sits under the Open button, after the id in the same row.
+    assert f":orange-badge[{job_rows.SELECTED}]" in values[position : position + 8]
 
 
 def test_backlog_search_narrows_the_frame_only(tmp_path) -> None:

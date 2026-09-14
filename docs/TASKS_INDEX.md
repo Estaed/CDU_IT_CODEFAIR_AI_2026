@@ -97,6 +97,9 @@ amendments dated that night):
 - [x] Field checks in the job pane (Fields are right / Fix a field) with an audit record, row badges and the sign-off count; Today's steps strip (`reports/research-review-workflow-2026-09-14.md`)
 - [x] Plain-word "What to do here" steps and term definitions on the visit plan, tenant answer and Evidence lab
 - [x] Material icons instead of tick glyphs, two-line job rows, Evidence lab interval wording
+- [x] Per-job decisions (2026-09-15, Tarik's decision): To decide / Accepted / Needs a human / Backlog, read tick, Accept or Reject with a reason, undo, sign only when nothing is left to decide
+- [x] Keyboard component (J, K, A, X), metric tiles without false zero arrows, DEV report kinds
+- [ ] Keyboard and DEV kinds wired into the workspace; effect and metrics from the decided list (in progress)
 
 ## Routing
 

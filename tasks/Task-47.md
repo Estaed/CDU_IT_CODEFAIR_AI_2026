@@ -1,6 +1,6 @@
 # Task-47: Review queue with less typing: reason chips, remembered name, drafted clarification
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `claude` · effort `high` · plan mode **no**
 > *Why:* Tarik (2026-09-14) asked for the human's work here to shrink. The model may not pre-fill the field (PRD 3.2, Part 2 Key Constraints: the rejected model value never renders, so a "just accept" button would anchor the reviewer), so the saving comes from fewer keystrokes: preset reasons, a remembered name, and a templated clarification message.

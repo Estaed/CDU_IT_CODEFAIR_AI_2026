@@ -1,5 +1,7 @@
 """The review queue never shows a rejected model value, writes a human-set field only with
-a reason, reports the resulting rank, and its cursor wraps at both ends."""
+a reason, reports the resulting rank, and its cursor wraps at both ends. The reason may come
+from a chip, the name is remembered across jobs, and the clarification message is drafted
+from a template."""
 
 import socket
 from datetime import date
@@ -8,7 +10,7 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from fair_turn.core import audit
+from fair_turn.core import audit, wording
 from fair_turn.data import artefacts, runtime
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -243,3 +245,138 @@ def test_previous_and_next_wrap_at_both_ends(art, tmp_path) -> None:
 
     at = next(b for b in at.button if b.label == "Next").click().run(timeout=60)
     assert "1 of" in at.header[0].value
+
+
+# --- less typing: reason chips, a remembered name, a drafted clarification --------------------
+
+REASON_PRESETS = (
+    "Report names the appliance",
+    "Report describes the fault",
+    "Tenant confirmed by phone",
+    "Housing officer confirmed on site",
+    "Photo attached to the report",
+)
+ANCHORING_CAPTION = (
+    "The system does not suggest a value here. Showing its rejected guess would steer you, "
+    "so you set the field from the report."
+)
+MISSING_PHRASE = {"fault_type": "what has broken", "safety_class": "how urgent it is"}
+
+
+def test_reason_chips_offer_the_presets_and_the_anchoring_caption_is_shown(tmp_path) -> None:
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+
+    assert not at.exception
+    chips = next(p for p in at.pills if p.label == "Reason")
+    assert tuple(chips.options) == REASON_PRESETS
+    assert any(ANCHORING_CAPTION in caption.value for caption in at.caption)
+
+
+def test_chip_is_the_reason_when_the_free_text_is_empty(art, tmp_path) -> None:
+    job_id, field, _dropped = _job_with_dropped_required_field(art)
+    runtime_path = tmp_path / "runtime.jsonl"
+
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+    while job_id not in at.header[0].value:
+        at = _click_next(at)
+
+    chip = REASON_PRESETS[2]
+    at.selectbox(key=f"set_{field}_{job_id}").select_index(1).run(timeout=60)
+    at.pills(key=f"reason_chip_{job_id}").set_value(chip).run(timeout=60)
+    at.button(key=f"mark_{job_id}").click().run(timeout=60)
+    assert not at.exception
+
+    assert [r.reason for r in runtime.read(runtime_path)] == [chip]
+
+
+def test_free_text_overrides_the_chip(art, tmp_path) -> None:
+    job_id, field, _dropped = _job_with_dropped_required_field(art)
+    runtime_path = tmp_path / "runtime.jsonl"
+
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+    while job_id not in at.header[0].value:
+        at = _click_next(at)
+
+    at.selectbox(key=f"set_{field}_{job_id}").select_index(1).run(timeout=60)
+    at.pills(key=f"reason_chip_{job_id}").set_value(REASON_PRESETS[0]).run(timeout=60)
+    at.text_input(key=f"reason_{job_id}").set_value("Tenant called back").run(timeout=60)
+    at.button(key=f"mark_{job_id}").click().run(timeout=60)
+    assert not at.exception
+
+    assert [r.reason for r in runtime.read(runtime_path)] == ["Tenant called back"]
+
+
+def test_the_name_is_remembered_on_the_next_job(tmp_path) -> None:
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+    n = int(at.header[0].value.split(" of ")[1].split(" — ")[0])
+    if n < 2:
+        pytest.skip("fewer than two committed jobs need review; the next job cannot be reached")
+
+    name_input = next(i for i in at.text_input if i.label == "Your name")
+    at = name_input.set_value("Ngaire").run(timeout=60)
+    at = _click_next(at)
+
+    assert not at.exception
+    assert next(i for i in at.text_input if i.label == "Your name").value == "Ngaire"
+
+
+# --- the drafted clarification ----------------------------------------------------------------
+
+
+def test_request_clarification_drafts_the_message_and_sends_it_as_the_reason(art, tmp_path) -> None:
+    job_id, field, _dropped = _job_with_dropped_required_field(art)
+    audit_path = tmp_path / "audit.jsonl"
+
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+    while job_id not in at.header[0].value:
+        at = _click_next(at)
+
+    assert any(e.label == "Request clarification" for e in at.get("expander"))
+
+    draft = at.text_area(key=f"clarify_msg_{job_id}").value
+    assert job_id in draft
+    assert MISSING_PHRASE[field] in draft
+    assert "Community Housing Officer" in draft
+    assert wording.check(draft) == []
+    assert audit.read(audit_path) == [], "drafting alone must record nothing"
+
+    at = at.button(key=f"send_clarify_{job_id}").click().run(timeout=60)
+    assert not at.exception
+
+    records = audit.read(audit_path)
+    assert len(records) == 1
+    assert records[0].field == "clarification_requested"
+    assert records[0].reason == draft
+    assert any("Clarification requested." in message.value for message in at.success)
+
+
+def test_clarification_draft_falls_back_when_no_required_field_is_missing(tmp_path) -> None:
+    """A job sent back for review has no missing required field, so the draft asks the general
+    question rather than naming one."""
+    job_id = "JR-2025-00004"
+    script = _wrapper_script(tmp_path)
+    script.write_text(
+        script.read_text(encoding="utf-8").replace(
+            "exec(compile(", "state.set_review_cursor(-1)\nexec(compile(", 1
+        ),
+        encoding="utf-8",
+    )
+    audit.append(
+        tmp_path / "audit.jsonl",
+        audit.HumanSet(
+            day=date(2025, 12, 30),
+            job_id=job_id,
+            field="review_requested",
+            value="review",
+            actor="coordinator",
+            reason="Check the evidence before dispatch.",
+        ),
+    )
+
+    at = AppTest.from_file(str(script)).run(timeout=60)
+    assert not at.exception
+    assert job_id in at.header[0].value
+
+    draft = at.text_area(key=f"clarify_msg_{job_id}").value
+    assert "enough about the repair" in draft
+    assert wording.check(draft) == []

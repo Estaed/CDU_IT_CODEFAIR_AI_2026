@@ -1,6 +1,8 @@
 """PRD 3.2 Review queue: one job at a time, verbatim text beside the fields table, the
 missing field named with its reason (never the rejected model value); a human sets it with
-a reason and is told where the job lands."""
+a reason and is told where the job lands. The reason comes from a chip, the name is typed
+once per session and the clarification message is drafted from a template, so the common
+review costs three clicks and no typing."""
 
 from dataclasses import dataclass, replace
 from datetime import date
@@ -34,6 +36,27 @@ TABLE_FIELDS = (
     "location_mentioned",
     "crew_or_access_note",
 )
+REASON_PRESETS = (
+    "Report names the appliance",
+    "Report describes the fault",
+    "Tenant confirmed by phone",
+    "Housing officer confirmed on site",
+    "Photo attached to the report",
+)
+ANCHORING_CAPTION = (
+    "The system does not suggest a value here. Showing its rejected guess would steer you, "
+    "so you set the field from the report."
+)
+# field -> (what the report did not say, what to ask the tenant for)
+CLARIFICATION_QUESTIONS = {
+    "fault_type": ("what has broken", "which part of the house or appliance is faulty"),
+    "safety_class": (
+        "how urgent it is",
+        "whether anyone is without power, water, cooling or a safe way in",
+    ),
+}
+CLARIFICATION_FALLBACK = ("enough about the repair", "what has broken and how urgent it is")
+CLARIFY_BOX_HEIGHT = 160
 
 
 @dataclass(frozen=True)
@@ -44,6 +67,22 @@ class QueueItem:
     kept: dict[str, str]  # field -> verified phrase
     missing: dict[str, str]  # required field -> reason it is not set
     source: Literal["build", "intake", "review_requested"]
+
+
+def clarification_draft(missing_fields: tuple[str, ...], job_id: str) -> str:
+    """The message to the tenant, from a template over the missing required fields. No model
+    call: a drafted question the coordinator edits cannot be steered by the report it asks
+    about, and the text stays inside ``core.wording`` limits."""
+    pairs = [CLARIFICATION_QUESTIONS[f] for f in missing_fields if f in CLARIFICATION_QUESTIONS]
+    if not pairs:
+        pairs = [CLARIFICATION_FALLBACK]
+    what = " and ".join(pair[0] for pair in pairs)
+    question = " and ".join(pair[1] for pair in pairs)
+    return (
+        f"Hello, this is about repair {job_id}. Your report did not say {what}. "
+        f"Could you tell us {question}? "
+        "Reply to this message or call your Community Housing Officer."
+    )
 
 
 def _reason(field: str, dropped) -> str:
@@ -228,6 +267,7 @@ st.caption(
     "Jobs arrive here when a field has no matching words in the report, failed the schema, or was "
     "not extracted. The system never fills a field on its own."
 )
+st.caption(ANCHORING_CAPTION)
 
 today = state.get_today()
 queue = _queue(art, today)
@@ -284,18 +324,23 @@ else:
         if choice != "—":
             chosen[field] = choice
 
-    actor = st.text_input("Your name", value="coordinator", key=f"actor_{item.job_id}")
-    reason = st.text_input("Reason", value="", key=f"reason_{item.job_id}")
+    actor = st.text_input("Your name", value=state.get_actor(), key=f"actor_{item.job_id}")
+    if actor.strip():
+        state.set_actor(actor)
 
-    col_mark, col_open, col_clarify, col_leave = st.columns(4)
+    chip = st.pills(
+        "Reason", REASON_PRESETS, selection_mode="single", key=f"reason_chip_{item.job_id}"
+    )
+    other = st.text_input("Other reason (optional)", value="", key=f"reason_{item.job_id}")
+    reason = other.strip() or (chip or "")
+
+    col_mark, col_open, col_leave = st.columns(3)
     with col_mark:
         mark_clicked = st.button("Mark rankable", key=f"mark_{item.job_id}")
     with col_open:
         if st.button("Open in workspace", key=f"open_{item.job_id}"):
             state.set_selected_job_id(item.job_id)
             st.switch_page("pages/workspace.py")
-    with col_clarify:
-        clarify_clicked = st.button("Request clarification", key=f"clarify_{item.job_id}")
     with col_leave:
         leave_clicked = st.button("Leave in queue", key=f"leave_{item.job_id}")
 
@@ -331,22 +376,32 @@ else:
             else:
                 st.success(f"{item.job_id} recorded.")
 
-    if clarify_clicked:
-        if not reason.strip():
-            st.error("A reason is required.")
-        else:
-            audit.append(
-                state.get_audit_path(),
-                audit.HumanSet(
-                    day=today,
-                    job_id=item.job_id,
-                    field="clarification_requested",
-                    value=reason,
-                    actor=actor,
-                    reason=reason,
-                ),
-            )
-            st.success("Clarification requested.")
+    # An expander, not a button that reveals the box: which job has a draft open would have to
+    # live in session state, and no page reads it (tests/test_app_smoke.py). The draft is
+    # written on every run, so the coordinator edits rather than types.
+    with st.expander("Request clarification"):
+        message = st.text_area(
+            "Message to the tenant",
+            value=clarification_draft(tuple(item.missing), item.job_id),
+            height=CLARIFY_BOX_HEIGHT,
+            key=f"clarify_msg_{item.job_id}",
+        )
+        if st.button("Send clarification", key=f"send_clarify_{item.job_id}"):
+            if not message.strip():
+                st.error("A reason is required.")
+            else:
+                audit.append(
+                    state.get_audit_path(),
+                    audit.HumanSet(
+                        day=today,
+                        job_id=item.job_id,
+                        field="clarification_requested",
+                        value=message,
+                        actor=actor,
+                        reason=message,
+                    ),
+                )
+                st.success("Clarification requested.")
 
     if leave_clicked:
         state.set_review_cursor((cursor + 1) % n)

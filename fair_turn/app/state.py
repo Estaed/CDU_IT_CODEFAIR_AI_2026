@@ -149,6 +149,15 @@ def set_intake_draft(value) -> None:
     st.session_state["intake_draft"] = value
 
 
+def get_actor() -> str:
+    """The reviewer's name, typed once per session and pre-filled on every later job."""
+    return _get("actor", "coordinator")
+
+
+def set_actor(value: str) -> None:
+    st.session_state["actor"] = str(value)
+
+
 def get_review_cursor() -> int:
     return _get("review_cursor", 0)
 

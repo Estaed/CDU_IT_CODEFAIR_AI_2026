@@ -204,7 +204,8 @@ def render(container) -> None:
             model = intake_llm.MODEL_FOR.get(provider, "") if provider else ""
             if provider is None:
                 provider_reason = (
-                    "Live intake is off: set FAIR_TURN_PROVIDER=claude and restart to enable it."
+                    "Live intake is off: choose an extractor above (claude or ollama), or set "
+                    "FAIR_TURN_PROVIDER before starting."
                 )
 
         if provider_reason:

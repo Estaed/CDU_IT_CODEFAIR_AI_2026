@@ -26,6 +26,11 @@ button[data-baseweb="tab"][aria-selected="true"]::after {
 }
 
 /* checked against Streamlit 1.63.0; unofficial */
-[data-testid="stCaptionContainer"] {
+[data-testid="stMain"] [data-testid="stCaptionContainer"] {
   color: #525252;
+}
+
+/* checked against Streamlit 1.63.0; unofficial: captions on the dark sidebar */
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+  color: #8d8d8d;
 }

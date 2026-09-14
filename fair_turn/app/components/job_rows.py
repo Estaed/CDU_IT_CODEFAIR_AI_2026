@@ -14,7 +14,7 @@ import streamlit as st
 from fair_turn.app.components.ranking_table import UNCHANGED
 
 # Row geometry: rank, job, community, class and window, score, the open button.
-COLUMN_RATIOS = [0.7, 1.6, 2.2, 1.6, 1.6, 0.9]
+COLUMN_RATIOS = [0.9, 1.7, 1.9, 1.5, 1.5, 1.2]
 # Named Streamlit badge colours, the same map the details pane uses.
 SAFETY_COLOURS = {"immediate": "red", "urgent": "orange", "routine": "gray"}
 SELECTED = "Selected"

@@ -162,7 +162,7 @@ if jobs and hidden == len(jobs):
     st.info(f"{hidden} jobs hidden by filters.")
     st.button("Clear filters", on_click=weighting.clear_filters, key="workspace_clear_hidden")
 
-centre, pane = st.columns([3, 2])
+centre, pane = st.columns([5, 3])
 with centre:
     compare = st.checkbox("Compare with efficiency-first", value=state.get_compare())
     state.set_compare(compare)

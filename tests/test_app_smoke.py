@@ -222,7 +222,8 @@ def test_visit_plan_shows_unsigned_message(no_network, tmp_path) -> None:
     at = AppTest.from_file(str(script)).run(timeout=60)
     assert not at.exception
     assert (
-        "Nothing to plan yet. Sign today's batch on the workspace and the run sheet appears here."
+        'Nothing to plan yet. On the workspace page, press "Review and sign" to sign '
+        "today's list. The run sheet appears here as soon as it is signed."
         in [i.value for i in at.info]
     )
 

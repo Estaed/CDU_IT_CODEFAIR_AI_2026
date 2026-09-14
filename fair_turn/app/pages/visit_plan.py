@@ -19,11 +19,22 @@ EFFICIENCY_LAM = 1.0
 RULE_SENTENCE = (
     "Distance chooses which crew goes, never which job is served. The jobs are the signed list."
 )
+UNSIGNED_MESSAGE = (
+    'Nothing to plan yet. On the workspace page, press "Review and sign" to sign today\'s '
+    "list. The run sheet appears here as soon as it is signed."
+)
+REASON_HELP = "Required. Saved in the audit log with your name and the time."
 
 art = state.artefacts()
 today = state.get_today()
 st.title("Visit plan")
 intro.purpose("visit_plan")
+st.markdown(
+    "**What to do here**\n\n"
+    "1. Check each crew's stops and kilometres.\n"
+    "2. A job marked *no crew within reach* needs a phone call to arrange it.\n"
+    "3. Accept the plan, or reject it with a reason."
+)
 st.caption(theme.PROVENANCE_LINE)
 
 
@@ -51,10 +62,7 @@ signoffs_today = sorted(
 
 if not signoffs_today:
     with st.container(border=True):
-        st.info(
-            "Nothing to plan yet. Sign today's batch on the workspace and the run sheet "
-            "appears here."
-        )
+        st.info(UNSIGNED_MESSAGE)
         st.caption("Columns of the run sheet")
         st.dataframe(
             pd.DataFrame(columns=("stop", "crew", "job", "community", "distance km")),
@@ -69,6 +77,10 @@ if not signoffs_today:
 else:
     signoff = signoffs_today[-1]
     st.markdown(f"Signed list {signoff.day} v{signoff.batch_version} by {signoff.signer}")
+    st.caption(
+        f'"v{signoff.batch_version}" is the batch version: it counts how many times '
+        "today's list has been signed. Every plan decision below is checked against it."
+    )
 
     open_today = ranking_table.open_jobs(today)
     jobs_by_id = {j.job_id: j for j in open_today}
@@ -102,12 +114,18 @@ else:
 
     st.markdown(RULE_SENTENCE)
     signed_col, efficiency_col, cost_col = st.columns(3)
-    signed_col.metric("Road km, this signed list", f"{current_plan.road_km:,.0f} km", border=True)
+    signed_col.metric(
+        "Road km, this signed list",
+        f"{current_plan.road_km:,.0f} km",
+        help="Kilometres the crews will drive today to reach every road job on the list "
+        "you signed.",
+        border=True,
+    )
     efficiency_col.metric(
         "Road km, efficiency-first list",
         f"{efficiency_plan.road_km:,.0f} km",
-        help="The top of the list at travel-cost weight 1.00, same day, same crews, "
-        "planned the same way.",
+        help='The "efficiency-first list" ranks jobs by travel cost alone, as if who has '
+        "waited longest did not count, same day, same crews, planned the same way.",
         border=True,
     )
     cost_col.metric(
@@ -121,6 +139,10 @@ else:
         "Jobs with no crew within reach: this signed list "
         f"{current_plan.out_of_reach}, efficiency-first list {efficiency_plan.out_of_reach}."
     )
+    st.caption(
+        '"No crew within reach" means no available crew can get to that job and back '
+        "within the day; it needs a phone call to arrange instead."
+    )
 
     if no_longer_open:
         st.caption(
@@ -132,6 +154,10 @@ else:
             f"({', '.join(_job_label(j) for j in no_longer_open)})"
         )
 
+    st.caption(
+        '"Travel day" marks a leg longer than a day\'s drive: the crew spends that whole '
+        "day travelling, with no job worked."
+    )
     for crew_plan in current_plan.crews:
         crew = crew_plan.crew
         with st.container(border=True):
@@ -189,14 +215,23 @@ else:
 
     accept_col, edit_col, reject_col = st.columns(3)
     with accept_col:
-        accept_reason = st.text_input("Reason", key="visit_accept_reason")
+        accept_reason = st.text_input("Reason", key="visit_accept_reason", help=REASON_HELP)
         if superseded:
-            st.button("Accept plan", key="visit_accept_plan", disabled=True)
+            st.button(
+                "Accept plan",
+                key="visit_accept_plan",
+                disabled=True,
+                help="Marks this run sheet as final for today and logs the decision.",
+            )
             st.caption(
                 f"Built on v{current_plan.batch_version}; sign-off v{signoff.batch_version} "
                 "supersedes it — rebuild"
             )
-        elif st.button("Accept plan", key="visit_accept_plan"):
+        elif st.button(
+            "Accept plan",
+            key="visit_accept_plan",
+            help="Marks this run sheet as final for today and logs the decision.",
+        ):
             if not accept_reason.strip():
                 st.error("A reason is required.")
             else:
@@ -232,8 +267,12 @@ else:
                 )
                 for position in range(len(stop_ids))
             ]
-            edit_reason = st.text_input("Reason", key="visit_edit_reason")
-            if st.button("Apply edit", key="visit_edit_apply"):
+            edit_reason = st.text_input("Reason", key="visit_edit_reason", help=REASON_HELP)
+            if st.button(
+                "Apply edit",
+                key="visit_edit_apply",
+                help="Reorders this crew's stops and logs the change against this batch version.",
+            ):
                 if not edit_reason.strip():
                     st.error("A reason is required.")
                 else:
@@ -258,8 +297,12 @@ else:
                         st.rerun()
 
     with reject_col:
-        reject_reason = st.text_input("Reason", key="visit_reject_reason")
-        if st.button("Reject with reason", key="visit_reject_plan"):
+        reject_reason = st.text_input("Reason", key="visit_reject_reason", help=REASON_HELP)
+        if st.button(
+            "Reject with reason",
+            key="visit_reject_plan",
+            help="Sends the plan back for rebuilding and logs why.",
+        ):
             if not reject_reason.strip():
                 st.error("A reason is required.")
             else:

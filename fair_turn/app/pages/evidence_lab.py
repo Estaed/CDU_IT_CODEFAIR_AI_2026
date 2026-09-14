@@ -21,6 +21,10 @@ from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 from fair_turn.data import artefacts, geography
 
 FALLBACK_EXTRACTOR_CAPTION = "Build extractor: Claude Sonnet via claude -p (Part 2)."
+NO_RECORDS_MESSAGE = (
+    "No decisions logged yet. Rows appear here once a report is signed, a visit plan is "
+    "accepted or rejected, or a coordinator makes an override."
+)
 
 # --- Tab 1: extraction quality -----------------------------------------------------------
 
@@ -144,21 +148,26 @@ def render_extraction_tab() -> None:
         "Phrases verified",
         f"{substring['rate']:.1%}",
         border=True,
-        help=f"Wilson interval: {interval}.",
+        help=(
+            "How often a claim the AI made could be checked word-for-word against the "
+            f"tenant's own report. Wilson interval: {interval}."
+        ),
     )
     metrics[1].metric(
         "Attacks resisted",
         f"{len(adversarial)} of {len(adversarial)}",
         border=True,
         help=(
-            "Every adversarial item leaves the ranking unchanged; the gate asserts this on the "
-            "committed artefact (tests/test_extraction_artefact.py), so the count is the size "
-            "of the adversarial set."
+            '"Attacks" are reports written on purpose to trick the system into a wrong '
+            "answer. Every one of them still leaves the ranking unchanged; the gate asserts "
+            "this on the committed artefact (tests/test_extraction_artefact.py), so the "
+            "count is the size of the adversarial set."
         ),
     )
     field_help = (
-        "Macro-F1 across classes on the 150-item held-out set; baseline is a "
-        "bag-of-words classifier."
+        'Macro-F1 across classes on the 150-item held-out set. "Baseline" is a simple '
+        "bag-of-words classifier used only for comparison, not the AI extractor this "
+        "product uses."
     )
     for column, field, label in zip(
         metrics[2:],
@@ -334,6 +343,7 @@ def render_feedback_tab() -> None:
         DEFAULT_LAM,
         0.05,
         key="evidence_lab_feedback_lam",
+        help="How much travel cost counts when ordering jobs: 0 ignores it, 1 counts nothing else.",
     )
     decay = st.slider(
         "Reporting decay when reports go unserved",
@@ -342,6 +352,8 @@ def render_feedback_tab() -> None:
         DEFAULT_DECAY,
         0.05,
         key="evidence_lab_feedback_decay",
+        help="How much less often a community reports a repair after being left "
+        "unserved: 0 means reporting never drops, 1 means it stops almost at once.",
     )
     st.caption(DECAY_CAPTION)
 
@@ -387,7 +399,7 @@ def render_audit_tab() -> None:
     sample_path = artefacts.AUDIT_DIR / "sample.jsonl"
     records = audit.read(state.get_audit_path()) + audit.read(sample_path)
     if not records:
-        st.info("No rows match the filters.")
+        st.info(NO_RECORDS_MESSAGE)
         return
 
     rows = sorted(
@@ -448,6 +460,11 @@ def render_audit_tab() -> None:
         f"decision day {start.isoformat()} to {end.isoformat()}."
     )
     st.caption(LOCAL_ZONE_CAPTION)
+    st.caption(
+        '"Decision day" is the day inside the dataset the decision belongs to; '
+        '"recorded at" is the real clock time it was logged. They are not always '
+        "the same day."
+    )
 
     if frame.empty:
         st.info("No rows match the filters.")
@@ -475,6 +492,13 @@ def render_audit_tab() -> None:
 state.artefacts()
 st.title("Evidence lab")
 intro.purpose("evidence_lab")
+st.markdown(
+    "This page is for checking the system, not for daily work.\n\n"
+    "**What to do here**\n\n"
+    "1. Extraction quality: how often the AI read a report correctly.\n"
+    "2. Feedback loop: what happens to remote reporting if only efficiency counts.\n"
+    "3. Audit log: every decision, who made it and when."
+)
 st.caption(theme.PROVENANCE_LINE)
 
 extraction_tab, feedback_tab, audit_tab = st.tabs(

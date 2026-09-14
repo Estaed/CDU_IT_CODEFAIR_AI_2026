@@ -115,7 +115,8 @@ def test_unsigned_state_points_back_to_the_workspace(tmp_path) -> None:
     audit_path = tmp_path / "audit.jsonl"
     at = _open(tmp_path, audit_path)
     assert [i.value for i in at.info] == [
-        "Nothing to plan yet. Sign today's batch on the workspace and the run sheet appears here.",
+        'Nothing to plan yet. On the workspace page, press "Review and sign" to sign '
+        "today's list. The run sheet appears here as soon as it is signed.",
     ]
     assert "Columns of the run sheet" in [caption.value for caption in at.caption]
     assert list(at.dataframe[0].value.columns) == [
@@ -247,6 +248,16 @@ def test_efficiency_first_side_compares_only_the_jobs_still_open(tmp_path, art) 
     plan = at.session_state["plan"]
     signed_road_stops = sum(len(cp.stops) for cp in plan.crews)
     assert signed_road_stops == 2
+
+
+def test_what_to_do_here_list_renders(tmp_path) -> None:
+    audit_path = tmp_path / "audit.jsonl"
+    at = _open(tmp_path, audit_path)
+    text = _page_text(at)
+    assert "**What to do here**" in text
+    assert "Check each crew's stops and kilometres." in text
+    assert "A job marked *no crew within reach* needs a phone call to arrange it." in text
+    assert "Accept the plan, or reject it with a reason." in text
 
 
 def test_no_hours_appear_anywhere_on_the_page(tmp_path, art) -> None:

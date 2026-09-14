@@ -13,11 +13,21 @@ from fair_turn.app.components.ranking_table import (
     capacity,
     open_jobs,
     review_requested_ids,
+    short_id,
 )
 from fair_turn.core import audit, explain, scoring
 from fair_turn.data import policy
 
 REQUIRED_FIELDS = ("fault_type", "safety_class")
+EXAMPLE_HINT = "Not sure of the number? Pick an example above instead."
+WINDOW_CAPTION = (
+    '"NT window" is the amount of time policy allows to fix this kind of repair once it '
+    "is reported."
+)
+LAMBDA_CAPTION = (
+    '"If distance did not count" compares your place in line today with where you would '
+    "be if travel cost were left out of the sum (that comparison is written as λ = 0)."
+)
 
 
 @st.cache_resource
@@ -28,6 +38,11 @@ def policy_index() -> policy.PolicyIndex:
 art = state.artefacts()
 st.title("Tenant answer")
 intro.purpose("tenant")
+st.markdown(
+    "**What to do here**\n\n"
+    "1. Type the job number from the tenant's receipt, or pick an example.\n"
+    "2. Read the answer to the tenant. It says where the repair sits and why."
+)
 st.caption(theme.PROVENANCE_LINE)
 st.caption("Community ids shown in this project are pseudonymous, not real place names.")
 
@@ -44,19 +59,24 @@ example_ids = [
     sorted(j.job_id for j in jobs if j.needs_human or j.job_id in review_ids)[0],
 ]
 example_labels = {
-    example_ids[0]: f"{example_ids[0]} - ranked today",
-    example_ids[1]: f"{example_ids[1]} - backlog",
-    example_ids[2]: f"{example_ids[2]} - review queue",
+    example_ids[0]: f"{short_id(example_ids[0])} · on today's list",
+    example_ids[1]: f"{short_id(example_ids[1])} · waiting in the backlog",
+    example_ids[2]: f"{short_id(example_ids[2])} · needs a person first",
 }
 
 
-typed = st.text_input("Job registration number").strip()
+typed = st.text_input(
+    "Job registration number",
+    help=f"Starts with {explain.JOB_ID_PREFIX} and ends with five digits, like "
+    f"{explain.JOB_ID_EXAMPLE}. Find it on the tenant's report receipt.",
+).strip()
 example = st.selectbox(
     "Or try an example",
     example_ids,
     index=None,
     placeholder="Pick an example job",
     format_func=example_labels.__getitem__,
+    help="A sample job in each state, so you can see what a tenant would be told.",
 )
 typed = example or typed
 
@@ -101,6 +121,7 @@ known = {label["job_id"].lower() for label in art.labels} | set(open_by_id)
 
 if typed.lower() not in known:
     render(explain.tenant_answer(state="unknown"))
+    st.caption(EXAMPLE_HINT)
     intro.about()
     st.stop()
 
@@ -139,6 +160,7 @@ if art.communities[job.community_id]["road_access"] == "barge_or_air":
             state="manual", scored=scoring.score_job(job, today, lam), policy=source
         )
     )
+    st.caption(WINDOW_CAPTION)
     st.stop()
 
 rankable = [j for j in jobs if not j.needs_human and j.job_id not in review_ids]
@@ -162,6 +184,8 @@ if not signoffs:
             policy=source,
         )
     )
+    st.caption(WINDOW_CAPTION)
+    st.caption(LAMBDA_CAPTION)
     st.stop()
 
 latest = max(signoffs, key=lambda r: (r.batch_version, r.recorded_at))
@@ -179,6 +203,8 @@ if job.job_id not in latest.today_job_ids:
         latest.ranked_job_ids.index(job.job_id) + 1 if job.job_id in latest.ranked_job_ids else None
     )
     render(explain.tenant_answer(state="backlog", signed_rank=signed_rank, **common))
+    st.caption(WINDOW_CAPTION)
+    st.caption(LAMBDA_CAPTION)
     st.stop()
 
 superseded = any(
@@ -194,4 +220,6 @@ render(
         **common,
     )
 )
+st.caption(WINDOW_CAPTION)
+st.caption(LAMBDA_CAPTION)
 intro.about()

@@ -111,18 +111,19 @@ def test_example_selectbox_offers_open_jobs_from_each_queue_state(tmp_path) -> N
 
     assert examples.label == "Or try an example"
     assert examples.options and len(examples.options) == 3
-    example_ids = [label.split(" - ", 1)[0] for label in examples.options]
-    assert all(
-        job_id in {j.job_id for j in ranking_table.open_jobs(TODAY)} for job_id in example_ids
-    )
-    assert "ranked today" in examples.options[0]
-    assert "backlog" in examples.options[1]
-    assert "review queue" in examples.options[2]
+    assert all(label.startswith("#") for label in examples.options)
+    assert "on today's list" in examples.options[0]
+    assert "waiting in the backlog" in examples.options[1]
+    assert "needs a person first" in examples.options[2]
 
-    chosen = example_ids[0]
+    short = examples.options[0].split(" · ", 1)[0]
     at = examples.select_index(0).run(timeout=60)
     assert not at.exception
-    assert f"Job {chosen}" in [caption.value for caption in at.caption]
+    caption_values = [caption.value for caption in at.caption]
+    assert any(
+        v.startswith("Job ") and ranking_table.short_id(v.removeprefix("Job ")) == short
+        for v in caption_values
+    )
 
 
 def test_known_id_renders_four_bordered_question_blocks(tmp_path, art) -> None:
@@ -150,12 +151,21 @@ def test_unsigned_draft_rank_matches_the_ranking(tmp_path, art) -> None:
     assert f"If distance did not count, your repair would be number {rank0}." in text
 
 
+def test_what_to_do_here_list_renders(tmp_path) -> None:
+    at = _open(tmp_path, None)
+    text = "\n".join(m.value for m in at.markdown)
+    assert "**What to do here**" in text
+    assert "Type the job number from the tenant's receipt, or pick an example." in text
+    assert "Read the answer to the tenant. It says where the repair sits and why." in text
+
+
 def test_bad_id_renders_unknown_copy(tmp_path) -> None:
     at = _open(tmp_path, "NOT-A-REAL-JOB-ID")
     text = _answer_text(at)
     assert "We could not find that job number." in text
     assert explain.JOB_ID_EXAMPLE in text
     assert len(_bordered_blocks(at.main)) == 4
+    assert any("Pick an example above instead." in caption.value for caption in at.caption)
 
 
 def test_human_queue_id_renders_review_copy_and_no_rank(tmp_path) -> None:

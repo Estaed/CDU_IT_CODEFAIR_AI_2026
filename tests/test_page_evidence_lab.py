@@ -11,6 +11,8 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
+from fair_turn.data import artefacts
+
 ROOT = Path(__file__).resolve().parent.parent
 PAGE = ROOT / "fair_turn" / "app" / "pages" / "evidence_lab.py"
 SAMPLE_PATH = ROOT / "data" / "audit" / "sample.jsonl"
@@ -50,6 +52,25 @@ def _run(tmp_path, audit_path=None) -> AppTest:
     return at
 
 
+def test_what_to_do_here_list_renders(tmp_path) -> None:
+    at = _run(tmp_path)
+    text = "\n".join(m.value for m in at.markdown)
+    assert "**What to do here**" in text
+    assert "Extraction quality: how often the AI read a report correctly." in text
+    assert "Feedback loop: what happens to remote reporting if only efficiency counts." in text
+    assert "Audit log: every decision, who made it and when." in text
+
+
+def test_empty_audit_log_says_how_rows_appear(tmp_path, monkeypatch) -> None:
+    empty_dir = tmp_path / "no_sample"
+    empty_dir.mkdir()
+    monkeypatch.setattr(artefacts, "AUDIT_DIR", empty_dir)
+    at = _run(tmp_path, audit_path=tmp_path / "missing_audit.jsonl")
+    audit_tab = [tab for tab in at.tabs if tab.label == "Audit log"][0]
+    assert any("Rows appear here once a report is signed" in i.value for i in audit_tab.get("info"))
+    assert len(at.dataframe) == 3  # fault_type, safety_class, health_risk; no audit table
+
+
 def test_three_tabs_render(tmp_path) -> None:
     at = _run(tmp_path)
     assert [t.label for t in at.tabs] == ["Extraction quality", "Feedback loop", "Audit log"]
@@ -81,11 +102,13 @@ def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
     assert all(metric.proto.show_border for metric in metrics.values())
     rate_ci = ev["substring_rate"]["rate_ci"]
     assert metrics["Phrases verified"].help == (
-        f"Wilson interval: {rate_ci[0]:.1%} to {rate_ci[1]:.1%}."
+        "How often a claim the AI made could be checked word-for-word against the "
+        f"tenant's own report. Wilson interval: {rate_ci[0]:.1%} to {rate_ci[1]:.1%}."
     )
     field_help = (
-        "Macro-F1 across classes on the 150-item held-out set; baseline is a "
-        "bag-of-words classifier."
+        'Macro-F1 across classes on the 150-item held-out set. "Baseline" is a simple '
+        "bag-of-words classifier used only for comparison, not the AI extractor this "
+        "product uses."
     )
     for field, label in (
         ("fault_type", "Fault type"),

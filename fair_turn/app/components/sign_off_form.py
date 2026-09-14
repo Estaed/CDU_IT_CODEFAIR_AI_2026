@@ -14,12 +14,10 @@ SIGNER_REQUIRED = "A signer is required."
 REASON_REQUIRED = "A reason is required."
 
 
-def check_line(today_job_ids: tuple[str, ...], checks: dict[str, str]) -> str:
-    checked = [job_id for job_id in today_job_ids if job_id in checks]
-    corrected = sum(checks[job_id] == "corrected" for job_id in checked)
+def decision_line(accepted: int, not_today: int, needs_person: int, fields_fixed: int) -> str:
     return (
-        f"You checked {len(checked)} of {len(today_job_ids)} jobs on today's list "
-        f"and corrected {corrected}."
+        f"Accepted {accepted} · not today {not_today} · sent to a person {needs_person} · "
+        f"fields fixed {fields_fixed}."
     )
 
 
@@ -30,13 +28,12 @@ def render(
     review_count: int,
     is_remote: Callable[[str], bool],
     rows: pd.DataFrame,
-    checks: dict[str, str] | None = None,
+    counts: tuple[int, int, int] = (0, 0, 0),
 ) -> None:
-    """``rows`` is the frozen today's list in the workspace's columns (``community id``
-    included); ``on_submit(signer, decision, reason)`` runs only with both fields filled.
-    ``checks`` maps a job id checked today to ``"confirmed"`` or ``"corrected"``; it is
-    reported in the summary and never a condition for signing."""
-    checks = checks or {}
+    """``rows`` is the frozen today's list (the accepted jobs) in the workspace's columns
+    (``community id`` included); ``on_submit(signer, decision, reason)`` runs only with both
+    fields filled. ``counts`` is today's jobs decided not today, sent to a person, and with a
+    field fixed, reported in the summary beside the accepted count."""
     today_count = len(frozen.today_job_ids)
     remote = sum(is_remote(community_id) for community_id in rows["community id"])
     with st.form("sign_off"):
@@ -55,7 +52,7 @@ def render(
         ]
         st.markdown("\n".join(moves))
         st.markdown(f"In review queue {review_count} (not ranked)")
-        st.markdown(check_line(frozen.today_job_ids, checks))
+        st.markdown(decision_line(today_count, *counts))
         with st.expander("Open today's list"):
             st.dataframe(rows, hide_index=True)
         if status == "signed":

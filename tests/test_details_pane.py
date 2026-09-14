@@ -231,60 +231,75 @@ def test_badges_use_named_colours_without_hex_literals() -> None:
     assert not re.search(r"#[0-9A-Fa-f]{3,8}\\b", source)
 
 
-# --- checking the AI's reading (PRD 3.1) --------------------------------------------------------
+# --- your decision: accept or reject, at the bottom of the pane (PRD 3.1) ----------------------
 
 
-def _ranked_job_id() -> str:
+def _ranked_job_id(index: int = 0) -> str:
     today, jobs = _open_jobs()
-    return scoring.rank(jobs, today, 1.0)[0].job.job_id
+    return scoring.rank(jobs, today, 1.0)[index].job.job_id
 
 
-def test_check_block_sits_after_the_report_with_two_keyed_buttons(art, tmp_path) -> None:
+def test_decision_section_is_the_last_block_with_the_read_tick(art, tmp_path) -> None:
     job_id = _ranked_job_id()
     at = _run(tmp_path, job_id)
-    values = _markdown(at) + [c.value for c in at.caption]
-    assert f"**{details_pane.CHECK_TITLE}**" in values
-    assert details_pane.CHECK_CAPTION in values
     markdown = _markdown(at)
-    report = markdown.index(_rendered_report(art, job_id))
-    assert report < markdown.index(f"**{details_pane.CHECK_TITLE}**")
-    assert markdown.index(f"**{details_pane.CHECK_TITLE}**") < markdown.index(
-        "**Why it sits here.**"
-    )
-    assert at.button(key=f"fieldcheck_ok_{job_id}").label == "Fields are right"
-    assert at.button(key=f"fieldcheck_ok_{job_id}").proto.icon == ":material/check:"
-    assert at.button(key=f"fieldcheck_fix_{job_id}").label == "Fix a field"
-    assert at.button(key=f"fieldcheck_fix_{job_id}").proto.icon == ":material/close:"
+    decision = markdown.index(f"**{details_pane.DECISION_TITLE}**")
+    assert markdown.index(_rendered_report(art, job_id)) < markdown.index("**Why it sits here.**")
+    assert markdown.index("**Why it sits here.**") < markdown.index("**Score**")
+    order = next(i for i, value in enumerate(markdown) if value.startswith("**Change this job"))
+    assert markdown.index("**Score**") < order < decision
+    assert "Change the order instead" in [block.label for block in at.get("expander")]
+    assert at.checkbox(key=f"read_{job_id}").label == details_pane.READ_BOX
+    buttons = [b.key for b in at.button]
+    assert buttons[-2:] == [f"decide_accept_{job_id}", f"decide_reject_{job_id}"]
+    assert not [b for b in at.button if (b.key or "").startswith("fieldcheck_")]
 
 
-def test_fields_are_right_writes_one_confirmed_check_and_shows_it(tmp_path) -> None:
+def test_accept_is_disabled_until_read_then_writes_one_decision_and_undo_reverts(tmp_path) -> None:
     job_id = _ranked_job_id()
     at = _run(tmp_path, job_id)
-    at.button(key=f"fieldcheck_ok_{job_id}").click().run(timeout=60)
+    assert at.button(key=f"decide_accept_{job_id}").proto.disabled
+    at.checkbox(key=f"read_{job_id}").check().run(timeout=60)
+    at.button(key=f"decide_accept_{job_id}").click().run(timeout=60)
     assert not at.exception
-    (check,) = [r for r in audit.read(tmp_path / "audit.jsonl") if isinstance(r, audit.FieldCheck)]
-    assert (check.job_id, check.decision, check.actor) == (job_id, "confirmed", "coordinator")
+    (record,) = audit.read(tmp_path / "audit.jsonl")
     today, _ = _open_jobs()
-    assert check.day == today and check.recorded_at.tzinfo is not None
-    assert any(
-        c.value.startswith(":material/check: Checked by coordinator at ") for c in at.caption
-    )
+    assert (record.job_id, record.decision, record.actor) == (job_id, "accepted", "coordinator")
+    assert record.day == today and record.recorded_at.tzinfo is not None
+    assert any(m.startswith(":material/check: Accepted by coordinator at ") for m in _markdown(at))
+    assert f"decide_accept_{job_id}" not in [b.key for b in at.button]
+
+    at.button(key=f"decide_undo_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    assert [r.decision for r in audit.read(tmp_path / "audit.jsonl")] == ["accepted", "undone"]
+    assert f"decide_accept_{job_id}" in [b.key for b in at.button]
 
 
-def test_fix_a_field_needs_a_reason_then_writes_the_human_set_path(tmp_path) -> None:
+def test_a_backlog_job_is_proposed_for_today_instead_of_accepted(tmp_path) -> None:
+    job_id = _ranked_job_id(ranking_table.capacity("All"))
+    at = _run(tmp_path, job_id)
+    keys = [b.key for b in at.button]
+    assert f"decide_accept_{job_id}" not in keys
+    propose = at.button(key=f"decide_propose_{job_id}")
+    assert propose.label == details_pane.PROPOSE and propose.proto.disabled
+    assert "Promote" in _buttons(at)
+
+
+def test_reject_as_a_wrong_field_needs_a_reason_then_writes_the_human_set_path(tmp_path) -> None:
     job_id = _ranked_job_id()
     at = _run(tmp_path, job_id)
-    at.button(key=f"fieldcheck_fix_{job_id}").click().run(timeout=60)
-    at.selectbox(key=f"fieldfix_field_{job_id}").set_value("safety_class").run(timeout=60)
-    at.selectbox(key=f"fieldfix_value_{job_id}_safety_class").set_value("urgent")
-    at.text_input(key=f"fieldfix_actor_{job_id}").set_value("Ada")
-    at.button(key=f"fieldfix_save_{job_id}").click().run(timeout=60)
+    at.button(key=f"decide_reject_{job_id}").click().run(timeout=60)
+    at.radio(key=f"reject_kind_{job_id}").set_value("A field is wrong: fix it").run(timeout=60)
+    at.selectbox(key=f"reject_field_{job_id}").set_value("safety_class").run(timeout=60)
+    at.selectbox(key=f"reject_value_{job_id}_safety_class").set_value("urgent")
+    at.text_input(key=f"reject_actor_{job_id}").set_value("Ada")
+    at.button(key=f"reject_save_{job_id}").click().run(timeout=60)
     assert not at.exception
     assert details_pane.REASON_REQUIRED in [e.value for e in at.error]
     assert not audit.read(tmp_path / "audit.jsonl")
 
-    at.text_input(key=f"fieldfix_reason_{job_id}").set_value("Tenant says no power")
-    at.button(key=f"fieldfix_save_{job_id}").click().run(timeout=60)
+    at.text_input(key=f"reject_reason_{job_id}").set_value("Tenant says no power")
+    at.button(key=f"reject_save_{job_id}").click().run(timeout=60)
     assert not at.exception
     records = audit.read(tmp_path / "audit.jsonl")
     assert [type(r).__name__ for r in records] == ["HumanSet", "FieldCheck"]
@@ -303,15 +318,18 @@ def test_fix_a_field_needs_a_reason_then_writes_the_human_set_path(tmp_path) -> 
     )
     stored = runtime.human_set_for(runtime.read(tmp_path / "runtime.jsonl"))
     assert stored == {job_id: {"safety_class": "urgent"}}
-    text = _page_text(at)
-    assert details_pane.SET_BY_COORDINATOR in text
-    assert ":material/close: Corrected safety class to urgent by Ada at " in text
+    assert details_pane.SET_BY_COORDINATOR in _page_text(at)
     assert at.session_state["actor"] == "Ada"
+    # A wrong field is not a decision: the job stays undecided and is re-ranked, so it offers
+    # Accept (still in today's list) or Propose (moved to the backlog), never a decision line.
+    keys = {b.key for b in at.button}
+    assert {f"decide_accept_{job_id}", f"decide_propose_{job_id}"} & keys
+    assert f"decide_undo_{job_id}" not in keys
 
 
-def test_a_job_in_the_review_queue_gets_no_check_buttons(tmp_path) -> None:
+def test_a_job_in_the_review_queue_gets_no_decision_buttons(tmp_path) -> None:
     _today, jobs = _open_jobs()
     review = next(job for job in jobs if job.needs_human)
     at = _run(tmp_path, review.job_id)
-    assert details_pane.CHECK_IN_REVIEW in [c.value for c in at.caption]
-    assert not [b for b in at.button if (b.key or "").startswith("fieldcheck_")]
+    assert details_pane.DECISION_IN_REVIEW in [c.value for c in at.caption]
+    assert not [b for b in at.button if (b.key or "").startswith("decide_")]

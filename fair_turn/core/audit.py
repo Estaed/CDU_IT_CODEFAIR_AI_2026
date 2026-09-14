@@ -176,7 +176,46 @@ class FieldCheck:
         )
 
 
-Record = SignOff | Revision | Override | HumanSet | Intake | Promotion | PlanDecision | FieldCheck
+JOB_DECISIONS = ("accepted", "not_today", "needs_person", "undone")
+
+
+@dataclass(frozen=True)
+class JobDecision:
+    """A coordinator's decision on one job for the decision ``day`` (PRD 3.1): accept it for
+    today, leave it for another day, send it to a person, or undo the previous decision.
+
+    ``not_today`` and ``needs_person`` need a reason; ``accepted`` and ``undone`` do not."""
+
+    day: date
+    job_id: str
+    decision: str
+    actor: str
+    reason: str = ""
+    recorded_at: datetime | None = None
+
+    def __post_init__(self) -> None:
+        if self.decision not in JOB_DECISIONS:
+            raise ValueError("decision must be accepted, not_today, needs_person or undone")
+        if self.decision in {"not_today", "needs_person"} and not self.reason.strip():
+            raise ValueError(f"{self.decision} needs a reason")
+        object.__setattr__(
+            self,
+            "recorded_at",
+            datetime.now().astimezone() if self.recorded_at is None else _aware(self.recorded_at),
+        )
+
+
+Record = (
+    SignOff
+    | Revision
+    | Override
+    | HumanSet
+    | Intake
+    | Promotion
+    | PlanDecision
+    | FieldCheck
+    | JobDecision
+)
 
 _KIND_OF = {
     SignOff: "sign_off",
@@ -187,6 +226,7 @@ _KIND_OF = {
     Promotion: "promotion",
     PlanDecision: "plan_decision",
     FieldCheck: "field_check",
+    JobDecision: "job_decision",
 }
 _CLASS_OF = {kind: cls for cls, kind in _KIND_OF.items()}
 _DATETIME_FIELDS = {"signed_at", "at", "recorded_at"}
@@ -307,6 +347,10 @@ def export_rows(records: list[Record]) -> list[dict]:
                 if record.decision == "corrected"
                 else "confirmed"
             )
+        elif isinstance(record, JobDecision):
+            row["job_id"] = record.job_id
+            row["signer"] = record.actor
+            row["detail"] = record.decision
         rows.append(row)
     return rows
 
@@ -314,6 +358,11 @@ def export_rows(records: list[Record]) -> list[dict]:
 def latest_checks(records: list[Record], day: date) -> dict[str, FieldCheck]:
     """The newest field check per job on the decision ``day``, in file order."""
     return {r.job_id: r for r in records if isinstance(r, FieldCheck) and r.day == day}
+
+
+def latest_decisions(records: list[Record], day: date) -> dict[str, str]:
+    """The newest job decision per job on the decision ``day``, in file order."""
+    return {r.job_id: r.decision for r in records if isinstance(r, JobDecision) and r.day == day}
 
 
 def override_rate(records: list[Record]) -> list[tuple[date, float]]:

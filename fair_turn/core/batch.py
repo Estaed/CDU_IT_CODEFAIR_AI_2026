@@ -39,8 +39,10 @@ def fingerprint_of(
     ranked_job_ids: tuple[str, ...] | list[str],
     hand_moves: Iterable[HandMove],
     human_set: dict[str, dict[str, str]] | None,
+    decisions: dict[str, str] | None = None,
 ) -> str:
-    """Return the canonical digest for all inputs that can invalidate a review."""
+    """Return the canonical digest for all inputs that can invalidate a review. ``decisions``
+    maps a job id to its standing decision today; an empty map adds nothing to the digest."""
     payload = {
         "lam": lam,
         "ranked_job_ids": list(ranked_job_ids),
@@ -49,6 +51,8 @@ def fingerprint_of(
         ],
         "human_set": human_set,
     }
+    if decisions:
+        payload["decisions"] = decisions
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
@@ -62,8 +66,11 @@ def freeze(
     capacity: int,
     hand_moves: Iterable[HandMove],
     human_set: dict[str, dict[str, str]] | None = None,
+    today_job_ids: Iterable[str] | None = None,
+    decisions: dict[str, str] | None = None,
 ) -> Batch:
-    """Freeze the page's already-final order for a batch version."""
+    """Freeze the page's already-final order for a batch version. ``today_job_ids`` is the
+    accepted list when the page has per-job decisions; without it, the first ``capacity``."""
     ranked_job_ids = tuple(scored.job.job_id for scored in ranked)
     frozen_moves = tuple(hand_moves)
     return Batch(
@@ -71,10 +78,12 @@ def freeze(
         version=version,
         lam=lam,
         preset=preset,
-        today_job_ids=ranked_job_ids[:capacity],
+        today_job_ids=(
+            ranked_job_ids[:capacity] if today_job_ids is None else tuple(today_job_ids)
+        ),
         ranked_job_ids=ranked_job_ids,
         hand_moves=frozen_moves,
-        fingerprint=fingerprint_of(lam, ranked_job_ids, frozen_moves, human_set),
+        fingerprint=fingerprint_of(lam, ranked_job_ids, frozen_moves, human_set, decisions),
     )
 
 

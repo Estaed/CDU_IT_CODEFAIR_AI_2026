@@ -46,11 +46,14 @@ says what to do.
 2. **Jobs that need a person.** These are jobs with a field the system could not read.
    The Needs a human tab, next to today's list, names what is missing in each one.
    Press Review to open it. Fill each one in by hand, with a reason.
-3. **Check today's jobs.** Open a job from today's list, the map, or the Select job box.
-   Read the report and the words marked in it. If the fields are right, press
-   Fields are right. If one is wrong, press Fix a field, pick the right value, and
-   say why. The row then shows Checked or Corrected. There is no button that passes
-   every job at once: each check is one job, read by you.
+3. **Decide today's jobs.** Open a job from the To decide tab, the map, or the Select
+   job box. Read it to the bottom: the report, why it sits here, and the fields. Then
+   tick "I have read the report and the reasons above" and press Accept for today. The
+   job moves to the Accepted tab. If it should not go today, press Reject and pick one:
+   not today (it goes to the backlog and the next job takes its place), needs a person
+   (it goes to the review queue), or a field is wrong (fix it, and the job is ranked
+   again). Each reject needs a reason. Undo my decision takes it back until you sign.
+   There is no button that passes every job at once: each decision is one job.
 4. **Use the map when it helps.** Circles group nearby communities. Click one and it
    splits into one dot per community. A dot with several jobs lets you choose; it never
    picks one job. The region filter only narrows what you see.
@@ -58,9 +61,9 @@ says what to do.
    written down and shown to anyone who looks at that job later.
 6. **Choose the weighting and sign.** Pick a setting in the sidebar: Efficiency first,
    Balanced, or Need first. The effect line under the numbers says how many remote and
-   town jobs move in or out. Then press Review and sign, under the list. The summary
-   says how many jobs you checked. Signing does not wait for checks. It freezes today's
-   list as a numbered batch, and the signer and the reason go to the log.
+   town jobs move in or out. Review and sign, under the list, opens only when To decide
+   is empty. The summary counts what you accepted and rejected. Signing freezes the
+   accepted jobs as a numbered batch, and the signer and the reason go to the log.
 7. **Read the outcomes.** Wait times and travel cost appear only after the first
    signature, so they cannot steer the order before it is set.
 8. **Open the visit plan.** It turns the signed list into crew run sheets. Distance

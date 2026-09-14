@@ -36,16 +36,16 @@ button[data-baseweb="tab"][aria-selected="true"]::after {
 }
 
 /* checked against Streamlit 1.63.0; unofficial: a keyed element carries the class st-key-KEY */
-[class*="st-key-fieldcheck_ok_"] button,
-[class*="st-key-fieldcheck_ok_"] button:hover {
+[class*="st-key-decide_accept_"] button,
+[class*="st-key-decide_accept_"] button:hover {
   background-color: #198038;
   border-color: #198038;
   color: #ffffff;
 }
 
 /* checked against Streamlit 1.63.0; unofficial: a keyed element carries the class st-key-KEY */
-[class*="st-key-fieldcheck_fix_"] button,
-[class*="st-key-fieldcheck_fix_"] button:hover {
+[class*="st-key-decide_reject_"] button,
+[class*="st-key-decide_reject_"] button:hover {
   background-color: #da1e28;
   border-color: #da1e28;
   color: #ffffff;

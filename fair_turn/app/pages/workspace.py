@@ -32,7 +32,7 @@ from fair_turn.app.components import (
     weighting,
     workspace_map,
 )
-from fair_turn.core import audit, batch, scoring
+from fair_turn.core import audit, batch, decisions, scoring
 from fair_turn.data import runtime
 
 # Decision columns first: at 1440 px the table shows about 600 px before it scrolls, so the
@@ -98,11 +98,17 @@ rankable = [j for j in jobs if not j.needs_human and j.job_id not in review_ids]
 baseline = scoring.rank(rankable, today, 1.0)
 current = ranking_table.apply_hand_moves(scoring.rank(rankable, today, lam), state.get_hand_moves())
 cap = ranking_table.capacity(state.ALL_REGIONS)
-today_list, backlog = current[:cap], current[cap:]
+# Today's per-job decisions split the ranking: accepted jobs stay, the free places go to the
+# best-ranked undecided jobs (To decide), and a job rejected as not today joins the backlog.
+latest_decisions = audit.latest_decisions(audit_records, today)
+standing = {job_id: d for job_id, d in latest_decisions.items() if d != "undone"}
+day_split = decisions.split([s.job.job_id for s in current], latest_decisions, cap)
+on_today = set(day_split.accepted) | set(day_split.to_decide)
+today_list = [s for s in current if s.job.job_id in on_today]
+to_decide = [s for s in today_list if s.job.job_id not in standing]
+accepted = [s for s in today_list if s.job.job_id in standing]
+backlog = [s for s in current if s.job.job_id not in on_today]
 review_count = sum(1 for j in jobs if j.needs_human or j.job_id in review_ids)
-checks = {
-    job_id: check.decision for job_id, check in audit.latest_checks(audit_records, today).items()
-}
 
 
 def ordinal(n: int) -> str:
@@ -124,7 +130,7 @@ def added_message(job_id: str) -> str:
     rank = next((s.rank for s in current if s.job.job_id == job_id), None)
     if rank is None:
         return f"{head}."
-    return f"{head}: it ranks {ordinal(rank)}" + ("" if rank <= cap else ", in the backlog")
+    return f"{head}: it ranks {ordinal(rank)}" + ("" if job_id in on_today else ", in the backlog")
 
 
 if (announced := state.get_pending_toast()) is not None:
@@ -138,13 +144,15 @@ def in_view(job) -> bool:
 
 shown_jobs = [j for j in jobs if in_view(j)]
 today_shown = [s for s in today_list if in_view(s.job)]
+to_decide_shown = [s for s in to_decide if in_view(s.job)]
+accepted_shown = [s for s in accepted if in_view(s.job)]
 backlog_shown = [s for s in backlog if in_view(s.job)]
 human_jobs = sorted(
     (j for j in shown_jobs if j.needs_human or j.job_id in review_ids),
     key=lambda j: (j.reported_on, j.job_id),
 )
 if state.get_selected_job_id() is None and today_list:
-    state.set_selected_job_id(today_list[0].job.job_id)
+    state.set_selected_job_id((to_decide or today_list)[0].job.job_id)
 
 
 def is_remote(community_id: str) -> bool:
@@ -239,7 +247,7 @@ def today_rows(frame, scored) -> list[dict]:
             "score": float(row["score"]),
             "score_max": score_max,
             "human_queue": needs_human[row["job_id"]],
-            "check": checks.get(row["job_id"]),
+            "decision": "accepted" if standing.get(row["job_id"]) == "accepted" else None,
         }
         for _, row in frame.iterrows()
     ]
@@ -291,6 +299,50 @@ if shown_jobs and hidden == len(shown_jobs):
     st.info(f"{hidden} jobs hidden by filters.")
     st.button("Clear filters", on_click=weighting.clear_filters, key="workspace_clear_hidden")
 
+STALE = "The list changed since you opened this review; open it again."
+
+
+def signed_today() -> list[audit.SignOff]:
+    return [
+        r
+        for r in audit.read(state.get_audit_path())
+        if isinstance(r, audit.SignOff) and r.day == today
+    ]
+
+
+human_set = runtime.human_set_for(runtime.read(state.get_runtime_path()))
+current_fp = batch.fingerprint_of(
+    lam, [s.job.job_id for s in current], state.get_hand_moves(), human_set, standing
+)
+signed_versions = {r.batch_version for r in signed_today()}
+
+
+def decision_status(frozen: batch.Batch | None, versions: set[int]) -> batch.Status:
+    if frozen is None:
+        return "draft"
+    if state.get_signed_today() and frozen.version in versions:
+        return "changed_since_signature" if batch.is_stale(frozen, current_fp) else "signed"
+    return "review_open"
+
+
+status = decision_status(state.get_batch(), signed_versions)
+
+
+def signed_banner() -> None:
+    """The signed state at the top of To decide, with the way on to the visit plan."""
+    latest = signed_today()[-1]
+    st.success(
+        f"Today's list is signed (v{latest.batch_version}): "
+        f"{len(latest.today_job_ids)} jobs accepted."
+    )
+    st.caption(f"Audit reference `{latest.audit_ref}`")
+    if st.button("Open the visit plan", key="workspace_open_visit_plan", type="primary"):
+        try:
+            st.switch_page("pages/visit_plan.py")
+        except StreamlitPageNotFoundError:
+            pass  # a page run on its own (AppTest) has no navigation registry
+
+
 centre, pane = st.columns([5, 3])
 with centre:
     compare = st.checkbox("Compare with efficiency-first", value=state.get_compare())
@@ -336,20 +388,32 @@ with centre:
     st.caption(MAP_CAPTION)
     tabs = st.tabs(
         [
-            f"Today's list {len(today_shown)}",
+            f"To decide {len(to_decide_shown)}",
+            f"Accepted {len(accepted_shown)}",
             f"Needs a human {len(human_jobs)}",
             f"Backlog {len(backlog_shown)}",
         ]
     )
+    with tabs[0]:
+        if status == "signed":
+            signed_banner()
+        elif not to_decide_shown:
+            st.info("Nothing left to decide here.")
     with tabs[1]:
+        if not accepted_shown:
+            st.info("No job accepted yet: open a job in To decide and read it to the bottom.")
+    with tabs[2]:
         human_rows(human_jobs)
+    # In the compare view To decide shows the whole of today's list against efficiency-first.
     lists = [
-        (tabs[0], "today", today_list, baseline[:cap]),
-        (tabs[2], "backlog", backlog, baseline[cap:]),
+        (tabs[0], "today", to_decide, today_list, baseline[:cap]),
+        (tabs[1], "accepted", accepted, None, None),
+        (tabs[3], "backlog", backlog, backlog, baseline[cap:]),
     ]
-    for tab, name, scored, efficiency_first in lists:
+    for tab, name, rows_scored, compared, efficiency_first in lists:
         with tab:
-            if compare:
+            if compare and compared is not None:
+                scored = compared
                 left, right = st.columns(2)
                 left.caption(f"Current: {label}")
                 current_frame = view(scored, against=baseline)
@@ -370,10 +434,10 @@ with centre:
                     height=ranking_table.table_height(len(efficiency_first)),
                 )
                 continue
-            frame = view(scored, against=baseline)
-            if name == "today":
+            frame = view(rows_scored, against=baseline)
+            if name in ("today", "accepted"):
                 # A short list is read, not scanned: bordered rows with an explicit Open.
-                picked = job_rows.render(today_rows(frame, scored), selected, TODAY_ROWS_KEY)
+                picked = job_rows.render(today_rows(frame, rows_scored), selected, TODAY_ROWS_KEY)
             else:
                 query = st.text_input(
                     "Find in backlog",
@@ -403,40 +467,27 @@ with centre:
                 st.rerun()
 
 with pane:
-    details_pane.render(art, jobs, current, cap, review_ids, today, lam, map_choice)
+    details_pane.render(
+        art,
+        jobs,
+        current,
+        cap,
+        review_ids,
+        today,
+        lam,
+        map_choice,
+        job_split=day_split,
+        signed=status == "signed",
+    )
 
 st.divider()
 st.markdown(
-    f"Today: {len(today_list)} jobs proposed within capacity {cap} · "
+    f"Today: {len(today_list)} jobs on today's list within capacity {cap} · "
+    f"{len(accepted)} accepted · {len(to_decide)} to decide · "
     f"{remote_today} remote / {len(today_list) - remote_today} town · "
     f"Backlog {len(backlog)} · {len(state.get_hand_moves())} moved by hand · "
     f"{review_count} in review"
 )
-
-STALE = "The list changed since you opened this review; open it again."
-
-
-def signed_today() -> list[audit.SignOff]:
-    return [
-        r
-        for r in audit.read(state.get_audit_path())
-        if isinstance(r, audit.SignOff) and r.day == today
-    ]
-
-
-human_set = runtime.human_set_for(runtime.read(state.get_runtime_path()))
-current_fp = batch.fingerprint_of(
-    lam, [s.job.job_id for s in current], state.get_hand_moves(), human_set
-)
-signed_versions = {r.batch_version for r in signed_today()}
-
-
-def decision_status(frozen: batch.Batch | None, versions: set[int]) -> batch.Status:
-    if frozen is None:
-        return "draft"
-    if state.get_signed_today() and frozen.version in versions:
-        return "changed_since_signature" if batch.is_stale(frozen, current_fp) else "signed"
-    return "review_open"
 
 
 def open_review(status: batch.Status) -> None:
@@ -453,6 +504,8 @@ def open_review(status: batch.Status) -> None:
         cap,
         state.get_hand_moves(),
         human_set=human_set,
+        today_job_ids=day_split.accepted,
+        decisions=standing,
     )
     state.set_batch(frozen)
     st.rerun()
@@ -484,18 +537,26 @@ def on_submit(signer: str, decision: str, reason: str) -> None:
         return
     batch.next_status(saving, "submit_ok")
     state.set_signed_today(True)
-    st.success(f"Signed batch v{frozen.version}. Audit reference `{record.audit_ref}`")
+    st.rerun()  # the page shows the signed state: the banner in To decide, decisions closed
 
 
-status = decision_status(state.get_batch(), signed_versions)
-if st.button("Review and sign", key="workspace_review_and_sign", disabled=status == "review_open"):
+ready = not day_split.to_decide and bool(day_split.accepted)
+if st.button(
+    "Review and sign",
+    key="workspace_review_and_sign",
+    disabled=status == "review_open" or not ready,
+):
     open_review(status)
+if day_split.to_decide:
+    st.caption(f"Decide the {len(day_split.to_decide)} jobs left in To decide first.")
+elif not day_split.accepted:
+    st.caption("Accept at least one job before you sign.")
 
 frozen = state.get_batch()
 if frozen is not None:
     if batch.is_stale(frozen, current_fp):
         st.warning(STALE)
-        if st.button("Open again", key="workspace_open_again"):
+        if st.button("Open again", key="workspace_open_again", disabled=not ready):
             open_review(status)
     else:
         by_id = {s.job.job_id: s for s in current}
@@ -506,8 +567,17 @@ if frozen is not None:
             today,
             baseline=baseline,
         )[DISPLAY]
+        fixed = sum(
+            check.decision == "corrected"
+            for check in audit.latest_checks(audit_records, today).values()
+        )
+        counts = (
+            sum(d == "not_today" for d in standing.values()),
+            sum(d == "needs_person" for d in standing.values()),
+            fixed,
+        )
         sign_off_form.render(
-            frozen, status, on_submit, review_count, is_remote, frozen_rows, checks
+            frozen, status, on_submit, review_count, is_remote, frozen_rows, counts
         )
 
 metrics.metrics_panel(today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label)
@@ -544,13 +614,11 @@ plan_accepted = signed_version is not None and any(
     and r.action == "accept"
     for r in audit.read(state.get_audit_path())
 )
-today_ids = [s.job.job_id for s in today_list]
 with steps_slot:
     today_steps.render(
         today_steps.steps(
             review_left=review_count,
-            checked=sum(job_id in checks for job_id in today_ids),
-            today_total=len(today_ids),
+            to_decide=len(day_split.to_decide),
             signed=status == "signed",
             plan_accepted=plan_accepted,
         )

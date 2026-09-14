@@ -9,7 +9,7 @@ import streamlit as st
 
 from fair_turn.app import state
 from fair_turn.app.components import highlight, ranking_table
-from fair_turn.core import audit, explain, scoring
+from fair_turn.core import audit, decisions, explain, scoring
 from fair_turn.core.batch import HandMove
 from fair_turn.core.types import FaultType, Job, SafetyClass, ScoredJob
 from fair_turn.data import policy, runtime
@@ -26,11 +26,21 @@ REPORT_CAPTION = "What the tenant reported"
 FULL_PASSAGE = "Full passage"
 REASON_PLACEHOLDER = "Why? e.g. crew already nearby, tenant called back"
 PASSAGE_PREVIEW_CHARS = 400
-CHECK_TITLE = "Check the AI's reading"
-CHECK_CAPTION = "Read the report above. Are the fields the AI read from it right?"
-CHECK_OK = "Fields are right"
-CHECK_FIX = "Fix a field"
-CHECK_IN_REVIEW = "This job needs a person first: open it in the Needs a human tab."
+DECISION_TITLE = "Your decision"
+READ_BOX = "I have read the report and the reasons above"
+ACCEPT = "Accept for today"
+REJECT = "Reject"
+PROPOSE = "Propose for today"
+UNDO = "Undo my decision"
+SIGNED_CLOSED = "Signed. Undo is closed; a change needs a new signature."
+DECISION_IN_REVIEW = "This job needs a person first: open it in the Needs a human tab."
+NEEDS_PERSON_UNDO = "Sent to a person. It is handled in the review queue, not undone here."
+TODAY_FULL = "Today's list is full of accepted jobs; undo one to make room for this job."
+REJECT_OPTIONS = {
+    "Not today: move it to the backlog": "not_today",
+    "Needs a person: send it to the review queue": "needs_person",
+    "A field is wrong: fix it": "field",
+}
 FIXABLE_FIELDS = {"fault_type": FaultType, "safety_class": SafetyClass}
 FIELD_FACTOR = {
     "fault_type": "safety",
@@ -236,89 +246,180 @@ def _report_block(art: Artefacts, job_id: str) -> None:
             st.caption("\n".join(legend))
 
 
-def _check_line(check: audit.FieldCheck) -> str:
-    at = f"{check.recorded_at.astimezone():%H:%M}"
-    if check.decision == "confirmed":
-        return f":material/check: Checked by {check.actor} at {at}"
-    return (
-        f":material/close: Corrected {_label(check.field)} to {_label(check.value)} "
-        f"by {check.actor} at {at}"
+def _latest_decision(job_id: str, today: date) -> audit.JobDecision | None:
+    return next(
+        (
+            r
+            for r in reversed(audit.read(state.get_audit_path()))
+            if isinstance(r, audit.JobDecision) and r.day == today and r.job_id == job_id
+        ),
+        None,
     )
 
 
-def _fix_form(job_id: str, today: date) -> None:
-    """The in-page correction: the field, a value from its enum, a reason and a name. Saved
-    through the review queue's path (a runtime human-set field and its audit record) plus
-    one ``FieldCheck``. Plain widgets, not ``st.form``, so the values follow the field."""
+def _decision_line(record: audit.JobDecision) -> str:
+    at = f"{record.recorded_at.astimezone():%H:%M}"
+    if record.decision == decisions.ACCEPTED:
+        return f":material/check: Accepted by {record.actor} at {at}"
+    return f":material/close: Not today by {record.actor} at {at}: {record.reason}"
+
+
+def _promote(job_id: str, rank: int, displaced: str, to_rank: int, reason: str, today: date):
+    """Promote a backlog job into today's list in place of ``displaced``, the last job left
+    to decide: one ``Promotion`` record and one hand move."""
+    audit.append(state.get_audit_path(), audit.Promotion(today, job_id, displaced, reason))
+    state.set_hand_moves((*state.get_hand_moves(), HandMove(job_id, rank, to_rank, reason)))
+    st.rerun()
+
+
+def _reject_form(job_id: str, today: date) -> None:
+    """Reject in words: not today, needs a person, or a field is wrong. Plain widgets, not
+    ``st.form``, so the field and value selectors follow the chosen option."""
     with st.container(border=True):
-        field = st.selectbox(
-            "Field to fix", list(FIXABLE_FIELDS), format_func=_label, key=f"fieldfix_field_{job_id}"
+        choice = st.radio(
+            "What should happen to this job?", list(REJECT_OPTIONS), key=f"reject_kind_{job_id}"
         )
-        value = st.selectbox(
-            "New value",
-            [e.value for e in FIXABLE_FIELDS[field]],
-            format_func=_label,
-            key=f"fieldfix_value_{job_id}_{field}",
-        )
-        reason = st.text_input("Why?", key=f"fieldfix_reason_{job_id}").strip()
+        kind = REJECT_OPTIONS[choice]
+        field = value = ""
+        if kind == "field":
+            field = st.selectbox(
+                "Field to fix",
+                list(FIXABLE_FIELDS),
+                format_func=_label,
+                key=f"reject_field_{job_id}",
+            )
+            value = st.selectbox(
+                "New value",
+                [e.value for e in FIXABLE_FIELDS[field]],
+                format_func=_label,
+                key=f"reject_value_{job_id}_{field}",
+            )
+        reason = st.text_input("Why?", key=f"reject_reason_{job_id}").strip()
         actor = st.text_input(
-            "Your name", value=state.get_actor(), key=f"fieldfix_actor_{job_id}"
+            "Your name", value=state.get_actor(), key=f"reject_actor_{job_id}"
         ).strip()
         save, cancel = st.columns(2)
-        if cancel.button("Cancel", key=f"fieldfix_cancel_{job_id}", width="stretch"):
-            state.set_field_fix_job(None)
+        if cancel.button("Cancel", key=f"reject_cancel_{job_id}", width="stretch"):
+            state.set_reject_job(None)
             st.rerun()
-        if not save.button("Save correction", key=f"fieldfix_save_{job_id}", width="stretch"):
+        if not save.button("Save", key=f"reject_save_{job_id}", width="stretch"):
             return
         if not reason:
             st.error(REASON_REQUIRED)
             return
         actor = actor or "coordinator"
         state.set_actor(actor)
-        state.set_human_set(job_id, field, value, actor, reason)
         path = state.get_audit_path()
-        audit.append(path, audit.HumanSet(today, job_id, field, value, actor, reason))
-        audit.append(
-            path, audit.FieldCheck(today, job_id, "corrected", actor, reason, field, value)
-        )
-        state.set_field_fix_job(None)
+        if kind == "field":
+            # The job stays undecided and is re-ranked with the corrected field.
+            state.set_human_set(job_id, field, value, actor, reason)
+            audit.append(path, audit.HumanSet(today, job_id, field, value, actor, reason))
+            audit.append(
+                path, audit.FieldCheck(today, job_id, "corrected", actor, reason, field, value)
+            )
+        else:
+            audit.append(path, audit.JobDecision(today, job_id, kind, actor, reason))
+            if kind == "needs_person":
+                audit.append(
+                    path,
+                    audit.HumanSet(
+                        today, job_id, ranking_table.REVIEW_REQUESTED, reason, actor, reason
+                    ),
+                )
+                state.set_hand_moves(
+                    ranking_table.without_moves_for(state.get_hand_moves(), job_id)
+                )
+        state.set_reject_job(None)
         st.rerun()
 
 
-def _check_block(job_id: str, today: date, in_review: bool) -> None:
-    """Check or fix the model's reading of this job, placed after the report so the words it
-    was read from are already on screen. No per-row approve and no "accept all" (PRD 3.1)."""
+def _decision_section(
+    job: Job,
+    current: list[ScoredJob],
+    job_split: decisions.Split,
+    today: date,
+    in_review: bool,
+    signed: bool,
+) -> None:
+    """The last block of the pane, so the coordinator reads everything above it first: the
+    read tick, Accept (or Propose for a backlog job) and Reject; once decided, the decision
+    and its undo. No per-list accept: every decision is one job (PRD 3.1)."""
+    job_id = job.job_id
     with st.container(border=True):
-        st.markdown(f"**{CHECK_TITLE}**")
+        st.markdown(f"**{DECISION_TITLE}**")
+        latest = _latest_decision(job_id, today)
         if in_review:
-            st.caption(CHECK_IN_REVIEW)
+            sent = latest is not None and latest.decision == "needs_person"
+            st.caption(NEEDS_PERSON_UNDO if sent else DECISION_IN_REVIEW)
             return
-        st.caption(CHECK_CAPTION)
-        ok, fix = st.columns(2)
-        if ok.button(
-            CHECK_OK,
-            icon=":material/check:",
-            key=f"fieldcheck_ok_{job_id}",
-            width="stretch",
-        ):
-            audit.append(
-                state.get_audit_path(),
-                audit.FieldCheck(today, job_id, "confirmed", state.get_actor()),
-            )
-            state.set_field_fix_job(None)
-            st.rerun()
-        if fix.button(
-            CHECK_FIX,
+        if signed:
+            st.caption(SIGNED_CLOSED)
+        if latest is not None and latest.decision in (decisions.ACCEPTED, decisions.NOT_TODAY):
+            st.markdown(_decision_line(latest))
+            if st.button(UNDO, key=f"decide_undo_{job_id}", disabled=signed):
+                audit.append(
+                    state.get_audit_path(),
+                    audit.JobDecision(today, job_id, "undone", state.get_actor()),
+                )
+                st.rerun()
+            return
+        read = st.checkbox(READ_BOX, key=f"read_{job_id}")
+        in_today = job_id in job_split.to_decide
+        propose_reason = ""
+        if not in_today:
+            st.caption("This job is in the backlog.")
+            propose_reason = st.text_input(
+                "Why propose it for today?",
+                key=f"propose_reason_{job_id}",
+                placeholder=REASON_PLACEHOLDER,
+            ).strip()
+        left, right = st.columns(2)
+        if in_today:
+            if left.button(
+                ACCEPT,
+                icon=":material/check:",
+                key=f"decide_accept_{job_id}",
+                disabled=signed or not read,
+                width="stretch",
+            ):
+                audit.append(
+                    state.get_audit_path(),
+                    audit.JobDecision(today, job_id, decisions.ACCEPTED, state.get_actor()),
+                )
+                st.rerun()
+        else:
+            ids = [s.job.job_id for s in current]
+            room = bool(job_split.to_decide) and job_id in ids
+            if not room:
+                st.caption(TODAY_FULL)
+            if left.button(
+                PROPOSE,
+                key=f"decide_propose_{job_id}",
+                disabled=signed or not read or not room,
+                width="stretch",
+            ):
+                if not propose_reason:
+                    st.error(REASON_REQUIRED)
+                else:
+                    displaced = job_split.to_decide[-1]
+                    _promote(
+                        job_id,
+                        ids.index(job_id) + 1,
+                        displaced,
+                        ids.index(displaced) + 1,
+                        propose_reason,
+                        today,
+                    )
+        if right.button(
+            REJECT,
             icon=":material/close:",
-            key=f"fieldcheck_fix_{job_id}",
+            key=f"decide_reject_{job_id}",
+            disabled=signed,
             width="stretch",
         ):
-            state.set_field_fix_job(job_id)
-        if state.get_field_fix_job() == job_id:
-            _fix_form(job_id, today)
-        latest = audit.latest_checks(audit.read(state.get_audit_path()), today).get(job_id)
-        if latest is not None:
-            st.caption(_check_line(latest))
+            state.set_reject_job(job_id)
+        if state.get_reject_job() == job_id and not signed:
+            _reject_form(job_id, today)
 
 
 def _fields_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -> None:
@@ -380,8 +481,14 @@ def _policy_expander(art: Artefacts, job: Job) -> None:
                     st.markdown(_text(passage.text))
 
 
-def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_review: bool) -> None:
-    with st.container(border=True):
+def _actions(
+    job: Job,
+    current: list[ScoredJob],
+    job_split: decisions.Split,
+    today: date,
+    in_review: bool,
+) -> None:
+    with st.expander("Change the order instead"):
         st.markdown("**Change this job's place** (every change needs a reason and is logged)")
         if in_review:
             st.caption("No changes here: this job is in the review queue.")
@@ -389,6 +496,9 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
         ids = [s.job.job_id for s in current]
         if job.job_id not in ids:
             st.caption("No changes here: this job is not in today's ranking.")
+            return
+        if job.job_id in job_split.not_today:
+            st.caption("No changes here: undo the decision first.")
             return
         job_id = job.job_id
         rank = ids.index(job_id) + 1
@@ -405,7 +515,7 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
 
         actions: list[tuple[str, str, str]] = []
         displaced = None
-        if rank <= cap:
+        if job_id in job_split.to_decide or job_id in job_split.accepted:
             st.caption(
                 "You can move this job up or down one place in today's list, "
                 "or send it to the review queue."
@@ -414,14 +524,16 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
                 actions.append(("up", "↑ Up", "Move this job up one place in today's list"))
             if rank < len(ids):
                 actions.append(("down", "↓ Down", "Move this job down one place in today's list"))
-        elif cap > 0:
-            displaced = ids[cap - 1]
+        elif job_split.to_decide:
+            # The last undecided job of today's list makes room; accepted jobs never do.
+            displaced = job_split.to_decide[-1]
+            to_rank = ids.index(displaced) + 1
             st.caption(
                 "This job is in the backlog. You can promote it into today's list; "
                 "the job at the last place moves to the backlog."
             )
             st.caption(
-                f"Promoting puts this job at rank {cap} and moves "
+                f"Promoting puts this job at rank {to_rank} and moves "
                 f"{ranking_table.short_id(displaced)} to the backlog."
             )
             actions.append(
@@ -450,9 +562,7 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
         elif clicked == "down":
             move(rank + 1, reason.strip())
         elif clicked == "promote":
-            audit.append(audit_path, audit.Promotion(today, job_id, displaced, reason.strip()))
-            state.set_hand_moves((*moves, HandMove(job_id, rank, cap, reason.strip())))
-            st.rerun()
+            _promote(job_id, rank, displaced, to_rank, reason.strip(), today)
         elif clicked == "review":
             audit.append(
                 audit_path,
@@ -492,9 +602,13 @@ def render(
     today: date,
     lam: float,
     map_choice: tuple[str, list[str]] | None = None,
+    job_split: decisions.Split | None = None,
+    signed: bool = False,
 ) -> None:
     """The pane for the selected job; ``jobs`` are the open jobs in the region, ``current``
-    the ranking after hand moves, ``map_choice`` a community picked on the map."""
+    the ranking after hand moves, ``map_choice`` a community picked on the map,
+    ``job_split`` today's decision split (derived from the audit log when omitted) and
+    ``signed`` whether today's list is signed and unchanged, which closes every decision."""
     by_id = {j.job_id: j for j in jobs}
     selected = _select(sorted(by_id), state.get_selected_job_id(), by_id)
     _map_choice(map_choice, selected)
@@ -519,8 +633,11 @@ def render(
     _header_badges(job, in_review, human_set)
     st.caption(f"Registration {selected} · {fault} · {safety} · {window}")
 
+    if job_split is None:
+        latest = audit.latest_decisions(audit.read(state.get_audit_path()), today)
+        job_split = decisions.split([s.job.job_id for s in current], latest, cap)
+
     _report_block(art, selected)
-    _check_block(selected, today, in_review)
     if in_review or scored is None:
         st.warning(IN_REVIEW)
     else:
@@ -530,4 +647,5 @@ def render(
     _summary_list(art, job, scored, today, _evidence(art, selected), human_set)
     _fields_expander(art, selected, human_set)
     _policy_expander(art, job)
-    _actions(job, current, cap, today, in_review)
+    _actions(job, current, job_split, today, in_review)
+    _decision_section(job, current, job_split, today, in_review, signed)

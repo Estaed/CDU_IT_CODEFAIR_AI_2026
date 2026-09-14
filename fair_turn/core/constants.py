@@ -37,7 +37,6 @@ CREW_BASE_COORDS = {
     "Alice Springs": (-23.6994, 133.8807),
     "Nhulunbuy": (-12.187, 136.7763),
 }
-SUGGESTION_MIN_SAVING_KM = 50
 
 # Regions exactly as BushTel spells ``NTRegionName``.
 REMOTE_REGIONS = ("CENTRAL AUSTRALIA", "BIG RIVERS", "BARKLY", "TOP END", "EAST ARNHEM")

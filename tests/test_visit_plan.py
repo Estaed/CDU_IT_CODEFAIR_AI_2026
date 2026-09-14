@@ -1,5 +1,9 @@
-"""Visit-plan invariants from PRD section 3.3."""
+"""Pooled visit-plan invariants (PRD section 3.3, pooled crews 2026-09-14).
 
+Distance chooses which crew goes, never which job is served: membership is the signed list,
+overflow is dropped by signed rank only, and within a crew the order is the shortest route."""
+
+from itertools import permutations
 from pathlib import Path
 
 import pytest
@@ -7,28 +11,40 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from fair_turn.core import constants
+from fair_turn.core.capacity_sim import CrewBase, crew_roster, haversine_km
 from fair_turn.core.visit_plan import (
-    Crew,
+    MANUAL_NEXT_ACTION,
+    MANUAL_OWNER,
+    OVER_CAPACITY,
+    ROAD_CLOSED,
     Stop,
-    apply,
+    _measure,
     edit_order,
-    haversine_km,
     plan,
-    suggestions,
 )
 from fair_turn.data.geography import BASE_FOR_REGION
 
-
-def factor(_: Stop) -> float:
-    return 1.0
+CAP = constants.JOBS_PER_CREW_DAY
 
 
-def crews_for_regions() -> list[Crew]:
-    return [
-        Crew(base, region, *constants.CREW_BASE_COORDS[base], jobs_per_day=2)
-        for region in constants.REGIONS
-        for base in (BASE_FOR_REGION[region].title(),)
-    ]
+def roster() -> tuple[CrewBase, ...]:
+    return crew_roster({region: base.title() for region, base in BASE_FOR_REGION.items()})
+
+
+def stop(job_id: str, rank: int, lat: float, lon: float, **overrides) -> Stop:
+    values = dict(
+        job_id=job_id,
+        community_id=f"community-{job_id}",
+        region=constants.REGIONS[0],
+        lat=lat,
+        lon=lon,
+        access="road",
+        road_open=True,
+        signed_rank=rank,
+        road_factor=1.0,
+    )
+    values.update(overrides)
+    return Stop(**values)
 
 
 @st.composite
@@ -36,119 +52,167 @@ def stop_lists(draw) -> list[Stop]:
     entries = draw(
         st.lists(
             st.tuples(
-                st.sampled_from(constants.REGIONS),
                 st.floats(-26, -11, allow_nan=False, allow_infinity=False),
                 st.floats(129, 138, allow_nan=False, allow_infinity=False),
-                st.sampled_from(("road", "air", "barge")),
-                st.booleans(),
-                st.integers(0, 5),
+                st.sampled_from(("road", "road", "air", "barge")),
+                st.booleans() | st.just(True),
+                st.integers(0, 3),  # a few shared communities
+                st.sampled_from((1.0, 1.4)),
             ),
             min_size=1,
-            max_size=12,
+            max_size=18,
         )
     )
     return [
-        Stop(f"j{index}", f"community-{index}", region, lat, lon, access, road_open, index, window)
-        for index, (region, lat, lon, access, road_open, window) in enumerate(entries, start=1)
+        Stop(
+            f"j{index:02d}",
+            f"community-{shared if shared else index}",
+            constants.REGIONS[0],
+            lat,
+            lon,
+            access,
+            road_open,
+            index,
+            factor,
+        )
+        for index, (lat, lon, access, road_open, shared, factor) in enumerate(entries, start=1)
     ]
+
+
+def _ids(current) -> tuple[list[str], list[str], list[str]]:
+    planned = [s.job_id for crew in current.crews for s in crew.stops]
+    return (
+        planned,
+        [item.stop.job_id for item in current.unplanned],
+        [item.stop.job_id for item in current.manual],
+    )
 
 
 @settings(max_examples=100, deadline=None)
 @given(stop_lists())
-def test_plan_preserves_membership_and_signed_order(stops: list[Stop]) -> None:
-    current = plan(7, stops, crews_for_regions(), factor)
-    planned = [stop.job_id for crew in current.crews for stop in crew.stops]
-    unplanned = [item.stop.job_id for item in current.unplanned]
-    manual = [item.stop.job_id for item in current.manual]
-    assert set(planned) | set(unplanned) | set(manual) == {stop.job_id for stop in stops}
-    assert len(planned) + len(unplanned) + len(manual) == len(stops)
-    assert all(
-        [stop.signed_rank for stop in crew.stops] == sorted(stop.signed_rank for stop in crew.stops)
-        for crew in current.crews
-    )
-    assert not set(planned) & set(manual)
+def test_membership_is_the_signed_list(stops: list[Stop]) -> None:
+    current = plan(7, stops, roster())
+    planned, unplanned, manual = _ids(current)
+    assert sorted(planned + unplanned + manual) == sorted(s.job_id for s in stops)
+    assert all(item.next_action == MANUAL_NEXT_ACTION for item in current.manual)
+    assert all(item.owner == MANUAL_OWNER for item in current.manual)
+    assert {s.job_id for s in stops if s.access != "road"} == set(manual)
+    closed = {s.job_id for s in stops if s.access == "road" and not s.road_open}
+    assert closed == {i.stop.job_id for i in current.unplanned if i.reason == ROAD_CLOSED}
     for crew in current.crews:
-        expected_leg_count = len(crew.stops) + 1 if crew.stops else 0
-        assert len(crew.legs_km) == expected_leg_count
-    over_capacity_regions = {
-        item.stop.region for item in current.unplanned if item.reason == "over crew capacity"
-    }
-    assert all(
-        not crew.within_capacity
-        for crew in current.crews
-        if crew.crew.region in over_capacity_regions
+        assert len(crew.stops) <= CAP
+        assert len(crew.legs_km) == (len(crew.stops) + 1 if crew.stops else 0)
+        assert crew.travel_day_legs == tuple(leg > constants.TRAVEL_DAY_KM for leg in crew.legs_km)
+    assert current.batch_version == 7
+
+
+@settings(max_examples=100, deadline=None)
+@given(stop_lists())
+def test_with_enough_slots_no_road_stop_is_over_capacity(stops: list[Stop]) -> None:
+    crews = roster()
+    drivable = [s for s in stops if s.access == "road" and s.road_open]
+    if len(drivable) > len(crews) * CAP:
+        crews = crews * (len(drivable) // (len(crews) * CAP) + 1)
+    current = plan(1, stops, crews)
+    assert current.within_capacity
+    assert not [i for i in current.unplanned if i.reason == OVER_CAPACITY]
+
+
+@settings(max_examples=100, deadline=None)
+@given(stop_lists())
+def test_overflow_is_the_lowest_signed_ranks(stops: list[Stop]) -> None:
+    crews = roster()[:2]
+    current = plan(1, stops, crews)
+    drivable = sorted(
+        (s for s in stops if s.access == "road" and s.road_open), key=lambda s: s.signed_rank
     )
+    expected = [s.job_id for s in drivable[len(crews) * CAP :]]
+    assert [i.stop.job_id for i in current.unplanned if i.reason == OVER_CAPACITY] == expected
+    assert current.within_capacity == (not expected)
 
 
-def test_road_closed_and_missing_crew_are_unplanned() -> None:
-    closed = Stop("closed", "c", constants.REGIONS[0], -20, 133, "road", False, 1, 1)
-    unknown = Stop("unknown", "u", "OUTSIDE", -20, 133, "road", True, 2, 1)
-    current = plan(4, [closed, unknown], [], factor)
-    assert [(item.stop.job_id, item.reason) for item in current.unplanned] == [
-        ("closed", "road closed"),
-        ("unknown", "no crew for region"),
+def test_a_far_high_rank_stop_is_planned_and_a_near_low_rank_stop_is_left_over() -> None:
+    crew = CrewBase("Base", "Base", 0.0, 0.0)
+    far = stop("far", 1, 0.0, 5.0)
+    fillers = [stop(f"f{i}", i + 2, 0.0, 0.5) for i in range(CAP - 1)]
+    near = stop("near", 99, 0.0, 0.01)
+    current = plan(3, [near, far, *fillers], [crew])
+    planned, unplanned, _ = _ids(current)
+    assert "far" in planned
+    assert unplanned == ["near"]
+    assert current.unplanned[0].reason == OVER_CAPACITY
+    assert not current.within_capacity
+
+
+@settings(max_examples=100, deadline=None)
+@given(stop_lists())
+def test_each_crew_drives_the_shortest_route(stops: list[Stop]) -> None:
+    for crew_plan in plan(1, stops, roster()).crews:
+        if not crew_plan.stops:
+            continue
+        best = min(
+            _measure(crew_plan.crew, list(order))[1] for order in permutations(crew_plan.stops)
+        )
+        assert crew_plan.km == pytest.approx(best, abs=1e-6)
+
+
+def test_same_community_stops_share_a_crew() -> None:
+    crews = (CrewBase("A 1", "A", 0.0, 0.0), CrewBase("A 2", "A", 0.0, 0.0))
+    here = dict(community_id="shared")
+    stops = [
+        stop("a", 1, 0.0, 1.0, **here),
+        stop("b", 2, 0.0, 1.2),
+        stop("c", 3, 0.0, 1.0, **here),
     ]
+    current = plan(1, stops, crews)
+    holders = [
+        {s.job_id for s in crew.stops}
+        for crew in current.crews
+        if {"a", "c"} & {s.job_id for s in crew.stops}
+    ]
+    assert holders == [{"a", "c"}]
 
 
-def test_manual_work_is_not_routed() -> None:
-    stop = Stop("air", "c", constants.REGIONS[0], -20, 133, "air", True, 1, 1)
-    current = plan(4, [stop], crews_for_regions(), factor)
-    assert current.manual[0].next_action == "book air/barge freight"
+def test_legs_are_measured_from_base_and_back_and_flag_travel_days() -> None:
+    crew = CrewBase("Base", "Base", 0.0, 0.0)
+    far = stop("one", 1, 0.0, 3.0, road_factor=1.4)
+    current = plan(1, [far], [crew])
+    leg = haversine_km(0.0, 0.0, 0.0, 3.0) * 1.4
+    assert current.crews[0].legs_km == pytest.approx((leg, leg))
+    assert current.crews[0].km == pytest.approx(2 * leg)
+    assert current.crews[0].travel_day_legs == (True, True)
+    assert current.road_km == pytest.approx(2 * leg)
+
+
+def test_edit_order_needs_a_reason_keeps_membership_and_the_batch_version() -> None:
+    crew = CrewBase("Base", "Base", 0.0, 0.0)
+    stops = [stop("a", 1, 0.0, 1.0), stop("b", 2, 1.0, 1.0)]
+    current = plan(5, stops, [crew])
+    order = [s.job_id for s in current.crews[0].stops]
+    with pytest.raises(ValueError, match="reason"):
+        edit_order(current, "Base", list(reversed(order)), "  ")
+    with pytest.raises(ValueError, match="membership"):
+        edit_order(current, "Base", ["a", "new"], "Need a change.")
+    edited = edit_order(current, "Base", list(reversed(order)), "Tenant asked for the afternoon.")
+    assert [s.job_id for s in edited.crews[0].stops] == list(reversed(order))
+    assert edited.changes[-1].reason == "Tenant asked for the afternoon."
+    assert edited.changes[-1].job_ids == tuple(reversed(order))
+    assert edited.batch_version == 5
+
+
+def test_air_and_closed_road_stops_are_never_routed() -> None:
+    air = stop("air", 1, -20.0, 133.0, access="air")
+    closed = stop("closed", 2, -20.0, 133.0, road_open=False)
+    current = plan(4, [air, closed], roster())
+    assert [item.stop.job_id for item in current.manual] == ["air"]
+    assert [(i.stop.job_id, i.reason) for i in current.unplanned] == [("closed", ROAD_CLOSED)]
     assert all(not crew.stops for crew in current.crews)
 
 
-def test_suggestion_requires_reason_and_only_swaps_named_stops() -> None:
-    crew = Crew("Darwin", constants.REGIONS[0], -12.5, 130.8, 3)
-    stops = [
-        Stop("a", "a", crew.region, -20, 133, "road", True, 1, 2),
-        Stop("b", "b", crew.region, -12.6, 130.9, "road", True, 2, 2),
-        Stop("c", "c", crew.region, -21, 133, "road", True, 3, 2),
-    ]
-    current = plan(5, stops, [crew], factor)
-    suggestion = suggestions(current, factor)[0]
-    assert suggestion.saving_km >= constants.SUGGESTION_MIN_SAVING_KM
-    with pytest.raises(ValueError, match="reason"):
-        apply(current, suggestion, "  ", factor)
-    applied = apply(current, suggestion, "Avoid a repeat drive.", factor)
-    before = current.crews[0].stops
-    after = applied.crews[0].stops
-    changed = [
-        index for index, pair in enumerate(zip(before, after, strict=True)) if pair[0] != pair[1]
-    ]
-    assert changed == [
-        index
-        for index, job in enumerate(suggestion.old_order)
-        if job != suggestion.new_order[index]
-    ]
-    assert {before[index].job_id for index in changed} == {suggestion.job_a, suggestion.job_b}
-    assert applied.changes[-1].reason == "Avoid a repeat drive."
-    assert applied.batch_version == 5
-
-
-def test_edit_order_rejects_membership_change() -> None:
-    crew = crews_for_regions()[0]
-    stops = [
-        Stop("a", "a", crew.region, -13, 131, "road", True, 1, 1),
-        Stop("b", "b", crew.region, -14, 132, "road", True, 2, 1),
-    ]
-    current = plan(2, stops, [crew], factor)
-    with pytest.raises(ValueError, match="membership"):
-        edit_order(current, crew.base, ["a", "new"], "Need a change.", factor)
-
-
-def test_haversine_and_kilometres_are_measured_from_base_and_back() -> None:
-    crew = Crew("Darwin", constants.REGIONS[0], 0.0, 0.0, 1)
-    stop = Stop("one", "one", crew.region, 0.0, 1.0, "road", True, 1, 1)
-    current = plan(1, [stop], [crew], factor)
-    expected_leg = haversine_km(0.0, 0.0, 0.0, 1.0)
-    assert current.crews[0].legs_km == pytest.approx((expected_leg, expected_leg))
-    assert current.crews[0].km == pytest.approx(expected_leg * 2)
-
-
-def test_planner_reads_capacity_and_coordinate_constants() -> None:
+def test_planner_reads_capacity_and_travel_day_constants() -> None:
     source = Path("fair_turn/core/visit_plan.py").read_text(encoding="utf-8")
-    assert "SUGGESTION_MIN_SAVING_KM" in source
-    assert "50" not in source
+    assert "JOBS_PER_CREW_DAY" in source and "TRAVEL_DAY_KM" in source
+    assert "200" not in source
     for coordinates in constants.CREW_BASE_COORDS.values():
         assert str(coordinates[0]) not in source
         assert str(coordinates[1]) not in source

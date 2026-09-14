@@ -1,6 +1,8 @@
-"""PRD 3.3 Visit plan (wireframes §6): the signed list allocated to crews in signed order,
-distance used only to measure and to suggest never-silent swaps, air/barge work kept visible
-as manual coordination, and every plan decision written against the signed batch version.
+"""PRD 3.3 Visit plan (wireframes §6), pooled crews (2026-09-14): the signed list placed on
+the NT-wide crew pool. Distance chooses which crew goes, never which job is served; each crew
+drives the shortest route over its stops; air/barge work stays manual coordination; the road
+km price of today's weighting is shown against the efficiency-first list; every plan decision
+is written against the signed batch version.
 """
 
 import pandas as pd
@@ -9,8 +11,13 @@ from streamlit.errors import StreamlitPageNotFoundError
 
 from fair_turn.app import state, theme
 from fair_turn.app.components import intro, ranking_table
-from fair_turn.core import audit, constants, scoring, visit_plan
+from fair_turn.core import audit, scoring, visit_plan
 from fair_turn.data import geography
+
+EFFICIENCY_LAM = 1.0
+RULE_SENTENCE = (
+    "Distance chooses which crew goes, never which job is served. The jobs are the signed list."
+)
 
 art = state.artefacts()
 today = state.get_today()
@@ -27,12 +34,8 @@ def _stop_access(road_access: str) -> str:
     return "air" if road_access == "barge_or_air" else "road"
 
 
-def _base_for_region(region: str) -> str:
-    return next(row["crew_base"] for row in art.communities.values() if row["region"] == region)
-
-
-def _road_factor(stop: visit_plan.Stop) -> float:
-    return geography.ROAD_FACTORS[art.communities[stop.community_id]["road_access"]]
+def _job_label(job_id: str) -> str:
+    return ranking_table.short_id(job_id)
 
 
 records = audit.read(state.get_audit_path())
@@ -62,40 +65,40 @@ else:
     signoff = signoffs_today[-1]
     st.markdown(f"Signed list {signoff.day} v{signoff.batch_version} by {signoff.signer}")
 
-    jobs_by_id = {j.job_id: j for j in ranking_table.open_jobs(today)}
-    stops: list[visit_plan.Stop] = []
-    no_longer_open: list[str] = []
-    for rank, job_id in enumerate(signoff.today_job_ids, start=1):
-        job = jobs_by_id.get(job_id)
-        if job is None:
-            no_longer_open.append(job_id)
-            continue
-        community = art.communities[job.community_id]
-        closed = any(
-            c["community_id"] == job.community_id
-            and c["closed_from"] <= today.isoformat() <= c["closed_to"]
-            for c in art.closures
-        )
-        days_open = (today - job.reported_on).days
-        stops.append(
-            visit_plan.Stop(
-                job_id=job.job_id,
-                community_id=job.community_id,
-                region=community["region"],
-                lat=float(community["lat"]),
-                lon=float(community["lon"]),
-                access=_stop_access(community["road_access"]),
-                road_open=not closed,
-                signed_rank=rank,
-                window_days_left=max(0, round(scoring.window_days(job) - days_open)),
-            )
-        )
+    open_today = ranking_table.open_jobs(today)
+    jobs_by_id = {j.job_id: j for j in open_today}
+    closed_today = {
+        c["community_id"]
+        for c in art.closures
+        if c["closed_from"] <= today.isoformat() <= c["closed_to"]
+    }
 
-    crews = []
-    for region in constants.REGIONS:
-        base = _base_for_region(region)
-        lat, lon = constants.CREW_BASE_COORDS[base]
-        crews.append(visit_plan.Crew(base, region, lat, lon, visit_plan.crew_capacity(region)))
+    def _stops(job_ids) -> tuple[list[visit_plan.Stop], list[str]]:
+        stops: list[visit_plan.Stop] = []
+        missing: list[str] = []
+        for rank, job_id in enumerate(job_ids, start=1):
+            job = jobs_by_id.get(job_id)
+            if job is None:
+                missing.append(job_id)
+                continue
+            community = art.communities[job.community_id]
+            stops.append(
+                visit_plan.Stop(
+                    job_id=job.job_id,
+                    community_id=job.community_id,
+                    region=community["region"],
+                    lat=float(community["lat"]),
+                    lon=float(community["lon"]),
+                    access=_stop_access(community["road_access"]),
+                    road_open=job.community_id not in closed_today,
+                    signed_rank=rank,
+                    road_factor=geography.ROAD_FACTORS[community["road_access"]],
+                )
+            )
+        return stops, missing
+
+    crews = geography.crews(art.communities)
+    stops, no_longer_open = _stops(signoff.today_job_ids)
 
     def _decisions_for(version: int) -> list[audit.PlanDecision]:
         return [
@@ -111,90 +114,83 @@ else:
     if current_plan is None or (
         current_plan.batch_version != signoff.batch_version and not accepted_current
     ):
-        current_plan = visit_plan.plan(signoff.batch_version, stops, crews, _road_factor)
+        current_plan = visit_plan.plan(signoff.batch_version, stops, crews)
         state.set_plan(current_plan)
 
+    efficiency_ids = [s.job.job_id for s in scoring.rank(open_today, today, EFFICIENCY_LAM)][
+        : len(signoff.today_job_ids)
+    ]
+    efficiency_plan = visit_plan.plan(signoff.batch_version, _stops(efficiency_ids)[0], crews)
+
+    st.markdown(RULE_SENTENCE)
+    signed_col, efficiency_col, cost_col = st.columns(3)
+    signed_col.metric("Road km, this signed list", f"{current_plan.road_km:,.0f} km", border=True)
+    efficiency_col.metric(
+        "Road km, efficiency-first list",
+        f"{efficiency_plan.road_km:,.0f} km",
+        help="The top of the list at travel-cost weight 1.00, same day, same crews, "
+        "planned the same way.",
+        border=True,
+    )
+    cost_col.metric(
+        "Road km cost of today's weighting",
+        f"{current_plan.road_km - efficiency_plan.road_km:+,.0f} km",
+        border=True,
+    )
+
     if no_longer_open:
-        st.caption(f"No longer open: {len(no_longer_open)} ({', '.join(no_longer_open)})")
+        st.caption(
+            f"No longer open: {len(no_longer_open)} "
+            f"({', '.join(_job_label(j) for j in no_longer_open)})"
+        )
 
     for crew_plan in current_plan.crews:
         crew = crew_plan.crew
         with st.container(border=True):
-            st.markdown(f"**Crew {crew.base} ({crew.jobs_per_day} jobs/day, road)**")
+            st.markdown(f"**Crew {crew.crew_id}** (base {crew.base}, {len(crew_plan.stops)} stops)")
             if not crew_plan.stops:
                 st.markdown("No signed road jobs for this crew")
-            else:
-                for index, (stop, leg) in enumerate(
-                    zip(crew_plan.stops, crew_plan.legs_km, strict=False), start=1
-                ):
-                    job = jobs_by_id[stop.job_id]
-                    open_word = "open" if stop.road_open else "closed"
-                    row_text, row_button = st.columns([6, 1])
-                    row_text.markdown(
-                        f"{index}. {stop.job_id}  {stop.community_id}  {leg:.0f} km road, "
-                        f"{open_word}  {_fault_label(job)}  signed rank {stop.signed_rank}"
-                    )
-                    if row_button.button("Select", key=f"visit_select_{crew.base}_{stop.job_id}"):
-                        state.set_selected_job_id(stop.job_id)
-                if crew_plan.within_capacity:
-                    st.markdown(f"Within job-count capacity — {crew_plan.km:.0f} km")
-                else:
-                    unfit = sum(
-                        1
-                        for item in current_plan.unplanned
-                        if item.reason == "over crew capacity" and item.stop.region == crew.region
-                    )
-                    st.markdown(f"Does not fit: {unfit} signed jobs unplanned")
-
-    st.subheader("Suggested changes (not applied)")
-    suggested = visit_plan.suggestions(current_plan, _road_factor)
-    stop_by_id = {s.job_id: s for cp in current_plan.crews for s in cp.stops}
-    if not suggested:
-        st.markdown("No suggested changes.")
-    for position, suggestion in enumerate(suggested):
-        rank_a = stop_by_id[suggestion.job_a].signed_rank
-        rank_b = stop_by_id[suggestion.job_b].signed_rank
-        st.markdown(
-            f"Crew {suggestion.crew_base}: visit rank {rank_b} before rank {rank_a}, "
-            f"saves {suggestion.saving_km:.0f} km; same day for both, windows unchanged."
-        )
-        reason = st.text_input("Reason", key=f"visit_suggestion_reason_{position}")
-        if st.button("Accept change", key=f"visit_suggestion_accept_{position}"):
-            if not reason.strip():
-                st.error("A reason is required.")
-            else:
-                updated = visit_plan.apply(current_plan, suggestion, reason.strip(), _road_factor)
-                state.set_plan(updated)
-                audit.append(
-                    state.get_audit_path(),
-                    audit.PlanDecision(
-                        day=today,
-                        batch_version=current_plan.batch_version,
-                        action="suggestion_accept",
-                        detail=f"{suggestion.job_a} <-> {suggestion.job_b}",
-                        reason=reason.strip(),
-                    ),
+                continue
+            for index, stop in enumerate(crew_plan.stops, start=1):
+                job = jobs_by_id[stop.job_id]
+                leg = crew_plan.legs_km[index - 1]
+                flag = (
+                    " — travel day (capacity model)" if crew_plan.travel_day_legs[index - 1] else ""
                 )
-                st.rerun()
+                row_text, row_button = st.columns([6, 1])
+                row_text.markdown(
+                    f"{index}. {_job_label(stop.job_id)}  {stop.community_id}  "
+                    f"{_fault_label(job)}  signed rank {stop.signed_rank}  "
+                    f"{leg:,.0f} km{flag}"
+                )
+                if row_button.button("Select", key=f"visit_select_{crew.crew_id}_{stop.job_id}"):
+                    state.set_selected_job_id(stop.job_id)
+            back_flag = " — travel day (capacity model)" if crew_plan.travel_day_legs[-1] else ""
+            st.markdown(f"Back to {crew.base}  {crew_plan.legs_km[-1]:,.0f} km{back_flag}")
+            st.markdown(f"Crew total {crew_plan.km:,.0f} km")
+            st.caption("Registrations: " + ", ".join(stop.job_id for stop in crew_plan.stops))
 
     st.subheader("Signed work needing manual coordination")
     if not current_plan.manual:
         st.markdown("No manual coordination needed.")
     for manual_item in current_plan.manual:
         st.markdown(
-            f"{manual_item.stop.job_id}  {manual_item.stop.community_id}  "
-            "air/barge access, no road route"
+            f"{_job_label(manual_item.stop.job_id)}  {manual_item.stop.community_id}  "
+            f"signed rank {manual_item.stop.signed_rank}  air/barge access, no road route"
         )
-        st.markdown(f"Next action: {manual_item.next_action} — owner: coordinator")
+        st.markdown(f"Next action: {manual_item.next_action} — owner: {manual_item.owner}")
+        st.caption(f"Registration: {manual_item.stop.job_id}")
 
     st.subheader("Signed, unplanned")
     if not current_plan.unplanned:
         st.markdown("Nothing signed is unplanned.")
     for unplanned_item in current_plan.unplanned:
         st.markdown(
-            f"{unplanned_item.stop.job_id}  {unplanned_item.stop.community_id}  "
-            f"{unplanned_item.reason}"
+            f"{_job_label(unplanned_item.stop.job_id)}  {unplanned_item.stop.community_id}  "
+            f"signed rank {unplanned_item.stop.signed_rank}  "
+            f"signed, unplanned: {unplanned_item.reason}"
         )
+        st.caption(f"Registration: {unplanned_item.stop.job_id}")
 
     decisions_current = _decisions_for(current_plan.batch_version)
     accepted = any(d.action == "accept" for d in decisions_current)
@@ -215,7 +211,6 @@ else:
             if not accept_reason.strip():
                 st.error("A reason is required.")
             else:
-                total_km = sum(cp.km for cp in current_plan.crews)
                 total_stops = sum(len(cp.stops) for cp in current_plan.crews)
                 audit.append(
                     state.get_audit_path(),
@@ -223,19 +218,19 @@ else:
                         day=today,
                         batch_version=current_plan.batch_version,
                         action="accept",
-                        detail=f"{total_stops} stops, {total_km:.0f} km",
+                        detail=f"{total_stops} stops, {current_plan.road_km:.0f} km",
                         reason=accept_reason.strip(),
                     ),
                 )
                 st.rerun()
 
     with edit_col, st.expander("Edit order"):
-        crew_bases = [cp.crew.base for cp in current_plan.crews if cp.stops]
-        if not crew_bases:
+        crew_ids = [cp.crew.crew_id for cp in current_plan.crews if cp.stops]
+        if not crew_ids:
             st.markdown("No road stops to reorder.")
         else:
-            crew_choice = st.selectbox("Crew", crew_bases, key="visit_edit_crew")
-            edit_crew_plan = next(cp for cp in current_plan.crews if cp.crew.base == crew_choice)
+            crew_choice = st.selectbox("Crew", crew_ids, key="visit_edit_crew")
+            edit_crew_plan = next(cp for cp in current_plan.crews if cp.crew.crew_id == crew_choice)
             stop_ids = [s.job_id for s in edit_crew_plan.stops]
             rank_by_id = {s.job_id: s.signed_rank for s in edit_crew_plan.stops}
             new_order = [
@@ -244,7 +239,7 @@ else:
                     stop_ids,
                     index=position,
                     key=f"visit_edit_pos_{position}",
-                    format_func=lambda jid: f"{jid} (signed rank {rank_by_id[jid]})",
+                    format_func=lambda jid: f"{_job_label(jid)} (signed rank {rank_by_id[jid]})",
                 )
                 for position in range(len(stop_ids))
             ]
@@ -255,7 +250,7 @@ else:
                 else:
                     try:
                         updated = visit_plan.edit_order(
-                            current_plan, crew_choice, new_order, edit_reason.strip(), _road_factor
+                            current_plan, crew_choice, new_order, edit_reason.strip()
                         )
                     except ValueError as exc:
                         st.error(str(exc))

@@ -10,20 +10,21 @@ from pathlib import Path
 import pytest
 
 from fair_turn.core import capacity_sim, constants, feedback_sim
-from fair_turn.core.capacity_sim import Closure, Site
+from fair_turn.core.capacity_sim import Closure, CrewBase, Site
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
+from fair_turn.data import geography
 
 BUILD_DIR = Path(__file__).resolve().parent.parent / "data" / "build"
 DECAY = 0.5
 
 
 @cache
-def artefacts() -> tuple[list[Job], dict[str, Site], list[Closure]]:
+def artefacts() -> tuple[list[Job], dict[str, Site], tuple[CrewBase, ...], list[Closure]]:
     if not (BUILD_DIR / "labels.json").exists():
         pytest.skip("data/build/labels.json absent")
     with (BUILD_DIR / "communities.csv").open(newline="", encoding="utf-8") as f:
         rows = {r["community_id"]: r for r in csv.DictReader(f)}
-    sites = {cid: Site(r["region"], float(r["km_to_base"])) for cid, r in rows.items()}
+    sites = geography.sim_sites(rows)
     jobs = []
     for label in json.loads((BUILD_DIR / "labels.json").read_text(encoding="utf-8")):
         community = rows[label["community_id"]]
@@ -47,19 +48,17 @@ def artefacts() -> tuple[list[Job], dict[str, Site], list[Closure]]:
         )
         for c in json.loads((BUILD_DIR / "closures.json").read_text(encoding="utf-8"))
     ]
-    return jobs, sites, closures
+    return jobs, sites, geography.crews(rows), closures
 
 
 @cache
 def series(lam: float, decay: float, seed: int = constants.SEED) -> feedback_sim.WeeklySeries:
-    jobs, sites, closures = artefacts()
-    return feedback_sim.run(jobs, sites, lam, decay, seed, closures)
+    jobs, sites, crews, closures = artefacts()
+    return feedback_sim.run(jobs, sites, crews, lam, decay, seed, closures)
 
 
 def test_decay_zero_is_the_plain_capacity_run() -> None:
-    jobs, sites, closures = artefacts()
-    crews = {r: constants.CREWS_PER_REMOTE_REGION for r in constants.REMOTE_REGIONS}
-    crews[constants.TOWN_REGION] = constants.CREWS_TOWN
+    jobs, sites, crews, closures = artefacts()
     horizon = constants.WINDOW_DAYS + feedback_sim.COMPLETION_TAIL_DAYS
     plain = capacity_sim.simulate(
         jobs,
@@ -112,8 +111,8 @@ def test_decay_thins_only_where_reports_went_unserved() -> None:
 
 
 def test_deterministic_for_a_seed_and_seed_changes_thinning() -> None:
-    jobs, sites, closures = artefacts()
-    again = feedback_sim.run(jobs, sites, 1.0, DECAY, constants.SEED, closures)
+    jobs, sites, crews, closures = artefacts()
+    again = feedback_sim.run(jobs, sites, crews, 1.0, DECAY, constants.SEED, closures)
     assert again == series(1.0, DECAY)
     other = series(1.0, DECAY, constants.SEED + 1)
     assert other.sim.completed_on.keys() != again.sim.completed_on.keys()
@@ -121,7 +120,7 @@ def test_deterministic_for_a_seed_and_seed_changes_thinning() -> None:
 
 @pytest.mark.parametrize("lam", [0.0, 1.0])
 def test_ninety_days_runs_under_twenty_seconds(lam: float) -> None:
-    jobs, sites, closures = artefacts()
+    jobs, sites, crews, closures = artefacts()
     began = time.perf_counter()
-    feedback_sim.run(jobs, sites, lam, 1.0, constants.SEED, closures)
+    feedback_sim.run(jobs, sites, crews, lam, 1.0, constants.SEED, closures)
     assert time.perf_counter() - began < 20.0

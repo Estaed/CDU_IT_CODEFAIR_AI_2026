@@ -123,7 +123,7 @@ def _open_needs_human(art, missing) -> str:
 
 def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    today, backlog = _today_ids(at), _frame(at, 2)
+    today, backlog = _today_ids(at), _frame(at, 3)
     cap = ranking_table.capacity("All")
     crews = len(constants.REMOTE_REGIONS) * constants.CREWS_PER_REMOTE_REGION
     assert cap == (crews + constants.CREWS_TOWN) * constants.JOBS_PER_CREW_DAY
@@ -146,7 +146,7 @@ def test_todays_list_is_rows_not_a_table_and_the_backlog_keeps_the_table(tmp_pat
     at = _run(_script(tmp_path))
     cap = ranking_table.capacity("All")
     assert at.tabs[0].dataframe.len == 0
-    assert at.tabs[2].dataframe.len == 1
+    assert at.tabs[3].dataframe.len == 1
     opens = [button for button in at.tabs[0].button if button.label == job_rows.OPEN]
     assert len(opens) == cap
     assert [button.proto.type for button in opens].count("primary") == 1
@@ -175,11 +175,11 @@ def test_opening_a_row_selects_that_job(tmp_path) -> None:
 
 def test_backlog_search_narrows_the_frame_only(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    full = _frame(at, 2)
+    full = _frame(at, 3)
     community = str(full.iloc[0]["community id"])
     at.text_input(key="workspace_backlog_search").set_value(community).run(timeout=60)
     assert not at.exception
-    narrowed = _frame(at, 2)
+    narrowed = _frame(at, 3)
     assert 0 < len(narrowed) < len(full)
     assert set(narrowed["community id"]) == {community}
     assert list(narrowed["rank"]) == [
@@ -190,7 +190,7 @@ def test_backlog_search_narrows_the_frame_only(tmp_path) -> None:
 
 def test_backlog_table_has_display_config_and_bounded_height(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    proto = at.tabs[2].dataframe[0].proto
+    proto = at.tabs[3].dataframe[0].proto
     config = json.loads(proto.columns)
     assert set(COLUMNS) <= set(config)
     assert {
@@ -221,7 +221,7 @@ def test_backlog_table_has_display_config_and_bounded_height(tmp_path) -> None:
         "type": "progress",
         "format": "%.1f",
         "min_value": 0.0,
-        "max_value": float(_frame(at, 2)["score_bar"].max()),
+        "max_value": float(_frame(at, 3)["score_bar"].max()),
     }
     assert ranking_table.table_height(ranking_table.capacity("All")) == 528
     assert ranking_table.table_height(21) == ranking_table.table_height(20)
@@ -315,12 +315,12 @@ def test_region_filter_narrows_rows_and_points_but_not_capacity(tmp_path, art) -
     in_today = [s.job.job_id for s in ranked[:cap] if _in_region(art, region, s.job)]
     assert _today_ids(at) == in_today
     assert at.main.metric[0].value == f"{len(in_today)} of {cap} in {region}"
-    backlog = _frame(at, 2)
+    backlog = _frame(at, 3)
     assert list(backlog["job_id"]) == [
         s.job.job_id for s in ranked[cap:] if _in_region(art, region, s.job)
     ]
     assert {point["region"] for point in _map_features(at)} == {region}
-    assert at.tabs[0].label == f"Today's list {len(in_today)}"
+    assert at.tabs[0].label == f"To decide {len(in_today)}"
     assert _effect(at) == "Effect: No job changes between today's list and the backlog."
 
 
@@ -333,7 +333,7 @@ def _human_ids(at: AppTest) -> list[str]:
     }
     return [
         by_short[m.value[len("**Job ") : -2]]
-        for m in at.tabs[1].markdown
+        for m in at.tabs[2].markdown
         if m.value.startswith("**Job #")
     ]
 
@@ -342,20 +342,21 @@ def test_tabs_are_today_needs_a_human_and_backlog(tmp_path, art) -> None:
     at = _run(_script(tmp_path))
     queue = [j for j in ranking_table.open_jobs(LAST_DAY) if j.needs_human]
     labels = [tab.label for tab in at.tabs]
-    assert labels[1] == f"Needs a human {len(queue)}"
-    assert labels[0].startswith("Today's list ") and labels[2].startswith("Backlog ")
+    assert labels[2] == f"Needs a human {len(queue)}"
+    assert labels[0].startswith("To decide ") and labels[1] == "Accepted 0"
+    assert labels[3].startswith("Backlog ")
     ids = _human_ids(at)
     assert sorted(ids) == sorted(j.job_id for j in queue)
-    buttons = [b for b in at.tabs[1].button if b.label == "Review"]
+    buttons = [b for b in at.tabs[2].button if b.label == "Review"]
     assert len(buttons) == len(queue)
-    texts = [t.value for t in at.tabs[1].text]
+    texts = [t.value for t in at.tabs[2].text]
     for job in queue:
         if job.fault_type is None:
             assert "Fault type not found in the report" in texts
         if job.safety_class is None:
             assert "Safety class not found in the report" in texts
     # A value the model proposed and verification rejected never renders in these rows.
-    shown = "\n".join(texts + [m.value for m in at.tabs[1].markdown])
+    shown = "\n".join(texts + [m.value for m in at.tabs[2].markdown])
     for job in queue:
         for value in art.extraction[job.job_id].dropped.values():
             assert str(value) not in shown
@@ -377,7 +378,7 @@ def test_sent_to_review_job_names_the_reason(tmp_path) -> None:
     assert not at.exception
     assert first in _human_ids(at)
     assert "Sent to review: tenant describes a different fault" in [
-        t.value for t in at.tabs[1].text
+        t.value for t in at.tabs[2].text
     ]
 
 
@@ -387,8 +388,8 @@ def test_empty_needs_a_human_tab_says_so(tmp_path, monkeypatch) -> None:
         ranking_table, "open_jobs", lambda today: [j for j in real(today) if not j.needs_human]
     )
     at = _run(_script(tmp_path))
-    assert at.tabs[1].label == "Needs a human 0"
-    assert NO_HUMAN_JOBS in [i.value for i in at.tabs[1].info]
+    assert at.tabs[2].label == "Needs a human 0"
+    assert NO_HUMAN_JOBS in [i.value for i in at.tabs[2].info]
 
 
 # --- weighting and the effect sentence -------------------------------------------------------
@@ -400,10 +401,10 @@ def test_filter_pills_clear_to_the_full_list(tmp_path) -> None:
     fault = at.sidebar.pills[0]
     fault.select("cooling").run(timeout=60)
     assert not at.exception
-    filtered_count = len(_today_ids(at)) + len(_frame(at, 2))
+    filtered_count = len(_today_ids(at)) + len(_frame(at, 3))
     at.sidebar.button(key="workspace_clear_filters").click().run(timeout=60)
     assert not at.exception
-    full_count = len(_today_ids(at)) + len(_frame(at, 2))
+    full_count = len(_today_ids(at)) + len(_frame(at, 3))
     assert filtered_count < full_count
 
 
@@ -560,7 +561,7 @@ def test_promote_backlog_job_writes_one_promotion(tmp_path) -> None:
     promoted, displaced = ranked[cap].job.job_id, ranked[cap - 1].job.job_id
     audit_path = tmp_path / "audit.jsonl"
     at = _run(_script(tmp_path, _select(promoted)))
-    assert promoted in list(_frame(at, 2)["job_id"])
+    assert promoted in list(_frame(at, 3)["job_id"])
 
     _submit(at, promoted, "promote", None)
     assert details_pane.REASON_REQUIRED in [e.value for e in at.error]
@@ -599,7 +600,7 @@ def test_move_undo_and_send_to_review(tmp_path) -> None:
         "review_requested",
         "tenant describes a different fault",
     )
-    shown = set(_today_ids(at)) | set(_frame(at, 2)["job_id"])
+    shown = set(_today_ids(at)) | set(_frame(at, 3)["job_id"])
     assert first not in shown
     assert details_pane.IN_REVIEW in [w.value for w in at.warning]
 
@@ -650,8 +651,8 @@ def test_dev_add_a_new_report_lands_in_the_ranking(art, tmp_path) -> None:
     # Matched on what the page shows: the new id is unknown to this process's cached open jobs.
     short = ranking_table.short_id(row["job_id"])
     in_today = any(c.value.startswith(f"Job {short} · ") for c in at.tabs[0].caption)
-    assert in_today or row["job_id"] in set(_frame(at, 2)["job_id"])
-    assert f"**Job {short}**" not in [m.value for m in at.tabs[1].markdown]
+    assert in_today or row["job_id"] in set(_frame(at, 3)["job_id"])
+    assert f"**Job {short}**" not in [m.value for m in at.tabs[2].markdown]
     assert any(t.startswith(f"Report {short} added: it ranks ") for t in _toasts(at))
     audit_rows = [
         json.loads(line) for line in (tmp_path / "audit.jsonl").read_text("utf-8").splitlines()
@@ -667,9 +668,9 @@ def test_dev_add_one_that_needs_a_human_lands_in_that_tab(art, tmp_path) -> None
     assert row["job_id"] == _next_ids(art, 1)[0]
     assert row["status"] == "needs_review"
     short = ranking_table.short_id(row["job_id"])
-    assert f"**Job {short}**" in [m.value for m in at.tabs[1].markdown]
+    assert f"**Job {short}**" in [m.value for m in at.tabs[2].markdown]
     assert not any(c.value.startswith(f"Job {short} · ") for c in at.tabs[0].caption)
-    assert row["job_id"] not in set(_frame(at, 2)["job_id"])
+    assert row["job_id"] not in set(_frame(at, 3)["job_id"])
     assert any(t.startswith(f"Report {short} added: it needs a person (") for t in _toasts(at))
 
 
@@ -687,7 +688,7 @@ def test_dev_pressing_twice_gives_two_distinct_ids(art, tmp_path) -> None:
 
 STEP_TITLES = (
     "Jobs that need a person",
-    "Check today's jobs",
+    "Decide today's jobs",
     "Choose the weighting and sign",
     "Open the visit plan",
 )
@@ -701,7 +702,7 @@ def test_todays_steps_strip_sits_above_the_header_numbers(tmp_path) -> None:
     status = next(i for i, value in enumerate(markdown) if value.startswith("Day "))
     assert positions[-1] < status
     assert any("Next" in value for value in markdown)
-    assert any(c.value.endswith("press Fields are right or Fix a field.") for c in at.caption)
+    assert any(c.value.endswith("then Accept or Reject.") for c in at.caption)
 
 
 def test_no_accept_all_control_on_the_workspace(tmp_path) -> None:
@@ -711,13 +712,108 @@ def test_no_accept_all_control_on_the_workspace(tmp_path) -> None:
     assert not [label for label in labels if re.search(r"\ball\b", label, re.IGNORECASE)]
 
 
-def test_a_confirmed_check_shows_on_its_row_and_counts_in_the_steps(tmp_path) -> None:
+# --- accept or reject each job (PRD 3.1) ------------------------------------------------------
+
+
+def _labels(at: AppTest) -> list[str]:
+    return [tab.label for tab in at.tabs]
+
+
+def _accepted_ids(at: AppTest) -> list[str]:
+    by_short = {ranking_table.short_id(s.job.job_id): s.job.job_id for s in _ranked()}
+    return [
+        by_short[match.group(1)]
+        for caption in at.tabs[1].caption
+        if (match := re.match(r"Job (#\d+) · ", caption.value))
+    ]
+
+
+def _decisions(tmp_path: Path) -> list[audit.JobDecision]:
+    return [r for r in audit.read(tmp_path / "audit.jsonl") if isinstance(r, audit.JobDecision)]
+
+
+def test_accept_needs_the_read_tick_and_moves_the_job_to_accepted(tmp_path) -> None:
+    cap = ranking_table.capacity("All")
     at = _run(_script(tmp_path))
     job_id = at.session_state["selected_job_id"]
-    total = len(_today_ids(at))
-    at.button(key=f"fieldcheck_ok_{job_id}").click().run(timeout=60)
+    assert job_id == _ranked()[0].job.job_id
+    assert _labels(at)[:2] == [f"To decide {cap}", "Accepted 0"]
+    accept = at.button(key=f"decide_accept_{job_id}")
+    assert accept.label == details_pane.ACCEPT and accept.proto.icon == ":material/check:"
+    assert accept.proto.disabled
+    reject = at.button(key=f"decide_reject_{job_id}")
+    assert reject.label == details_pane.REJECT and reject.proto.icon == ":material/close:"
+    assert at.checkbox(key=f"read_{job_id}").label == details_pane.READ_BOX
+
+    at.checkbox(key=f"read_{job_id}").check().run(timeout=60)
+    assert not at.button(key=f"decide_accept_{job_id}").proto.disabled
+    at.button(key=f"decide_accept_{job_id}").click().run(timeout=60)
     assert not at.exception
-    row_badges = [m.value for m in at.tabs[0].markdown]
-    assert sum(":material/check: Checked" in value for value in row_badges) == 1
-    assert sum("Not checked" in value for value in row_badges) == total - 1
-    assert any(c.value.startswith(f"1 of {total} checked") for c in at.caption)
+    assert _labels(at)[:2] == [f"To decide {cap - 1}", "Accepted 1"]
+    assert job_id not in _today_ids(at)
+    assert _accepted_ids(at) == [job_id]
+    assert any(":material/check: Accepted" in m.value for m in at.tabs[1].markdown)
+    assert sum("Not decided" in m.value for m in at.tabs[0].markdown) == cap - 1
+    (record,) = _decisions(tmp_path)
+    assert (record.job_id, record.decision, record.day) == (job_id, "accepted", LAST_DAY)
+    assert any(
+        m.value.startswith(":material/check: Accepted by coordinator at ") for m in at.markdown
+    )
+    assert any(
+        c.value == f"{cap - 1} left: open each job, read it to the bottom, then Accept or Reject."
+        for c in at.caption
+    )
+
+    at.button(key=f"decide_undo_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    assert _labels(at)[:2] == [f"To decide {cap}", "Accepted 0"]
+    assert _today_ids(at)[0] == job_id
+    assert [r.decision for r in _decisions(tmp_path)] == ["accepted", "undone"]
+
+
+def test_reject_not_today_keeps_to_decide_full_and_moves_the_job_to_the_backlog(tmp_path) -> None:
+    cap = ranking_table.capacity("All")
+    ranked = _ranked()
+    job_id, next_in = ranked[0].job.job_id, ranked[cap].job.job_id
+    at = _run(_script(tmp_path, _select(job_id)))
+    at.button(key=f"decide_reject_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    assert at.radio(key=f"reject_kind_{job_id}").value == "Not today: move it to the backlog"
+    at.button(key=f"reject_save_{job_id}").click().run(timeout=60)
+    assert details_pane.REASON_REQUIRED in [e.value for e in at.error]
+    assert not _decisions(tmp_path)
+
+    at.text_input(key=f"reject_reason_{job_id}").set_value("tenant away this week")
+    at.button(key=f"reject_save_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    assert _labels(at)[:2] == [f"To decide {cap}", "Accepted 0"]
+    assert job_id not in _today_ids(at) and next_in in _today_ids(at)
+    assert job_id in list(_frame(at, 3)["job_id"])
+    (record,) = _decisions(tmp_path)
+    assert (record.decision, record.reason) == ("not_today", "tenant away this week")
+    assert any(
+        m.value.startswith(":material/close: Not today by coordinator at ")
+        and m.value.endswith(": tenant away this week")
+        for m in at.markdown
+    )
+
+    at.button(key=f"decide_undo_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    assert _today_ids(at)[0] == job_id and next_in not in _today_ids(at)
+
+
+def test_reject_as_needs_a_person_sends_the_job_to_that_tab(tmp_path) -> None:
+    job_id = _ranked()[0].job.job_id
+    at = _run(_script(tmp_path, _select(job_id)))
+    at.button(key=f"decide_reject_{job_id}").click().run(timeout=60)
+    at.radio(key=f"reject_kind_{job_id}").set_value("Needs a person: send it to the review queue")
+    at.text_input(key=f"reject_reason_{job_id}").set_value("report names two faults")
+    at.button(key=f"reject_save_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    records = audit.read(tmp_path / "audit.jsonl")
+    assert [type(r).__name__ for r in records] == ["JobDecision", "HumanSet"]
+    assert records[0].decision == "needs_person"
+    assert records[1].field == ranking_table.REVIEW_REQUESTED
+    assert job_id in _human_ids(at)
+    assert details_pane.NEEDS_PERSON_UNDO in [c.value for c in at.caption]
+    assert not [b for b in at.button if (b.key or "").startswith("decide_")]

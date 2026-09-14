@@ -15,12 +15,10 @@ class Step:
     is_next: bool = False
 
 
-def steps(
-    review_left: int, checked: int, today_total: int, signed: bool, plan_accepted: bool
-) -> list[Step]:
-    """``signed`` means today's list is signed and not changed since; ``plan_accepted`` that a
-    visit plan for that signed batch was accepted."""
-    all_checked = checked >= today_total
+def steps(review_left: int, to_decide: int, signed: bool, plan_accepted: bool) -> list[Step]:
+    """``to_decide`` is the number of jobs left in To decide; ``signed`` means today's list is
+    signed and not changed since; ``plan_accepted`` that a visit plan for that signed batch
+    was accepted."""
     drafts = [
         Step(
             "Jobs that need a person",
@@ -30,14 +28,11 @@ def steps(
             else f"{review_left} left: open the Needs a human tab and fill in each one.",
         ),
         Step(
-            "Check today's jobs",
-            all_checked,
-            f"{checked} of {today_total} checked"
-            + (
-                "."
-                if all_checked
-                else ": open a job, read the report, then press Fields are right or Fix a field."
-            ),
+            "Decide today's jobs",
+            to_decide == 0,
+            "Every job on today's list is decided."
+            if to_decide == 0
+            else f"{to_decide} left: open each job, read it to the bottom, then Accept or Reject.",
         ),
         Step(
             "Choose the weighting and sign",

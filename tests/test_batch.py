@@ -77,6 +77,28 @@ def test_each_fingerprint_input_change_makes_a_batch_stale(
     )
 
 
+def test_accepted_list_is_today_and_a_decision_change_makes_a_batch_stale() -> None:
+    ranked = [_scored("job-1"), _scored("job-2"), _scored("job-3")]
+    standing = {"job-3": "accepted", "job-1": "accepted"}
+    batch = freeze(
+        date(2025, 12, 30),
+        1,
+        0.5,
+        None,
+        ranked,
+        2,
+        (),
+        today_job_ids=["job-1", "job-3"],
+        decisions=standing,
+    )
+    assert batch.today_job_ids == ("job-1", "job-3")
+    ids = batch.ranked_job_ids
+    assert not is_stale(batch, fingerprint_of(0.5, ids, (), None, dict(standing)))
+    assert is_stale(batch, fingerprint_of(0.5, ids, (), None, {"job-1": "accepted"}))
+    assert is_stale(batch, fingerprint_of(0.5, ids, (), None, {**standing, "job-2": "not_today"}))
+    assert fingerprint_of(0.5, ids, (), None, {}) == fingerprint_of(0.5, ids, (), None)
+
+
 @pytest.mark.parametrize("current,event", TRANSITIONS)
 def test_every_valid_transition_has_its_declared_target(current: str, event: str) -> None:
     assert next_status(current, event) == TRANSITIONS[(current, event)]

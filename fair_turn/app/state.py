@@ -158,13 +158,13 @@ def set_actor(value: str) -> None:
     st.session_state["actor"] = str(value)
 
 
-def get_field_fix_job() -> str | None:
-    """The job whose "Fix a field" form is open in the selected-job pane, if any."""
-    return _get("field_fix_job", None)
+def get_reject_job() -> str | None:
+    """The job whose "Reject" form is open in the selected-job pane, if any."""
+    return _get("reject_job", None)
 
 
-def set_field_fix_job(job_id: str | None) -> None:
-    st.session_state["field_fix_job"] = job_id
+def set_reject_job(job_id: str | None) -> None:
+    st.session_state["reject_job"] = job_id
 
 
 def get_review_cursor() -> int:

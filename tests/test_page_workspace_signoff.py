@@ -14,9 +14,9 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app import state
+from fair_turn.app.components import details_pane, metrics, ranking_table, sign_off_form
 from fair_turn.app.components import map as nt_map_component
-from fair_turn.app.components import metrics, ranking_table, sign_off_form
-from fair_turn.core import audit, capacity_sim, constants
+from fair_turn.core import audit, capacity_sim, constants, scoring
 from fair_turn.data import artefacts
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -65,8 +65,28 @@ def _run(runnable) -> AppTest:
     return at
 
 
-def _open(tmp_path: Path) -> AppTest:
+LAST_DAY = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
+
+
+def _accept_today(audit_path: Path) -> list[str]:
+    """Accept the efficiency-first top of today's list in the audit log, so To decide is
+    empty and Review and sign opens. Returns the accepted ids in rank order."""
+    cap = ranking_table.capacity(state.ALL_REGIONS)
+    ranked = scoring.rank(ranking_table.open_jobs(LAST_DAY), LAST_DAY, 1.0)
+    ids = [s.job.job_id for s in ranked[:cap]]
+    for job_id in ids:
+        audit.append(audit_path, audit.JobDecision(LAST_DAY, job_id, "accepted", "A. Coordinator"))
+    return ids
+
+
+def _open(tmp_path: Path, accept: bool = True) -> AppTest:
+    if accept:
+        _accept_today(tmp_path / "audit.jsonl")
     return _run(AppTest.from_file(str(_script(tmp_path))))
+
+
+def _not_decisions(path: Path) -> list:
+    return [r for r in audit.read(path) if not isinstance(r, audit.JobDecision)]
 
 
 def _main_text(at: AppTest) -> str:
@@ -117,7 +137,8 @@ def _sign_offs(path: Path) -> list[audit.SignOff]:
 
 def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
     audit_path = tmp_path / "audit.jsonl"
-    at = _open(tmp_path)
+    accepted = _accept_today(audit_path)
+    at = _open(tmp_path, accept=False)
     assert _header(at).endswith("Status: Draft")
     text = _main_text(at)
     assert LOCKED_OUTCOMES.lower() in text
@@ -141,21 +162,23 @@ def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
         w.value for w in at.warning
     ]
     assert "sign_off_submit" not in _keys(at)
-    assert not audit_path.exists()
+    assert not _not_decisions(audit_path)
 
     _review(at, "workspace_open_again")
     assert "sign_off_submit" in _keys(at)
     assert metrics_hidden(at)
     _sign(at, "A. Coordinator", "remote backlog is ageing")
     (record,) = _sign_offs(audit_path)
-    assert len(audit.read(audit_path)) == 1
+    assert len(_not_decisions(audit_path)) == 1
     assert record.batch_version == 1
     assert re.fullmatch(r"\d{8}-v1", record.audit_ref)
     assert (record.decision, record.signer, record.lam) == ("approve", "A. Coordinator", 0.5)
     cap = ranking_table.capacity(state.ALL_REGIONS)
+    # The signed list is the accepted jobs, in the rank order of the signed weighting.
     assert len(record.today_job_ids) == cap
-    assert record.today_job_ids == record.ranked_job_ids[:cap]
-    assert any(record.audit_ref in s.value for s in at.success)
+    assert set(record.today_job_ids) == set(accepted)
+    assert list(record.today_job_ids) == [j for j in record.ranked_job_ids if j in accepted]
+    assert f"Audit reference `{record.audit_ref}`" in [c.value for c in at.caption]
     assert "median wait" in _main_text(at)
     assert len(at.metric) == 8
     assert [metric.label for metric in at.main.metric[4:]] == list(metrics.LABELS.values())
@@ -171,10 +194,10 @@ def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
 
     _run(at.button(key="sign_off_submit").click())
     assert any("already signed" in e.value for e in at.error)
-    assert len(audit.read(audit_path)) == 1
+    assert len(_not_decisions(audit_path)) == 1
 
     _set_lam(at, 0.0)
-    records = audit.read(audit_path)
+    records = _not_decisions(audit_path)
     assert [type(r) for r in records] == [audit.SignOff, audit.Revision]
     assert (records[1].old_lam, records[1].new_lam) == (0.5, 0.0)
     assert _header(at).endswith("Status: Changed since signature (signed v1 stays authoritative)")
@@ -200,13 +223,13 @@ def test_empty_fields_are_flagged_inline_and_defer_is_recorded(tmp_path) -> None
     shown = [m.value for m in at.markdown]
     assert f":red[{sign_off_form.SIGNER_REQUIRED}]" in shown
     assert f":red[{sign_off_form.REASON_REQUIRED}]" in shown
-    assert not audit_path.exists()
+    assert not _not_decisions(audit_path)
     assert metrics_hidden(at)
 
     _sign(at, "A. Coordinator", "", "Defer")
     assert f":red[{sign_off_form.REASON_REQUIRED}]" in [m.value for m in at.markdown]
     assert f":red[{sign_off_form.SIGNER_REQUIRED}]" not in [m.value for m in at.markdown]
-    assert not audit_path.exists()
+    assert not _not_decisions(audit_path)
 
     _sign(at, "A. Coordinator", "crews held for a storm", "Defer")
     (record,) = _sign_offs(audit_path)
@@ -223,10 +246,33 @@ def test_failed_audit_write_writes_nothing_and_keeps_the_review_open(tmp_path, m
     monkeypatch.setattr(audit, "append", fail)
     _sign(at, "A. Coordinator", "remote backlog is ageing")
     assert "Could not write the audit log: disk full" in [e.value for e in at.error]
-    assert not audit_path.exists()
+    assert not _not_decisions(audit_path)
     assert _header(at).endswith("Status: Review open (batch v1)")
     assert "sign_off_submit" in _keys(at)
     assert metrics_hidden(at)
+
+
+def test_review_and_sign_waits_for_every_decision_then_signing_closes_them(tmp_path) -> None:
+    cap = ranking_table.capacity(state.ALL_REGIONS)
+    at = _open(tmp_path, accept=False)
+    assert at.button(key="workspace_review_and_sign").proto.disabled
+    assert f"Decide the {cap} jobs left in To decide first." in [c.value for c in at.caption]
+
+    at = _open(tmp_path)  # every job on today's list accepted
+    assert not at.button(key="workspace_review_and_sign").proto.disabled
+    assert not [c for c in at.caption if c.value.startswith("Decide the ")]
+    assert [tab.label for tab in at.tabs][:2] == ["To decide 0", f"Accepted {cap}"]
+    _review(at)
+    assert f"Accepted {cap} · not today 0 · sent to a person 0 · fields fixed 0." in [
+        m.value for m in at.markdown
+    ]
+    _sign(at, "A. Coordinator", "remote backlog is ageing")
+    assert f"Today's list is signed (v1): {cap} jobs accepted." in [s.value for s in at.success]
+    assert at.button(key="workspace_open_visit_plan").label == "Open the visit plan"
+    job_id = at.session_state["selected_job_id"]
+    assert at.button(key=f"decide_undo_{job_id}").proto.disabled
+    assert details_pane.SIGNED_CLOSED in [c.value for c in at.caption]
+    assert re.search(r"Status: Signed v1 \d{2}:\d{2} by A\. Coordinator$", _header(at))
 
 
 def test_phase_one_pages_are_retired() -> None:
@@ -342,13 +388,8 @@ def test_formatting_and_deltas() -> None:
     }
 
 
-def test_sign_off_summary_counts_checks_on_todays_list_only() -> None:
-    checks = {"a": "confirmed", "b": "corrected", "z": "corrected"}
+def test_sign_off_summary_counts_the_decisions() -> None:
     assert (
-        sign_off_form.check_line(("a", "b", "c"), checks)
-        == "You checked 2 of 3 jobs on today's list and corrected 1."
-    )
-    assert (
-        sign_off_form.check_line(("a",), {})
-        == "You checked 0 of 1 jobs on today's list and corrected 0."
+        sign_off_form.decision_line(14, 2, 1, 3)
+        == "Accepted 14 · not today 2 · sent to a person 1 · fields fixed 3."
     )

@@ -100,10 +100,14 @@ def _records() -> list[audit.Record]:
             "urgent",
             recorded_at,
         ),
+        audit.JobDecision(date(2026, 9, 1), "job-10", "accepted", "Tarik", recorded_at=recorded_at),
+        audit.JobDecision(
+            date(2026, 9, 1), "job-11", "not_today", "Tarik", "tenant away", recorded_at
+        ),
     ]
 
 
-def test_round_trip_preserves_all_eight_kinds(tmp_path: Path) -> None:
+def test_round_trip_preserves_every_kind(tmp_path: Path) -> None:
     path = tmp_path / "log.jsonl"
     records = _records()
     for record in records:
@@ -263,3 +267,49 @@ def test_latest_checks_keeps_the_newest_per_job_on_that_day() -> None:
     second = audit.FieldCheck(day, "job-1", "corrected", "B", "why", "fault_type", "roof")
     other_day = audit.FieldCheck(date(2026, 9, 2), "job-2", "confirmed", "A")
     assert audit.latest_checks([first, second, other_day, _sign_off()], day) == {"job-1": second}
+
+
+# --- job decisions (PRD 3.1, accept or reject per job) -----------------------------------------
+
+
+def test_job_decision_round_trip_keeps_both_clocks(tmp_path: Path) -> None:
+    path = tmp_path / "log.jsonl"
+    day = date(2025, 12, 30)  # the dataset day, far from the wall clock
+    before = datetime.now().astimezone()
+    record = audit.JobDecision(day, "job-1", "not_today", "Tarik", "tenant away")
+    audit.append(path, record)
+    (read_back,) = audit.read(path)
+    assert read_back == record
+    assert read_back.day == day
+    assert read_back.recorded_at.tzinfo is not None
+    assert read_back.recorded_at >= before
+    row = audit.export_rows([read_back])[0]
+    assert row["kind"] == "job_decision"
+    assert (row["job_id"], row["signer"], row["detail"]) == ("job-1", "Tarik", "not_today")
+    assert row["reason"] == "tenant away"
+    assert row["decision_day"] == "2025-12-30"
+    assert row["recorded_at"] == read_back.recorded_at.isoformat()
+    assert row["decision_day"] != row["recorded_at"][:10]
+
+
+def test_job_decision_values_and_reasons_are_validated() -> None:
+    day = date(2026, 9, 1)
+    with pytest.raises(ValueError):
+        audit.JobDecision(day, "job-1", "approved", "Tarik")
+    for decision in ("not_today", "needs_person"):
+        with pytest.raises(ValueError):
+            audit.JobDecision(day, "job-1", decision, "Tarik", "  ")
+    audit.JobDecision(day, "job-1", "accepted", "Tarik")
+    audit.JobDecision(day, "job-1", "undone", "Tarik")
+
+
+def test_latest_decisions_keeps_the_newest_per_job_on_that_day() -> None:
+    day = date(2026, 9, 1)
+    records = [
+        audit.JobDecision(day, "job-1", "accepted", "A"),
+        audit.JobDecision(day, "job-1", "undone", "A"),
+        audit.JobDecision(day, "job-2", "not_today", "A", "why"),
+        audit.JobDecision(date(2026, 9, 2), "job-3", "accepted", "A"),
+        _sign_off(),
+    ]
+    assert audit.latest_decisions(records, day) == {"job-1": "undone", "job-2": "not_today"}

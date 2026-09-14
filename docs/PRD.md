@@ -122,6 +122,20 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
   (the pane names the job it displaces), send a job to the review queue, undo a hand move
   before signing; each with a written reason, each logged. Actions are disabled, with
   the reason shown, only for closed jobs and jobs in the review queue.
+- **Checking the AI's reading** (*added 2026-09-14 night, Tarik's request, shaped by
+  `reports/research-review-workflow-2026-09-14.md`*). In the selected-job pane, after the
+  report and its highlighted phrases, two buttons: **✓ Fields are right** (green) and
+  **✗ Fix a field** (red; opens the field, a value from the enum and a required reason, and
+  writes a human-set field). Each press is an audit record with actor, both clocks and the
+  job. Today's list rows show the result as a badge (✓ Checked, ✗ Corrected, or Not
+  checked). There is no per-row approve and no "accept all": the list itself is accepted
+  only by the daily signature, and a one-click approve per row is the rubber-stamp pattern
+  the research warns against. Checking never gates signing; the sign-off summary states
+  how many of today's jobs were checked and corrected.
+- **Today's steps.** A strip at the top of the workspace shows the day's four steps with
+  live state, so a first-time user needs no document: 1 Jobs that need a person (N left),
+  2 Check today's jobs (N of M checked), 3 Choose the weighting and sign, 4 Open the visit
+  plan. Each step says in one line what to do next. No auto-opened tour.
 - **Selection.** One selected job, shared by the list, the map, the pane and the visit
   plan. A keyboard-reachable selectbox is the equivalent of every click. A map marker
   holding several jobs offers the choice; it never picks one.

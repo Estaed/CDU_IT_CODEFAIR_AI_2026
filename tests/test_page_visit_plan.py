@@ -151,6 +151,24 @@ def test_rule_sentence_and_road_km_metrics_render_after_a_signature(tmp_path, ar
     assert metrics[KM_METRICS[0]] == f"{plan.road_km:,.0f} km"
 
 
+def test_reach_caption_counts_jobs_no_crew_within_reach_can_take(tmp_path, art) -> None:
+    audit_path = tmp_path / "audit.jsonl"
+    road_a, road_b = _road_pair(art)
+    _sign(audit_path, 1, [road_a, road_b], "A. Coordinator")
+
+    at = _open(tmp_path, audit_path)
+    lines = [
+        c.value for c in at.main.caption if c.value.startswith("Jobs with no crew within reach")
+    ]
+    assert len(lines) == 1
+    match = re.fullmatch(
+        r"Jobs with no crew within reach: this signed list (\d+), efficiency-first list (\d+)\.",
+        lines[0],
+    )
+    assert match
+    assert int(match.group(1)) == at.session_state["plan"].out_of_reach
+
+
 def test_crew_rows_use_short_numbers_and_barge_work_stays_manual(tmp_path, art) -> None:
     audit_path = tmp_path / "audit.jsonl"
     road_a, road_b = _road_pair(art)

@@ -1,10 +1,12 @@
-"""Pooled visit plan for the signed list (PRD section 3.3, pooled crews decided 2026-09-14).
+"""Pooled visit plan for the signed list (PRD section 3.3, pooled crews with reach 2026-09-14).
 
 Distance chooses which crew goes, never which job is served. Membership is the signed list:
-air and barge stops stay manual coordination, closed-road stops stay listed with their
-reason, and when road stops outnumber crew slots the ones left over are the lowest signed
-ranks. Road stops are assigned to crew slots at minimum round-trip km; each crew then drives
-the shortest route over its stops. The coordinator may reorder a crew with a reason.
+air and barge stops stay manual coordination and closed-road stops stay listed with their
+reason. Road stops are taken in signed-rank order; each takes a free slot of the nearest crew
+that reaches it (its home region, or within the travel-day distance of its base by road).
+A stop no crew with a free slot reaches stays signed, unplanned, with that reason. Each crew
+then drives the shortest route over its stops. The coordinator may reorder a crew with a
+reason.
 """
 
 from collections.abc import Sequence
@@ -12,14 +14,14 @@ from dataclasses import dataclass
 from itertools import permutations
 from typing import Literal
 
-from fair_turn.core.assignment import min_cost_assignment
-from fair_turn.core.capacity_sim import CrewBase, haversine_km
+from fair_turn.core.capacity_sim import CrewBase, base_road_km, haversine_km, reaches
 from fair_turn.core.constants import JOBS_PER_CREW_DAY, TRAVEL_DAY_KM
 
 MANUAL_NEXT_ACTION = "book air/barge freight"
 MANUAL_OWNER = "coordinator"
 ROAD_CLOSED = "road closed"
-OVER_CAPACITY = "over crew capacity"
+NO_FREE_SLOT = "no crew within reach has a free slot"
+NO_REACH = "no crew reaches this community"
 _KM_EPS = 1e-9
 
 
@@ -90,8 +92,9 @@ class Plan:
         return sum(crew.km for crew in self.crews)
 
     @property
-    def within_capacity(self) -> bool:
-        return not any(item.reason == OVER_CAPACITY for item in self.unplanned)
+    def out_of_reach(self) -> int:
+        """Signed road stops left unplanned because no crew within reach has a free slot."""
+        return sum(item.reason in (NO_FREE_SLOT, NO_REACH) for item in self.unplanned)
 
 
 def _measure(crew: CrewBase, stops: Sequence[Stop]) -> tuple[tuple[float, ...], float]:
@@ -124,86 +127,34 @@ def _crew_plan(crew: CrewBase, stops: Sequence[Stop]) -> CrewPlan:
     return CrewPlan(crew, tuple(stops), legs, tuple(leg > TRAVEL_DAY_KM for leg in legs), km)
 
 
-def _split_count(assigned: list[list[Stop]]) -> int:
-    """How many extra crews the communities are spread over (0 when none is split)."""
-    crews_of: dict[str, set[int]] = {}
-    for index, stops in enumerate(assigned):
-        for stop in stops:
-            crews_of.setdefault(stop.community_id, set()).add(index)
-    return sum(len(indices) - 1 for indices in crews_of.values())
-
-
-def _route_km(crew: CrewBase, stops: Sequence[Stop]) -> float:
-    return _measure(crew, _shortest(crew, stops))[1]
-
-
-def _consolidate(crews: Sequence[CrewBase], assigned: list[list[Stop]]) -> list[list[Stop]]:
-    """Move or swap stops so one community's stops share a crew, only when that does not
-    raise the total route km. Each accepted change strictly reduces the split count."""
-    changed = True
-    while changed:
-        changed = False
-        split = _split_count(assigned)
-        if split == 0:
-            break
-        for a, b in permutations(range(len(crews)), 2):
-            here = {stop.community_id for stop in assigned[a]}
-            for stop in assigned[b]:
-                if stop.community_id not in here:
-                    continue
-                rest_b = [s for s in assigned[b] if s is not stop]
-                options: list[tuple[list[Stop], list[Stop]]] = []
-                if len(assigned[a]) < JOBS_PER_CREW_DAY:
-                    options.append(([*assigned[a], stop], rest_b))
-                options += [
-                    ([*(s for s in assigned[a] if s is not other), stop], [*rest_b, other])
-                    for other in assigned[a]
-                    if other.community_id != stop.community_id
-                ]
-                before = _route_km(crews[a], assigned[a]) + _route_km(crews[b], assigned[b])
-                for new_a, new_b in options:
-                    trial = list(assigned)
-                    trial[a] = sorted(new_a, key=lambda s: s.signed_rank)
-                    trial[b] = sorted(new_b, key=lambda s: s.signed_rank)
-                    after = _route_km(crews[a], trial[a]) + _route_km(crews[b], trial[b])
-                    if _split_count(trial) < split and after <= before + _KM_EPS:
-                        assigned, changed = trial, True
-                        break
-                if changed:
-                    break
-            if changed:
-                break
-    return assigned
-
-
 def plan(batch_version: int, stops: Sequence[Stop], crews: Sequence[CrewBase]) -> Plan:
     """Place every signed stop: manual, unplanned with a reason, or on a crew's route."""
     ordered = sorted(stops, key=lambda stop: stop.signed_rank)
     manual = tuple(
         Manual(stop, MANUAL_NEXT_ACTION, MANUAL_OWNER) for stop in ordered if stop.access != "road"
     )
-    road = [stop for stop in ordered if stop.access == "road"]
-    unplanned = [Unplanned(stop, ROAD_CLOSED) for stop in road if not stop.road_open]
-    drivable = [stop for stop in road if stop.road_open]
-
-    slots = [index for index in range(len(crews)) for _ in range(JOBS_PER_CREW_DAY)]
-    fits, over = drivable[: len(slots)], drivable[len(slots) :]  # overflow by signed rank only
-    unplanned += [Unplanned(stop, OVER_CAPACITY) for stop in over]
-
-    costs = [
-        [2 * haversine_km(crews[c].lat, crews[c].lon, s.lat, s.lon) * s.road_factor for c in slots]
-        for s in fits
-    ]
+    unplanned: list[Unplanned] = []
     assigned: list[list[Stop]] = [[] for _ in crews]
-    for stop, slot in zip(fits, min_cost_assignment(costs), strict=True):
-        assigned[slots[slot]].append(stop)
-    assigned = _consolidate(crews, assigned)
+    for stop in (stop for stop in ordered if stop.access == "road"):
+        if not stop.road_open:
+            unplanned.append(Unplanned(stop, ROAD_CLOSED))
+            continue
+        km = [base_road_km(crew, stop.lat, stop.lon, stop.road_factor) for crew in crews]
+        reaching = [
+            index
+            for index, crew in enumerate(crews)
+            if reaches(crew, stop.region, km[index], TRAVEL_DAY_KM)
+        ]
+        free = [index for index in reaching if len(assigned[index]) < JOBS_PER_CREW_DAY]
+        if not free:
+            unplanned.append(Unplanned(stop, NO_FREE_SLOT if reaching else NO_REACH))
+            continue
+        assigned[min((km[index], index) for index in free)[1]].append(stop)
 
     crew_plans = tuple(
         _crew_plan(crew, _shortest(crew, stops_for))
         for crew, stops_for in zip(crews, assigned, strict=True)
     )
-    unplanned.sort(key=lambda item: item.stop.signed_rank)
     return Plan(batch_version, crew_plans, tuple(unplanned), manual, ())
 
 

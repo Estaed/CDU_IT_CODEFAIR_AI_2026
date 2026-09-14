@@ -1,8 +1,9 @@
-"""PRD 3.3 Visit plan (wireframes §6), pooled crews (2026-09-14): the signed list placed on
-the NT-wide crew pool. Distance chooses which crew goes, never which job is served; each crew
+"""PRD 3.3 Visit plan (wireframes §6), pooled crews with reach (2026-09-14): the signed list
+placed on the NT-wide crew pool. In signed order each road job takes the nearest free crew
+that reaches it; distance chooses which crew goes, never which job is served; each crew
 drives the shortest route over its stops; air/barge work stays manual coordination; the road
-km price of today's weighting is shown against the efficiency-first list; every plan decision
-is written against the signed batch version.
+km price of today's weighting, and the jobs no crew within reach can take, are shown against
+the efficiency-first list; every plan decision is written against the signed batch version.
 """
 
 import pandas as pd
@@ -10,7 +11,7 @@ import streamlit as st
 from streamlit.errors import StreamlitPageNotFoundError
 
 from fair_turn.app import state, theme
-from fair_turn.app.components import intro, ranking_table
+from fair_turn.app.components import intro, ranking_table, run_sheet
 from fair_turn.core import audit, scoring, visit_plan
 from fair_turn.data import geography
 
@@ -36,10 +37,6 @@ def _fault_label(job) -> str:
 def _signed_km(value: float) -> str:
     sign = "+" if value >= 0 else "−"
     return f"{sign}{abs(value):,.0f} km"
-
-
-def _stop_access(road_access: str) -> str:
-    return "air" if road_access == "barge_or_air" else "road"
 
 
 def _job_label(job_id: str) -> str:
@@ -75,38 +72,8 @@ else:
 
     open_today = ranking_table.open_jobs(today)
     jobs_by_id = {j.job_id: j for j in open_today}
-    closed_today = {
-        c["community_id"]
-        for c in art.closures
-        if c["closed_from"] <= today.isoformat() <= c["closed_to"]
-    }
-
-    def _stops(job_ids) -> tuple[list[visit_plan.Stop], list[str]]:
-        stops: list[visit_plan.Stop] = []
-        missing: list[str] = []
-        for rank, job_id in enumerate(job_ids, start=1):
-            job = jobs_by_id.get(job_id)
-            if job is None:
-                missing.append(job_id)
-                continue
-            community = art.communities[job.community_id]
-            stops.append(
-                visit_plan.Stop(
-                    job_id=job.job_id,
-                    community_id=job.community_id,
-                    region=community["region"],
-                    lat=float(community["lat"]),
-                    lon=float(community["lon"]),
-                    access=_stop_access(community["road_access"]),
-                    road_open=job.community_id not in closed_today,
-                    signed_rank=rank,
-                    road_factor=geography.ROAD_FACTORS[community["road_access"]],
-                )
-            )
-        return stops, missing
-
     crews = geography.crews(art.communities)
-    stops, no_longer_open = _stops(signoff.today_job_ids)
+    stops, no_longer_open = run_sheet.stops(signoff.today_job_ids, jobs_by_id, today)
 
     def _decisions_for(version: int) -> list[audit.PlanDecision]:
         return [
@@ -129,7 +96,9 @@ else:
     efficiency_ids = [s.job.job_id for s in scoring.rank(open_today, today, EFFICIENCY_LAM)][
         :n_open
     ]
-    efficiency_plan = visit_plan.plan(signoff.batch_version, _stops(efficiency_ids)[0], crews)
+    efficiency_plan = visit_plan.plan(
+        signoff.batch_version, run_sheet.stops(efficiency_ids, jobs_by_id, today)[0], crews
+    )
 
     st.markdown(RULE_SENTENCE)
     signed_col, efficiency_col, cost_col = st.columns(3)
@@ -147,6 +116,10 @@ else:
         help="Positive means today's signed list drives further than the efficiency-first "
         "list. It is the travel price of the equity choice: shown, never optimised away.",
         border=True,
+    )
+    st.caption(
+        "Jobs with no crew within reach: this signed list "
+        f"{current_plan.out_of_reach}, efficiency-first list {efficiency_plan.out_of_reach}."
     )
 
     if no_longer_open:

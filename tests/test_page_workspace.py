@@ -13,7 +13,7 @@ from types import SimpleNamespace
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from fair_turn.app.components import cluster_map, details_pane, job_rows, ranking_table
+from fair_turn.app.components import cluster_map, details_pane, job_rows, ranking_table, run_sheet
 from fair_turn.core import audit, constants, scoring
 from fair_turn.core.batch import HandMove
 from fair_turn.data import artefacts, policy
@@ -424,6 +424,20 @@ def test_effect_sentence_states_composition_only(tmp_path) -> None:
     assert "Travel-cost weight 0.00. 0 ignores travel cost, 1 applies the full penalty." in captions
     for sentence in sentences:
         assert not [word for word in OUTCOME_WORDS if word in sentence.lower()]
+
+
+def test_crew_reach_line_plans_todays_list_like_the_visit_plan(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    lines = [c.value for c in at.main.caption if c.value.startswith("Crew reach: ")]
+    cap = ranking_table.capacity("All")
+    today_ids = [s.job.job_id for s in _ranked()[:cap]]
+    jobs_by_id = {j.job_id: j for j in ranking_table.open_jobs(LAST_DAY)}
+    assert lines == [run_sheet.reach_line(today_ids, jobs_by_id, LAST_DAY)]
+    assert re.fullmatch(
+        r"Crew reach: (every job on today's list has a crew within reach\."
+        rf"|\d+ of today's {cap} jobs (has|have) no crew within reach with a free slot\.)",
+        lines[0],
+    )
 
 
 def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:

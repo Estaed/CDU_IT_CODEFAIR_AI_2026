@@ -1,8 +1,9 @@
 """Capacity simulation: the PRD section 6.3 toy model on hand-built fixtures, plus a timed run
 over the committed labels (CLAUDE.md Part 2 verification rule 2).
 
-The pooled rule under test: distance decides which crew goes to a job, never which job is
-served or when. Which communities are served each day is the ranking alone."""
+The pooled rule under test: a crew reaches its home region and anything within the
+travel-day distance of its base; inside reach, communities are served in rank order, each by
+the nearest free crew that reaches it."""
 
 import csv
 import json
@@ -37,7 +38,7 @@ SITES = {
     "far": site_at(500.0),
     "other": site_at(0.0, region="OTHER"),
 }
-CREW = CrewBase("Base", "Base", 0.0, 0.0)
+CREW = CrewBase("Base", "Base", 0.0, 0.0, REGION)
 
 
 def make_job(job_id: str, community_id: str = "town", **overrides) -> Job:
@@ -165,9 +166,24 @@ def test_a_far_higher_ranked_job_is_served_before_a_near_lower_ranked_one() -> N
     assert result.wait_days == {"far": 1, "near": 3}
 
 
-def test_the_pool_serves_every_region() -> None:
+def test_a_crew_serves_another_region_within_the_travel_day_distance() -> None:
     result = run([make_job("o", "other")], days=3)
     assert result.wait_days["o"] == 0
+
+
+def test_a_crew_never_serves_a_community_outside_its_reach() -> None:
+    sites = {**SITES, "away": site_at(500.0, region="OTHER")}
+    result = run([make_job("x", "away"), make_job("t")], sites=sites)
+    assert result.completed_on["x"] is None
+    assert result.wait_days["t"] == 0
+    assert {community for _, _, community in result.visits} == {"town"}
+
+
+def test_a_higher_ranked_community_nobody_free_reaches_does_not_hold_back_the_next() -> None:
+    sites = {**SITES, "away": site_at(500.0, region="OTHER")}
+    away = make_job("x", "away", safety_class=SafetyClass.IMMEDIATE)
+    result = run([away, make_job("n", "near")], sites=sites)
+    assert result.wait_days["n"] == 0
 
 
 @st.composite
@@ -180,7 +196,8 @@ def pooled_days(draw):
         )
         for _ in range(community_count)
     ]
-    sites = {f"c{i}": Site(REGION, 0.0, lat, lon, 1.0) for i, (lat, lon) in enumerate(coords)}
+    regions = [draw(st.sampled_from(("R", "OTHER"))) for _ in range(community_count)]
+    sites = {f"c{i}": Site(regions[i], 0.0, lat, lon, 1.0) for i, (lat, lon) in enumerate(coords)}
     entries = draw(
         st.lists(
             st.tuples(
@@ -207,14 +224,28 @@ def pooled_days(draw):
         )
     )
     placed = draw(st.permutations(base_coords))
-    crews = [CrewBase(f"crew{i}", f"crew{i}", lat, lon) for i, (lat, lon) in enumerate(placed)]
+    crews = [
+        CrewBase(f"crew{i}", f"crew{i}", lat, lon, draw(st.sampled_from(("R", "OTHER"))))
+        for i, (lat, lon) in enumerate(placed)
+    ]
     lam = draw(st.sampled_from((0.0, 0.5, 1.0)))
     return jobs, sites, crews, lam
 
 
+TRAVEL_DAY = 300.0
+
+
+def _km(crew: CrewBase, site: Site) -> float:
+    return capacity_sim.haversine_km(crew.lat, crew.lon, site.lat, site.lon) * site.road_factor
+
+
+def _reached(crew: CrewBase, site: Site) -> bool:
+    return site.region == crew.region or _km(crew, site) <= TRAVEL_DAY
+
+
 @settings(max_examples=150, deadline=None)
 @given(pooled_days())
-def test_day_one_serves_the_first_k_communities_in_rank_order_wherever_crews_sit(case) -> None:
+def test_day_one_serves_what_rank_order_nearest_reaching_crew_yields(case) -> None:
     jobs, sites, crews, lam = case
     result = capacity_sim.simulate(
         jobs,
@@ -224,15 +255,48 @@ def test_day_one_serves_the_first_k_communities_in_rank_order_wherever_crews_sit
         closures=[],
         crews=crews,
         jobs_per_crew_day=len(jobs),
-        travel_day_km=float("inf"),
+        travel_day_km=TRAVEL_DAY,
         sites=sites,
     )
-    chosen: list[str] = []
+    free = list(range(len(crews)))
+    seen: set[str] = set()
+    served: set[str] = set()
     for scored in scoring.rank(jobs, START, lam):
-        if scored.job.community_id not in chosen and len(chosen) < len(crews):
-            chosen.append(scored.job.community_id)
-    served = {job_id for job_id, done in result.completed_on.items() if done == START}
-    assert served == {j.job_id for j in jobs if j.community_id in chosen}
+        community = scored.job.community_id
+        if not free:
+            break
+        if community in seen:
+            continue
+        seen.add(community)
+        reaching = [i for i in free if _reached(crews[i], sites[community])]
+        if not reaching:
+            continue
+        km, chosen = min((_km(crews[i], sites[community]), i) for i in reaching)
+        free.remove(chosen)
+        if km <= TRAVEL_DAY:  # every crew starts at base, so only a longer trip costs the day
+            served.add(community)
+    done = {job_id for job_id, day in result.completed_on.items() if day == START}
+    assert done == {j.job_id for j in jobs if j.community_id in served}
+
+
+@settings(max_examples=100, deadline=None)
+@given(pooled_days())
+def test_no_crew_ever_serves_a_community_outside_its_reach(case) -> None:
+    jobs, sites, crews, lam = case
+    result = capacity_sim.simulate(
+        jobs,
+        lam,
+        START,
+        6,
+        closures=[],
+        crews=crews,
+        jobs_per_crew_day=1,
+        travel_day_km=TRAVEL_DAY,
+        sites=sites,
+    )
+    by_id = {crew.crew_id: crew for crew in crews}
+    for _, crew_id, community in result.visits:
+        assert _reached(by_id[crew_id], sites[community])
 
 
 def test_medians_split_town_and_remote_and_queue_length_counts_open_jobs() -> None:
@@ -250,7 +314,7 @@ def test_medians_split_town_and_remote_and_queue_length_counts_open_jobs() -> No
 def test_two_crews_do_not_both_travel_for_the_same_job() -> None:
     far = make_job("a", "far")
     town = make_job("t", reported_on=START)
-    result = run([far, town], crews=[CREW, CrewBase("Base 2", "Base", 0.0, 0.0)])
+    result = run([far, town], crews=[CREW, CrewBase("Base 2", "Base", 0.0, 0.0, REGION)])
     assert result.wait_days == {"a": 1, "t": 0}
 
 
@@ -263,6 +327,8 @@ def test_crew_roster_places_each_regions_crews_at_its_base() -> None:
     assert len({crew.crew_id for crew in roster}) == len(roster)
     for crew in roster:
         assert (crew.lat, crew.lon) == constants.CREW_BASE_COORDS[crew.base]
+        assert crew.base == bases[crew.region]
+    assert [crew.region for crew in roster].count(constants.TOWN_REGION) == constants.CREWS_TOWN
     with pytest.raises(ValueError, match="no crew base"):
         capacity_sim.crew_roster({})
 

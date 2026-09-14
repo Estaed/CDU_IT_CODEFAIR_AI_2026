@@ -26,6 +26,7 @@ from fair_turn.app.components import (
     job_rows,
     metrics,
     ranking_table,
+    run_sheet,
     sign_off_form,
     weighting,
     workspace_map,
@@ -146,6 +147,9 @@ effect_message.info(
     + metrics.effect_sentence(
         today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label
     )
+)
+st.caption(
+    run_sheet.reach_line([s.job.job_id for s in today_list], {j.job_id: j for j in jobs}, today)
 )
 if state.get_intake_draft() is not None:
     intake.render(st.container(border=True))

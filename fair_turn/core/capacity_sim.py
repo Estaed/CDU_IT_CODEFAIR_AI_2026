@@ -1,12 +1,15 @@
 """Toy dispatch model that turns a ranking into wait times (PRD section 6.3).
 
 A measurement device, not a scheduler. Crews are one NT-wide pool, each working from its
-home base. Each day the ranking decides which communities are served: walk the ranked open
-jobs in rank order and take distinct, open-road communities until there is one per free
-crew. Distance then decides only which free crew goes where (minimum total km, crew's
-current location to the community, times the road factor). A trip longer than the
-travel-day distance costs the crew that day; at the community it batches up to its daily
-capacity in rank order. Deterministic; no randomness inside.
+home base. A crew **reaches** a community in its home region, or one whose road km from the
+base (haversine times the road factor) is at most the travel-day distance. Each day the ranked
+open jobs are walked in rank order, each community once (closed-road and already-targeted
+communities skipped): the community takes the nearest free crew that reaches it, measured
+from that crew's current location, until no crew is free. Reach is physical feasibility;
+inside it a lower-ranked community is never served before a higher-ranked one a free crew
+could reach. A trip longer than the travel-day distance costs the crew that day; at the
+community it batches up to its daily capacity in rank order. Deterministic; no randomness
+inside.
 
 Jobs carry no region or distance, so the caller passes a ``Site`` per community (from
 ``communities.csv``). A job still open at the end of the run counts in the medians with its
@@ -21,7 +24,6 @@ from datetime import date, timedelta
 from statistics import median
 
 from fair_turn.core import constants, scoring
-from fair_turn.core.assignment import min_cost_assignment
 from fair_turn.core.types import Job
 
 
@@ -42,6 +44,7 @@ class CrewBase:
     base: str
     lat: float
     lon: float
+    region: str  # home region: the crew reaches all of it whatever the distance
 
 
 @dataclass(frozen=True)
@@ -61,6 +64,7 @@ class SimResult:
     travel_cost: float  # sum of ``logistics_factor`` over trips actually made
     travel_km: float  # sum of assigned trip km (haversine times road factor)
     queue_length: list[int] = field(default_factory=list)  # open rankable jobs, start of day
+    visits: list[tuple[date, str, str]] = field(default_factory=list)  # day, crew, community
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -71,6 +75,17 @@ def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return 2 * 6371.0 * math.asin(math.sqrt(a))
 
 
+def base_road_km(crew: CrewBase, lat: float, lon: float, road_factor: float) -> float:
+    """Road km from the crew's base: haversine times the community's road factor."""
+    return haversine_km(crew.lat, crew.lon, lat, lon) * road_factor
+
+
+def reaches(crew: CrewBase, region: str, km_from_base: float, travel_day_km: float) -> bool:
+    """A crew reaches its home region, and any community within the travel-day distance of
+    its base by road."""
+    return region == crew.region or km_from_base <= travel_day_km
+
+
 def crew_roster(base_for_region: Mapping[str, str]) -> tuple[CrewBase, ...]:
     """The NT-wide crew pool: ``CREWS_PER_REMOTE_REGION`` crews at each remote region's base
     and ``CREWS_TOWN`` at the town region's base. ``base_for_region`` is the ``crew_base``
@@ -78,21 +93,21 @@ def crew_roster(base_for_region: Mapping[str, str]) -> tuple[CrewBase, ...]:
     missing = [region for region in constants.REGIONS if region not in base_for_region]
     if missing:
         raise ValueError(f"no crew base for {missing}")
-    bases: list[str] = []
+    homes: list[tuple[str, str]] = []  # (base, home region) per crew
     for region in constants.REGIONS:
         count = (
             constants.CREWS_PER_REMOTE_REGION
             if region in constants.REMOTE_REGIONS
             else constants.CREWS_TOWN
         )
-        bases.extend([base_for_region[region]] * count)
-    totals = {base: bases.count(base) for base in bases}
+        homes.extend([(base_for_region[region], region)] * count)
+    totals = {base: sum(1 for b, _ in homes if b == base) for base, _ in homes}
     seen: dict[str, int] = {}
     roster = []
-    for base in bases:
+    for base, region in homes:
         seen[base] = seen.get(base, 0) + 1
         crew_id = base if totals[base] == 1 else f"{base} {seen[base]}"
-        roster.append(CrewBase(crew_id, base, *constants.CREW_BASE_COORDS[base]))
+        roster.append(CrewBase(crew_id, base, *constants.CREW_BASE_COORDS[base], region))
     return tuple(roster)
 
 
@@ -131,10 +146,12 @@ def simulate(
     for c in closures:
         closed.setdefault(c.community_id, []).append(c)
     pool = [_Crew(crew.lat, crew.lon) for crew in crews]
+    reach: dict[str, tuple[bool, ...]] = {}  # community -> reached, per crew in roster order
     completed_on: dict[str, date | None] = {j.job_id: None for j in jobs}
     travel_cost = 0.0
     travel_km = 0.0
     queue_length: list[int] = []
+    visits: list[tuple[date, str, str]] = []
 
     for offset in range(days):
         today = start + timedelta(days=offset)
@@ -143,51 +160,59 @@ def simulate(
         queue_length.append(len(ranked))
 
         # Crews arriving after a travel day work where they are headed, unless it closed.
-        working: list[tuple[_Crew, str]] = []
-        free: list[_Crew] = []
-        for crew in pool:
+        working: list[tuple[int, str]] = []
+        free: list[int] = []  # roster order, so a km tie goes to the earlier crew
+        for index, crew in enumerate(pool):
             destination, crew.heading_to = crew.heading_to, None
             if destination is not None and not _is_closed(closed, destination, today):
-                working.append((crew, destination))
+                working.append((index, destination))
             else:
-                free.append(crew)
+                free.append(index)
 
-        # The ranking picks the communities: rank order, distinct, open road.
-        targeted = {destination for _, destination in working}
-        targets: list[Job] = []
+        # Rank order, each community once: the nearest free crew that reaches it goes.
+        considered = {destination for _, destination in working}
         for j in ranked:
-            if len(targets) == len(free):
+            if not free:
                 break
-            if j.community_id in targeted or _is_closed(closed, j.community_id, today):
+            cid = j.community_id
+            if cid in considered or _is_closed(closed, cid, today):
                 continue
-            targeted.add(j.community_id)
-            targets.append(j)
-
-        # Distance picks only which free crew goes to each chosen community.
-        if targets:
-            costs = [
-                [
-                    haversine_km(
-                        crew.lat, crew.lon, sites[t.community_id].lat, sites[t.community_id].lon
+            considered.add(cid)
+            site = sites[cid]
+            if cid not in reach:
+                reach[cid] = tuple(
+                    reaches(
+                        crew,
+                        site.region,
+                        base_road_km(crew, site.lat, site.lon, site.road_factor),
+                        travel_day_km,
                     )
-                    * sites[t.community_id].road_factor
-                    for crew in free
-                ]
-                for t in targets
-            ]
-            for t, col, row in zip(targets, min_cost_assignment(costs), costs, strict=True):
-                crew, destination = free[col], t.community_id
-                if crew.location != destination:
-                    travel_cost += t.logistics_factor
-                    travel_km += row[col]
-                    crew.location = destination
-                    crew.lat, crew.lon = sites[destination].lat, sites[destination].lon
-                    if row[col] > travel_day_km:
-                        crew.heading_to = destination
-                        continue
-                working.append((crew, destination))
+                    for crew in crews
+                )
+            candidates = [index for index in free if reach[cid][index]]
+            if not candidates:
+                continue
+            km, chosen = min(
+                (
+                    haversine_km(pool[i].lat, pool[i].lon, site.lat, site.lon) * site.road_factor,
+                    i,
+                )
+                for i in candidates
+            )
+            free.remove(chosen)
+            crew = pool[chosen]
+            if crew.location != cid:
+                travel_cost += j.logistics_factor
+                travel_km += km
+                crew.location = cid
+                crew.lat, crew.lon = site.lat, site.lon
+                if km > travel_day_km:
+                    crew.heading_to = cid
+                    continue
+            working.append((chosen, cid))
 
-        for _, destination in working:
+        for index, destination in working:
+            visits.append((today, crews[index].crew_id, destination))
             batch = [
                 j
                 for j in ranked
@@ -221,4 +246,5 @@ def simulate(
         travel_cost=travel_cost,
         travel_km=travel_km,
         queue_length=queue_length,
+        visits=visits,
     )

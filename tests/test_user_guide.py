@@ -1,5 +1,5 @@
 """The user guide has the seven required sections, its walkthrough passes the wording
-check, README links it, and every page renders it in a sidebar "How to use" popover
+check, README links it, and every page renders it in a "How to use" popover
 (Task 50)."""
 
 import re
@@ -88,7 +88,7 @@ def test_guide_has_no_deficit_language() -> None:
 def test_how_to_use_popover_renders_guide_sections_1_and_3(page, no_network) -> None:
     at = AppTest.from_file(str(APP / "pages" / f"{page}.py")).run(timeout=60)
     assert not at.exception
-    popovers = at.sidebar.get("popover")
+    popovers = at.main.get("popover")
     assert len(popovers) == 1
     body = "\n".join(m.value for m in popovers[0].get("markdown"))
     heading_1, text_1 = _sections()[1]

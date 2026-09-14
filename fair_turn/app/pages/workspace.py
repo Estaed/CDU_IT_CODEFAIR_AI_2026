@@ -166,7 +166,32 @@ centre, pane = st.columns([5, 3])
 with centre:
     compare = st.checkbox("Compare with efficiency-first", value=state.get_compare())
     state.set_compare(compare)
-    tabs = st.tabs([f"Today's list {len(today_list)}", f"Backlog {len(backlog)}", "Map"])
+    # The map sits above the lists so it needs no second click to be seen.
+    rank_of = {s.job.job_id: s.rank for s in current}
+    by_community: dict[str, list] = {}
+    for job in jobs:
+        if passes(job):
+            by_community.setdefault(job.community_id, []).append(job)
+    points = []
+    for community_id, members in sorted(by_community.items()):
+        best = min(members, key=lambda j: (rank_of.get(j.job_id, len(rank_of) + 1), j.job_id))
+        community = art.communities[community_id]
+        points.append(
+            {
+                "job_id": best.job_id,
+                "community_id": community_id,
+                "lat": float(community["lat"]),
+                "lon": float(community["lon"]),
+                "region": community["region"],
+                "open_jobs": len(members),
+            }
+        )
+    map_choice = workspace_map.choice_for(workspace_map.render(points, selected), by_community)
+    st.caption(
+        "One dot per community, sized by open jobs. Click a dot to open its job; "
+        "a dot with several jobs offers a choice."
+    )
+    tabs = st.tabs([f"Today's list {len(today_list)}", f"Backlog {len(backlog)}"])
     lists = [
         (tabs[0], "today", today_list, baseline[:cap]),
         (tabs[1], "backlog", backlog, baseline[cap:]),
@@ -224,31 +249,6 @@ with centre:
             if picked is not None and picked != selected:
                 state.set_selected_job_id(picked)
                 st.rerun()
-    with tabs[2]:
-        rank_of = {s.job.job_id: s.rank for s in current}
-        by_community: dict[str, list] = {}
-        for job in jobs:
-            if passes(job):
-                by_community.setdefault(job.community_id, []).append(job)
-        points = []
-        for community_id, members in sorted(by_community.items()):
-            best = min(members, key=lambda j: (rank_of.get(j.job_id, len(rank_of) + 1), j.job_id))
-            community = art.communities[community_id]
-            points.append(
-                {
-                    "job_id": best.job_id,
-                    "community_id": community_id,
-                    "lat": float(community["lat"]),
-                    "lon": float(community["lon"]),
-                    "region": community["region"],
-                    "open_jobs": len(members),
-                }
-            )
-        map_pick = workspace_map.render(points, selected)
-        map_choice = None
-        if map_pick is not None:
-            community_id = next(p["community_id"] for p in points if p["job_id"] == map_pick)
-            map_choice = (community_id, sorted(j.job_id for j in by_community[community_id]))
 
 with pane:
     details_pane.render(art, jobs, current, cap, review_ids, today, lam, map_choice)

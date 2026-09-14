@@ -58,8 +58,9 @@ def test_three_tabs_render(tmp_path) -> None:
 def test_extraction_and_feedback_and_audit_each_show_a_chart(tmp_path) -> None:
     at = _run(tmp_path)
     charts = at.get("vega_lite_chart")
-    # Tab 2: three feedback-loop line charts (reports, wait, gap). Tab 3: one override-rate line.
-    assert len(charts) == 4
+    # Tab 1: one macro-F1 bar chart. Tab 2: three feedback-loop line charts (reports, wait,
+    # gap). Tab 3: one override-rate line.
+    assert len(charts) == 5
 
 
 def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
@@ -108,11 +109,26 @@ def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
     ) in captions
     expanders = [expander for expander in at.get("expander") if expander.label.endswith("by class")]
     assert [expander.label for expander in expanders] == [
-        "fault_type by class",
-        "safety_class by class",
-        "health_risk by class",
+        "Fault type, by class",
+        "Safety class, by class",
+        "Health risk, by class",
     ]
     assert len(at.dataframe) == 4  # fault_type, safety_class, health_risk, then the audit table
+    field_frame = expanders[0].dataframe[0].value
+    for column in (
+        "class",
+        "extractor precision",
+        "extractor precision 95 % CI",
+        "extractor recall",
+        "extractor recall 95 % CI",
+        "extractor F1",
+        "baseline precision",
+        "baseline precision 95 % CI",
+        "baseline recall",
+        "baseline recall 95 % CI",
+        "baseline F1",
+    ):
+        assert column in field_frame.columns
 
 
 def test_feedback_purpose_and_audit_chart_precede_audit_controls(tmp_path) -> None:
@@ -123,7 +139,14 @@ def test_feedback_purpose_and_audit_chart_precede_audit_controls(tmp_path) -> No
     ) in [markdown.value for markdown in at.markdown]
     audit_tab = [tab for tab in at.tabs if tab.label == "Audit log"][0]
     audit_chart = at.get("vega_lite_chart")[-1]
-    assert audit_tab.children[0] is audit_chart
+    override_expander = [
+        expander
+        for expander in at.get("expander")
+        if expander.label == "Override rate by decision day"
+    ][0]
+    assert audit_tab.children[0] is override_expander
+    assert override_expander.proto.expanded is False
+    assert audit_chart in override_expander.get("vega_lite_chart")
 
 
 def test_audit_frame_first_row_is_the_newest_recorded_at(tmp_path) -> None:

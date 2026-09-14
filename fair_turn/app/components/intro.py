@@ -53,9 +53,12 @@ def _guide_sections() -> dict[int, tuple[str, str]]:
 
 
 def _how_to_use() -> None:
-    """Render the "How to use" popover in the sidebar, once per page."""
+    """Render the "How to use" popover in the main area, once per page.
+
+    Main area, not the sidebar: in the sidebar the opened panel showed no text in the browser
+    (seen 2026-09-14, cause not traced); the main area needs no sidebar theme at all."""
     sections = _guide_sections()
-    with st.sidebar, st.popover("How to use", icon=":material/help:"):
+    with st.popover("How to use", icon=":material/help:"):
         for number in _HOW_TO_USE_SECTIONS:
             heading, body = sections[number]
             st.markdown(f"**{heading}**")
@@ -64,7 +67,7 @@ def _how_to_use() -> None:
 
 def purpose(page: str) -> None:
     """Render the page purpose immediately below its title, and the "How to use"
-    popover in the sidebar."""
+    popover under it."""
     st.markdown(COPY[page])
     _how_to_use()
 

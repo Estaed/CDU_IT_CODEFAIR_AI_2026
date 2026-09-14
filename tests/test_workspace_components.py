@@ -186,14 +186,33 @@ def test_selected_job_id_handles_positions_and_empty_frame() -> None:
     assert job_list.selected_job_id(frame, [7]) is None
 
 
-def test_picked_id_handles_first_object_and_empty_selection() -> None:
+def test_picked_community_id_handles_first_object_and_empty_selection() -> None:
     event = SimpleNamespace(
-        selection={"objects": {"jobs": [{"job_id": "JR-2"}], "selected": [{"job_id": "JR-1"}]}}
+        selection={
+            "objects": {
+                "jobs": [{"job_id": "JR-2", "community_id": "COMMUNITY-02"}],
+                "selected": [{"job_id": "JR-1", "community_id": "COMMUNITY-01"}],
+            }
+        }
     )
-    assert workspace_map.picked_id(event) == "JR-2"
-    assert workspace_map.picked_id(SimpleNamespace(selection={"objects": {}})) is None
+    assert workspace_map.picked_community_id(event) == "COMMUNITY-02"
+    assert workspace_map.picked_community_id(SimpleNamespace(selection={"objects": {}})) is None
 
 
-def test_picked_id_ignores_a_counts_only_selection() -> None:
-    event = SimpleNamespace(selection={"objects": {"counts": [{"job_id": "JR-2"}]}})
-    assert workspace_map.picked_id(event) is None
+def test_picked_community_id_ignores_a_counts_only_selection() -> None:
+    event = SimpleNamespace(selection={"objects": {"counts": [{"community_id": "COMMUNITY-02"}]}})
+    assert workspace_map.picked_community_id(event) is None
+
+
+def test_choice_for_resolves_a_community_and_ignores_a_stale_pick() -> None:
+    by_community = {
+        "COMMUNITY-02": [SimpleNamespace(job_id="JR-9"), SimpleNamespace(job_id="JR-2")]
+    }
+    assert workspace_map.choice_for("COMMUNITY-02", by_community) == (
+        "COMMUNITY-02",
+        ["JR-2", "JR-9"],
+    )
+    # A filter change can drop the picked community from the map while the pick survives.
+    assert workspace_map.choice_for("COMMUNITY-03", by_community) is None
+    assert workspace_map.choice_for(None, by_community) is None
+    assert workspace_map.choice_for("COMMUNITY-04", {"COMMUNITY-04": []}) is None

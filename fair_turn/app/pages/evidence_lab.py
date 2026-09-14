@@ -29,9 +29,19 @@ def _load_json(path) -> dict | list:
     return json.loads(path.read_text("utf-8"))
 
 
-def _cell(stats: dict, key: str) -> str:
+def _ci_span(stats: dict, key: str) -> str:
     low, high = stats[f"{key}_ci"]
-    return f"{stats[key]:.3f} [{low:.3f}, {high:.3f}]"
+    return f"{low:.2f}–{high:.2f}"
+
+
+NUMBER_COLUMNS = [
+    "extractor precision",
+    "extractor recall",
+    "extractor F1",
+    "baseline precision",
+    "baseline recall",
+    "baseline F1",
+]
 
 
 def field_table(ev: dict, field: str) -> pd.DataFrame:
@@ -41,28 +51,76 @@ def field_table(ev: dict, field: str) -> pd.DataFrame:
     for label, stats in extractor["per_class"].items():
         row = {
             "class": label,
-            "extractor precision": _cell(stats, "precision"),
-            "extractor recall": _cell(stats, "recall"),
-            "extractor f1": f"{stats['f1']:.3f}",
+            "extractor precision": stats["precision"],
+            "extractor precision 95 % CI": _ci_span(stats, "precision"),
+            "extractor recall": stats["recall"],
+            "extractor recall 95 % CI": _ci_span(stats, "recall"),
+            "extractor F1": stats["f1"],
         }
         if baseline is not None:
             b = baseline["per_class"][label]
-            row["baseline precision"] = _cell(b, "precision")
-            row["baseline recall"] = _cell(b, "recall")
-            row["baseline f1"] = f"{b['f1']:.3f}"
+            row["baseline precision"] = b["precision"]
+            row["baseline precision 95 % CI"] = _ci_span(b, "precision")
+            row["baseline recall"] = b["recall"]
+            row["baseline recall 95 % CI"] = _ci_span(b, "recall")
+            row["baseline F1"] = b["f1"]
         rows.append(row)
     macro = {
         "class": "macro",
-        "extractor precision": f"{extractor['macro_precision']:.3f}",
-        "extractor recall": f"{extractor['macro_recall']:.3f}",
-        "extractor f1": f"{extractor['macro_f1']:.3f}",
+        "extractor precision": extractor["macro_precision"],
+        "extractor precision 95 % CI": "",
+        "extractor recall": extractor["macro_recall"],
+        "extractor recall 95 % CI": "",
+        "extractor F1": extractor["macro_f1"],
     }
     if baseline is not None:
-        macro["baseline precision"] = f"{baseline['macro_precision']:.3f}"
-        macro["baseline recall"] = f"{baseline['macro_recall']:.3f}"
-        macro["baseline f1"] = f"{baseline['macro_f1']:.3f}"
+        macro["baseline precision"] = baseline["macro_precision"]
+        macro["baseline precision 95 % CI"] = ""
+        macro["baseline recall"] = baseline["macro_recall"]
+        macro["baseline recall 95 % CI"] = ""
+        macro["baseline F1"] = baseline["macro_f1"]
     rows.append(macro)
     return pd.DataFrame(rows)
+
+
+def macro_f1_chart(ev: dict, fields: tuple[str, ...]) -> alt.Chart:
+    """Macro-F1 per field, extractor vs baseline, grouped bars."""
+    rows = []
+    labels = {
+        "fault_type": "Fault type",
+        "safety_class": "Safety class",
+        "health_risk": "Health risk",
+    }
+    for field in fields:
+        extractor = ev["extractor"][field]
+        rows.append(
+            {"field": labels[field], "model": "Extractor", "macro_f1": extractor["macro_f1"]}
+        )
+        baseline = ev["baseline"].get(field)
+        if baseline is not None:
+            rows.append(
+                {"field": labels[field], "model": "Baseline", "macro_f1": baseline["macro_f1"]}
+            )
+    data = pd.DataFrame(rows)
+    colour = alt.Color(
+        "model:N",
+        scale=alt.Scale(domain=["Extractor", "Baseline"], range=[theme.TOWN, theme.REMOTE]),
+        title="Model",
+    )
+    return (
+        alt.Chart(data, title="Macro-F1 by field")
+        .mark_bar()
+        .encode(
+            x=alt.X("model:N", title=None, axis=None),
+            y=alt.Y("macro_f1:Q", title="Macro-F1"),
+            color=colour,
+            column=alt.Column("field:N", title=None),
+        )
+        .configure_axis(
+            gridColor=theme.GRIDLINE, labelColor=theme.AXIS_LABEL, titleColor=theme.AXIS_LABEL
+        )
+        .configure_title(color=theme.AXIS_LABEL)
+    )
 
 
 def render_extraction_tab() -> None:
@@ -72,6 +130,11 @@ def render_extraction_tab() -> None:
     substring = ev["substring_rate"]
     adversarial = [r for r in extraction_rows if r["is_adversarial"]]
     interval = f"{substring['rate_ci'][0]:.1%} to {substring['rate_ci'][1]:.1%}"
+    st.write(
+        "How well the model read 150 held-out synthetic reports into typed fields, "
+        "compared with a bag-of-words baseline. Higher is better; the bracket is the "
+        "95 % interval."
+    )
     metrics = st.columns(5)
     metrics[0].metric(
         "Verified phrases",
@@ -116,9 +179,20 @@ def render_extraction_tab() -> None:
         f"{'met' if ev['target_met']['safety_class'] else 'not met'} "
         "(the extractor over-predicts immediate)."
     )
-    for field in ("fault_type", "safety_class", "health_risk"):
-        with st.expander(f"{field} by class"):
-            st.dataframe(field_table(ev, field), hide_index=True)
+    st.altair_chart(
+        macro_f1_chart(ev, ("fault_type", "safety_class", "health_risk")), width="stretch"
+    )
+    number_config = {
+        column: st.column_config.NumberColumn(format="%.2f") for column in NUMBER_COLUMNS
+    }
+    field_labels = {
+        "fault_type": "Fault type, by class",
+        "safety_class": "Safety class, by class",
+        "health_risk": "Health risk, by class",
+    }
+    for field, expander_label in field_labels.items():
+        with st.expander(expander_label):
+            st.dataframe(field_table(ev, field), hide_index=True, column_config=number_config)
 
 
 # --- Tab 2: feedback loop (Task-19 page body, moved) --------------------------------------
@@ -234,6 +308,10 @@ def render_feedback_tab() -> None:
         "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting, "
         "to show that an efficiency-only allocation makes remote demand look like it dried up."
     )
+    st.write(
+        "Watch the remote line in the first chart: under efficiency-only it falls as unserved "
+        "communities stop reporting; under the chosen weighting it holds."
+    )
     lam = st.slider(
         "λ (0 = equity first, 1 = efficiency first)",
         0.0,
@@ -322,11 +400,13 @@ def render_audit_tab() -> None:
             )
             .configure_title(color=theme.AXIS_LABEL)
         )
-        st.altair_chart(chart, width="stretch")
+        with st.expander("Override rate by decision day", expanded=False):
+            st.altair_chart(chart, width="stretch")
 
-    signer_filter = st.multiselect("Signer", signers, default=signers)
-    kind_filter = st.multiselect("Kind", kinds, default=kinds)
-    day_range = st.date_input(
+    filter_columns = st.columns(3)
+    signer_filter = filter_columns[0].multiselect("Signer", signers, default=signers)
+    kind_filter = filter_columns[1].multiselect("Kind", kinds, default=kinds)
+    day_range = filter_columns[2].date_input(
         "Decision day range", value=(min_day, max_day), min_value=min_day, max_value=max_day
     )
     start, end = (
@@ -348,8 +428,8 @@ def render_audit_tab() -> None:
     frame = pd.DataFrame(filtered, columns=AUDIT_COLUMNS)
 
     st.caption(
-        f"Filters: kind {', '.join(kind_filter) or NO_SIGNER}; "
-        f"signer {', '.join(signer_filter) or NO_SIGNER}; "
+        f"Showing {len(filtered)} of {len(rows)} rows · kind "
+        f"{', '.join(kind_filter) or NO_SIGNER}; signer {', '.join(signer_filter) or NO_SIGNER}; "
         f"decision day {start.isoformat()} to {end.isoformat()}."
     )
     st.caption(LOCAL_ZONE_CAPTION)

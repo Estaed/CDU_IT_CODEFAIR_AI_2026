@@ -2,8 +2,8 @@
 
 Ten minutes, for a new coordinator, a teammate, or a judge. This page is the walkthrough;
 `docs/PRD.md` section 3 has the full rule behind each surface, and `design/` has the exact
-layout. A short version of sections 1 and 3 is one click away in the app, in the sidebar's
-"How to use" popover, on every page.
+layout. A short version of sections 1 and 3 is one click away in the app, in the
+"How to use" popover under the page title, on every page.
 
 If a screen ever disagrees with this guide, the screen and `docs/PRD.md` are right; this
 guide is the fast path in, not the source of the rules.

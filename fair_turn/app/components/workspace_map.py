@@ -17,6 +17,7 @@ SELECTED_RADIUS_MULTIPLIER = 1.6
 MARKER_LINE_WIDTH_MIN_PX = 1
 SELECTED_LINE_WIDTH_MIN_PX = 3
 COUNT_FONT_PX = 12
+MAP_HEIGHT_PX = 320
 
 
 def _rgb(hex_value: str) -> list[int]:
@@ -102,16 +103,30 @@ def build_deck(points: list[dict], selected_id: str | None) -> pdk.Deck:
     )
 
 
-def picked_id(event) -> str | None:
-    """Return the first selected job from a pydeck selection event, if there is one."""
+def picked_community_id(event) -> str | None:
+    """Return the community of the first selected marker, if there is one.
+
+    The community, not the job: a marker carries the community's best job id, and that id
+    changes when a filter changes while the stored selection does not."""
     selection = getattr(event, "selection", None)
     if selection is None:
         return None
     objects = selection.get("objects", {})
     for layer_id, picked in objects.items():
         if layer_id != "counts" and picked:
-            return picked[0].get("job_id")
+            return picked[0].get("community_id")
     return None
+
+
+def choice_for(community_id: str | None, by_community: dict[str, list]) -> tuple | None:
+    """Resolve a map pick to ``(community id, sorted job ids)``.
+
+    A pick naming a community the current filters no longer show is stale and yields no
+    choice, rather than an error."""
+    members = by_community.get(community_id) if community_id is not None else None
+    if not members:
+        return None
+    return (community_id, sorted(job.job_id for job in members))
 
 
 def _fallback_map(points: list[dict]):
@@ -128,15 +143,16 @@ def _fallback_map(points: list[dict]):
 
 
 def render(points: list[dict], selected_id: str | None) -> str | None:
-    """Render the map and return the clicked job id without touching session state."""
+    """Render the map and return the clicked community id without touching session state."""
     try:
         event = st.pydeck_chart(
             build_deck(points, selected_id),
             on_select="rerun",
             selection_mode="single-object",
+            height=MAP_HEIGHT_PX,
             key="workspace_map",
         )
-        return picked_id(event)
+        return picked_community_id(event)
     except Exception:
         st.altair_chart(_fallback_map(points), width="stretch")
         st.info("Basemap unavailable — showing the NT outline instead.")

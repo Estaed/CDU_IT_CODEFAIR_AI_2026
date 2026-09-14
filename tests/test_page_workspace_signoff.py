@@ -340,3 +340,15 @@ def test_formatting_and_deltas() -> None:
         "gap": "-0.5 days",
         "travel_cost": "+234",
     }
+
+
+def test_sign_off_summary_counts_checks_on_todays_list_only() -> None:
+    checks = {"a": "confirmed", "b": "corrected", "z": "corrected"}
+    assert (
+        sign_off_form.check_line(("a", "b", "c"), checks)
+        == "You checked 2 of 3 jobs on today's list and corrected 1."
+    )
+    assert (
+        sign_off_form.check_line(("a",), {})
+        == "You checked 0 of 1 jobs on today's list and corrected 0."
+    )

@@ -21,13 +21,20 @@ SAFETY_COLOURS = {"immediate": "red", "urgent": "orange", "routine": "gray"}
 SELECTED = "Selected"
 NEEDS_HUMAN = "Needs a human"
 OPEN = "Open"
+# A job's latest field check today -> (badge colour, label); ``None`` is not checked yet.
+CHECK_BADGES = {
+    "confirmed": ("green", "✓ Checked"),
+    "corrected": ("red", "✗ Corrected"),
+    None: ("gray", "Not checked"),
+}
 
 
 def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
     """Render one bordered row per job and return the id of the job whose button was pressed.
 
     Each ``rows`` item carries ``job_id, rank, rank_change, community_id, is_remote,
-    fault_type, safety_class, window, score, score_max, human_queue``; the caller builds them
+    fault_type, safety_class, window, score, score_max, human_queue, check`` (``check``
+    is ``"confirmed"``, ``"corrected"`` or ``None``); the caller builds them
     from the ranking it already has, so nothing is scored here.
     """
     clicked = None
@@ -49,6 +56,8 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
                 st.badge(
                     row["safety_class"].capitalize(), color=SAFETY_COLOURS[row["safety_class"]]
                 )
+                colour, label = CHECK_BADGES[row["check"]]
+                st.badge(label, color=colour)
                 st.badge("Remote" if row["is_remote"] else "Town", color="gray")
                 if row["human_queue"]:
                     st.badge(NEEDS_HUMAN, color="yellow")

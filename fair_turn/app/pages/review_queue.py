@@ -171,6 +171,11 @@ def _intake_items() -> list[QueueItem]:
 def _review_requested_items(art: Artefacts, today: date) -> list[QueueItem]:
     items = []
     jobs_by_id = {j.job_id: j for j in ranking_table.open_jobs(today)}
+    intake_by_id = {
+        r.job_id: r
+        for r in runtime.read(state.get_runtime_path())
+        if isinstance(r, runtime.IntakeReport)
+    }
     for record in audit.read(state.get_audit_path()):
         if not (
             isinstance(record, audit.HumanSet)
@@ -181,15 +186,22 @@ def _review_requested_items(art: Artefacts, today: date) -> list[QueueItem]:
         job = jobs_by_id.get(record.job_id)
         if job is None:
             continue
-        row = extraction_for(art, job.job_id)
-        kept = {field: ev.evidence for field, ev in row.kept.items()}
+        if job.job_id in art.reports:
+            row = extraction_for(art, job.job_id)
+            text = art.reports[job.job_id]
+            kept = {field: ev.evidence for field, ev in row.kept.items()}
+            values = _kept_values(row)
+        else:  # an intake job: its text and extraction live in the runtime record
+            intake = intake_by_id[job.job_id]
+            verified = verify_spans.verify(intake.text, intake.extraction or {})
+            text, kept, values = intake.text, dict(verified.kept), _kept_values_intake(verified)
         items.append(
             QueueItem(
                 job.job_id,
                 job.community_id,
-                art.reports[job.job_id],
+                text,
                 kept,
-                _kept_values(row),
+                values,
                 {"review_requested": f"sent to review: {record.reason}"},
                 "review_requested",
             )

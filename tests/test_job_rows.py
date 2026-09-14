@@ -35,6 +35,7 @@ def _row(rank: int, job_id: str, **overrides) -> dict:
         "score": 4.0 - rank,
         "score_max": 4.0,
         "human_queue": False,
+        "check": None,
     }
     return {**row, **overrides}
 
@@ -43,8 +44,8 @@ def _row(rank: int, job_id: str, **overrides) -> dict:
 def rows() -> list[dict]:
     return [
         _row(1, "JR-2025-00001", is_remote=False, rank_change="▲2"),
-        _row(2, "JR-2025-00002", safety_class="immediate"),
-        _row(3, "JR-2025-00003", safety_class="routine", human_queue=True),
+        _row(2, "JR-2025-00002", safety_class="immediate", check="confirmed"),
+        _row(3, "JR-2025-00003", safety_class="routine", human_queue=True, check="corrected"),
     ]
 
 
@@ -114,3 +115,13 @@ def test_open_returns_that_job_id(tmp_path, rows) -> None:
     at.button(key=f"rows_open_{rows[1]['job_id']}").click().run(timeout=60)
     assert not at.exception
     assert at.session_state[CLICKED] == rows[1]["job_id"]
+
+
+def test_each_row_shows_its_check_state_badge(tmp_path, rows) -> None:
+    at = _run(_script(tmp_path, rows, None))
+    badges = [m.value for m in at.markdown]
+    assert sum("Not checked" in b for b in badges) == 1
+    assert sum("✓ Checked" in b for b in badges) == 1
+    assert sum("✗ Corrected" in b for b in badges) == 1
+    assert any("green" in b and "✓ Checked" in b for b in badges)
+    assert any("red" in b and "✗ Corrected" in b for b in badges)

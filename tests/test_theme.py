@@ -44,6 +44,12 @@ def test_config_and_stylesheet_colours_are_design_tokens() -> None:
     assert set(HEX.findall(config + css)) <= allowed
 
 
+def test_stylesheet_has_no_angle_bracket() -> None:
+    # The browser's sanitiser drops a whole <style> whose text contains "<" before a letter
+    # (seen 2026-09-14: a comment reading "st-key-<key>" unstyled every page).
+    assert "<" not in (APP / "static" / "theme.css").read_text("utf-8")
+
+
 def test_only_theme_injects_styles_and_stylesheet_is_self_contained() -> None:
     style_hits = []
     for path in APP.rglob("*.py"):

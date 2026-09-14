@@ -1,6 +1,6 @@
 # Task-22: Workspace interaction spike: pydeck map, selectable list, shared selection
 
-Status: DONE
+Status: TODO
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Part 2 fixed pydeck and the session-state selection seam (spike 2026-09-14); what is left is writing the two components and the tests. The click path is a human check listed as not gated.
@@ -32,3 +32,12 @@ framework gate in `docs/phase-2-discovery.md` §5: if it holds, Streamlit stays.
 - [ ] No hex, size or font literal outside `theme.py` (existing theme test stays green).
 - [ ] Human check, recorded in this file under a `## Spike result` heading with the date: clicking a marker and clicking a row both change the selected id in a real `streamlit run`; if either fails, stop and raise the framework question before Task-29.
 - [ ] Gate green.
+
+## Spike result
+
+**2026-09-14 — framework question raised.** In the real app started with `streamlit run`,
+selecting a list row changed the shared selected job to `JR-2025-00881` and updated the details
+pane. Clicking a visible pydeck marker did not change the selected job after the map was panned
+and zoomed to place the marker under the click target. Criterion 5 therefore fails. Before any
+further workspace UI change: can Streamlit 1.63 reliably return pydeck `single-object` selection
+for this layer, or must the workspace use another selectable map mechanism?

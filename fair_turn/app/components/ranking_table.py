@@ -125,6 +125,15 @@ def _label(value: str) -> str:
     return value.replace("_", " ")
 
 
+def short_id(job_id: str) -> str:
+    """The number a person reads aloud: ``JR-2025-00717`` shows as ``#717``. The full
+    registration number stays the identity everywhere else (audit log, tenant lookup)."""
+    prefix, _, number = job_id.rpartition("-")
+    if not number.isdigit() or not prefix:
+        return job_id
+    return f"#{int(number)}"
+
+
 def rank_change(places: int) -> str:
     """``places`` is how many places higher the job sits at the current lam."""
     if places > 0:

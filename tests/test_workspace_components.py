@@ -186,7 +186,7 @@ def test_selected_job_id_handles_positions_and_empty_frame() -> None:
     assert job_list.selected_job_id(frame, [7]) is None
 
 
-def test_picked_community_id_handles_first_object_and_empty_selection() -> None:
+def test_picked_handles_first_object_and_empty_selection() -> None:
     event = SimpleNamespace(
         selection={
             "objects": {
@@ -195,13 +195,63 @@ def test_picked_community_id_handles_first_object_and_empty_selection() -> None:
             }
         }
     )
-    assert workspace_map.picked_community_id(event) == "COMMUNITY-02"
-    assert workspace_map.picked_community_id(SimpleNamespace(selection={"objects": {}})) is None
+    assert workspace_map.picked(event) == ("community", "COMMUNITY-02")
+    assert workspace_map.picked(SimpleNamespace(selection={"objects": {}})) is None
+    assert workspace_map.picked(SimpleNamespace(selection=None)) is None
 
 
-def test_picked_community_id_ignores_a_counts_only_selection() -> None:
+def test_picked_reads_a_region_circle_as_a_region() -> None:
+    event = SimpleNamespace(
+        selection={"objects": {"regions": [{"region": constants.REMOTE_REGIONS[0]}]}}
+    )
+    assert workspace_map.picked(event) == ("region", constants.REMOTE_REGIONS[0])
+
+
+def test_picked_ignores_a_counts_only_selection() -> None:
     event = SimpleNamespace(selection={"objects": {"counts": [{"community_id": "COMMUNITY-02"}]}})
-    assert workspace_map.picked_community_id(event) is None
+    assert workspace_map.picked(event) is None
+
+
+def test_region_level_deck_has_region_circles_and_no_job_dots(points) -> None:
+    points.append({**points[1], "community_id": "COMMUNITY-04", "job_id": "JR-4", "open_jobs": 5})
+    spec = json.loads(workspace_map.build_deck(points, None, workspace_map.REGION_LEVEL).to_json())
+    assert [layer["id"] for layer in spec["layers"]] == ["regions", "counts"]
+    regions = spec["layers"][0]
+    assert regions["pickable"] is True
+    assert regions["radiusMaxPixels"] == workspace_map.REGION_MARKER_MAX_PX
+    assert regions["radiusUnits"] == "pixels"
+    # One circle per region, carrying that region's total open jobs; every circle is counted.
+    assert {point["region"]: point["open_jobs"] for point in regions["data"]} == {
+        constants.TOWN_REGION: 1,
+        constants.REMOTE_REGIONS[0]: 7,
+        constants.REMOTE_REGIONS[1]: 3,
+    }
+    assert len(spec["layers"][1]["data"]) == len(regions["data"])
+    assert "{region}" in workspace_map.REGION_TOOLTIP
+
+
+def test_community_level_deck_has_job_dots_and_no_region_circles(points) -> None:
+    centre = workspace_map.centre_of(points)
+    spec = json.loads(
+        workspace_map.build_deck(
+            points, "JR-2025-00002", workspace_map.COMMUNITY_LEVEL, centre
+        ).to_json()
+    )
+    assert [layer["id"] for layer in spec["layers"]] == ["jobs", "selected", "counts"]
+    assert spec["initialViewState"]["zoom"] == workspace_map.REGION_ZOOM
+    assert spec["initialViewState"]["latitude"] == pytest.approx(
+        sum(point["lat"] for point in points) / len(points)
+    )
+
+
+def test_region_aggregate_sums_open_jobs_and_averages_the_position(points) -> None:
+    points.append({**points[1], "community_id": "COMMUNITY-04", "lat": -16.5, "open_jobs": 4})
+    aggregate = {point["region"]: point for point in workspace_map.region_points(points)}
+    first = aggregate[constants.REMOTE_REGIONS[0]]
+    assert first["open_jobs"] == 6
+    assert first["lat"] == pytest.approx((-14.5 + -16.5) / 2)
+    assert first["lon"] == pytest.approx(132.2)
+    assert workspace_map.centre_of([]) == workspace_map.NT_VIEW
 
 
 def test_choice_for_resolves_a_community_and_ignores_a_stale_pick() -> None:

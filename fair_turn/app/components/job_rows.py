@@ -11,10 +11,11 @@ whose button was pressed, so the page owns the selection seam exactly as it did 
 
 import streamlit as st
 
-from fair_turn.app.components.ranking_table import UNCHANGED
+from fair_turn.app.components.ranking_table import UNCHANGED, short_id
 
-# Row geometry: rank, job, community, class and window, score, the open button.
-COLUMN_RATIOS = [0.7, 1.9, 1.6, 1.4, 1.4, 1.6]
+# Row geometry: rank, job (fault type, id and community), class and window, score, the
+# open button.
+COLUMN_RATIOS = [0.7, 2.4, 1.8, 1.4, 1.6]
 # Named Streamlit badge colours, the same map the details pane uses.
 SAFETY_COLOURS = {"immediate": "red", "urgent": "orange", "routine": "gray"}
 SELECTED = "Selected"
@@ -34,7 +35,7 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
         job_id = row["job_id"]
         is_selected = job_id == selected_id
         with st.container(border=True):
-            rank, job, community, urgency, score, action = st.columns(
+            rank, job, urgency, score, action = st.columns(
                 COLUMN_RATIOS, vertical_alignment="center"
             )
             with rank:
@@ -42,15 +43,13 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
                 if row["rank_change"] != UNCHANGED:
                     st.caption(row["rank_change"])
             with job:
-                st.markdown(f"`{job_id}`")
-                st.caption(row["fault_type"])
-            with community:
-                st.markdown(row["community_id"])
-                st.badge("Remote" if row["is_remote"] else "Town", color="gray")
+                st.markdown(f"**{row['fault_type'].replace('_', ' ').capitalize()}**")
+                st.caption(f"Job {short_id(job_id)} · {row['community_id']}")
             with urgency:
                 st.badge(
                     row["safety_class"].capitalize(), color=SAFETY_COLOURS[row["safety_class"]]
                 )
+                st.badge("Remote" if row["is_remote"] else "Town", color="gray")
                 if row["human_queue"]:
                     st.badge(NEEDS_HUMAN, color="yellow")
                 st.caption(row["window"])

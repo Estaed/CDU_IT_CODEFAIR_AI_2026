@@ -207,8 +207,19 @@ def test_workspace_intake_disabled_without_provider(tmp_path, no_network, monkey
     assert any("FAIR_TURN_PROVIDER" in i.value for i in at.info)
 
 
-def test_visit_plan_shows_unsigned_message(no_network) -> None:
-    at = AppTest.from_file(str(APP / "pages" / "visit_plan.py")).run(timeout=60)
+def test_visit_plan_shows_unsigned_message(no_network, tmp_path) -> None:
+    # The local audit log may hold a real sign-off for the dataset day; an empty one is the
+    # unsigned state this test is about.
+    script = tmp_path / "visit_plan_unsigned.py"
+    script.write_text(
+        "from pathlib import Path\n"
+        "from fair_turn.app import state\n"
+        f"state.set_audit_path(Path({str(tmp_path / 'audit.jsonl')!r}))\n"
+        + (APP / "pages" / "visit_plan.py").read_text("utf-8"),
+        encoding="utf-8",
+        newline="",
+    )
+    at = AppTest.from_file(str(script)).run(timeout=60)
     assert not at.exception
     assert (
         "Nothing to plan yet. Sign today's batch on the workspace and the run sheet appears here."

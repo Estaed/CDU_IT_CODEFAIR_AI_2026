@@ -8,6 +8,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app.components import job_rows
+from fair_turn.app.components.ranking_table import short_id
 
 CLICKED = "clicked"
 
@@ -82,9 +83,10 @@ def test_one_bordered_row_per_job_with_an_open_button(tmp_path, rows) -> None:
     assert [button.label for button in at.button] == [job_rows.OPEN] * len(rows)
     values = [markdown.value for markdown in at.markdown]
     for row in rows:
-        assert f"`{row['job_id']}`" in values
-        assert row["community_id"] in values
+        assert f"**{row['fault_type'].capitalize()}**" in values
     captions = [caption.value for caption in at.caption]
+    for row in rows:
+        assert f"Job {short_id(row['job_id'])} · {row['community_id']}" in captions
     assert captions.count("6 of 2 d") == len(rows)
     assert "▲2" in captions
     assert ":red-badge[Immediate]" in values

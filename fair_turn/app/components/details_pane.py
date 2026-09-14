@@ -11,7 +11,7 @@ from fair_turn.app import state
 from fair_turn.app.components import highlight, ranking_table
 from fair_turn.core import audit, explain, scoring
 from fair_turn.core.batch import HandMove
-from fair_turn.core.types import Job, ScoredJob
+from fair_turn.core.types import Job, SafetyClass, ScoredJob
 from fair_turn.data import policy, runtime
 from fair_turn.data.artefacts import Artefacts
 
@@ -22,6 +22,10 @@ INDEX_UNAVAILABLE = "Policy index unavailable"
 REASON_REQUIRED = "A reason is required."
 SET_BY_COORDINATOR = "Set by coordinator"
 IN_REVIEW = "In the review queue"
+REPORT_CAPTION = "What the tenant reported"
+FULL_PASSAGE = "Full passage"
+REASON_PLACEHOLDER = "Why? e.g. crew already nearby, tenant called back"
+PASSAGE_PREVIEW_CHARS = 400
 FIELD_FACTOR = {
     "fault_type": "safety",
     "safety_class": "safety",
@@ -42,6 +46,11 @@ def _label(value: str) -> str:
 
 def _text(value: str) -> str:
     return highlight.render(value, [])
+
+
+def _community_label(community_id: str) -> str:
+    """``CENTRAL AUSTRALIA R-01`` reads as ``Central Australia R-01``; the code stays."""
+    return " ".join(word.title() if word.isalpha() else word for word in community_id.split())
 
 
 def _closed(art: Artefacts, community_id: str, today: date) -> bool:
@@ -200,10 +209,11 @@ def _summary_list(
             source_column.markdown(source)
 
 
-def _evidence_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -> None:
+def _report_block(art: Artefacts, job_id: str) -> None:
+    """The tenant's own words first, with the source phrases highlighted and read out."""
     evidence = _evidence(art, job_id)
-    row = art.extraction.get(job_id)
-    with st.expander("Evidence"):
+    with st.container(border=True):
+        st.caption(REPORT_CAPTION)
         text = _report_text(art, job_id)
         st.markdown(highlight.render(text, highlight.spans(text, evidence)))
         legend = [
@@ -213,7 +223,13 @@ def _evidence_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -
             for field, phrase in sorted(evidence.items())
         ]
         if legend:
-            st.markdown("\n".join(legend))
+            st.caption("\n".join(legend))
+
+
+def _fields_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -> None:
+    row = art.extraction.get(job_id)
+    evidence = _evidence(art, job_id)
+    with st.expander("Fields read from the report"):
         fields = ["fault_type", "safety_class"]
         fields += sorted(field for field in evidence if field.startswith("health_risk:"))
         fields += ["location_mentioned", "crew_or_access_note"]
@@ -229,9 +245,19 @@ def _evidence_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -
             else:
                 value, phrase, status = "", "", "Not found"
             records.append(
-                {"field": _label(field), "value": value, "phrase": phrase, "status": status}
+                {
+                    "Field": _label(field),
+                    "Value": value,
+                    "Source phrase": phrase,
+                    "Status": status,
+                }
             )
-        st.table(pd.DataFrame(records, columns=["field", "value", "phrase", "status"]))
+        st.table(pd.DataFrame(records, columns=["Field", "Value", "Source phrase", "Status"]))
+
+
+def _preview(text: str) -> str:
+    """The first ``PASSAGE_PREVIEW_CHARS`` characters, cut at a word boundary."""
+    return f"{text[:PASSAGE_PREVIEW_CHARS].rsplit(' ', 1)[0]}…"
 
 
 def _policy_expander(art: Artefacts, job: Job) -> None:
@@ -248,16 +274,21 @@ def _policy_expander(art: Artefacts, job: Job) -> None:
             st.caption(NO_PASSAGE)
             return
         for passage in passages:
-            st.markdown(
-                f"**{passage.title} — {passage.section} (effective {passage.effective_date})**"
-            )
-            st.markdown(_text(passage.text))
+            with st.container(border=True):
+                st.markdown(f"**{passage.title}**")
+                st.caption(f"{passage.section} · effective {passage.effective_date}")
+                if len(passage.text) > PASSAGE_PREVIEW_CHARS:
+                    st.markdown(_text(_preview(passage.text)))
+                    with st.popover(FULL_PASSAGE):
+                        st.markdown(_text(passage.text))
+                else:
+                    st.markdown(_text(passage.text))
 
 
 def _reason_form(key: str, label: str) -> str | None:
     """A reason field and a submit button; the reason, or None when nothing may be written."""
     with st.form(key):
-        reason = st.text_input("Reason", key=f"{key}_reason")
+        reason = st.text_input("Reason", key=f"{key}_reason", placeholder=REASON_PLACEHOLDER)
         submitted = st.form_submit_button(label, key=f"{key}_submit")
     if not submitted:
         return None
@@ -269,13 +300,13 @@ def _reason_form(key: str, label: str) -> str | None:
 
 def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_review: bool) -> None:
     with st.container(border=True):
-        st.markdown("**Actions**")
+        st.markdown("**Change this job's place** (every change needs a reason and is logged)")
         if in_review:
-            st.caption("Actions are disabled: this job is in the review queue.")
+            st.caption("No changes here: this job is in the review queue.")
             return
         ids = [s.job.job_id for s in current]
         if job.job_id not in ids:
-            st.caption("Actions are disabled: this job is not in today's ranking.")
+            st.caption("No changes here: this job is not in today's ranking.")
             return
         job_id = job.job_id
         rank = ids.index(job_id) + 1
@@ -291,21 +322,32 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
             st.rerun()
 
         if rank <= cap:
-            if rank > 1 and (reason := _reason_form(f"move_up_{job_id}", "Move up")):
+            st.caption(
+                "You can move this job up or down one place in today's list, "
+                "or send it to the review queue."
+            )
+            if rank > 1 and (reason := _reason_form(f"move_up_{job_id}", "Move up one place")):
                 move(rank - 1, reason)
-            if rank < len(ids) and (reason := _reason_form(f"move_down_{job_id}", "Move down")):
+            if rank < len(ids) and (
+                reason := _reason_form(f"move_down_{job_id}", "Move down one place")
+            ):
                 move(rank + 1, reason)
         elif cap > 0:
             displaced = ids[cap - 1]
             st.caption(
-                f"Promoting puts this job at rank {cap} and moves {displaced} to the backlog."
+                "This job is in the backlog. You can promote it into today's list; "
+                "the job at the last place moves to the backlog."
             )
-            if reason := _reason_form(f"promote_{job_id}", "Promote to today's list"):
+            st.caption(
+                f"Promoting puts this job at rank {cap} and moves "
+                f"{ranking_table.short_id(displaced)} to the backlog."
+            )
+            if reason := _reason_form(f"promote_{job_id}", "Promote into today's list"):
                 audit.append(audit_path, audit.Promotion(today, job_id, displaced, reason))
                 state.set_hand_moves((*moves, HandMove(job_id, rank, cap, reason)))
                 st.rerun()
 
-        if reason := _reason_form(f"review_{job_id}", "Send to review"):
+        if reason := _reason_form(f"review_{job_id}", "Send to review queue"):
             audit.append(
                 audit_path,
                 audit.HumanSet(
@@ -321,10 +363,18 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
             st.rerun()
 
         if any(m.job_id == job_id for m in moves) and st.button(
-            "Undo hand move", key=f"undo_{job_id}"
+            "Undo my hand move", key=f"undo_{job_id}"
         ):
             state.set_hand_moves(ranking_table.without_moves_for(moves, job_id))
             st.rerun()
+
+
+def _window_label(job: Job, today: date) -> str:
+    """``day 3 of 5 d``; the make-safe window is hours, so it carries no day count."""
+    if job.safety_class is None:
+        return "—"
+    window = ranking_table.window_text(job, today)
+    return window if job.safety_class is SafetyClass.IMMEDIATE else f"day {window}"
 
 
 def render(
@@ -357,17 +407,19 @@ def render(
     in_review = job.needs_human or selected in review_ids
     fault = _label(job.fault_type.value) if job.fault_type is not None else "—"
     safety = job.safety_class.value if job.safety_class is not None else "—"
-    window = ranking_table.window_text(job, today) if job.safety_class is not None else "—"
-    st.subheader(f"{selected} · {job.community_id}")
+    window = _window_label(job, today)
+    st.subheader(f"Job {ranking_table.short_id(selected)} · {_community_label(job.community_id)}")
     _header_badges(job, in_review, human_set)
-    st.caption(f"{fault} · {safety} · {window}")
+    st.caption(f"Registration {selected} · {fault} · {safety} · {window}")
 
+    _report_block(art, selected)
     if in_review or scored is None:
         st.warning(IN_REVIEW)
     else:
         st.markdown("**Why it sits here.**")
         st.write(explain.why_sentence(scored, lam))
+    st.caption("How the score is built")
     _summary_list(art, job, scored, today, _evidence(art, selected), human_set)
-    _evidence_expander(art, selected, human_set)
+    _fields_expander(art, selected, human_set)
     _policy_expander(art, job)
     _actions(job, current, cap, today, in_review)

@@ -88,10 +88,16 @@ def test_guide_has_no_deficit_language() -> None:
 def test_how_to_use_popover_renders_guide_sections_1_and_3(page, no_network) -> None:
     at = AppTest.from_file(str(APP / "pages" / f"{page}.py")).run(timeout=60)
     assert not at.exception
-    popovers = at.main.get("popover")
+    heading_1, text_1 = _sections()[1]
+    # Other popovers exist on a page (a long policy passage opens in one); the guide's is
+    # the one that starts with the guide's first heading.
+    popovers = [
+        p
+        for p in at.main.get("popover")
+        if p.get("markdown") and p.get("markdown")[0].value == f"**{heading_1}**"
+    ]
     assert len(popovers) == 1
     body = "\n".join(m.value for m in popovers[0].get("markdown"))
-    heading_1, text_1 = _sections()[1]
     heading_3, text_3 = _sections()[3]
     assert heading_1 in body
     assert heading_3 in body

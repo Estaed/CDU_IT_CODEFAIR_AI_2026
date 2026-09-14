@@ -45,6 +45,7 @@ DISPLAY = [
     "fault type",
 ]
 TODAY_ROWS_KEY = "workspace_today"
+MAP_MODES = ["Today's list", "All open jobs"]
 
 art = state.artefacts()
 today = state.get_today()
@@ -167,9 +168,24 @@ with centre:
     compare = st.checkbox("Compare with efficiency-first", value=state.get_compare())
     state.set_compare(compare)
     # The map sits above the lists so it needs no second click to be seen.
+    mode_column, region_column = st.columns([3, 1])
+    with mode_column:
+        map_mode = st.radio(
+            "Map shows",
+            MAP_MODES,
+            horizontal=True,
+            key="workspace_map_mode",
+            label_visibility="collapsed",
+        )
+    if region != state.ALL_REGIONS and region_column.button(
+        "All regions", key="workspace_all_regions"
+    ):
+        state.set_region(state.ALL_REGIONS)
+        st.rerun()
     rank_of = {s.job.job_id: s.rank for s in current}
+    mapped_jobs = [s.job for s in today_list] if map_mode == MAP_MODES[0] else jobs
     by_community: dict[str, list] = {}
-    for job in jobs:
+    for job in mapped_jobs:
         if passes(job):
             by_community.setdefault(job.community_id, []).append(job)
     points = []
@@ -186,11 +202,29 @@ with centre:
                 "open_jobs": len(members),
             }
         )
-    map_choice = workspace_map.choice_for(workspace_map.render(points, selected), by_community)
-    st.caption(
-        "One dot per community, sized by open jobs. Click a dot to open its job; "
-        "a dot with several jobs offers a choice."
-    )
+    at_nt = region == state.ALL_REGIONS
+    level = workspace_map.REGION_LEVEL if at_nt else workspace_map.COMMUNITY_LEVEL
+    map_centre = None if at_nt else workspace_map.centre_of(points)
+    pick = workspace_map.render(points, selected, level, map_centre, key=f"workspace_map_{region}")
+    map_choice = None
+    if pick is not None and pick[0] == workspace_map.REGION_LEVEL:
+        if pick[1] != region:
+            state.set_region(pick[1])
+            st.rerun()
+    elif pick is not None:
+        map_choice = workspace_map.choice_for(pick[1], by_community)
+    if at_nt:
+        st.caption(
+            f"{map_mode}: {len(points)} communities grouped into "
+            f"{len({point['region'] for point in points})} region circles, sized by open "
+            "jobs. Click a circle to open that region."
+        )
+    else:
+        st.caption(
+            f"{map_mode}: {len(points)} communities in {region}. One dot per community, "
+            "sized by open jobs. Click a dot to open its job; a dot with several jobs "
+            "offers a choice."
+        )
     tabs = st.tabs([f"Today's list {len(today_list)}", f"Backlog {len(backlog)}"])
     lists = [
         (tabs[0], "today", today_list, baseline[:cap]),

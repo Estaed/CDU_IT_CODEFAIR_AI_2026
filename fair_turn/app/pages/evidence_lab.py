@@ -31,16 +31,16 @@ def _load_json(path) -> dict | list:
 
 def _ci_span(stats: dict, key: str) -> str:
     low, high = stats[f"{key}_ci"]
-    return f"{low:.2f}–{high:.2f}"
+    return f"{low:.0%}–{high:.0%}"
 
 
 NUMBER_COLUMNS = [
-    "extractor precision",
-    "extractor recall",
-    "extractor F1",
-    "baseline precision",
-    "baseline recall",
-    "baseline F1",
+    "Extractor Precision",
+    "Extractor Recall",
+    "Extractor F1",
+    "Baseline Precision",
+    "Baseline Recall",
+    "Baseline F1",
 ]
 
 
@@ -51,34 +51,34 @@ def field_table(ev: dict, field: str) -> pd.DataFrame:
     for label, stats in extractor["per_class"].items():
         row = {
             "class": label,
-            "extractor precision": stats["precision"],
-            "extractor precision 95 % CI": _ci_span(stats, "precision"),
-            "extractor recall": stats["recall"],
-            "extractor recall 95 % CI": _ci_span(stats, "recall"),
-            "extractor F1": stats["f1"],
+            "Extractor Precision": stats["precision"] * 100,
+            "Extractor Precision 95 % CI": _ci_span(stats, "precision"),
+            "Extractor Recall": stats["recall"] * 100,
+            "Extractor Recall 95 % CI": _ci_span(stats, "recall"),
+            "Extractor F1": stats["f1"] * 100,
         }
         if baseline is not None:
             b = baseline["per_class"][label]
-            row["baseline precision"] = b["precision"]
-            row["baseline precision 95 % CI"] = _ci_span(b, "precision")
-            row["baseline recall"] = b["recall"]
-            row["baseline recall 95 % CI"] = _ci_span(b, "recall")
-            row["baseline F1"] = b["f1"]
+            row["Baseline Precision"] = b["precision"] * 100
+            row["Baseline Precision 95 % CI"] = _ci_span(b, "precision")
+            row["Baseline Recall"] = b["recall"] * 100
+            row["Baseline Recall 95 % CI"] = _ci_span(b, "recall")
+            row["Baseline F1"] = b["f1"] * 100
         rows.append(row)
     macro = {
         "class": "macro",
-        "extractor precision": extractor["macro_precision"],
-        "extractor precision 95 % CI": "",
-        "extractor recall": extractor["macro_recall"],
-        "extractor recall 95 % CI": "",
-        "extractor F1": extractor["macro_f1"],
+        "Extractor Precision": extractor["macro_precision"] * 100,
+        "Extractor Precision 95 % CI": "",
+        "Extractor Recall": extractor["macro_recall"] * 100,
+        "Extractor Recall 95 % CI": "",
+        "Extractor F1": extractor["macro_f1"] * 100,
     }
     if baseline is not None:
-        macro["baseline precision"] = baseline["macro_precision"]
-        macro["baseline precision 95 % CI"] = ""
-        macro["baseline recall"] = baseline["macro_recall"]
-        macro["baseline recall 95 % CI"] = ""
-        macro["baseline F1"] = baseline["macro_f1"]
+        macro["Baseline Precision"] = baseline["macro_precision"] * 100
+        macro["Baseline Precision 95 % CI"] = ""
+        macro["Baseline Recall"] = baseline["macro_recall"] * 100
+        macro["Baseline Recall 95 % CI"] = ""
+        macro["Baseline F1"] = baseline["macro_f1"] * 100
     rows.append(macro)
     return pd.DataFrame(rows)
 
@@ -112,7 +112,7 @@ def macro_f1_chart(ev: dict, fields: tuple[str, ...]) -> alt.Chart:
         .mark_bar()
         .encode(
             x=alt.X("model:N", title=None, axis=None),
-            y=alt.Y("macro_f1:Q", title="Macro-F1"),
+            y=alt.Y("macro_f1:Q", title="Read correctly", axis=alt.Axis(format="%")),
             color=colour,
             column=alt.Column("field:N", title=None),
         )
@@ -131,7 +131,7 @@ def render_extraction_tab() -> None:
     adversarial = [r for r in extraction_rows if r["is_adversarial"]]
     interval = f"{substring['rate_ci'][0]:.1%} to {substring['rate_ci'][1]:.1%}"
     st.write(
-        "How well the model read 150 held-out synthetic reports into typed fields, "
+        "The percent of reports read correctly out of 150 held-out synthetic reports, "
         "compared with a bag-of-words baseline. Higher is better; the bracket is the "
         "95 % interval."
     )
@@ -152,10 +152,18 @@ def render_extraction_tab() -> None:
             "of the adversarial set."
         ),
     )
+    field_help = (
+        "Macro-F1 across classes on the 150-item held-out set; baseline is a "
+        "bag-of-words classifier."
+    )
     for column, field, label in zip(
         metrics[2:],
         ("fault_type", "safety_class", "health_risk"),
-        ("Fault type F1", "Safety class F1", "Health risk F1"),
+        (
+            "Fault type read correctly",
+            "Safety class read correctly",
+            "Health risk read correctly",
+        ),
         strict=True,
     ):
         extractor = ev["extractor"][field]
@@ -163,10 +171,11 @@ def render_extraction_tab() -> None:
         delta = None if baseline is None else extractor["macro_f1"] - baseline["macro_f1"]
         column.metric(
             label,
-            f"{extractor['macro_f1']:.3f}",
-            delta=None if delta is None else f"{delta:+.3f}",
+            f"{extractor['macro_f1']:.0%}",
+            delta=None if delta is None else f"{delta * 100:+.0f} pts",
             delta_color="normal",
             border=True,
+            help=field_help,
         )
     artefact_date = datetime.fromtimestamp(eval_path.stat().st_mtime).date().isoformat()
     st.caption(
@@ -174,16 +183,16 @@ def render_extraction_tab() -> None:
         f"Evaluation artefact date: {artefact_date}."
     )
     st.caption(
-        f"Macro-F1 target {ev['f1_target']:.2f}: fault type "
-        f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class "
+        f"Target: {ev['f1_target']:.0%} on fault type and on safety class. Fault type: "
+        f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class: "
         f"{'met' if ev['target_met']['safety_class'] else 'not met'} "
-        "(the extractor over-predicts immediate)."
+        "(the model over-predicts immediate)."
     )
     st.altair_chart(
         macro_f1_chart(ev, ("fault_type", "safety_class", "health_risk")), width="stretch"
     )
     number_config = {
-        column: st.column_config.NumberColumn(format="%.2f") for column in NUMBER_COLUMNS
+        column: st.column_config.NumberColumn(format="%.0f%%") for column in NUMBER_COLUMNS
     }
     field_labels = {
         "fault_type": "Fault type, by class",

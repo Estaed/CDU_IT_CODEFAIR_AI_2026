@@ -3,6 +3,7 @@ states composition only before a signature, and writes one audit record per expl
 move (PRD 3.1, wireframes §3 and §9)."""
 
 import json
+import re
 import socket
 from datetime import date, timedelta
 from pathlib import Path
@@ -77,13 +78,16 @@ def _frame(at: AppTest, tab: int):
 
 
 def _today_ids(at: AppTest) -> list[str]:
-    """Job ids of today's bordered rows, in rendered order: the only code-styled markdown
-    each row emits is its job id (``job_rows.render``)."""
-    return [
-        markdown.value.strip("`")
-        for markdown in at.tabs[0].markdown
-        if markdown.value.startswith("`")
-    ]
+    """Job ids of today's bordered rows, in rendered order: each row's caption reads
+    ``Job #717 · <community>`` (``job_rows.render``), and the short number maps back to the
+    registration id through the ranked jobs."""
+    by_short = {ranking_table.short_id(s.job.job_id): s.job.job_id for s in _ranked()}
+    ids = []
+    for caption in at.tabs[0].caption:
+        match = re.match(r"Job (#\d+) · ", caption.value)
+        if match:
+            ids.append(by_short[match.group(1)])
+    return ids
 
 
 def _markdown(at: AppTest) -> list[str]:
@@ -125,7 +129,9 @@ def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) 
     assert queue
     assert not queue & (set(today) | set(backlog["job_id"]))
     top = _ranked()[0].job
-    assert f"{top.job_id} · {top.community_id}" in [s.value for s in at.subheader]
+    assert f"Job {ranking_table.short_id(top.job_id)} · {top.community_id}" in [
+        s.value for s in at.subheader
+    ]
     assert details_pane.NOTHING_SELECTED not in [i.value for i in at.info]
 
 
@@ -139,7 +145,7 @@ def test_todays_list_is_rows_not_a_table_and_the_backlog_keeps_the_table(tmp_pat
     assert [button.proto.type for button in opens].count("primary") == 1
     values = [markdown.value for markdown in at.tabs[0].markdown]
     top = _ranked()[0]
-    assert f"`{top.job.job_id}`" in values
+    assert _today_ids(at)[0] == top.job.job_id
     assert f":orange-badge[{job_rows.SELECTED}]" in values
     assert ranking_table.window_text(top.job, LAST_DAY) in [c.value for c in at.tabs[0].caption]
     assert len([node for node in at.tabs[0] if getattr(node, "type", None) == "progress"]) == cap
@@ -150,10 +156,13 @@ def test_opening_a_row_selects_that_job(tmp_path) -> None:
     at = _run(_script(tmp_path))
     at.button(key=f"{TODAY_ROWS_KEY}_open_{second.job_id}").click().run(timeout=60)
     assert not at.exception
-    assert f"{second.job_id} · {second.community_id}" in [s.value for s in at.subheader]
+    assert f"Job {ranking_table.short_id(second.job_id)} · {second.community_id}" in [
+        s.value for s in at.subheader
+    ]
     values = [markdown.value for markdown in at.tabs[0].markdown]
-    position = values.index(f"`{second.job_id}`")
-    # The Selected badge sits under the Open button, after the id in the same row.
+    position = values.index("**2**")  # the rank cell opens the second row
+    # The Selected badge sits under the Open button, after the rank in the same row.
+    assert values.count(f":orange-badge[{job_rows.SELECTED}]") == 1
     assert f":orange-badge[{job_rows.SELECTED}]" in values[position : position + 8]
 
 
@@ -222,6 +231,44 @@ def test_compare_renders_two_frames_with_identical_columns(tmp_path) -> None:
     assert len(frames[0]) == len(frames[1]) == ranking_table.capacity("All")
 
 
+# --- the map: two sets, two levels ------------------------------------------------------------
+
+
+def _deck_layers(at: AppTest) -> list[dict]:
+    """The deck's layer specs; the pydeck element carries its spec as JSON in the proto."""
+    return json.loads(at.get("deck_gl_json_chart")[0].proto.json)["layers"]
+
+
+def test_map_mode_switches_between_todays_list_and_all_open_jobs(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    cap = ranking_table.capacity("All")
+    today_communities = {s.job.community_id for s in _ranked()[:cap]}
+    todays = _deck_layers(at)[0]["data"]
+    assert len(todays) <= len(today_communities)
+    assert sum(point["open_jobs"] for point in todays) == cap
+    at.radio(key="workspace_map_mode").set_value("All open jobs").run(timeout=60)
+    assert not at.exception
+    everything = _deck_layers(at)[0]["data"]
+    assert len(everything) >= len(todays)
+    assert sum(point["open_jobs"] for point in everything) == len(ranking_table.open_jobs(LAST_DAY))
+
+
+def test_map_opens_a_region_into_community_dots_and_back(tmp_path, art) -> None:
+    at = _run(_script(tmp_path))
+    assert [layer["id"] for layer in _deck_layers(at)] == ["regions", "counts"]
+    assert not [button for button in at.button if button.key == "workspace_all_regions"]
+    region = art.communities[_ranked()[0].job.community_id]["region"]
+    at.sidebar.selectbox[0].set_value(region).run(timeout=60)
+    assert not at.exception
+    assert [layer["id"] for layer in _deck_layers(at)] == ["jobs", "selected", "counts"]
+    assert at.button(key="workspace_all_regions").label == "All regions"
+    at.button(key="workspace_all_regions").click().run(timeout=60)
+    assert not at.exception
+    assert at.session_state["region"] == "All"
+    assert [layer["id"] for layer in _deck_layers(at)] == ["regions", "counts"]
+    assert not [button for button in at.button if button.key == "workspace_all_regions"]
+
+
 # --- weighting and the effect sentence -------------------------------------------------------
 
 
@@ -286,7 +333,9 @@ def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:
 def test_selected_id_in_state_shows_in_pane_header(tmp_path) -> None:
     job = _ranked()[0].job
     at = _run(_script(tmp_path, _select(job.job_id)))
-    assert f"{job.job_id} · {job.community_id}" in [s.value for s in at.subheader]
+    assert f"Job {ranking_table.short_id(job.job_id)} · {job.community_id}" in [
+        s.value for s in at.subheader
+    ]
     assert details_pane.NOTHING_SELECTED not in [i.value for i in at.info]
 
 
@@ -350,7 +399,8 @@ def test_policy_passages_render_with_title_section_and_date(tmp_path, monkeypatc
     monkeypatch.setattr(policy, "BUILD_DIR", index_dir)
     at = _run(_script(tmp_path, _select(job.job_id)))
     values = _markdown(at)
-    assert "**Test fact sheet — Urgent repairs (effective 2025-10)**" in values
+    assert "**Test fact sheet**" in values
+    assert "Urgent repairs · effective 2025-10" in [c.value for c in at.caption]
     assert "Call the hotline." in values
     assert details_pane.INDEX_UNAVAILABLE not in [i.value for i in at.info]
     assert details_pane.NO_PASSAGE not in [c.value for c in at.caption]

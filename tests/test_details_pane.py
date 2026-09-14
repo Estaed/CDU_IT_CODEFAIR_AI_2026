@@ -8,9 +8,9 @@ from pathlib import Path
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from fair_turn.app.components import ranking_table
+from fair_turn.app.components import details_pane, highlight, ranking_table
 from fair_turn.core import constants, scoring
-from fair_turn.data import artefacts
+from fair_turn.data import artefacts, policy
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -125,6 +125,91 @@ def test_empty_health_evidence_and_rejected_value_do_not_render(art, tmp_path) -
     )
     dropped = next(iter(art.extraction[review.job_id].dropped.values()))
     assert dropped not in _page_text(_run(tmp_path, review.job_id))
+
+
+def _buttons(at: AppTest) -> list[str]:
+    return [button.label for button in at.button]
+
+
+def _rendered_report(art, job_id: str) -> str:
+    """The report text exactly as the pane renders it: verbatim, phrases highlighted."""
+    text = art.reports[job_id]
+    evidence = {field: ev.evidence for field, ev in art.extraction[job_id].kept.items()}
+    return highlight.render(text, highlight.spans(text, evidence))
+
+
+def test_header_reads_as_a_short_id_with_the_registration_in_the_caption(art, tmp_path) -> None:
+    today, jobs = _open_jobs()
+    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    at = _run(tmp_path, ranked.job_id)
+    heading = at.subheader[0].value
+    assert heading.startswith(f"Job {ranking_table.short_id(ranked.job_id)} ")
+    assert ranked.job_id not in heading
+    assert heading.endswith(
+        " ".join(word.title() if word.isalpha() else word for word in ranked.community_id.split())
+    )
+    captions = [element.value for element in at.caption]
+    assert any(caption.startswith(f"Registration {ranked.job_id} ") for caption in captions)
+
+
+def test_report_text_is_rendered_above_the_explanation(art, tmp_path) -> None:
+    today, jobs = _open_jobs()
+    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    at = _run(tmp_path, ranked.job_id)
+    values = _markdown(at)
+    report = values.index(_rendered_report(art, ranked.job_id))
+    assert report < values.index("**Why it sits here.**")
+    assert details_pane.REPORT_CAPTION in [element.value for element in at.caption]
+
+
+def test_fields_and_policy_sit_in_their_own_expanders(art, tmp_path) -> None:
+    today, jobs = _open_jobs()
+    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    labels = [block.label for block in _run(tmp_path, ranked.job_id).get("expander")]
+    assert "Fields read from the report" in labels
+    assert "Policy reference" in labels
+
+
+def test_a_long_policy_passage_is_cut_with_the_full_text_one_click_away(art, tmp_path) -> None:
+    index = policy.load()
+    today, jobs = _open_jobs()
+    job, passage = next(
+        (job, passage)
+        for job in jobs
+        if job.safety_class is not None
+        for passage in policy.lookup(
+            index,
+            job.safety_class.value,
+            art.communities[job.community_id]["is_remote"] == "True",
+            job.fault_type,
+        )
+        if len(passage.text) > details_pane.PASSAGE_PREVIEW_CHARS
+    )
+    at = _run(tmp_path, job.job_id)
+    values = _markdown(at)
+    cut = passage.text[: details_pane.PASSAGE_PREVIEW_CHARS].rsplit(" ", 1)[0]
+    preview = highlight.render(f"{cut}…", [])
+    assert preview in values
+    assert highlight.render(passage.text, []) in values
+    assert at.get("popover")
+
+
+def test_action_buttons_say_what_they_do(art, tmp_path) -> None:
+    today, jobs = _open_jobs()
+    ranked = scoring.rank(jobs, today, 1.0)
+    cap = ranking_table.capacity("All")
+    at = _run(tmp_path, ranked[1].job.job_id)
+    assert "Move up one place" in _buttons(at)
+    assert "Move down one place" in _buttons(at)
+    assert "Send to review queue" in _buttons(at)
+    assert any("every change needs a reason and is logged" in value for value in _markdown(at))
+
+    backlog = _run(tmp_path, ranked[cap].job.job_id)
+    assert "Promote into today's list" in _buttons(backlog)
+    assert any(
+        caption.startswith("This job is in the backlog.")
+        for caption in [element.value for element in backlog.caption]
+    )
 
 
 def test_badges_use_named_colours_without_hex_literals() -> None:

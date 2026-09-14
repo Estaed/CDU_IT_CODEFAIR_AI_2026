@@ -71,9 +71,9 @@ def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
     expected = {
         "Verified phrases": f"{ev['substring_rate']['rate']:.1%}",
         "Adversarial unchanged": f"{adversarial_count} of {adversarial_count}",
-        "Fault type F1": f"{ev['extractor']['fault_type']['macro_f1']:.3f}",
-        "Safety class F1": f"{ev['extractor']['safety_class']['macro_f1']:.3f}",
-        "Health risk F1": f"{ev['extractor']['health_risk']['macro_f1']:.3f}",
+        "Fault type read correctly": f"{ev['extractor']['fault_type']['macro_f1']:.0%}",
+        "Safety class read correctly": f"{ev['extractor']['safety_class']['macro_f1']:.0%}",
+        "Health risk read correctly": f"{ev['extractor']['health_risk']['macro_f1']:.0%}",
     }
     metrics = {metric.label: metric for metric in at.metric}
     assert len(metrics) == 5
@@ -83,13 +83,19 @@ def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
     assert metrics["Verified phrases"].help == (
         f"Wilson interval: {rate_ci[0]:.1%} to {rate_ci[1]:.1%}."
     )
+    field_help = (
+        "Macro-F1 across classes on the 150-item held-out set; baseline is a "
+        "bag-of-words classifier."
+    )
     for field, label in (
-        ("fault_type", "Fault type F1"),
-        ("safety_class", "Safety class F1"),
+        ("fault_type", "Fault type read correctly"),
+        ("safety_class", "Safety class read correctly"),
     ):
         expected_delta = ev["extractor"][field]["macro_f1"] - ev["baseline"][field]["macro_f1"]
-        assert metrics[label].delta == f"{expected_delta:+.3f}"
-    assert metrics["Health risk F1"].delta == ""
+        assert metrics[label].delta == f"{expected_delta * 100:+.0f} pts"
+        assert metrics[label].help == field_help
+    assert metrics["Health risk read correctly"].delta == ""
+    assert metrics["Health risk read correctly"].help == field_help
 
 
 def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
@@ -102,10 +108,10 @@ def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
         f"Evaluation artefact date: {artefact_date}."
     ) in captions
     assert (
-        f"Macro-F1 target {ev['f1_target']:.2f}: fault type "
-        f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class "
+        f"Target: {ev['f1_target']:.0%} on fault type and on safety class. Fault type: "
+        f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class: "
         f"{'met' if ev['target_met']['safety_class'] else 'not met'} "
-        "(the extractor over-predicts immediate)."
+        "(the model over-predicts immediate)."
     ) in captions
     expanders = [expander for expander in at.get("expander") if expander.label.endswith("by class")]
     assert [expander.label for expander in expanders] == [
@@ -117,16 +123,16 @@ def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
     field_frame = expanders[0].dataframe[0].value
     for column in (
         "class",
-        "extractor precision",
-        "extractor precision 95 % CI",
-        "extractor recall",
-        "extractor recall 95 % CI",
-        "extractor F1",
-        "baseline precision",
-        "baseline precision 95 % CI",
-        "baseline recall",
-        "baseline recall 95 % CI",
-        "baseline F1",
+        "Extractor Precision",
+        "Extractor Precision 95 % CI",
+        "Extractor Recall",
+        "Extractor Recall 95 % CI",
+        "Extractor F1",
+        "Baseline Precision",
+        "Baseline Precision 95 % CI",
+        "Baseline Recall",
+        "Baseline Recall 95 % CI",
+        "Baseline F1",
     ):
         assert column in field_frame.columns
 

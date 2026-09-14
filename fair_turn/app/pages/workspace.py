@@ -24,6 +24,7 @@ from fair_turn.app.components import (
     intro,
     job_list,
     job_rows,
+    keyboard,
     metrics,
     ranking_table,
     run_sheet,
@@ -60,8 +61,15 @@ DEV_EXPANDER = "DEV OPTION · Simulate incoming reports"
 DEV_CAPTION = (
     "Replays a synthetic report as if a tenant just sent it. No model call; for demos and testing."
 )
-DEV_ADD = "Add a new report"
-DEV_ADD_HUMAN = "Add one that needs a human"
+DEV_KINDS = {
+    "Immediate": "immediate",
+    "Urgent": "urgent",
+    "Routine": "routine",
+    "Needs a person": "needs_person",
+}
+KEY_SIGNED = "Today's list is signed."
+KEY_NOT_TO_DECIDE = "This job is not in To decide."
+KEY_NOT_READ = "Tick 'I have read the report' first."
 
 art = state.artefacts()
 today = state.get_today()
@@ -74,13 +82,14 @@ with st.sidebar:
     region, faults, safeties = weighting.filters()
     with st.expander(DEV_EXPANDER):
         st.caption(DEV_CAPTION)
-        for label_text, needs_person in ((DEV_ADD, False), (DEV_ADD_HUMAN, True)):
-            if st.button(label_text, key=f"workspace_dev_{int(needs_person)}", width="stretch"):
-                new_id = intake.simulate_incoming(needs_person)
-                state.set_selected_job_id(new_id)
-                state.set_map_pick(None)
-                state.set_pending_toast(new_id)
-                st.rerun()
+        dev_kind = st.selectbox("Kind of report", list(DEV_KINDS), key="workspace_dev_kind")
+        if st.button("Add report", key="workspace_dev_add", width="stretch"):
+            new_id = intake.simulate_incoming(DEV_KINDS[dev_kind])
+            state.set_selected_job_id(new_id)
+            state.set_map_pick(None)
+            audit_length = len(audit.read(state.get_audit_path()))
+            state.set_added_report((new_id, DEV_KINDS[dev_kind], audit_length))
+            st.rerun()
 
 # Crews are one NT-wide pool: the ranking and the capacity split always cover every open job,
 # and the sidebar region only narrows the rows and the map points shown.
@@ -116,26 +125,34 @@ def ordinal(n: int) -> str:
     return f"{n}{suffix}"
 
 
-def added_message(job_id: str) -> str:
-    """The toast for a replayed report: where it landed, in the words the lists use."""
+def added_message(job_id: str, kind: str) -> str:
+    """Where a replayed report landed, from the same split the tabs use."""
     head = f"Report {ranking_table.short_id(job_id)} added"
     job = next((j for j in jobs if j.job_id == job_id), None)
-    if job is not None and job.needs_human:
-        missing = [
-            name
-            for name, value in (("fault type", job.fault_type), ("safety class", job.safety_class))
-            if value is None
-        ]
-        return f"{head}: it needs a person ({' and '.join(missing)} not found)"
+    if job is not None and (job.needs_human or job_id in review_ids):
+        return f"{head}. It needs a person: open the Needs a human tab."
     rank = next((s.rank for s in current if s.job.job_id == job_id), None)
     if rank is None:
         return f"{head}."
-    return f"{head}: it ranks {ordinal(rank)}" + ("" if job_id in on_today else ", in the backlog")
+    head = f"{head} ({kind}). It ranks {ordinal(rank)}"
+    if job_id in day_split.to_decide:
+        return f"{head}: it is in To decide."
+    why = (
+        "a new routine repair has most of its NT window left"
+        if kind == "routine"
+        else "today's list is already full of higher-ranked jobs"
+    )
+    return f"{head}: it waits in the Backlog, because {why}."
 
 
-if (announced := state.get_pending_toast()) is not None:
-    state.set_pending_toast(None)
-    st.toast(added_message(announced))
+# The message stays until the next action: the audit log grows or the selection moves.
+added_text = None
+if (added := state.get_added_report()) is not None:
+    added_id, added_kind, added_length = added
+    if len(audit_records) == added_length and state.get_selected_job_id() == added_id:
+        added_text = added_message(added_id, added_kind)
+    else:
+        state.set_added_report(None)
 
 
 def in_view(job) -> bool:
@@ -200,7 +217,7 @@ effect_message = st.empty()
 effect_message.info(
     "Effect: "
     + metrics.effect_sentence(
-        today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label
+        today, state.ALL_REGIONS, lam, today_list, baseline[:cap], is_remote, label
     )
 )
 st.caption(
@@ -343,6 +360,40 @@ def signed_banner() -> None:
             pass  # a page run on its own (AppTest) has no navigation registry
 
 
+def handle_key(pressed: str | None) -> None:
+    """J/K walk To decide as the tab shows it; A accepts only an unsigned, read job in To
+    decide, through the Accept button's own function; X opens the reject form. No key signs."""
+    if pressed is None:
+        return
+    order = [s.job.job_id for s in to_decide_shown if passes(s.job)]
+    if pressed in ("j", "k"):
+        if not order:
+            return
+        if selected in order:
+            step = 1 if pressed == "j" else -1
+            target = order[(order.index(selected) + step) % len(order)]
+        else:
+            target = order[0] if pressed == "j" else order[-1]
+        state.set_selected_job_id(target)
+        state.set_map_pick(None)
+        st.rerun()
+    elif pressed == "a":
+        if status == "signed":
+            st.toast(KEY_SIGNED)
+        elif selected not in day_split.to_decide:
+            st.toast(KEY_NOT_TO_DECIDE)
+        elif not state.get_read(selected):
+            st.toast(KEY_NOT_READ)
+        else:
+            details_pane.accept_for_today(selected, today)
+            st.rerun()
+    elif pressed == "x" and selected is not None:
+        state.set_reject_job(selected)
+        st.rerun()
+
+
+handle_key(keyboard.render())
+
 centre, pane = st.columns([5, 3])
 with centre:
     compare = st.checkbox("Compare with efficiency-first", value=state.get_compare())
@@ -386,6 +437,9 @@ with centre:
         state.set_map_pick(None)
         map_choice = None
     st.caption(MAP_CAPTION)
+    st.caption(keyboard.HINT)
+    if added_text is not None:
+        st.success(added_text)
     tabs = st.tabs(
         [
             f"To decide {len(to_decide_shown)}",
@@ -580,11 +634,11 @@ if frozen is not None:
             frozen, status, on_submit, review_count, is_remote, frozen_rows, counts
         )
 
-metrics.metrics_panel(today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label)
+metrics.metrics_panel(today, state.ALL_REGIONS, lam)
 effect_message.info(
     "Effect: "
     + metrics.effect_sentence(
-        today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label
+        today, state.ALL_REGIONS, lam, today_list, baseline[:cap], is_remote, label
     )
 )
 

@@ -264,6 +264,15 @@ def _decision_line(record: audit.JobDecision) -> str:
     return f":material/close: Not today by {record.actor} at {at}: {record.reason}"
 
 
+def accept_for_today(job_id: str, today: date) -> None:
+    """Write the one ``JobDecision`` that accepts ``job_id`` for today; the Accept button and
+    the A key both call this, and both check the read tick first."""
+    audit.append(
+        state.get_audit_path(),
+        audit.JobDecision(today, job_id, decisions.ACCEPTED, state.get_actor()),
+    )
+
+
 def _promote(job_id: str, rank: int, displaced: str, to_rank: int, reason: str, today: date):
     """Promote a backlog job into today's list in place of ``displaced``, the last job left
     to decide: one ``Promotion`` record and one hand move."""
@@ -382,10 +391,7 @@ def _decision_section(
                 disabled=signed or not read,
                 width="stretch",
             ):
-                audit.append(
-                    state.get_audit_path(),
-                    audit.JobDecision(today, job_id, decisions.ACCEPTED, state.get_actor()),
-                )
+                accept_for_today(job_id, today)
                 st.rerun()
         else:
             ids = [s.job.job_id for s in current]

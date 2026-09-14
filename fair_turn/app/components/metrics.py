@@ -138,24 +138,29 @@ def effect_sentence(
     today: date,
     region: str,
     lam: float,
-    current: list[ScoredJob],
-    baseline: list[ScoredJob],
-    cap: int,
+    proposed: list[ScoredJob],
+    baseline_today: list[ScoredJob],
     is_remote: Callable[[str], bool],
     label: str,
 ) -> str:
-    """The two-stage effect sentence shown above the workspace list."""
+    """The two-stage effect sentence shown above the workspace list. ``proposed`` is today's
+    list after decisions (To decide + Accepted), ``baseline_today`` the first capacity-many
+    jobs of the efficiency-first ranking; the two may differ in length (an accepted job is
+    never dropped), so the comparison window covers both lists whole."""
+    window = max(len(proposed), len(baseline_today))
     if not state.get_signed_today():
-        return effect.sentence("before_signature", current, baseline, cap, is_remote, label)
+        return effect.sentence(
+            "before_signature", proposed, baseline_today, window, is_remote, label
+        )
     art = state.artefacts()
     jobs = to_jobs(art)
     values = panel_values(simulation(today, lam), jobs, art.communities, region)
     baseline_values = panel_values(simulation(today, 1.0), jobs, art.communities, region)
     return effect.sentence(
         "after_signature",
-        current,
-        baseline,
-        cap,
+        proposed,
+        baseline_today,
+        window,
         is_remote,
         label,
         current_metrics=values,
@@ -163,18 +168,10 @@ def effect_sentence(
     )
 
 
-def metrics_panel(
-    today: date,
-    region: str,
-    lam: float,
-    current: list[ScoredJob],
-    baseline: list[ScoredJob],
-    cap: int,
-    is_remote: Callable[[str], bool],
-    label: str,
-) -> None:
-    """The outcome metrics, locked until today's signature (decide before reveal).
-    ``current`` and ``baseline`` are the workspace's rankings."""
+def metrics_panel(today: date, region: str, lam: float) -> None:
+    """The outcome metrics, locked until today's signature (decide before reveal). The numbers
+    come from the 90-day capacity simulation at ``lam`` against λ = 1.0, which reads no day's
+    list, so no list is passed in."""
     if not state.get_signed_today():
         with st.container(border=True):
             st.markdown("**Outcomes appear after you sign**")

@@ -13,7 +13,14 @@ from types import SimpleNamespace
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from fair_turn.app.components import cluster_map, details_pane, job_rows, ranking_table, run_sheet
+from fair_turn.app.components import (
+    cluster_map,
+    details_pane,
+    job_rows,
+    keyboard,
+    ranking_table,
+    run_sheet,
+)
 from fair_turn.core import audit, constants, scoring
 from fair_turn.core.batch import HandMove
 from fair_turn.data import artefacts, policy, runtime
@@ -243,7 +250,7 @@ def test_compare_renders_two_frames_with_identical_columns(tmp_path) -> None:
 
 def _map_features(at: AppTest) -> list[dict]:
     """The clustered map's features: the v2 component carries its ``data`` as JSON."""
-    nodes = at.get("bidi_component")
+    nodes = _map_nodes(at)
     assert len(nodes) == 1
     return [f["properties"] for f in json.loads(nodes[0].proto.json)["features"]["features"]]
 
@@ -271,8 +278,17 @@ def test_map_mode_switches_between_todays_list_and_all_open_jobs(tmp_path) -> No
 def test_map_ring_follows_the_selected_job(tmp_path) -> None:
     job = _ranked()[3].job
     at = _run(_script(tmp_path, _select(job.job_id)))
-    data = json.loads(at.get("bidi_component")[0].proto.json)
+    data = json.loads(_map_nodes(at)[0].proto.json)
     assert data["selected"] == job.community_id
+
+
+def _map_nodes(at: AppTest) -> list:
+    """The map's component nodes; the keyboard listener is a component node too."""
+    return [
+        node
+        for node in at.get("bidi_component")
+        if node.proto.component_name.endswith(cluster_map.COMPONENT_NAME)
+    ]
 
 
 def _fake_map(monkeypatch, picked=None, failed=None) -> None:
@@ -299,7 +315,7 @@ def test_a_map_pick_opens_its_community_job(tmp_path, monkeypatch) -> None:
 def test_a_failed_map_shows_the_outline(tmp_path, monkeypatch) -> None:
     _fake_map(monkeypatch, failed="style: network error")
     at = _run(_script(tmp_path))
-    assert not at.get("bidi_component")
+    assert not _map_nodes(at)
     assert len(at.get("vega_lite_chart")) >= 1
     assert cluster_map.UNAVAILABLE in [i.value for i in at.info]
 
@@ -439,6 +455,33 @@ def test_crew_reach_line_plans_todays_list_like_the_visit_plan(tmp_path) -> None
         rf"|\d+ of today's {cap} jobs (has|have) no crew within reach with a free slot\.)",
         lines[0],
     )
+
+
+def test_a_not_today_rejection_shows_in_the_effect_the_reach_line_and_the_tile(
+    tmp_path, art
+) -> None:
+    """The effect sentence, the reach caption and the tile read To decide + Accepted; the
+    efficiency-first side stays the first capacity-many jobs of the λ = 1.0 ranking."""
+    cap = ranking_table.capacity("All")
+    ranked = _ranked()
+    out, into = ranked[0].job, ranked[cap].job
+    audit.append(
+        tmp_path / "audit.jsonl",
+        audit.JobDecision(LAST_DAY, out.job_id, "not_today", "coordinator", "tenant away"),
+    )
+    at = _run(_script(tmp_path))
+    remote_in = int(art.communities[into.community_id]["is_remote"] == "True")
+    remote_out = int(art.communities[out.community_id]["is_remote"] == "True")
+    assert _effect(at) == (
+        f"Effect: Efficiency first moves 1 job into today's list ({remote_in} remote, "
+        f"{1 - remote_in} town) and 1 job to the backlog ({remote_out} remote, "
+        f"{1 - remote_out} town)."
+    )
+    decided = [s.job.job_id for s in ranked[1 : cap + 1]]
+    jobs_by_id = {j.job_id: j for j in ranking_table.open_jobs(LAST_DAY)}
+    reach = [c.value for c in at.main.caption if c.value.startswith("Crew reach: ")]
+    assert reach == [run_sheet.reach_line(decided, jobs_by_id, LAST_DAY)]
+    assert at.main.metric[0].value == f"{cap} of {cap}"
 
 
 def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:
@@ -633,51 +676,78 @@ def _next_ids(art, count: int) -> list[str]:
     return out
 
 
-def _toasts(at: AppTest) -> list[str]:
-    return [t.value for t in at.toast]
+def _add_report(at: AppTest, kind: str) -> AppTest:
+    at.selectbox(key="workspace_dev_kind").set_value(kind)
+    at.button(key="workspace_dev_add").click().run(timeout=60)
+    assert not at.exception
+    return at
 
 
-def test_dev_add_a_new_report_lands_in_the_ranking(art, tmp_path) -> None:
+@pytest.mark.parametrize("kind", ["Immediate", "Urgent", "Routine", "Needs a person"])
+def test_dev_add_report_lands_where_its_message_says(art, tmp_path, kind) -> None:
     at = _run(_script(tmp_path))
     assert not _intake_rows()
-    at.button(key="workspace_dev_0").click().run(timeout=60)
-    assert not at.exception
+    _add_report(at, kind)
     (row,) = _intake_rows()
     assert row["job_id"] == _next_ids(art, 1)[0]
-    assert row["provider"] == "dev-replay" and row["status"] == "extracted"
+    assert row["provider"] == "dev-replay"
     assert row["model"] == "synthetic replay (no model call)"
     assert row["reported_on"] == LAST_DAY.isoformat()
     assert at.session_state["selected_job_id"] == row["job_id"]
-    # Matched on what the page shows: the new id is unknown to this process's cached open jobs.
-    short = ranking_table.short_id(row["job_id"])
-    in_today = any(c.value.startswith(f"Job {short} · ") for c in at.tabs[0].caption)
-    assert in_today or row["job_id"] in set(_frame(at, 3)["job_id"])
-    assert f"**Job {short}**" not in [m.value for m in at.tabs[2].markdown]
-    assert any(t.startswith(f"Report {short} added: it ranks ") for t in _toasts(at))
     audit_rows = [
         json.loads(line) for line in (tmp_path / "audit.jsonl").read_text("utf-8").splitlines()
     ]
     assert [r["job_id"] for r in audit_rows if r.get("provider") == "dev-replay"] == [row["job_id"]]
-
-
-def test_dev_add_one_that_needs_a_human_lands_in_that_tab(art, tmp_path) -> None:
-    at = _run(_script(tmp_path))
-    at.button(key="workspace_dev_1").click().run(timeout=60)
-    assert not at.exception
-    (row,) = _intake_rows()
-    assert row["job_id"] == _next_ids(art, 1)[0]
-    assert row["status"] == "needs_review"
+    # Matched on what the page shows: the new id is unknown to this process's cached open jobs.
     short = ranking_table.short_id(row["job_id"])
-    assert f"**Job {short}**" in [m.value for m in at.tabs[2].markdown]
-    assert not any(c.value.startswith(f"Job {short} · ") for c in at.tabs[0].caption)
-    assert row["job_id"] not in set(_frame(at, 3)["job_id"])
-    assert any(t.startswith(f"Report {short} added: it needs a person (") for t in _toasts(at))
+    today_captions = [c.value for c in at.tabs[0].caption if re.match(r"Job #\d+ · ", c.value)]
+    today_at = [i for i, c in enumerate(today_captions) if c.startswith(f"Job {short} · ")]
+    backlog = _frame(at, 3)
+    in_backlog = backlog[backlog["job_id"] == row["job_id"]]
+    in_human = f"**Job {short}**" in [m.value for m in at.tabs[2].markdown]
+    (message,) = [s.value for s in at.success if s.value.startswith(f"Report {short} added")]
+    if kind == "Needs a person":
+        assert row["status"] == "needs_review"
+        assert message == f"Report {short} added. It needs a person: open the Needs a human tab."
+        assert in_human and not today_at and in_backlog.empty
+        return
+    assert row["status"] == "extracted" and row["extraction"]["safety_class"] == kind.lower()
+    match = re.fullmatch(
+        rf"Report {short} added \({kind.lower()}\)\. It ranks (\d+)(?:st|nd|rd|th): "
+        r"(it is in To decide|it waits in the Backlog, because (.+))\.",
+        message,
+    )
+    assert match, message
+    assert not in_human
+    rank = int(match.group(1))
+    if match.group(2) == "it is in To decide":
+        assert in_backlog.empty and len(today_at) == 1
+        assert today_at[0] + 1 == rank  # nothing is accepted, so rows are ranks 1..capacity
+    else:
+        assert not today_at and int(in_backlog["rank"].iloc[0]) == rank
+        if kind == "Routine":
+            assert match.group(3) == "a new routine repair has most of its NT window left"
+
+
+def test_dev_message_stays_until_the_next_action(tmp_path) -> None:
+    at = _add_report(_run(_script(tmp_path)), "Urgent")
+    new_id = at.session_state["selected_job_id"]
+    at.run(timeout=60)
+    assert [s for s in at.success if s.value.startswith("Report ")]
+    other = next(
+        b
+        for b in at.tabs[0].button
+        if (b.key or "").startswith(f"{TODAY_ROWS_KEY}_open_") and not b.key.endswith(new_id)
+    )
+    other.click().run(timeout=60)
+    assert not at.exception
+    assert not [s for s in at.success if s.value.startswith("Report ")]
 
 
 def test_dev_pressing_twice_gives_two_distinct_ids(art, tmp_path) -> None:
     at = _run(_script(tmp_path))
-    at.button(key="workspace_dev_0").click().run(timeout=60)
-    at.button(key="workspace_dev_0").click().run(timeout=60)
+    at.button(key="workspace_dev_add").click().run(timeout=60)
+    at.button(key="workspace_dev_add").click().run(timeout=60)
     assert not at.exception
     rows = _intake_rows()
     assert [row["job_id"] for row in rows] == _next_ids(art, 2)
@@ -717,6 +787,117 @@ def test_no_accept_all_control_on_the_workspace(tmp_path) -> None:
 
 def _labels(at: AppTest) -> list[str]:
     return [tab.label for tab in at.tabs]
+
+
+def _fake_keys(monkeypatch) -> list[str]:
+    """Replace the keyboard listener: each run pops one queued key, like one real keydown."""
+    queue: list[str] = []
+
+    def fake(data, key):
+        return SimpleNamespace(pressed={"key": queue.pop(0), "nonce": 1} if queue else None)
+
+    monkeypatch.setattr(keyboard, "_mount", fake)
+    return queue
+
+
+def _press(at: AppTest, queue: list[str], key: str) -> AppTest:
+    queue.append(key)
+    at.run(timeout=60)
+    assert not at.exception
+    assert not queue
+    return at
+
+
+def test_keyboard_hint_sits_above_the_tabs(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    assert keyboard.HINT in [c.value for c in at.main.caption]
+
+
+def test_j_and_k_walk_to_decide_and_wrap(tmp_path, monkeypatch) -> None:
+    queue = _fake_keys(monkeypatch)
+    cap = ranking_table.capacity("All")
+    ids = [s.job.job_id for s in _ranked()[:cap]]
+    at = _run(_script(tmp_path))
+    assert at.session_state["selected_job_id"] == ids[0]
+    _press(at, queue, "j")
+    assert at.session_state["selected_job_id"] == ids[1]
+    assert any(s.value.startswith(f"Job {ranking_table.short_id(ids[1])} · ") for s in at.subheader)
+    _press(at, queue, "k")
+    assert at.session_state["selected_job_id"] == ids[0]
+    _press(at, queue, "k")
+    assert at.session_state["selected_job_id"] == ids[-1]
+    _press(at, queue, "j")
+    assert at.session_state["selected_job_id"] == ids[0]
+
+
+def test_j_selects_the_first_job_when_the_selection_is_not_in_to_decide(
+    tmp_path, monkeypatch
+) -> None:
+    queue = _fake_keys(monkeypatch)
+    ranked = _ranked()
+    cap = ranking_table.capacity("All")
+    # Seeded once through session state: a script line would reset the selection every rerun.
+    at = AppTest.from_file(str(_script(tmp_path)))
+    at.session_state["selected_job_id"] = ranked[cap].job.job_id
+    at.run(timeout=60)
+    assert not at.exception
+    _press(at, queue, "j")
+    assert at.session_state["selected_job_id"] == ranked[0].job.job_id
+
+
+def test_a_refuses_without_the_read_tick_then_accepts_once_ticked(tmp_path, monkeypatch) -> None:
+    queue = _fake_keys(monkeypatch)
+    cap = ranking_table.capacity("All")
+    at = _run(_script(tmp_path))
+    job_id = at.session_state["selected_job_id"]
+    _press(at, queue, "a")
+    assert "Tick 'I have read the report' first." in [t.value for t in at.toast]
+    assert not _decisions(tmp_path)
+    at.checkbox(key=f"read_{job_id}").check().run(timeout=60)
+    _press(at, queue, "a")
+    (record,) = _decisions(tmp_path)
+    assert (record.job_id, record.decision, record.actor) == (job_id, "accepted", "coordinator")
+    assert _labels(at)[:2] == [f"To decide {cap - 1}", "Accepted 1"]
+
+
+def test_a_refuses_a_job_that_is_not_in_to_decide(tmp_path, monkeypatch) -> None:
+    queue = _fake_keys(monkeypatch)
+    backlog_id = _ranked()[ranking_table.capacity("All")].job.job_id
+    at = _run(_script(tmp_path, _select(backlog_id)))
+    at.checkbox(key=f"read_{backlog_id}").check().run(timeout=60)
+    _press(at, queue, "a")
+    assert "This job is not in To decide." in [t.value for t in at.toast]
+    assert not _decisions(tmp_path)
+
+
+def test_a_refuses_once_todays_list_is_signed(tmp_path, monkeypatch) -> None:
+    queue = _fake_keys(monkeypatch)
+    cap = ranking_table.capacity("All")
+    for s in _ranked()[:cap]:
+        audit.append(
+            tmp_path / "audit.jsonl", audit.JobDecision(LAST_DAY, s.job.job_id, "accepted", "A")
+        )
+    at = _run(_script(tmp_path))
+    at.button(key="workspace_review_and_sign").click().run(timeout=60)
+    at.text_input(key="sign_off_signer").set_value("A. Coordinator")
+    at.text_area(key="sign_off_reason").set_value("Every job was read and decided today.")
+    at.button(key="sign_off_submit").click().run(timeout=60)
+    assert not at.exception
+    assert at.session_state["signed_today"]
+    before = len(_decisions(tmp_path))
+    _press(at, queue, "a")
+    assert "Today's list is signed." in [t.value for t in at.toast]
+    assert len(_decisions(tmp_path)) == before
+
+
+def test_x_opens_the_reject_form_for_the_selected_job(tmp_path, monkeypatch) -> None:
+    queue = _fake_keys(monkeypatch)
+    at = _run(_script(tmp_path))
+    job_id = at.session_state["selected_job_id"]
+    _press(at, queue, "x")
+    assert at.session_state["reject_job"] == job_id
+    assert at.radio(key=f"reject_kind_{job_id}").value == "Not today: move it to the backlog"
+    assert not _decisions(tmp_path)
 
 
 def _accepted_ids(at: AppTest) -> list[str]:

@@ -197,13 +197,20 @@ def set_map_pick(community_id: str | None) -> None:
     st.session_state["map_pick"] = community_id
 
 
-def get_pending_toast() -> str | None:
-    """The job id a dev replay just added; the page announces it once, then clears it."""
-    return _get("pending_toast", None)
+def get_added_report() -> tuple[str, str, int] | None:
+    """``(job_id, kind, audit length)`` of the report a dev replay just added; the page shows
+    where it landed until the next action (the audit log grows or the selection moves)."""
+    return _get("added_report", None)
 
 
-def set_pending_toast(job_id: str | None) -> None:
-    st.session_state["pending_toast"] = job_id
+def set_added_report(value: tuple[str, str, int] | None) -> None:
+    st.session_state["added_report"] = value
+
+
+def get_read(job_id: str) -> bool:
+    """Whether the pane's "I have read the report" box is ticked for ``job_id``. Read only:
+    the checkbox widget owns the key, so this never writes it."""
+    return bool(st.session_state.get(f"read_{job_id}", False))
 
 
 def get_map_failed() -> str | None:

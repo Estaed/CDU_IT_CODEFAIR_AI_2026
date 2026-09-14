@@ -15,9 +15,11 @@ stays "review_open" with the batch kept, because nothing survives the rerun to s
 from datetime import datetime
 
 import streamlit as st
+from streamlit.errors import StreamlitPageNotFoundError
 
 from fair_turn.app import intake, state, theme
 from fair_turn.app.components import (
+    cluster_map,
     details_pane,
     intro,
     job_list,
@@ -46,6 +48,12 @@ DISPLAY = [
 ]
 TODAY_ROWS_KEY = "workspace_today"
 MAP_MODES = ["Today's list", "All open jobs"]
+MAP_CAPTION = (
+    "Circles group communities; zoom in or click a circle to split it. "
+    "Click a dot to open its jobs."
+)
+NO_HUMAN_JOBS = "No jobs need a person today."
+HUMAN_ROW_RATIOS = [2.2, 3.6, 1.2]  # job and community, what is missing, the Review button
 
 art = state.artefacts()
 today = state.get_today()
@@ -56,16 +64,37 @@ with st.sidebar:
     lam, label = weighting.render()
     region, faults, safeties = weighting.filters()
 
+# Crews are one NT-wide pool: the ranking and the capacity split always cover every open job,
+# and the sidebar region only narrows the rows and the map points shown.
 jobs = ranking_table.open_jobs(today)
-if region != state.ALL_REGIONS:
-    jobs = [j for j in jobs if art.communities[j.community_id]["region"] == region]
-review_ids = ranking_table.review_requested_ids(audit.read(state.get_audit_path()), today)
+audit_records = audit.read(state.get_audit_path())
+review_ids = ranking_table.review_requested_ids(audit_records, today)
+review_reasons = {
+    r.job_id: r.reason
+    for r in audit_records
+    if isinstance(r, audit.HumanSet)
+    and r.field == ranking_table.REVIEW_REQUESTED
+    and r.day == today
+}
 rankable = [j for j in jobs if not j.needs_human and j.job_id not in review_ids]
 baseline = scoring.rank(rankable, today, 1.0)
 current = ranking_table.apply_hand_moves(scoring.rank(rankable, today, lam), state.get_hand_moves())
-cap = ranking_table.capacity(region)
+cap = ranking_table.capacity(state.ALL_REGIONS)
 today_list, backlog = current[:cap], current[cap:]
 review_count = sum(1 for j in jobs if j.needs_human or j.job_id in review_ids)
+
+
+def in_view(job) -> bool:
+    return region == state.ALL_REGIONS or art.communities[job.community_id]["region"] == region
+
+
+shown_jobs = [j for j in jobs if in_view(j)]
+today_shown = [s for s in today_list if in_view(s.job)]
+backlog_shown = [s for s in backlog if in_view(s.job)]
+human_jobs = sorted(
+    (j for j in shown_jobs if j.needs_human or j.job_id in review_ids),
+    key=lambda j: (j.reported_on, j.job_id),
+)
 if state.get_selected_job_id() is None and today_list:
     state.set_selected_job_id(today_list[0].job.job_id)
 
@@ -93,7 +122,14 @@ for column, label_text, value, delta, help_text in zip(
         "In review",
         "Override rate today",
     ),
-    (f"{len(today_list)} of {cap}", remote_today, review_count, f"{today_rate:.0%}"),
+    (
+        f"{len(today_list)} of {cap}"
+        if region == state.ALL_REGIONS
+        else f"{len(today_shown)} of {len(today_list)} in {region}",
+        remote_today,
+        review_count,
+        f"{today_rate:.0%}",
+    ),
     (None, (remote_today - remote_in_baseline) or None, None, None),
     (
         "Jobs proposed within today's capacity: crews x jobs per crew per day (Part 2 constants).",
@@ -107,7 +143,9 @@ for column, label_text, value, delta, help_text in zip(
 effect_message = st.empty()
 effect_message.info(
     "Effect: "
-    + metrics.effect_sentence(today, region, lam, current, baseline, cap, is_remote, label)
+    + metrics.effect_sentence(
+        today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label
+    )
 )
 if state.get_intake_draft() is not None:
     intake.render(st.container(border=True))
@@ -123,7 +161,11 @@ def passes(job) -> bool:
 
 def view(scored, other=None, table_lam=lam, against=None):
     frame = ranking_table.rows_for(
-        [s for s in scored if passes(s.job)], other, table_lam, today, baseline=against
+        [s for s in scored if passes(s.job) and in_view(s.job)],
+        other,
+        table_lam,
+        today,
+        baseline=against,
     )
     return frame[DISPLAY].rename(columns={"job id": "job_id"})
 
@@ -151,15 +193,49 @@ def today_rows(frame, scored) -> list[dict]:
     ]
 
 
+def missing_lines(job) -> list[str]:
+    """What a person has to supply, in words. Only the absence is named: a value the model
+    proposed and verification rejected never reaches this text (PRD 3.2)."""
+    lines = [
+        f"{name} not found in the report"
+        for name, value in (("Fault type", job.fault_type), ("Safety class", job.safety_class))
+        if value is None
+    ]
+    if job.job_id in review_reasons:
+        lines.append(f"Sent to review: {review_reasons[job.job_id]}")
+    return lines
+
+
+def human_rows(human: list) -> None:
+    """The "Needs a human" tab: one bordered row per job with a Review button that opens the
+    review queue at that job."""
+    if not human:
+        st.info(NO_HUMAN_JOBS)
+        return
+    for job in human:
+        with st.container(border=True):
+            who, what, action = st.columns(HUMAN_ROW_RATIOS, vertical_alignment="center")
+            who.markdown(f"**Job {ranking_table.short_id(job.job_id)}**")
+            who.caption(f"{job.community_id} · reported {job.reported_on.isoformat()}")
+            for line in missing_lines(job):
+                what.text(line)
+            if action.button("Review", key=f"workspace_review_{job.job_id}", width="stretch"):
+                state.set_review_focus(job.job_id)
+                try:
+                    st.switch_page("pages/review_queue.py")
+                except StreamlitPageNotFoundError:
+                    pass  # a page run on its own (AppTest) has no navigation registry
+
+
 selected = state.get_selected_job_id()
-if not jobs:
+if not shown_jobs:
     st.info("No open reports for this day and region. Try widening the region.")
-elif not rankable:
-    st.warning(f"All {len(jobs)} open jobs are in the review queue ({review_count}).")
+elif not any(in_view(s.job) for s in current):
+    st.warning(f"All {len(shown_jobs)} open jobs are in the review queue ({len(human_jobs)}).")
 if cap == 0:
-    st.info("Capacity is zero for this region; the list shows as backlog only.")
-hidden = sum(1 for j in jobs if not passes(j))
-if jobs and hidden == len(jobs):
+    st.info("Capacity is zero; the list shows as backlog only.")
+hidden = sum(1 for j in shown_jobs if not passes(j))
+if shown_jobs and hidden == len(shown_jobs):
     st.info(f"{hidden} jobs hidden by filters.")
     st.button("Clear filters", on_click=weighting.clear_filters, key="workspace_clear_hidden")
 
@@ -168,22 +244,15 @@ with centre:
     compare = st.checkbox("Compare with efficiency-first", value=state.get_compare())
     state.set_compare(compare)
     # The map sits above the lists so it needs no second click to be seen.
-    mode_column, region_column = st.columns([3, 1])
-    with mode_column:
-        map_mode = st.radio(
-            "Map shows",
-            MAP_MODES,
-            horizontal=True,
-            key="workspace_map_mode",
-            label_visibility="collapsed",
-        )
-    if region != state.ALL_REGIONS and region_column.button(
-        "All regions", key="workspace_all_regions"
-    ):
-        state.set_region(state.ALL_REGIONS)
-        st.rerun()
+    map_mode = st.radio(
+        "Map shows",
+        MAP_MODES,
+        horizontal=True,
+        key="workspace_map_mode",
+        label_visibility="collapsed",
+    )
     rank_of = {s.job.job_id: s.rank for s in current}
-    mapped_jobs = [s.job for s in today_list] if map_mode == MAP_MODES[0] else jobs
+    mapped_jobs = [s.job for s in today_shown] if map_mode == MAP_MODES[0] else shown_jobs
     by_community: dict[str, list] = {}
     for job in mapped_jobs:
         if passes(job):
@@ -202,33 +271,29 @@ with centre:
                 "open_jobs": len(members),
             }
         )
-    at_nt = region == state.ALL_REGIONS
-    level = workspace_map.REGION_LEVEL if at_nt else workspace_map.COMMUNITY_LEVEL
-    map_centre = None if at_nt else workspace_map.centre_of(points)
-    pick = workspace_map.render(points, selected, level, map_centre, key=f"workspace_map_{region}")
-    map_choice = None
-    if pick is not None and pick[0] == workspace_map.REGION_LEVEL:
-        if pick[1] != region:
-            state.set_region(pick[1])
-            st.rerun()
-    elif pick is not None:
-        map_choice = workspace_map.choice_for(pick[1], by_community)
-    if at_nt:
-        st.caption(
-            f"{map_mode}: {len(points)} communities grouped into "
-            f"{len({point['region'] for point in points})} region circles, sized by open "
-            "jobs. Click a circle to open that region."
-        )
-    else:
-        st.caption(
-            f"{map_mode}: {len(points)} communities in {region}. One dot per community, "
-            "sized by open jobs. Click a dot to open its job; a dot with several jobs "
-            "offers a choice."
-        )
-    tabs = st.tabs([f"Today's list {len(today_list)}", f"Backlog {len(backlog)}"])
+    selected_community = next((j.community_id for j in jobs if j.job_id == selected), None)
+    pick = cluster_map.render(points, selected_community, key="workspace_map")
+    if pick is not None:
+        state.set_map_pick(pick)
+    map_choice = workspace_map.choice_for(state.get_map_pick(), by_community)
+    if map_choice is not None and selected in map_choice[1]:
+        # The pick has done its job once one of its jobs is open; a stale pick must not
+        # pull the selection back after a row is opened elsewhere.
+        state.set_map_pick(None)
+        map_choice = None
+    st.caption(MAP_CAPTION)
+    tabs = st.tabs(
+        [
+            f"Today's list {len(today_shown)}",
+            f"Needs a human {len(human_jobs)}",
+            f"Backlog {len(backlog_shown)}",
+        ]
+    )
+    with tabs[1]:
+        human_rows(human_jobs)
     lists = [
         (tabs[0], "today", today_list, baseline[:cap]),
-        (tabs[1], "backlog", backlog, baseline[cap:]),
+        (tabs[2], "backlog", backlog, baseline[cap:]),
     ]
     for tab, name, scored, efficiency_first in lists:
         with tab:
@@ -282,6 +347,7 @@ with centre:
                 picked = job_list.selected_job_id(frame, event.selection.rows)
             if picked is not None and picked != selected:
                 state.set_selected_job_id(picked)
+                state.set_map_pick(None)
                 st.rerun()
 
 with pane:
@@ -390,10 +456,12 @@ if frozen is not None:
         )[DISPLAY]
         sign_off_form.render(frozen, status, on_submit, review_count, is_remote, frozen_rows)
 
-metrics.metrics_panel(today, region, lam, current, baseline, cap, is_remote, label)
+metrics.metrics_panel(today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label)
 effect_message.info(
     "Effect: "
-    + metrics.effect_sentence(today, region, lam, current, baseline, cap, is_remote, label)
+    + metrics.effect_sentence(
+        today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label
+    )
 )
 
 records = signed_today()

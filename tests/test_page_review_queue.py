@@ -247,6 +247,25 @@ def test_previous_and_next_wrap_at_both_ends(art, tmp_path) -> None:
     assert "1 of" in at.header[0].value
 
 
+def test_a_focus_from_the_workspace_moves_the_cursor_once(tmp_path) -> None:
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+    n = int(at.header[0].value.split(" of ")[1].split(" — ")[0])
+    if n < 3:
+        pytest.skip("fewer than three committed jobs need review; focus cannot be exercised")
+    at = _click_next(_click_next(at))
+    third = at.header[0].value.split(" — ")[0]
+
+    script = _wrapper_script(tmp_path)
+    body = script.read_text(encoding="utf-8")
+    focus = f'state.set_review_focus("{third}")\n'
+    script.write_text(body.replace("exec(", focus + "exec(", 1), encoding="utf-8")
+    focused = AppTest.from_file(str(script)).run(timeout=60)
+    assert not focused.exception
+    assert focused.header[0].value.startswith(f"{third} — ")
+    assert focused.session_state["review_cursor"] == 2
+    assert focused.session_state["review_focus"] is None
+
+
 # --- less typing: reason chips, a remembered name, a drafted clarification --------------------
 
 REASON_PRESETS = (

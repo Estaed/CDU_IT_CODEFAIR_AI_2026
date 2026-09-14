@@ -5,13 +5,15 @@ move (PRD 3.1, wireframes §3 and §9)."""
 import json
 import re
 import socket
+from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from streamlit.testing.v1 import AppTest
 
-from fair_turn.app.components import details_pane, job_rows, ranking_table
+from fair_turn.app.components import cluster_map, details_pane, job_rows, ranking_table
 from fair_turn.core import audit, constants, scoring
 from fair_turn.core.batch import HandMove
 from fair_turn.data import artefacts, policy
@@ -32,6 +34,11 @@ COLUMNS = [
 ]
 OUTCOME_WORDS = ("wait", "travel", "median", "cost")
 TODAY_ROWS_KEY = "workspace_today"  # workspace.TODAY_ROWS_KEY; importing the page would run it
+MAP_CAPTION = (  # workspace.MAP_CAPTION
+    "Circles group communities; zoom in or click a circle to split it. "
+    "Click a dot to open its jobs."
+)
+NO_HUMAN_JOBS = "No jobs need a person today."  # workspace.NO_HUMAN_JOBS
 
 
 def _refuse(*args, **kwargs):
@@ -116,7 +123,7 @@ def _open_needs_human(art, missing) -> str:
 
 def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    today, backlog = _today_ids(at), _frame(at, 1)
+    today, backlog = _today_ids(at), _frame(at, 2)
     cap = ranking_table.capacity("All")
     crews = len(constants.REMOTE_REGIONS) * constants.CREWS_PER_REMOTE_REGION
     assert cap == (crews + constants.CREWS_TOWN) * constants.JOBS_PER_CREW_DAY
@@ -139,7 +146,7 @@ def test_todays_list_is_rows_not_a_table_and_the_backlog_keeps_the_table(tmp_pat
     at = _run(_script(tmp_path))
     cap = ranking_table.capacity("All")
     assert at.tabs[0].dataframe.len == 0
-    assert at.tabs[1].dataframe.len == 1
+    assert at.tabs[2].dataframe.len == 1
     opens = [button for button in at.tabs[0].button if button.label == job_rows.OPEN]
     assert len(opens) == cap
     assert [button.proto.type for button in opens].count("primary") == 1
@@ -168,11 +175,11 @@ def test_opening_a_row_selects_that_job(tmp_path) -> None:
 
 def test_backlog_search_narrows_the_frame_only(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    full = _frame(at, 1)
+    full = _frame(at, 2)
     community = str(full.iloc[0]["community id"])
     at.text_input(key="workspace_backlog_search").set_value(community).run(timeout=60)
     assert not at.exception
-    narrowed = _frame(at, 1)
+    narrowed = _frame(at, 2)
     assert 0 < len(narrowed) < len(full)
     assert set(narrowed["community id"]) == {community}
     assert list(narrowed["rank"]) == [
@@ -183,7 +190,7 @@ def test_backlog_search_narrows_the_frame_only(tmp_path) -> None:
 
 def test_backlog_table_has_display_config_and_bounded_height(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    proto = at.tabs[1].dataframe[0].proto
+    proto = at.tabs[2].dataframe[0].proto
     config = json.loads(proto.columns)
     assert set(COLUMNS) <= set(config)
     assert {
@@ -214,7 +221,7 @@ def test_backlog_table_has_display_config_and_bounded_height(tmp_path) -> None:
         "type": "progress",
         "format": "%.1f",
         "min_value": 0.0,
-        "max_value": float(_frame(at, 1)["score_bar"].max()),
+        "max_value": float(_frame(at, 2)["score_bar"].max()),
     }
     assert ranking_table.table_height(ranking_table.capacity("All")) == 528
     assert ranking_table.table_height(21) == ranking_table.table_height(20)
@@ -234,39 +241,154 @@ def test_compare_renders_two_frames_with_identical_columns(tmp_path) -> None:
 # --- the map: two sets, two levels ------------------------------------------------------------
 
 
-def _deck_layers(at: AppTest) -> list[dict]:
-    """The deck's layer specs; the pydeck element carries its spec as JSON in the proto."""
-    return json.loads(at.get("deck_gl_json_chart")[0].proto.json)["layers"]
+def _map_features(at: AppTest) -> list[dict]:
+    """The clustered map's features: the v2 component carries its ``data`` as JSON."""
+    nodes = at.get("bidi_component")
+    assert len(nodes) == 1
+    return [f["properties"] for f in json.loads(nodes[0].proto.json)["features"]["features"]]
+
+
+def _in_region(art, region: str, job) -> bool:
+    return art.communities[job.community_id]["region"] == region
 
 
 def test_map_mode_switches_between_todays_list_and_all_open_jobs(tmp_path) -> None:
     at = _run(_script(tmp_path))
     cap = ranking_table.capacity("All")
     today_communities = {s.job.community_id for s in _ranked()[:cap]}
-    todays = _deck_layers(at)[0]["data"]
-    assert len(todays) <= len(today_communities)
+    todays = _map_features(at)
+    assert len(todays) == len(today_communities)
     assert sum(point["open_jobs"] for point in todays) == cap
+    assert MAP_CAPTION in [c.value for c in at.caption]
+    assert not [button for button in at.button if button.key == "workspace_all_regions"]
     at.radio(key="workspace_map_mode").set_value("All open jobs").run(timeout=60)
     assert not at.exception
-    everything = _deck_layers(at)[0]["data"]
+    everything = _map_features(at)
     assert len(everything) >= len(todays)
     assert sum(point["open_jobs"] for point in everything) == len(ranking_table.open_jobs(LAST_DAY))
 
 
-def test_map_opens_a_region_into_community_dots_and_back(tmp_path, art) -> None:
+def test_map_ring_follows_the_selected_job(tmp_path) -> None:
+    job = _ranked()[3].job
+    at = _run(_script(tmp_path, _select(job.job_id)))
+    data = json.loads(at.get("bidi_component")[0].proto.json)
+    assert data["selected"] == job.community_id
+
+
+def _fake_map(monkeypatch, picked=None, failed=None) -> None:
+    def fake(data, key):
+        return SimpleNamespace(picked=picked, failed=failed)
+
+    monkeypatch.setattr(cluster_map, "_mount", fake)
+
+
+def test_a_map_pick_opens_its_community_job(tmp_path, monkeypatch) -> None:
+    cap = ranking_table.capacity("All")
+    counts = Counter(s.job.community_id for s in _ranked()[:cap])
+    single = next(s.job for s in _ranked()[1:cap] if counts[s.job.community_id] == 1)
+    _fake_map(monkeypatch, picked=single.community_id)
     at = _run(_script(tmp_path))
-    assert [layer["id"] for layer in _deck_layers(at)] == ["regions", "counts"]
-    assert not [button for button in at.button if button.key == "workspace_all_regions"]
-    region = art.communities[_ranked()[0].job.community_id]["region"]
-    at.sidebar.selectbox[0].set_value(region).run(timeout=60)
+    assert at.session_state["selected_job_id"] == single.job_id
+    assert any(
+        s.value.startswith(f"Job {ranking_table.short_id(single.job_id)} · ") for s in at.subheader
+    )
+    # Once its job is open the pick is spent, so opening a row later is not pulled back.
+    assert at.session_state["map_pick"] is None
+
+
+def test_a_failed_map_shows_the_outline(tmp_path, monkeypatch) -> None:
+    _fake_map(monkeypatch, failed="style: network error")
+    at = _run(_script(tmp_path))
+    assert not at.get("bidi_component")
+    assert len(at.get("vega_lite_chart")) >= 1
+    assert cluster_map.UNAVAILABLE in [i.value for i in at.info]
+
+
+# --- region is a view; capacity is NT-wide ----------------------------------------------------
+
+
+def test_region_filter_narrows_rows_and_points_but_not_capacity(tmp_path, art) -> None:
+    cap = ranking_table.capacity("All")
+    ranked = _ranked()
+    region = art.communities[ranked[0].job.community_id]["region"]
+    at = _run(_script(tmp_path, f'state.set_region("{region}")'))
+    in_today = [s.job.job_id for s in ranked[:cap] if _in_region(art, region, s.job)]
+    assert _today_ids(at) == in_today
+    assert at.main.metric[0].value == f"{len(in_today)} of {cap} in {region}"
+    backlog = _frame(at, 2)
+    assert list(backlog["job_id"]) == [
+        s.job.job_id for s in ranked[cap:] if _in_region(art, region, s.job)
+    ]
+    assert {point["region"] for point in _map_features(at)} == {region}
+    assert at.tabs[0].label == f"Today's list {len(in_today)}"
+    assert _effect(at) == "Effect: No job changes between today's list and the backlog."
+
+
+# --- needs a human in the daily view ----------------------------------------------------------
+
+
+def _human_ids(at: AppTest) -> list[str]:
+    by_short = {
+        ranking_table.short_id(j.job_id): j.job_id for j in ranking_table.open_jobs(LAST_DAY)
+    }
+    return [
+        by_short[m.value[len("**Job ") : -2]]
+        for m in at.tabs[1].markdown
+        if m.value.startswith("**Job #")
+    ]
+
+
+def test_tabs_are_today_needs_a_human_and_backlog(tmp_path, art) -> None:
+    at = _run(_script(tmp_path))
+    queue = [j for j in ranking_table.open_jobs(LAST_DAY) if j.needs_human]
+    labels = [tab.label for tab in at.tabs]
+    assert labels[1] == f"Needs a human {len(queue)}"
+    assert labels[0].startswith("Today's list ") and labels[2].startswith("Backlog ")
+    ids = _human_ids(at)
+    assert sorted(ids) == sorted(j.job_id for j in queue)
+    buttons = [b for b in at.tabs[1].button if b.label == "Review"]
+    assert len(buttons) == len(queue)
+    texts = [t.value for t in at.tabs[1].text]
+    for job in queue:
+        if job.fault_type is None:
+            assert "Fault type not found in the report" in texts
+        if job.safety_class is None:
+            assert "Safety class not found in the report" in texts
+    # A value the model proposed and verification rejected never renders in these rows.
+    shown = "\n".join(texts + [m.value for m in at.tabs[1].markdown])
+    for job in queue:
+        for value in art.extraction[job.job_id].dropped.values():
+            assert str(value) not in shown
+
+
+def test_review_button_sets_the_focus(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    job_id = _human_ids(at)[0]
+    at.button(key=f"workspace_review_{job_id}").click().run(timeout=60)
     assert not at.exception
-    assert [layer["id"] for layer in _deck_layers(at)] == ["jobs", "selected", "counts"]
-    assert at.button(key="workspace_all_regions").label == "All regions"
-    at.button(key="workspace_all_regions").click().run(timeout=60)
+    assert at.session_state["review_focus"] == job_id
+
+
+def test_sent_to_review_job_names_the_reason(tmp_path) -> None:
+    first = _ranked()[0].job.job_id
+    at = _run(_script(tmp_path, _select(first)))
+    at.text_input(key=f"review_{first}_reason").set_value("tenant describes a different fault")
+    at.button(key=f"review_{first}_submit").click().run(timeout=60)
     assert not at.exception
-    assert at.session_state["region"] == "All"
-    assert [layer["id"] for layer in _deck_layers(at)] == ["regions", "counts"]
-    assert not [button for button in at.button if button.key == "workspace_all_regions"]
+    assert first in _human_ids(at)
+    assert "Sent to review: tenant describes a different fault" in [
+        t.value for t in at.tabs[1].text
+    ]
+
+
+def test_empty_needs_a_human_tab_says_so(tmp_path, monkeypatch) -> None:
+    real = ranking_table.open_jobs
+    monkeypatch.setattr(
+        ranking_table, "open_jobs", lambda today: [j for j in real(today) if not j.needs_human]
+    )
+    at = _run(_script(tmp_path))
+    assert at.tabs[1].label == "Needs a human 0"
+    assert NO_HUMAN_JOBS in [i.value for i in at.tabs[1].info]
 
 
 # --- weighting and the effect sentence -------------------------------------------------------
@@ -278,10 +400,10 @@ def test_filter_pills_clear_to_the_full_list(tmp_path) -> None:
     fault = at.sidebar.pills[0]
     fault.select("cooling").run(timeout=60)
     assert not at.exception
-    filtered_count = len(_today_ids(at)) + len(_frame(at, 1))
+    filtered_count = len(_today_ids(at)) + len(_frame(at, 2))
     at.sidebar.button(key="workspace_clear_filters").click().run(timeout=60)
     assert not at.exception
-    full_count = len(_today_ids(at)) + len(_frame(at, 1))
+    full_count = len(_today_ids(at)) + len(_frame(at, 2))
     assert filtered_count < full_count
 
 
@@ -423,7 +545,7 @@ def test_promote_backlog_job_writes_one_promotion(tmp_path) -> None:
     promoted, displaced = ranked[cap].job.job_id, ranked[cap - 1].job.job_id
     audit_path = tmp_path / "audit.jsonl"
     at = _run(_script(tmp_path, _select(promoted)))
-    assert promoted in list(_frame(at, 1)["job_id"])
+    assert promoted in list(_frame(at, 2)["job_id"])
 
     _submit(at, f"promote_{promoted}", None)
     assert details_pane.REASON_REQUIRED in [e.value for e in at.error]
@@ -462,7 +584,7 @@ def test_move_undo_and_send_to_review(tmp_path) -> None:
         "review_requested",
         "tenant describes a different fault",
     )
-    shown = set(_today_ids(at)) | set(_frame(at, 1)["job_id"])
+    shown = set(_today_ids(at)) | set(_frame(at, 2)["job_id"])
     assert first not in shown
     assert details_pane.IN_REVIEW in [w.value for w in at.warning]
 

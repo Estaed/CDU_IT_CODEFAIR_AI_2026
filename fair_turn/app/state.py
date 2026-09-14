@@ -166,6 +166,37 @@ def set_review_cursor(value: int) -> None:
     st.session_state["review_cursor"] = int(value)
 
 
+def get_review_focus() -> str | None:
+    """A job the workspace asked the review queue to open first; cleared once applied."""
+    return _get("review_focus", None)
+
+
+def set_review_focus(job_id: str) -> None:
+    st.session_state["review_focus"] = str(job_id)
+
+
+def clear_review_focus() -> None:
+    st.session_state["review_focus"] = None
+
+
+def get_map_pick() -> str | None:
+    """The community last clicked on the workspace map, until one of its jobs is open."""
+    return _get("map_pick", None)
+
+
+def set_map_pick(community_id: str | None) -> None:
+    st.session_state["map_pick"] = community_id
+
+
+def get_map_failed() -> str | None:
+    """Why the clustered map could not load; set once, the outline stays for the session."""
+    return _get("map_failed", None)
+
+
+def set_map_failed(reason: str | None) -> None:
+    st.session_state["map_failed"] = reason
+
+
 def get_hand_moves() -> tuple[batch.HandMove, ...]:
     return _get("hand_moves", ())
 

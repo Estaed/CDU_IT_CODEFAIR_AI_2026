@@ -42,12 +42,17 @@ This step list follows how other dispatch tools already work.
 1. **Read the numbers at the top of the Workspace.** They say how many jobs are open,
    how many need a person's help, and how the list has moved since the last change.
 2. **Clear the review queue first.** These are jobs with a field the system could not
-   read. Fill each one in by hand, with a reason, before ranking the day.
+   read. The Needs a human tab, next to today's list, names what is missing in each one.
+   Press Review to open it. Fill each one in by hand, with a reason, before ranking the
+   day.
 3. **Choose a weighting and read the effect sentence.** Pick Efficiency first, Balanced,
    or Need first. A sentence under the list says how many remote and town jobs move in
    or out under that setting.
-4. **Check the map.** One dot per community, coloured by region and sized by how many
-   jobs are open there. A dot with several jobs offers a choice; it never picks one job.
+4. **Check the map.** Circles group nearby communities and show how many jobs are open.
+   Zoom in, or click a circle, and it splits into one dot per community, coloured by
+   region. Click a dot to open its jobs. A dot with several jobs offers a choice; it
+   never picks one job. The region filter only narrows what you see. Crews and today's
+   list still cover the whole NT.
 5. **Open a job and read "why it sits here."** The selected-job pane shows the report
    text, the fields read from it with their source words highlighted, and the
    plain-language reason for its place in the list.

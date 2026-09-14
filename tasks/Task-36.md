@@ -1,6 +1,6 @@
 # Task-36: Ollama extractor benchmark (last step): qwen3:8b against the build extractor, default decided by the table
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* The code (chat wrapper, benchmark script, eval table) is specified and tested with fakes; the pull and the real run are the main loop's on Tarik's machine, and the decision rule is written in Part 2. Tarik's call 2026-09-14: this is the last Phase 2 step; nothing before it pulls or calls an Ollama chat model.
@@ -26,6 +26,6 @@ not the fact that it runs, decide whether Ollama becomes the intake default.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] `chat` failure modes and the decision rule tested with fakes.
-- [ ] Main loop: `ollama pull qwen3:8b`, then `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b` from the repo root; `eval_ollama.json` and `MODELS.md` committed with the numbers; if the decision is `ollama`, the README default and Part 2's seam line are updated in the same commit (Part 2 edit raised to Tarik first, rule 8).
-- [ ] Gate green.
+- [x] `chat` failure modes and the decision rule tested with fakes.
+- [x] Main loop: `ollama pull qwen3:8b`, then `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b` from the repo root; `eval_ollama.json` and `MODELS.md` committed with the numbers; if the decision is `ollama`, the README default and Part 2's seam line are updated in the same commit (Part 2 edit raised to Tarik first, rule 8).
+- [x] Gate green.

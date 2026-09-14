@@ -1,18 +1,11 @@
 # Models — which model does what in this project
 
-Delete these instructions once the table reflects reality. The routing policy
-itself lives in the `chef` skills (`claude-chef` / `codex-chef`); this file
-carries only the decisions actually **measured in this project** — never
-general model-capability opinion. "Model X is generally good at Y" is a belief
-that ages badly and is not a project decision; it does not belong here even as
-justification. A row without a measured date and evidence is a guess wearing a
-decision's clothes.
-
 ## Decisions
 
 | Lane / surface | Model | Effort | Why chosen | Measured on | Evidence |
 |---|---|---|---|---|---|
-| Intake extractor benchmark (Task-36) | ollama / qwen3:8b against the build extractor (claude / sonnet) | temperature 0 | pending: F1 per field (fault_type, safety_class, health_risk), latency p50 / p90 / max and the decision (`default` = ollama only if not below the build extractor on both required fields and 20/20 adversarial leave the rank unchanged) come from the real run | 2026-09-14: code and fakes only, real run pending | pending: run `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b` after `ollama pull qwen3:8b`; writes `data/build/eval_ollama.json` |
+| Intake extractor | claude / sonnet | provider default | Retained: qwen3:8b F1 was 0.6882 fault type, 0.5605 safety class and 0.5809 health risk against Claude's required-field 0.9187 and 0.5641; 6/20 adversarial ranks unchanged; latency p50 4.6260 s, p90 5.3214 s, max 10.0973 s | 2026-09-14: 150 holdout + 20 adversarial items | `data/build/eval_ollama.json` |
+| Intake extractor comparison | ollama / qwen3.5:9b | temperature 0, thinking disabled | Not selected: F1 was 0.6142 fault type, 0.5352 safety class and 0.5804 health risk; 14/20 adversarial ranks unchanged; latency p50 5.1593 s, p90 6.0732 s, max 11.5759 s | 2026-09-14: 150 holdout + 20 adversarial items | `data/build/eval_ollama_qwen35.json` |
 <!-- | Codex gate lane | Codex | high | Held a 40-file spec over a 3h unattended run without drifting; the Opus sub-agent tried on the same task lost the thread after ~90min. | 2026-01-01 | otopilot report daily/2026-01-01.md, run log reports/2026-01-01-gate-lane.md | -->
 
 ## Notes

@@ -72,6 +72,7 @@ def test_chat_posts_schema_and_parses_the_message(monkeypatch) -> None:
             "messages": [{"role": "user", "content": "the prompt"}],
             "format": schema,
             "stream": False,
+            "think": False,
             "options": {"temperature": 0},
         },
         "timeout": 7,

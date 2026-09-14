@@ -61,6 +61,7 @@ def chat(
             "messages": [{"role": "user", "content": prompt}],
             "format": schema,
             "stream": False,
+            "think": False,
             "options": {"temperature": 0},
         }
     ).encode("utf-8")

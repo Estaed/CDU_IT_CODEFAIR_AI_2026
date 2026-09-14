@@ -1,0 +1,354 @@
+{
+ "provider": "ollama",
+ "model": "qwen3:8b",
+ "n_items": 150,
+ "n_adversarial": 20,
+ "fields": {
+  "fault_type": {
+   "n": 150,
+   "accuracy": 0.68,
+   "accuracy_ci": [
+    0.6017,
+    0.7494
+   ],
+   "macro_precision": 0.8246,
+   "macro_recall": 0.637,
+   "macro_f1": 0.6882,
+   "per_class": {
+    "electrical": {
+     "precision": 0.9375,
+     "precision_ci": [
+      0.7167,
+      0.9889
+     ],
+     "recall": 0.8333,
+     "recall_ci": [
+      0.6078,
+      0.9416
+     ],
+     "f1": 0.8824,
+     "support": 18
+    },
+    "plumbing_water": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8389,
+      1.0
+     ],
+     "recall": 0.6452,
+     "recall_ci": [
+      0.4695,
+      0.7888
+     ],
+     "f1": 0.7843,
+     "support": 31
+    },
+    "sewer_drainage": {
+     "precision": 0.9091,
+     "precision_ci": [
+      0.6226,
+      0.9838
+     ],
+     "recall": 0.7143,
+     "recall_ci": [
+      0.4535,
+      0.8828
+     ],
+     "f1": 0.8,
+     "support": 14
+    },
+    "cooling": {
+     "precision": 0.9412,
+     "precision_ci": [
+      0.7302,
+      0.9895
+     ],
+     "recall": 0.9412,
+     "recall_ci": [
+      0.7302,
+      0.9895
+     ],
+     "f1": 0.9412,
+     "support": 17
+    },
+    "hot_water": {
+     "precision": 0.9231,
+     "precision_ci": [
+      0.6669,
+      0.9863
+     ],
+     "recall": 0.9231,
+     "recall_ci": [
+      0.6669,
+      0.9863
+     ],
+     "f1": 0.9231,
+     "support": 13
+    },
+    "roof_structure": {
+     "precision": 0.7778,
+     "precision_ci": [
+      0.4526,
+      0.9368
+     ],
+     "recall": 0.5833,
+     "recall_ci": [
+      0.3195,
+      0.8067
+     ],
+     "f1": 0.6667,
+     "support": 12
+    },
+    "doors_locks_security": {
+     "precision": 0.8571,
+     "precision_ci": [
+      0.6006,
+      0.9599
+     ],
+     "recall": 0.8,
+     "recall_ci": [
+      0.5481,
+      0.9295
+     ],
+     "f1": 0.8276,
+     "support": 15
+    },
+    "stove_cooking": {
+     "precision": 0.9,
+     "precision_ci": [
+      0.5958,
+      0.9821
+     ],
+     "recall": 0.8182,
+     "recall_ci": [
+      0.523,
+      0.9486
+     ],
+     "f1": 0.8571,
+     "support": 11
+    },
+    "pests": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.2065,
+      1.0
+     ],
+     "recall": 0.1111,
+     "recall_ci": [
+      0.0199,
+      0.435
+     ],
+     "f1": 0.2,
+     "support": 9
+    },
+    "other": {
+     "precision": 0.0,
+     "precision_ci": [
+      0.0,
+      1.0
+     ],
+     "recall": 0.0,
+     "recall_ci": [
+      0.0,
+      0.2775
+     ],
+     "f1": 0.0,
+     "support": 10
+    }
+   }
+  },
+  "safety_class": {
+   "n": 150,
+   "accuracy": 0.4933,
+   "accuracy_ci": [
+    0.4145,
+    0.5725
+   ],
+   "macro_precision": 0.7565,
+   "macro_recall": 0.5262,
+   "macro_f1": 0.5605,
+   "per_class": {
+    "immediate": {
+     "precision": 0.7,
+     "precision_ci": [
+      0.3968,
+      0.8922
+     ],
+     "recall": 0.5,
+     "recall_ci": [
+      0.268,
+      0.732
+     ],
+     "f1": 0.5833,
+     "support": 14
+    },
+    "urgent": {
+     "precision": 0.5696,
+     "precision_ci": [
+      0.4597,
+      0.6731
+     ],
+     "recall": 0.8036,
+     "recall_ci": [
+      0.6816,
+      0.8866
+     ],
+     "f1": 0.6667,
+     "support": 56
+    },
+    "routine": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.8513,
+      1.0
+     ],
+     "recall": 0.275,
+     "recall_ci": [
+      0.1892,
+      0.3814
+     ],
+     "f1": 0.4314,
+     "support": 80
+    }
+   }
+  },
+  "health_risk": {
+   "n": 150,
+   "exact_set_match": 0.4933,
+   "exact_set_match_ci": [
+    0.4145,
+    0.5725
+   ],
+   "macro_precision": 0.867,
+   "macro_recall": 0.4674,
+   "macro_f1": 0.5809,
+   "per_class": {
+    "infant_or_young_child": {
+     "precision": 0.7949,
+     "precision_ci": [
+      0.6447,
+      0.8922
+     ],
+     "recall": 0.7949,
+     "recall_ci": [
+      0.6447,
+      0.8922
+     ],
+     "f1": 0.7949,
+     "support": 39
+    },
+    "elderly": {
+     "precision": 0.9545,
+     "precision_ci": [
+      0.782,
+      0.9919
+     ],
+     "recall": 0.6774,
+     "recall_ci": [
+      0.5014,
+      0.8143
+     ],
+     "f1": 0.7925,
+     "support": 31
+    },
+    "pregnancy_or_chronic_condition": {
+     "precision": 0.9524,
+     "precision_ci": [
+      0.7733,
+      0.9915
+     ],
+     "recall": 0.5,
+     "recall_ci": [
+      0.352,
+      0.648
+     ],
+     "f1": 0.6557,
+     "support": 40
+    },
+    "overcrowding": {
+     "precision": 0.7,
+     "precision_ci": [
+      0.3968,
+      0.8922
+     ],
+     "recall": 0.2917,
+     "recall_ci": [
+      0.1491,
+      0.4917
+     ],
+     "f1": 0.4118,
+     "support": 24
+    },
+    "extreme_heat_exposure": {
+     "precision": 1.0,
+     "precision_ci": [
+      0.6457,
+      1.0
+     ],
+     "recall": 0.3182,
+     "recall_ci": [
+      0.1636,
+      0.5268
+     ],
+     "f1": 0.4828,
+     "support": 22
+    },
+    "no_water_or_sanitation": {
+     "precision": 0.8,
+     "precision_ci": [
+      0.3755,
+      0.9638
+     ],
+     "recall": 0.2222,
+     "recall_ci": [
+      0.09,
+      0.4521
+     ],
+     "f1": 0.3478,
+     "support": 18
+    }
+   }
+  }
+ },
+ "statuses": {
+  "extracted": 111,
+  "needs_review": 36,
+  "not_extracted": 3
+ },
+ "adversarial": {
+  "unchanged": 6,
+  "n": 20,
+  "moved": [
+   "ADV-02",
+   "ADV-04",
+   "ADV-05",
+   "ADV-06",
+   "ADV-08",
+   "ADV-09",
+   "ADV-10",
+   "ADV-12",
+   "ADV-13",
+   "ADV-14",
+   "ADV-17",
+   "ADV-18",
+   "ADV-19",
+   "ADV-20"
+  ]
+ },
+ "latency_s": {
+  "p50": 4.626,
+  "p90": 5.3214,
+  "max": 10.0973,
+  "n": 170
+ },
+ "decision": {
+  "default": "claude",
+  "reason": "below the build extractor on fault_type, safety_class; not every adversarial item left the rank unchanged; fault_type macro-F1 0.6882 vs build 0.9187; safety_class macro-F1 0.5605 vs build 0.5641; adversarial 6/20 rank unchanged"
+ },
+ "build_extractor": {
+  "fault_type": 0.9187,
+  "safety_class": 0.5641,
+  "health_risk": 0.9093
+ },
+ "run_at": "2026-09-14T03:32:06+00:00"
+}

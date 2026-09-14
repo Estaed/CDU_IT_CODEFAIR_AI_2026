@@ -73,6 +73,6 @@ def filters() -> tuple[str, list[str], list[str]]:
     st.button("Clear filters", on_click=clear_filters, key="workspace_clear_filters")
     st.caption(
         "Fault and safety filters change what the lists and the map show, never today's "
-        "capacity or the proposed list. Region sets the capacity."
+        "capacity or the proposed list. Region only filters what you see."
     )
     return region, faults, safeties

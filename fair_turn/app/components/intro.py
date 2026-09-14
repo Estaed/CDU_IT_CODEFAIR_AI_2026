@@ -19,8 +19,8 @@ COPY: dict[str, str] = {
         "a person can fill it in. The system never fills a field on its own."
     ),
     "visit_plan": (
-        "This is the run sheet for the jobs you signed. The order is yours. Distance suggestions "
-        "are only suggestions, and each one shows its reason."
+        "This is the run sheet for the jobs you signed. Distance decides which crew goes to "
+        "each job. It never decides which jobs are done: that is the list you signed."
     ),
     "tenant": (
         "Here is where your repair sits today, and what moved it there. A housing officer checked "

@@ -372,8 +372,8 @@ def test_review_button_sets_the_focus(tmp_path) -> None:
 def test_sent_to_review_job_names_the_reason(tmp_path) -> None:
     first = _ranked()[0].job.job_id
     at = _run(_script(tmp_path, _select(first)))
-    at.text_input(key=f"review_{first}_reason").set_value("tenant describes a different fault")
-    at.button(key=f"review_{first}_submit").click().run(timeout=60)
+    at.text_input(key=f"actions_{first}_reason").set_value("tenant describes a different fault")
+    at.button(key=f"actions_{first}_review").click().run(timeout=60)
     assert not at.exception
     assert first in _human_ids(at)
     assert "Sent to review: tenant describes a different fault" in [

@@ -28,8 +28,8 @@ Fair Turn has five pages, reached from the sidebar.
   selected-job pane, the weighting control, and the sign-off form, all in one place.
 - **Review queue.** The coordinator's second stop. One job at a time, for jobs where a
   needed field has no matching words in the report.
-- **Visit plan.** The coordinator's run sheet, once today's list is signed. Stops in
-  signed order, with optional shorter routes.
+- **Visit plan.** The coordinator's run sheet, once today's list is signed. Each crew
+  gets its stops in the shortest order, and the page shows the road kilometres of the day.
 - **Tenant answer.** For a tenant, or the housing officer helping them. Look up one job
   by its registration number and read a plain-language answer.
 - **Evidence lab.** For judges and governance, outside the coordinator's daily flow. How
@@ -62,8 +62,9 @@ This step list follows how other dispatch tools already work.
    the signer, the weighting, and the reason all go to the log.
 8. **Read the outcomes.** Wait times and travel cost appear only after the first
    signature, so they cannot steer the order before it is set.
-9. **Open the visit plan.** It turns the signed list into a run sheet, in signed order.
-   A shorter route is only a suggestion. It needs a reason before it can be used.
+9. **Open the visit plan.** It turns the signed list into a run sheet. Distance picks
+   which crew goes, never which job is done. It also shows how many extra road km today's
+   weighting costs against the efficiency-first list.
 
 Source: `reports/research-ui-dispatch-products-2026-09-14.md`, "Usage logic a coordinator
 would recognise".

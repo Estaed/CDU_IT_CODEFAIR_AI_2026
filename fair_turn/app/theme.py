@@ -31,7 +31,7 @@ PROVENANCE_LINE = "Geography real (BushTel/ABS); events synthetic"
 LEGEND_LINE = (
     "Colour key — class: Immediate red, Urgent orange, Routine grey · "
     "badges: Needs a human yellow, Set by coordinator grey · "
-    "map: one dot per community, size = open jobs, colour = region."
+    "map: circles group communities and split as you zoom, dot colour = region."
 )
 
 

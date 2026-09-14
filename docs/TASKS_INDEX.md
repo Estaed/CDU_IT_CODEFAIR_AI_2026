@@ -78,7 +78,7 @@ Presentation wave 2 (added 2026-09-14 evening, Tarik's requests):
 - [ ] Task-46: Visual identity: logo, page icons, dark sidebar, tinted tiles
 - [ ] Task-47: Review queue with less typing: reason chips, remembered name, drafted clarification
 - [ ] Task-48: Provider switch and example reports for intake, from the UI
-- [ ] Task-49: Map markers show their job count
+- [x] Task-49: Map markers show their job count
 - [ ] Task-50: User guide in English and an in-app "How to use" popover
 
 ## Routing

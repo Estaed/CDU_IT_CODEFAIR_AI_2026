@@ -16,6 +16,7 @@ MARKER_MAX_PX = 14
 SELECTED_RADIUS_MULTIPLIER = 1.6
 MARKER_LINE_WIDTH_MIN_PX = 1
 SELECTED_LINE_WIDTH_MIN_PX = 3
+COUNT_FONT_PX = 12
 
 
 def _rgb(hex_value: str) -> list[int]:
@@ -31,6 +32,14 @@ def _layer_points(points: list[dict]) -> list[dict]:
             "radius": min(MARKER_MIN_PX + MARKER_STEP_PX * int(point["open_jobs"]), MARKER_MAX_PX),
         }
         for point in points
+    ]
+
+
+def _count_points(layer_points: list[dict]) -> list[dict]:
+    return [
+        {**point, "label": str(point["open_jobs"])}
+        for point in layer_points
+        if int(point["open_jobs"]) > 1
     ]
 
 
@@ -71,12 +80,25 @@ def build_deck(points: list[dict], selected_id: str | None) -> pdk.Deck:
         get_line_color=_rgb(st.get_option("theme.primaryColor")),
         line_width_min_pixels=SELECTED_LINE_WIDTH_MIN_PX,
     )
+    counts = pdk.Layer(
+        "TextLayer",
+        id="counts",
+        data=_count_points(layer_points),
+        pickable=False,
+        get_position=["lon", "lat"],
+        get_text="label",
+        get_size=COUNT_FONT_PX,
+        size_units="'pixels'",
+        get_color=_rgb(st.get_option("theme.backgroundColor")),
+        get_text_anchor="'middle'",
+        get_alignment_baseline="'center'",
+    )
     return pdk.Deck(
-        layers=[jobs, selected],
+        layers=[jobs, selected, counts],
         initial_view_state=pdk.ViewState(latitude=-19, longitude=133, zoom=4),
         map_provider="carto",
         map_style="light",
-        tooltip={"html": "<b>{job_id}</b><br/>{community_id}"},
+        tooltip={"html": "<b>{job_id}</b><br/>{community_id} · {open_jobs} open"},
     )
 
 
@@ -86,8 +108,8 @@ def picked_id(event) -> str | None:
     if selection is None:
         return None
     objects = selection.get("objects", {})
-    for picked in objects.values():
-        if picked:
+    for layer_id, picked in objects.items():
+        if layer_id != "counts" and picked:
             return picked[0].get("job_id")
     return None
 

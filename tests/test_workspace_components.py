@@ -83,7 +83,8 @@ def _map_choice_script(tmp_path: Path, community_id: str, job_ids: list[str]) ->
 
 def test_deck_spec_has_selected_layer_and_carto_style(points) -> None:
     spec = json.loads(workspace_map.build_deck(points, "JR-2025-00002").to_json())
-    assert len(spec["layers"]) == 2
+    assert len(spec["layers"]) == 3
+    assert [layer["id"] for layer in spec["layers"]] == ["jobs", "selected", "counts"]
     assert len(spec["layers"][1]["data"]) == 1
     assert spec["layers"][1]["data"][0]["job_id"] == "JR-2025-00002"
     assert spec["mapProvider"] == "carto"
@@ -91,10 +92,25 @@ def test_deck_spec_has_selected_layer_and_carto_style(points) -> None:
     assert all("cartocdn.com" in value for value in _urls(spec))
 
 
+def test_counts_layer_only_covers_multi_job_points_and_is_not_pickable(points) -> None:
+    spec = json.loads(workspace_map.build_deck(points, "JR-2025-00002").to_json())
+    counts = spec["layers"][2]
+    assert counts["sizeUnits"] == "pixels"
+    assert "@@=" not in counts["sizeUnits"]
+    assert counts["pickable"] is False
+    assert [point["job_id"] for point in counts["data"]] == ["JR-2025-00002", "JR-2025-00003"]
+    assert [point["label"] for point in counts["data"]] == ["2", "3"]
+
+
+def test_tooltip_carries_the_open_job_count(points) -> None:
+    deck = workspace_map.build_deck(points, "JR-2025-00002")
+    assert "{open_jobs} open" in deck._tooltip["html"]
+
+
 def test_deck_spec_uses_pixel_markers_without_accessor_units(points) -> None:
     points[-1]["open_jobs"] = 99
     spec = json.loads(workspace_map.build_deck(points, "JR-2025-00002").to_json())
-    jobs, selected = spec["layers"]
+    jobs, selected, _counts = spec["layers"]
     for layer in (jobs, selected):
         assert layer["radiusUnits"] == "pixels"
         assert "@@=" not in layer["radiusUnits"]
@@ -176,3 +192,8 @@ def test_picked_id_handles_first_object_and_empty_selection() -> None:
     )
     assert workspace_map.picked_id(event) == "JR-2"
     assert workspace_map.picked_id(SimpleNamespace(selection={"objects": {}})) is None
+
+
+def test_picked_id_ignores_a_counts_only_selection() -> None:
+    event = SimpleNamespace(selection={"objects": {"counts": [{"job_id": "JR-2"}]}})
+    assert workspace_map.picked_id(event) is None

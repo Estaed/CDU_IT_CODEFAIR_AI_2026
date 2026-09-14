@@ -72,6 +72,15 @@ Presentation wave (added 2026-09-14 from `reports/research-ui-*-2026-09-14.md`, 
 - [x] Task-42: Selected-job pane as a summary list with badges
 - [x] Task-44: Evidence lab headline tiles and expanders
 
+Presentation wave 2 (added 2026-09-14 evening, Tarik's requests):
+
+- [ ] Task-45: Today's list as readable job rows with one-click open
+- [ ] Task-46: Visual identity: logo, page icons, dark sidebar, tinted tiles
+- [ ] Task-47: Review queue with less typing: reason chips, remembered name, drafted clarification
+- [ ] Task-48: Provider switch and example reports for intake, from the UI
+- [ ] Task-49: Map markers show their job count
+- [ ] Task-50: User guide in English and an in-app "How to use" popover
+
 ## Routing
 
 Summary of each task's Execution and Lane blocks; the task file wins on disagreement.
@@ -122,6 +131,12 @@ Summary of each task's Execution and Lane blocks; the task file wins on disagree
 | 41 | codex | no | high | 38, 40 |
 | 42 | codex | no | high | 37, 40 |
 | 44 | codex | no | medium | 40 |
+| 45 | claude | no | high | 38, 41, 42 |
+| 46 | claude | no | high | 40 |
+| 47 | claude | no | high | 39 |
+| 48 | claude | no | medium | none |
+| 49 | claude | no | medium | 37 |
+| 50 | claude | no | medium | 40 |
 
 **Parallel waves** (from the dependency graph, for `otopilot`): after 00 → {01, 02}; after
 02 → {04, 06, 07, 08}; then {03, 05, 09}; 10 → 11 → {12, 13}; after 13 → {14, 19}; 14 →

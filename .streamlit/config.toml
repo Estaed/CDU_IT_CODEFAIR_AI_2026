@@ -11,7 +11,8 @@ borderColor = "#e0e0e0"
 # Surface 1 / backgroundColor token
 baseFontSize = 15
 # Smaller page title / textColor token
-headingFontSizes = { h1 = "1.75rem" }
+# h1..h6; the option takes a list or one string, never a table (streamlit/config.py, 1.63)
+headingFontSizes = ["1.75rem", "1.5rem", "1.25rem", "1.125rem", "1rem", "0.875rem"]
 metricValueFontSize = "2rem"
 # Surface 1 / secondaryBackgroundColor token
 dataframeHeaderBackgroundColor = "#f4f4f4"

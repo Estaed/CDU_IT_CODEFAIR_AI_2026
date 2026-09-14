@@ -181,6 +181,8 @@ Datasets is a judging criterion; every source below goes into the report.
   report 80 obstructions, NT open data mobile-coverage XLSX). See `data/raw/PROVENANCE.md`.
   Fetch script: `scripts/fetch_raw_sources.py`. BushTel follows the NT Open Data Creative
   Commons licence (BushTel team email, 2026-09-14); the road-report licence is still TBD.
+  BoM material is CC BY 4.0 with the standard Commonwealth attribution (BoM email,
+  2026-09-14, CAS-141210-H2K1C8); the mean-maximum values themselves are still unverified.
 
 ## Decisions at PRD time (2026-09-12) — now recorded in docs/PRD.md
 

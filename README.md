@@ -148,7 +148,7 @@ Reduced from `data/raw/PROVENANCE.md`:
 | NT road report (obstructions) | to be confirmed |
 | NT open data mobile coverage 2021 | Creative Commons Attribution |
 | Natural Earth admin-1 outline | Public domain |
-| BoM monthly mean-maximum normals | Cited, unverified |
+| BoM monthly mean-maximum normals | CC BY 4.0; attribution: Bureau of Meteorology, © Commonwealth of Australia. Licensed from the Commonwealth of Australia under a Creative Commons Attribution 4.0 International licence. Values still unverified |
 
 ## Packaging
 

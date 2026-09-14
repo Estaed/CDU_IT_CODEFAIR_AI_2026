@@ -68,6 +68,9 @@ Presentation wave (added 2026-09-14 from `reports/research-ui-*-2026-09-14.md`, 
 - [ ] Task-38: Workspace table shows the whole row; a job is always selected; filters as pills
 - [ ] Task-39: Empty and refusal states that show what they refuse; review queue and tenant framing
 - [ ] Task-40: Government chrome through theme keys, the one stylesheet seam, page intros
+- [ ] Task-41: Workspace KPI row, effect sentence in the main column, outcome tiles after signature
+- [ ] Task-42: Selected-job pane as a summary list with badges
+- [ ] Task-44: Evidence lab headline tiles and expanders
 
 ## Routing
 
@@ -116,6 +119,9 @@ Summary of each task's Execution and Lane blocks; the task file wins on disagree
 | 38 | codex | no | high | 40 |
 | 39 | codex | no | medium | 40 |
 | 40 | codex | no | medium | none |
+| 41 | codex | no | high | 38, 40 |
+| 42 | codex | no | high | 37, 40 |
+| 44 | codex | no | medium | 40 |
 
 **Parallel waves** (from the dependency graph, for `otopilot`): after 00 → {01, 02}; after
 02 → {04, 06, 07, 08}; then {03, 05, 09}; 10 → 11 → {12, 13}; after 13 → {14, 19}; 14 →
@@ -124,7 +130,7 @@ run in the main loop, one at a time.
 
 **Phase 2 parallel waves** (from the DEPENDS ON lines): wave A {22, 23, 24, 27}; wave B
 {25, 28, 31 after 23+24+28}; wave C {26, 29}; then 30; wave D {32, 33, 34}; then 35; then
-36 alone. **Presentation wave (2026-09-14):** {37, 40} first, then {38, 39} after 40 is integrated. `agent codex` means a bee; which pool the bee runs in (Codex or a Claude
+36 alone. **Presentation wave (2026-09-14):** {37, 40} first, then {38, 39} after 40 is integrated. Second wave {41, 42, 44} after 38 is integrated (43 was not needed: the tenant page already carries the counterfactual rank and the FS17 window). `agent codex` means a bee; which pool the bee runs in (Codex or a Claude
 sub-agent) is the chef's call at spawn time from the live limits, never the main loop
 typing the code. Tasks 27 and 36 have a real run the main loop performs on Tarik's
 machine after the bee's gate is green.

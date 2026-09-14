@@ -272,6 +272,12 @@ st.caption(ANCHORING_CAPTION)
 today = state.get_today()
 queue = _queue(art, today)
 n = len(queue)
+focus = state.get_review_focus()  # set by the workspace "Needs a human" tab
+if focus is not None:
+    position = next((i for i, queued in enumerate(queue) if queued.job_id == focus), None)
+    if position is not None:
+        state.set_review_cursor(position)
+    state.clear_review_focus()
 
 if n == 0:
     st.success("All reports reviewed")

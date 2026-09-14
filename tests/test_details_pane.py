@@ -9,7 +9,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app.components import details_pane, highlight, ranking_table
-from fair_turn.core import audit, constants, scoring
+from fair_turn.core import audit, constants, decisions, scoring
 from fair_turn.data import artefacts, policy, runtime
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,6 +34,11 @@ def _open_jobs():
     return today, ranking_table.open_jobs(today)
 
 
+def _crew(jobs):
+    """The jobs a crew ranking holds: Immediate jobs go to the make-safe lane (2026-09-15)."""
+    return [job for job in jobs if not decisions.is_make_safe(job)]
+
+
 def _script(tmp_path: Path, job_id: str) -> Path:
     """Create an offline Streamlit app that renders only the selected-job pane."""
     script = tmp_path / "details_pane_app.py"
@@ -41,7 +46,7 @@ def _script(tmp_path: Path, job_id: str) -> Path:
         "from pathlib import Path\n"
         "from fair_turn.app import state\n"
         "from fair_turn.app.components import details_pane, ranking_table\n"
-        "from fair_turn.core import constants, scoring\n"
+        "from fair_turn.core import constants, decisions, scoring\n"
         "from fair_turn.data import artefacts\n"
         "from datetime import timedelta\n"
         f'state.set_runtime_path(Path(r"{tmp_path / "runtime.jsonl"}"))\n'
@@ -50,7 +55,9 @@ def _script(tmp_path: Path, job_id: str) -> Path:
         "art = artefacts.load_all()\n"
         "today = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)\n"
         "jobs = ranking_table.open_jobs(today)\n"
-        "current = scoring.rank(jobs, today, 1.0)\n"
+        # Immediate jobs go to the make-safe lane, not the ranking (PRD 3.1, 2026-09-15).
+        "crew = [j for j in jobs if not decisions.is_make_safe(j)]\n"
+        "current = scoring.rank(crew, today, 1.0)\n"
         "details_pane.render(\n"
         '    art, jobs, current, ranking_table.capacity("All"), set(), today, 1.0\n'
         ")\n",
@@ -79,7 +86,7 @@ def _page_text(at: AppTest) -> str:
 
 def test_ranked_and_review_jobs_show_their_status_badges(art, tmp_path) -> None:
     today, jobs = _open_jobs()
-    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    ranked = scoring.rank(_crew(jobs), today, 1.0)[0].job
     ranked_text = _page_text(_run(tmp_path, ranked.job_id))
     assert ranked.safety_class is not None
     assert ranked.safety_class.value.capitalize() in ranked_text
@@ -92,7 +99,7 @@ def test_ranked_and_review_jobs_show_their_status_badges(art, tmp_path) -> None:
 
 def test_summary_list_has_score_then_all_four_factors(art, tmp_path) -> None:
     today, jobs = _open_jobs()
-    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    ranked = scoring.rank(_crew(jobs), today, 1.0)[0].job
     values = _markdown(_run(tmp_path, ranked.job_id))
     labels = ["Score", "urgency", "safety", "household health risk", "logistics"]
     positions = [
@@ -140,7 +147,7 @@ def _rendered_report(art, job_id: str) -> str:
 
 def test_header_reads_as_a_short_id_with_the_registration_in_the_caption(art, tmp_path) -> None:
     today, jobs = _open_jobs()
-    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    ranked = scoring.rank(_crew(jobs), today, 1.0)[0].job
     at = _run(tmp_path, ranked.job_id)
     heading = at.subheader[0].value
     assert heading.startswith(f"Job {ranking_table.short_id(ranked.job_id)} ")
@@ -154,7 +161,7 @@ def test_header_reads_as_a_short_id_with_the_registration_in_the_caption(art, tm
 
 def test_report_text_is_rendered_above_the_explanation(art, tmp_path) -> None:
     today, jobs = _open_jobs()
-    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    ranked = scoring.rank(_crew(jobs), today, 1.0)[0].job
     at = _run(tmp_path, ranked.job_id)
     values = _markdown(at)
     report = values.index(_rendered_report(art, ranked.job_id))
@@ -164,7 +171,7 @@ def test_report_text_is_rendered_above_the_explanation(art, tmp_path) -> None:
 
 def test_fields_and_policy_sit_in_their_own_expanders(art, tmp_path) -> None:
     today, jobs = _open_jobs()
-    ranked = scoring.rank(jobs, today, 1.0)[0].job
+    ranked = scoring.rank(_crew(jobs), today, 1.0)[0].job
     labels = [block.label for block in _run(tmp_path, ranked.job_id).get("expander")]
     assert "Fields read from the report" in labels
     assert "Policy reference" in labels
@@ -196,7 +203,7 @@ def test_a_long_policy_passage_is_cut_with_the_full_text_one_click_away(art, tmp
 
 def test_action_buttons_say_what_they_do(art, tmp_path) -> None:
     today, jobs = _open_jobs()
-    ranked = scoring.rank(jobs, today, 1.0)
+    ranked = scoring.rank(_crew(jobs), today, 1.0)
     cap = ranking_table.capacity("All")
     at = _run(tmp_path, ranked[1].job.job_id)
     assert {"↑ Up", "↓ Down", "To review"} <= set(_buttons(at))
@@ -216,7 +223,7 @@ def test_action_buttons_say_what_they_do(art, tmp_path) -> None:
 
 def test_actions_form_has_exactly_one_reason_box(art, tmp_path) -> None:
     today, jobs = _open_jobs()
-    ranked = scoring.rank(jobs, today, 1.0)[1].job
+    ranked = scoring.rank(_crew(jobs), today, 1.0)[1].job
     at = _run(tmp_path, ranked.job_id)
     assert len(at.text_input) == 1
     assert at.text_input[0].label == "Why?"
@@ -236,7 +243,7 @@ def test_badges_use_named_colours_without_hex_literals() -> None:
 
 def _ranked_job_id(index: int = 0) -> str:
     today, jobs = _open_jobs()
-    return scoring.rank(jobs, today, 1.0)[index].job.job_id
+    return scoring.rank(_crew(jobs), today, 1.0)[index].job.job_id
 
 
 def test_decision_section_is_the_last_block_with_the_read_tick(art, tmp_path) -> None:

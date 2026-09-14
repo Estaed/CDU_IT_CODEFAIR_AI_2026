@@ -9,7 +9,7 @@ import streamlit as st
 
 from fair_turn.app import state
 from fair_turn.app.components import highlight, ranking_table
-from fair_turn.core import audit, decisions, explain, scoring, verify_spans
+from fair_turn.core import audit, constants, decisions, explain, scoring, verify_spans
 from fair_turn.core.batch import HandMove
 from fair_turn.core.types import FaultType, Job, SafetyClass, ScoredJob
 from fair_turn.data import policy, runtime
@@ -41,6 +41,13 @@ REJECT_OPTIONS = {
     "Needs a person: send it to the review queue": "needs_person",
     "A field is wrong: fix it": "field",
 }
+MAKE_SAFE_WHY = (
+    f"Immediate: the NT window is make safe within {constants.MAKE_SAFE_HOURS} hours. This job "
+    "goes to the emergency make-safe contractor, not into the ranked list, so the weighting "
+    "does not move it and it takes no crew place."
+)
+MAKE_SAFE_PLACEHOLDER = "e.g. contractor booked by phone, attending this afternoon"
+MAKE_SAFE_SENT = "Sent to make-safe contractor"
 FIXABLE_FIELDS = {"fault_type": FaultType, "safety_class": SafetyClass}
 FIELD_FACTOR = {
     "fault_type": "safety",
@@ -439,6 +446,39 @@ def _decision_section(
             _reject_form(job_id, today)
 
 
+def _make_safe_section(job: Job, today: date) -> None:
+    """The last block of the pane for an Immediate job: one send to the make-safe contractor
+    with a reason, independent of today's signature (PRD 3.1)."""
+    job_id = job.job_id
+    with st.container(border=True):
+        st.markdown(f"**{DECISION_TITLE}**")
+        record = audit.make_safe_sent(audit.read(state.get_audit_path())).get(job_id)
+        if record is not None:
+            at = f"{record.recorded_at.astimezone():%H:%M}"
+            st.markdown(
+                f":material/check: Sent to make-safe contractor by {record.actor} at {at}: "
+                f"{record.reason}"
+            )
+            return
+        reason = st.text_input(
+            "Why?", key=f"make_safe_reason_{job_id}", placeholder=MAKE_SAFE_PLACEHOLDER
+        ).strip()
+        actor = st.text_input(
+            "Your name", value=state.get_actor(), key=f"make_safe_actor_{job_id}"
+        ).strip()
+        if not st.button(
+            MAKE_SAFE_SENT, key=f"make_safe_sent_{job_id}", type="primary", width="stretch"
+        ):
+            return
+        if not reason:
+            st.error(REASON_REQUIRED)
+            return
+        actor = actor or "coordinator"
+        state.set_actor(actor)
+        audit.append(state.get_audit_path(), audit.MakeSafe(today, job_id, actor, reason))
+        st.rerun()
+
+
 def _fields_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -> None:
     row = art.extraction.get(job_id)
     evidence = _evidence(art, job_id)
@@ -642,6 +682,7 @@ def render(
 
     scored = next((s for s in current if s.job.job_id == selected), None)
     in_review = job.needs_human or selected in review_ids
+    make_safe = not in_review and decisions.is_make_safe(job)
     fault = _label(job.fault_type.value) if job.fault_type is not None else "—"
     safety = job.safety_class.value if job.safety_class is not None else "—"
     window = _window_label(job, today)
@@ -655,7 +696,10 @@ def render(
         job_split = decisions.split([s.job.job_id for s in current], latest, cap)
 
     _report_block(art, selected)
-    if in_review or scored is None:
+    if make_safe:
+        st.markdown("**Make safe now.**")
+        st.write(MAKE_SAFE_WHY)
+    elif in_review or scored is None:
         st.warning(IN_REVIEW)
     else:
         st.markdown("**Why it sits here.**")
@@ -664,5 +708,8 @@ def render(
     _summary_list(art, job, scored, today, _evidence(art, selected), human_set)
     _fields_expander(art, selected, human_set)
     _policy_expander(art, job)
+    if make_safe:
+        _make_safe_section(job, today)
+        return
     _actions(job, current, job_split, today, in_review)
     _decision_section(job, current, job_split, today, in_review, signed)

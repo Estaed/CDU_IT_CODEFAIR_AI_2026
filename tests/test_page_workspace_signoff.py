@@ -16,7 +16,7 @@ from streamlit.testing.v1 import AppTest
 from fair_turn.app import state
 from fair_turn.app.components import details_pane, metrics, ranking_table, sign_off_form
 from fair_turn.app.components import map as nt_map_component
-from fair_turn.core import audit, capacity_sim, constants, scoring
+from fair_turn.core import audit, capacity_sim, constants, decisions, scoring
 from fair_turn.data import artefacts
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -72,7 +72,9 @@ def _accept_today(audit_path: Path) -> list[str]:
     """Accept the efficiency-first top of today's list in the audit log, so To decide is
     empty and Review and sign opens. Returns the accepted ids in rank order."""
     cap = ranking_table.capacity(state.ALL_REGIONS)
-    ranked = scoring.rank(ranking_table.open_jobs(LAST_DAY), LAST_DAY, 1.0)
+    # Immediate jobs go to the make-safe lane, not today's list (PRD 3.1, 2026-09-15).
+    crew = [j for j in ranking_table.open_jobs(LAST_DAY) if not decisions.is_make_safe(j)]
+    ranked = scoring.rank(crew, LAST_DAY, 1.0)
     ids = [s.job.job_id for s in ranked[:cap]]
     for job_id in ids:
         audit.append(audit_path, audit.JobDecision(LAST_DAY, job_id, "accepted", "A. Coordinator"))

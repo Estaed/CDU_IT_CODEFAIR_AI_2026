@@ -1,5 +1,6 @@
 """Round-trip, two-clock and export-schema tests for the audit log."""
 
+import json
 from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -9,7 +10,8 @@ import pytest
 from fair_turn.core import audit
 
 DARWIN = ZoneInfo("Australia/Darwin")
-SAMPLE_PATH = Path(__file__).resolve().parent.parent / "data" / "audit" / "sample.jsonl"
+ROOT = Path(__file__).resolve().parent.parent
+SAMPLE_PATH = ROOT / "data" / "audit" / "sample.jsonl"
 EXPORT_KEYS = [
     "kind",
     "decision_day",
@@ -104,6 +106,7 @@ def _records() -> list[audit.Record]:
         audit.JobDecision(
             date(2026, 9, 1), "job-11", "not_today", "Tarik", "tenant away", recorded_at
         ),
+        audit.MakeSafe(date(2026, 9, 1), "job-12", "Tarik", "contractor booked", recorded_at),
     ]
 
 
@@ -313,3 +316,82 @@ def test_latest_decisions_keeps_the_newest_per_job_on_that_day() -> None:
         _sign_off(),
     ]
     assert audit.latest_decisions(records, day) == {"job-1": "undone", "job-2": "not_today"}
+
+
+# --- make-safe lane (PRD 3.1 and 6.3, amended 2026-09-15) ----------------------------------------
+
+
+def test_make_safe_round_trip_keeps_both_clocks_and_exports_its_row(tmp_path: Path) -> None:
+    path = tmp_path / "log.jsonl"
+    day = date(2025, 12, 30)  # the dataset day, far from the wall clock
+    before = datetime.now().astimezone()
+    record = audit.MakeSafe(day, "job-1", "Tarik", "contractor booked by phone")
+    audit.append(path, record)
+    assert '"kind": "make_safe"' in path.read_text("utf-8")
+    (read_back,) = audit.read(path)
+    assert read_back == record
+    assert isinstance(read_back, audit.MakeSafe)
+    assert read_back.day == day
+    assert read_back.recorded_at.tzinfo is not None
+    assert read_back.recorded_at >= before
+    row = audit.export_rows([read_back])[0]
+    assert list(row) == EXPORT_KEYS
+    assert row["kind"] == "make_safe"
+    assert (row["job_id"], row["signer"], row["reason"]) == (
+        "job-1",
+        "Tarik",
+        "contractor booked by phone",
+    )
+    assert row["detail"] == "sent to make-safe contractor"
+    assert row["decision_day"] == "2025-12-30"
+    assert row["recorded_at"] == read_back.recorded_at.isoformat()
+    assert row["decision_day"] != row["recorded_at"][:10]
+
+
+def test_make_safe_is_frozen_and_needs_a_reason() -> None:
+    day = date(2026, 9, 1)
+    for reason in ("", "   ", "\t\n"):
+        with pytest.raises(ValueError):
+            audit.MakeSafe(day, "job-1", "Tarik", reason)
+    record = audit.MakeSafe(day, "job-1", "Tarik", "booked")
+    with pytest.raises(AttributeError):
+        record.reason = "changed"  # type: ignore[misc]
+    naive = audit.MakeSafe(day, "job-1", "Tarik", "booked", datetime(2026, 9, 1, 9, 0))
+    assert naive.recorded_at.tzinfo is not None
+
+
+def test_make_safe_sent_keeps_the_newest_per_job_on_any_day() -> None:
+    first = audit.MakeSafe(date(2026, 9, 1), "job-1", "A", "first call")
+    second = audit.MakeSafe(date(2026, 9, 2), "job-1", "B", "second call")
+    other = audit.MakeSafe(date(2026, 8, 30), "job-2", "A", "booked")
+    records = [
+        first,
+        _sign_off(),
+        audit.JobDecision(date(2026, 9, 1), "job-3", "accepted", "A"),
+        other,
+        second,
+    ]
+    assert audit.make_safe_sent(records) == {"job-1": second, "job-2": other}
+    assert audit.make_safe_sent([second, first]) == {"job-1": first}  # file order wins
+    assert audit.make_safe_sent([_sign_off(), _revision()]) == {}
+
+
+def _immediate_label_ids() -> set[str]:
+    labels = json.loads((ROOT / "data" / "build" / "labels.json").read_text("utf-8"))
+    return {label["job_id"] for label in labels if label["safety_class"] == "immediate"}
+
+
+def _assert_sample_signs_crew_jobs_and_sends_one_make_safe(records) -> None:
+    immediate = _immediate_label_ids()
+    sign_offs = [r for r in records if isinstance(r, audit.SignOff)]
+    assert sign_offs
+    for record in sign_offs:
+        assert not immediate & set(record.ranked_job_ids)
+        assert not immediate & set(record.today_job_ids)
+    (make_safe,) = [r for r in records if isinstance(r, audit.MakeSafe)]
+    assert make_safe.reason.strip()
+    assert make_safe.job_id in immediate
+
+
+def test_seeded_sample_signs_only_crew_jobs_and_sends_one_make_safe() -> None:
+    _assert_sample_signs_crew_jobs_and_sends_one_make_safe(audit.read(SAMPLE_PATH))

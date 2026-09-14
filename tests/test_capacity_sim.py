@@ -8,6 +8,7 @@ the nearest free crew that reaches it."""
 import csv
 import json
 import time
+from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -83,7 +84,8 @@ def test_batching_completes_a_community_in_one_visit() -> None:
 
 def test_batching_is_capped_by_capacity_in_rank_order() -> None:
     jobs = [make_job(f"j{i}", "near") for i in range(4)]
-    jobs.append(make_job("top", "near", safety_class=SafetyClass.IMMEDIATE))
+    # Urgent, not Immediate: an Immediate job goes to the make-safe contractor, no slot.
+    jobs.append(make_job("top", "near", safety_class=SafetyClass.URGENT))
     result = run(jobs, jobs_per_crew_day=4)
     assert result.wait_days["top"] == 0
     assert sorted(result.wait_days[f"j{i}"] for i in range(4)) == [0, 0, 0, 1]
@@ -137,10 +139,10 @@ def test_road_factor_scales_trip_km_and_the_travel_day_rule() -> None:
 
 
 def _far_high_need_fixture() -> list[Job]:
-    far = make_job(
+    far = make_job(  # Urgent, not Immediate: Immediate jobs never use a crew
         "far",
         "far",
-        safety_class=SafetyClass.IMMEDIATE,
+        safety_class=SafetyClass.URGENT,
         health_risk=frozenset({HealthRiskFactor.ELDERLY}),
         logistics_factor=380.0,
     )
@@ -181,13 +183,16 @@ def test_a_crew_never_serves_a_community_outside_its_reach() -> None:
 
 def test_a_higher_ranked_community_nobody_free_reaches_does_not_hold_back_the_next() -> None:
     sites = {**SITES, "away": site_at(500.0, region="OTHER")}
-    away = make_job("x", "away", safety_class=SafetyClass.IMMEDIATE)
+    away = make_job("x", "away", safety_class=SafetyClass.URGENT)  # Immediate: no crew
     result = run([away, make_job("n", "near")], sites=sites)
     assert result.wait_days["n"] == 0
 
 
+CREW_CLASSES = tuple(c for c in SafetyClass if c is not SafetyClass.IMMEDIATE)
+
+
 @st.composite
-def pooled_days(draw):
+def pooled_days(draw, crew_classes=CREW_CLASSES):
     community_count = draw(st.integers(1, 6))
     coords = [
         (
@@ -202,7 +207,8 @@ def pooled_days(draw):
         st.lists(
             st.tuples(
                 st.integers(0, community_count - 1),
-                st.sampled_from(list(SafetyClass)),
+                # Crew dispatch covers crew jobs; Immediate jobs have their own property.
+                st.sampled_from(crew_classes),
                 st.floats(0, 100, allow_nan=False, allow_infinity=False),
             ),
             min_size=1,
@@ -297,6 +303,94 @@ def test_no_crew_ever_serves_a_community_outside_its_reach(case) -> None:
     by_id = {crew.crew_id: crew for crew in crews}
     for _, crew_id, community in result.visits:
         assert _reached(by_id[crew_id], sites[community])
+
+
+@settings(max_examples=100, deadline=None)
+@given(pooled_days(crew_classes=tuple(SafetyClass)), st.data())
+def test_immediate_jobs_change_nothing_for_crew_jobs_and_complete_on_their_report_day(
+    case, data
+) -> None:
+    jobs, sites, crews, lam = case
+    shift = data.draw(st.lists(st.integers(0, 4), min_size=len(jobs), max_size=len(jobs)))
+    jobs = [
+        replace(j, reported_on=START + timedelta(days=d)) for j, d in zip(jobs, shift, strict=True)
+    ]
+    kwargs = dict(
+        closures=[],
+        crews=crews,
+        jobs_per_crew_day=1,
+        travel_day_km=TRAVEL_DAY,
+        sites=sites,
+    )
+    crew_jobs = [j for j in jobs if j.safety_class is not SafetyClass.IMMEDIATE]
+    everything = capacity_sim.simulate(jobs, lam, START, 6, **kwargs)
+    crews_only = capacity_sim.simulate(crew_jobs, lam, START, 6, **kwargs)
+    for job in jobs:
+        if job.safety_class is SafetyClass.IMMEDIATE:
+            assert everything.completed_on[job.job_id] == job.reported_on
+            assert everything.wait_days[job.job_id] == 0
+        else:
+            assert everything.completed_on[job.job_id] == crews_only.completed_on[job.job_id]
+    assert everything.visits == crews_only.visits
+    assert everything.travel_cost == crews_only.travel_cost
+    assert everything.travel_km == pytest.approx(crews_only.travel_km)
+    assert everything.queue_length == crews_only.queue_length
+
+
+def test_an_immediate_job_takes_no_crew_slot() -> None:
+    routine = make_job("a")
+    immediate = make_job("b", safety_class=SafetyClass.IMMEDIATE)
+    result = run([routine, immediate])
+    assert result.completed_on == {"a": START, "b": START}
+    assert result.wait_days == {"a": 0, "b": 0}
+
+
+def test_an_immediate_job_far_away_costs_no_travel_and_no_visit() -> None:
+    far = make_job("x", "far", safety_class=SafetyClass.IMMEDIATE, logistics_factor=380.0)
+    result = run([far])
+    assert result.completed_on["x"] == START
+    assert result.wait_days["x"] == 0
+    assert result.travel_cost == 0.0
+    assert result.travel_km == 0.0
+    assert result.visits == []
+
+
+def test_an_immediate_job_outside_every_crews_reach_is_still_made_safe() -> None:
+    sites = {**SITES, "away": site_at(500.0, region="OTHER")}
+    result = run([make_job("x", "away", safety_class=SafetyClass.IMMEDIATE)], sites=sites)
+    assert result.completed_on["x"] == START
+    assert result.visits == []
+
+
+def test_a_road_closure_does_not_delay_an_immediate_job() -> None:
+    closure = Closure("near", START, START + timedelta(days=5))
+    immediate = make_job("i", "near", safety_class=SafetyClass.IMMEDIATE)
+    routine = make_job("r", "near")
+    result = run([immediate, routine], closures=[closure])
+    assert result.completed_on["i"] == START and result.wait_days["i"] == 0
+    assert result.wait_days["r"] == 6  # the crew job still waits for the road
+
+
+def test_an_immediate_job_is_completed_on_its_report_day_not_before() -> None:
+    later = START + timedelta(days=3)
+    immediate = make_job("i", "near", safety_class=SafetyClass.IMMEDIATE, reported_on=later)
+    result = run([immediate], days=6)
+    assert result.completed_on["i"] == later
+    assert result.wait_days["i"] == 0
+
+
+def test_immediate_jobs_are_not_in_the_queue_but_count_in_the_medians_with_wait_zero() -> None:
+    jobs = [
+        make_job("t1"),
+        make_job("t2"),
+        make_job("t3", safety_class=SafetyClass.IMMEDIATE),
+        make_job("r1", "near", safety_class=SafetyClass.IMMEDIATE),
+    ]
+    result = run(jobs, days=3)
+    assert result.queue_length == [2, 1, 0]
+    assert result.wait_days == {"t1": 0, "t2": 1, "t3": 0, "r1": 0}
+    assert result.median_wait_town == 0.0  # waits 0, 1, 0
+    assert result.median_wait_remote == 0.0
 
 
 def test_medians_split_town_and_remote_and_queue_length_counts_open_jobs() -> None:

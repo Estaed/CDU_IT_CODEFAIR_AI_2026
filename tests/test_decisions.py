@@ -2,10 +2,13 @@
 (PRD 3.1): an acceptance is never dropped, a job decided not today never comes back that day,
 and the free places go to the best-ranked undecided jobs."""
 
+from datetime import date
+
 from hypothesis import given
 from hypothesis import strategies as st
 
 from fair_turn.core import decisions
+from fair_turn.core.types import FaultType, Job, SafetyClass
 
 DECISION = st.sampled_from(["accepted", "not_today", "undone", None])
 
@@ -103,3 +106,38 @@ def test_undo_restores_the_earlier_split(day, data) -> None:
 
 def decisions_made() -> tuple[str, str]:
     return (decisions.ACCEPTED, decisions.NOT_TODAY)
+
+
+# --- the make-safe lane (PRD 3.1 and 6.3, amended 2026-09-15) ------------------------------------
+
+
+def _job(**overrides) -> Job:
+    base = dict(
+        job_id="job-1",
+        community_id="c1",
+        is_remote=True,
+        reported_on=date(2026, 9, 1),
+        fault_type=FaultType.PLUMBING_WATER,
+        safety_class=SafetyClass.IMMEDIATE,
+    )
+    base.update(overrides)
+    return Job(**base)
+
+
+@given(
+    st.sampled_from([None, *FaultType]),
+    st.sampled_from([None, *SafetyClass]),
+)
+def test_is_make_safe_iff_every_required_field_and_immediate(fault, safety) -> None:
+    job = _job(fault_type=fault, safety_class=safety)
+    expected = fault is not None and safety is SafetyClass.IMMEDIATE
+    assert decisions.is_make_safe(job) is expected
+    assert decisions.is_make_safe(job) is (
+        not job.needs_human and job.safety_class is SafetyClass.IMMEDIATE
+    )
+
+
+def test_an_immediate_job_missing_its_fault_type_is_for_a_person_not_make_safe() -> None:
+    assert decisions.is_make_safe(_job())
+    assert not decisions.is_make_safe(_job(fault_type=None))
+    assert not decisions.is_make_safe(_job(safety_class=SafetyClass.URGENT))

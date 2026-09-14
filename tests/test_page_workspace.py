@@ -6,6 +6,7 @@ import json
 import re
 import socket
 from collections import Counter
+from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -21,8 +22,9 @@ from fair_turn.app.components import (
     ranking_table,
     run_sheet,
 )
-from fair_turn.core import audit, constants, scoring
+from fair_turn.core import audit, constants, decisions, scoring
 from fair_turn.core.batch import HandMove
+from fair_turn.core.types import SafetyClass
 from fair_turn.data import artefacts, policy, runtime
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -63,7 +65,9 @@ def art() -> artefacts.Artefacts:
 
 
 def _ranked():
-    return scoring.rank(ranking_table.open_jobs(LAST_DAY), LAST_DAY, 1.0)
+    # Immediate jobs go to the make-safe lane, never into the crew ranking (PRD 3.1, 2026-09-15).
+    jobs = [j for j in ranking_table.open_jobs(LAST_DAY) if not decisions.is_make_safe(j)]
+    return scoring.rank(jobs, LAST_DAY, 1.0)
 
 
 def _script(tmp_path: Path, *lines: str) -> Path:
@@ -112,6 +116,12 @@ def _select(job_id: str) -> str:
     return f'state.set_selected_job_id("{job_id}")'
 
 
+def _heading(job) -> str:
+    """The pane heading: short id and the community label as the pane renders it."""
+    label = ranking_table.community_label(job.community_id)
+    return f"Job {ranking_table.short_id(job.job_id)} · {label}"
+
+
 def _open_needs_human(art, missing) -> str:
     open_ids = {j.job_id for j in ranking_table.open_jobs(LAST_DAY)}
     candidates = [
@@ -143,9 +153,7 @@ def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) 
     assert queue
     assert not queue & (set(today) | set(backlog["job_id"]))
     top = _ranked()[0].job
-    assert f"Job {ranking_table.short_id(top.job_id)} · {top.community_id}" in [
-        s.value for s in at.subheader
-    ]
+    assert _heading(top) in [s.value for s in at.subheader]
     assert details_pane.NOTHING_SELECTED not in [i.value for i in at.info]
 
 
@@ -170,9 +178,7 @@ def test_opening_a_row_selects_that_job(tmp_path) -> None:
     at = _run(_script(tmp_path))
     at.button(key=f"{TODAY_ROWS_KEY}_open_{second.job_id}").click().run(timeout=60)
     assert not at.exception
-    assert f"Job {ranking_table.short_id(second.job_id)} · {second.community_id}" in [
-        s.value for s in at.subheader
-    ]
+    assert _heading(second) in [s.value for s in at.subheader]
     values = [markdown.value for markdown in at.tabs[0].markdown]
     position = values.index("**2**")  # the rank cell opens the second row
     # The Selected badge sits under the Open button, after the rank in the same row.
@@ -513,9 +519,7 @@ def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:
 def test_selected_id_in_state_shows_in_pane_header(tmp_path) -> None:
     job = _ranked()[0].job
     at = _run(_script(tmp_path, _select(job.job_id)))
-    assert f"Job {ranking_table.short_id(job.job_id)} · {job.community_id}" in [
-        s.value for s in at.subheader
-    ]
+    assert _heading(job) in [s.value for s in at.subheader]
     assert details_pane.NOTHING_SELECTED not in [i.value for i in at.info]
 
 
@@ -706,6 +710,13 @@ def test_dev_add_report_lands_where_its_message_says(art, tmp_path, kind) -> Non
     in_backlog = backlog[backlog["job_id"] == row["job_id"]]
     in_human = f"**Job {short}**" in [m.value for m in at.tabs[2].markdown]
     (message,) = [s.value for s in at.success if s.value.startswith(f"Report {short} added")]
+    if kind == "Immediate":  # the make-safe lane, not the crew ranking (PRD 3.1, 2026-09-15)
+        assert row["status"] == "extracted" and row["extraction"]["safety_class"] == "immediate"
+        assert "is in Make safe now" in message, message
+        assert at.button(key=f"{MAKE_SAFE_OPEN}{row['job_id']}")
+        assert not in_human and not today_at and in_backlog.empty
+        assert short not in "\n".join(c.value for c in at.tabs[1].caption)
+        return
     if kind == "Needs a person":
         assert row["status"] == "needs_review"
         assert message == f"Report {short} added. It needs a person: open the Needs a human tab."
@@ -998,3 +1009,184 @@ def test_reject_as_needs_a_person_sends_the_job_to_that_tab(tmp_path) -> None:
     assert job_id in _human_ids(at)
     assert details_pane.NEEDS_PERSON_UNDO in [c.value for c in at.caption]
     assert not [b for b in at.button if (b.key or "").startswith("decide_")]
+
+
+# --- make safe now: Immediate jobs leave the crew ranking (PRD 3.1 and 6.3, 2026-09-15) -------
+
+MAKE_SAFE_OPEN = "workspace_make_safe_open_"
+NO_MAKE_SAFE = "No Immediate job is waiting."  # workspace.NO_MAKE_SAFE
+
+
+def _make_safe_open(monkeypatch):
+    """Turn today's top-ranked crew job into an open Immediate one in the jobs the page reads,
+    so the lane holds a job that would otherwise be first in To decide."""
+    real = ranking_table.open_jobs
+    target = _ranked()[0].job
+    immediate = replace(target, safety_class=SafetyClass.IMMEDIATE)
+    monkeypatch.setattr(
+        ranking_table,
+        "open_jobs",
+        lambda today: [immediate if j.job_id == target.job_id else j for j in real(today)],
+    )
+    return immediate
+
+
+def _in_ranked_lists(at: AppTest, job_id: str) -> list[str]:
+    """The ranked lists (To decide, Accepted, Backlog) that show ``job_id``."""
+    row = re.compile(rf"Job {re.escape(ranking_table.short_id(job_id))} · ")
+    found = [
+        at.tabs[tab].label
+        for tab in (0, 1)
+        if any(row.match(caption.value) for caption in at.tabs[tab].caption)
+    ]
+    if job_id in set(_frame(at, 3)["job_id"]):
+        found.append(at.tabs[3].label)
+    return found
+
+
+def _lane_title(at: AppTest) -> list[str]:
+    return [m.value for m in at.main.markdown if m.value.startswith("**Make safe now")]
+
+
+def _sent(tmp_path: Path) -> list[audit.MakeSafe]:
+    return [r for r in audit.read(tmp_path / "audit.jsonl") if isinstance(r, audit.MakeSafe)]
+
+
+def test_open_jobs_keeps_a_make_safe_job_open_on_its_report_day_only() -> None:
+    for back in range(constants.WINDOW_DAYS):
+        day = LAST_DAY - timedelta(days=back)
+        before = [
+            j
+            for j in ranking_table.open_jobs(day - timedelta(days=1))
+            if decisions.is_make_safe(j) and j.reported_on == day - timedelta(days=1)
+        ]
+        today = [j for j in ranking_table.open_jobs(day) if decisions.is_make_safe(j)]
+        if before and today:
+            break
+    else:
+        pytest.fail("the committed labels should hold Immediate jobs on two consecutive days")
+    assert {j.reported_on for j in today} == {day}
+    assert not {j.job_id for j in before} & {j.job_id for j in today}
+
+
+def test_an_open_immediate_job_is_in_make_safe_now_and_in_no_ranked_list(
+    tmp_path, monkeypatch
+) -> None:
+    immediate = _make_safe_open(monkeypatch)
+    cap = ranking_table.capacity("All")
+    ranked = _ranked()
+    assert immediate.job_id not in [s.job.job_id for s in ranked]
+    at = _run(_script(tmp_path))
+    assert _lane_title(at)
+    assert at.button(key=f"{MAKE_SAFE_OPEN}{immediate.job_id}").label == "Open"
+    assert NO_MAKE_SAFE not in [c.value for c in at.main.caption]
+    assert not _in_ranked_lists(at, immediate.job_id)
+    assert _today_ids(at) == [s.job.job_id for s in ranked[:cap]]
+    assert list(_frame(at, 3)["job_id"]) == [s.job.job_id for s in ranked[cap:]]
+    assert _labels(at) == [
+        f"To decide {cap}",
+        "Accepted 0",
+        _labels(at)[2],
+        f"Backlog {len(ranked) - cap}",
+    ]
+
+    at.sidebar.radio[0].set_value("Need first").run(timeout=60)
+    assert not at.exception
+    assert not _in_ranked_lists(at, immediate.job_id)
+    assert len(_today_ids(at)) == cap
+    assert _labels(at)[0] == f"To decide {cap}"
+    assert _labels(at)[3] == f"Backlog {len(ranked) - cap}"
+    assert at.button(key=f"{MAKE_SAFE_OPEN}{immediate.job_id}")
+
+
+def test_the_make_safe_lane_says_when_no_immediate_job_waits(tmp_path, monkeypatch) -> None:
+    real = ranking_table.open_jobs
+    monkeypatch.setattr(
+        ranking_table,
+        "open_jobs",
+        lambda today: [j for j in real(today) if not decisions.is_make_safe(j)],
+    )
+    at = _run(_script(tmp_path))
+    assert _lane_title(at)
+    assert NO_MAKE_SAFE in [c.value for c in at.main.caption]
+    assert not [b for b in at.button if (b.key or "").startswith(MAKE_SAFE_OPEN)]
+    assert len(_today_ids(at)) == ranking_table.capacity("All")
+
+
+def test_make_safe_pane_sends_to_the_contractor_with_a_reason_and_leaves_the_lane(
+    tmp_path, monkeypatch
+) -> None:
+    immediate = _make_safe_open(monkeypatch)
+    job_id = immediate.job_id
+    at = _run(_script(tmp_path))
+    at.button(key=f"{MAKE_SAFE_OPEN}{job_id}").click().run(timeout=60)
+    assert not at.exception
+    assert at.session_state["selected_job_id"] == job_id
+
+    labels = {b.label for b in at.button}
+    assert not {details_pane.ACCEPT, details_pane.REJECT, details_pane.PROPOSE} & labels
+    assert not [b for b in at.button if (b.key or "").startswith(("decide_", "actions_"))]
+    assert "Change the order instead" not in [e.label for e in at.get("expander")]
+    assert at.text_input(key=f"make_safe_reason_{job_id}")
+    assert at.text_input(key=f"make_safe_actor_{job_id}")
+    send = at.button(key=f"make_safe_sent_{job_id}")
+    assert send.label == "Sent to make-safe contractor"
+
+    send.click().run(timeout=60)
+    assert not at.exception
+    assert "A reason is required." in [e.value for e in at.error]
+    assert not _sent(tmp_path)
+
+    at.text_input(key=f"make_safe_reason_{job_id}").set_value("contractor booked by phone")
+    at.text_input(key=f"make_safe_actor_{job_id}").set_value("Ada")
+    at.button(key=f"make_safe_sent_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    (record,) = _sent(tmp_path)
+    assert (record.job_id, record.actor, record.reason) == (
+        job_id,
+        "Ada",
+        "contractor booked by phone",
+    )
+    assert record.day == LAST_DAY  # state.get_today(), the dataset day
+    assert record.recorded_at.tzinfo is not None
+    assert f"{MAKE_SAFE_OPEN}{job_id}" not in [b.key for b in at.button]
+    assert not _in_ranked_lists(at, job_id)
+
+    selected = _run(_script(tmp_path, _select(job_id)))
+    assert any("Sent to make-safe contractor by" in value for value in _markdown(selected))
+    assert f"{MAKE_SAFE_OPEN}{job_id}" not in [b.key for b in selected.button]
+    assert len(_sent(tmp_path)) == 1
+
+
+def test_make_safe_send_stays_open_after_signing_and_a_blank_name_is_coordinator(
+    tmp_path, monkeypatch
+) -> None:
+    immediate = _make_safe_open(monkeypatch)
+    job_id = immediate.job_id
+    cap = ranking_table.capacity("All")
+    for s in _ranked()[:cap]:
+        audit.append(
+            tmp_path / "audit.jsonl", audit.JobDecision(LAST_DAY, s.job.job_id, "accepted", "A")
+        )
+    at = _run(_script(tmp_path))
+    at.button(key="workspace_review_and_sign").click().run(timeout=60)
+    at.text_input(key="sign_off_signer").set_value("A. Coordinator")
+    at.text_area(key="sign_off_reason").set_value("Every job was read and decided today.")
+    at.button(key="sign_off_submit").click().run(timeout=60)
+    assert not at.exception
+    assert at.session_state["signed_today"]
+    signed = [r for r in audit.read(tmp_path / "audit.jsonl") if isinstance(r, audit.SignOff)]
+    assert signed and all(
+        job_id not in r.ranked_job_ids and job_id not in r.today_job_ids for r in signed
+    )
+
+    at.button(key=f"{MAKE_SAFE_OPEN}{job_id}").click().run(timeout=60)
+    assert not at.exception
+    send = at.button(key=f"make_safe_sent_{job_id}")
+    assert not send.proto.disabled
+    at.text_input(key=f"make_safe_reason_{job_id}").set_value("tenant reports sparking")
+    at.text_input(key=f"make_safe_actor_{job_id}").set_value("")
+    at.button(key=f"make_safe_sent_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    (record,) = _sent(tmp_path)
+    assert (record.job_id, record.actor) == (job_id, "coordinator")

@@ -8,8 +8,9 @@ communities skipped): the community takes the nearest free crew that reaches it,
 from that crew's current location, until no crew is free. Reach is physical feasibility;
 inside it a lower-ranked community is never served before a higher-ranked one a free crew
 could reach. A trip longer than the travel-day distance costs the crew that day; at the
-community it batches up to its daily capacity in rank order. Deterministic; no randomness
-inside.
+community it batches up to its daily capacity in rank order. Immediate jobs are completed on
+their report day by the emergency make-safe contractor: they use no crew, no travel and no
+queue place, whatever the road status. Deterministic; no randomness inside.
 
 Jobs carry no region or distance, so the caller passes a ``Site`` per community (from
 ``communities.csv``). A job still open at the end of the run counts in the medians with its
@@ -23,7 +24,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from statistics import median
 
-from fair_turn.core import constants, scoring
+from fair_turn.core import constants, decisions, scoring
 from fair_turn.core.types import Job
 
 
@@ -155,6 +156,14 @@ def simulate(
 
     for offset in range(days):
         today = start + timedelta(days=offset)
+        # The make-safe contractor, not a crew, completes Immediate jobs on the day they arrive.
+        for j in jobs:
+            if (
+                decisions.is_make_safe(j)
+                and j.reported_on <= today
+                and completed_on[j.job_id] is None
+            ):
+                completed_on[j.job_id] = today
         open_jobs = [j for j in jobs if j.reported_on <= today and completed_on[j.job_id] is None]
         ranked = [s.job for s in scoring.rank(open_jobs, today, lam)]
         queue_length.append(len(ranked))

@@ -205,6 +205,27 @@ class JobDecision:
         )
 
 
+@dataclass(frozen=True)
+class MakeSafe:
+    """The coordinator sent an Immediate job to the emergency make-safe contractor (PRD 3.1).
+    A reason is required."""
+
+    day: date
+    job_id: str
+    actor: str
+    reason: str
+    recorded_at: datetime | None = None
+
+    def __post_init__(self) -> None:
+        if not self.reason.strip():
+            raise ValueError("a make-safe record needs a reason")
+        object.__setattr__(
+            self,
+            "recorded_at",
+            datetime.now().astimezone() if self.recorded_at is None else _aware(self.recorded_at),
+        )
+
+
 Record = (
     SignOff
     | Revision
@@ -215,6 +236,7 @@ Record = (
     | PlanDecision
     | FieldCheck
     | JobDecision
+    | MakeSafe
 )
 
 _KIND_OF = {
@@ -227,6 +249,7 @@ _KIND_OF = {
     PlanDecision: "plan_decision",
     FieldCheck: "field_check",
     JobDecision: "job_decision",
+    MakeSafe: "make_safe",
 }
 _CLASS_OF = {kind: cls for cls, kind in _KIND_OF.items()}
 _DATETIME_FIELDS = {"signed_at", "at", "recorded_at"}
@@ -351,6 +374,10 @@ def export_rows(records: list[Record]) -> list[dict]:
             row["job_id"] = record.job_id
             row["signer"] = record.actor
             row["detail"] = record.decision
+        elif isinstance(record, MakeSafe):
+            row["job_id"] = record.job_id
+            row["signer"] = record.actor
+            row["detail"] = "sent to make-safe contractor"
         rows.append(row)
     return rows
 
@@ -363,6 +390,11 @@ def latest_checks(records: list[Record], day: date) -> dict[str, FieldCheck]:
 def latest_decisions(records: list[Record], day: date) -> dict[str, str]:
     """The newest job decision per job on the decision ``day``, in file order."""
     return {r.job_id: r.decision for r in records if isinstance(r, JobDecision) and r.day == day}
+
+
+def make_safe_sent(records: list[Record]) -> dict[str, MakeSafe]:
+    """The newest make-safe record per job, on any decision day, in file order."""
+    return {r.job_id: r for r in records if isinstance(r, MakeSafe)}
 
 
 def override_rate(records: list[Record]) -> list[tuple[date, float]]:

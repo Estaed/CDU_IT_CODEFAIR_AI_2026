@@ -12,7 +12,7 @@ import pandas as pd
 import streamlit as st
 
 from fair_turn.app import state
-from fair_turn.core import audit, capacity_sim, constants, explain, scoring
+from fair_turn.core import audit, capacity_sim, constants, decisions, explain, scoring
 from fair_turn.core.batch import HandMove
 from fair_turn.core.capacity_sim import Closure
 from fair_turn.core.types import Job, SafetyClass, ScoredJob
@@ -45,7 +45,9 @@ def open_jobs(today: date) -> list[Job]:
 
     Provisional: which jobs are open comes from the toy capacity model run at lam = 1.0
     from the window start to ``today``, standing in for what the contractor's system does
-    today (PRD 4). A pilot would read open jobs from intake instead.
+    today (PRD 4). A pilot would read open jobs from intake instead. An Immediate job
+    reported on ``today`` stays open although the simulation completes it that day, so the
+    coordinator can send it to the make-safe contractor; earlier ones stay closed.
     """
     path = state.get_runtime_path()
     return _open_jobs_cached(today, _runtime_stamp(path), path)
@@ -77,7 +79,15 @@ def _open_jobs_cached(today: date, runtime_stamp: tuple[int, int], runtime_path:
         travel_day_km=constants.TRAVEL_DAY_KM,
         sites=geography.sim_sites(art.communities),
     )
-    return [j for j in jobs if j.reported_on <= today and result.completed_on[j.job_id] is None]
+    return [
+        j
+        for j in jobs
+        if j.reported_on <= today
+        and (
+            result.completed_on[j.job_id] is None
+            or (decisions.is_make_safe(j) and j.reported_on == today)
+        )
+    ]
 
 
 def capacity(region: str) -> int:

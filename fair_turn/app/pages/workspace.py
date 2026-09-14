@@ -33,7 +33,7 @@ from fair_turn.app.components import (
     weighting,
     workspace_map,
 )
-from fair_turn.core import audit, batch, decisions, scoring
+from fair_turn.core import audit, batch, constants, decisions, scoring
 from fair_turn.data import runtime
 
 # Decision columns first: at 1440 px the table shows about 600 px before it scrolls, so the
@@ -70,6 +70,12 @@ DEV_KINDS = {
 KEY_SIGNED = "Today's list is signed."
 KEY_NOT_TO_DECIDE = "This job is not in To decide."
 KEY_NOT_READ = "Tick 'I have read the report' first."
+MAKE_SAFE_CAPTION = (
+    "Immediate jobs go to the emergency make-safe contractor, who makes them safe within "
+    f"{constants.MAKE_SAFE_HOURS} hours. The weighting does not move them and they take no "
+    "crew place."
+)
+NO_MAKE_SAFE = "No Immediate job is waiting."
 
 art = state.artefacts()
 today = state.get_today()
@@ -103,7 +109,21 @@ review_reasons = {
     and r.field == ranking_table.REVIEW_REQUESTED
     and r.day == today
 }
-rankable = [j for j in jobs if not j.needs_human and j.job_id not in review_ids]
+sent = audit.make_safe_sent(audit_records)
+# Immediate jobs go to the make-safe contractor, never into the ranking or the crew places.
+rankable = [
+    j
+    for j in jobs
+    if not j.needs_human and j.job_id not in review_ids and not decisions.is_make_safe(j)
+]
+make_safe = sorted(
+    (
+        j
+        for j in jobs
+        if decisions.is_make_safe(j) and j.job_id not in review_ids and j.job_id not in sent
+    ),
+    key=lambda j: (j.reported_on, j.job_id),
+)
 baseline = scoring.rank(rankable, today, 1.0)
 current = ranking_table.apply_hand_moves(scoring.rank(rankable, today, lam), state.get_hand_moves())
 cap = ranking_table.capacity(state.ALL_REGIONS)
@@ -131,6 +151,8 @@ def added_message(job_id: str, kind: str) -> str:
     job = next((j for j in jobs if j.job_id == job_id), None)
     if job is not None and (job.needs_human or job_id in review_ids):
         return f"{head}. It needs a person: open the Needs a human tab."
+    if job is not None and decisions.is_make_safe(job):
+        return f"{head} ({kind}). It is in Make safe now: send it to the make-safe contractor."
     rank = next((s.rank for s in current if s.job.job_id == job_id), None)
     if rank is None:
         return f"{head}."
@@ -233,6 +255,29 @@ def passes(job) -> bool:
         job.safety_class is not None and job.safety_class.value in safeties
     )
     return fault_ok and safety_ok
+
+
+make_safe_shown = [j for j in make_safe if in_view(j) and passes(j)]
+
+
+def make_safe_rows(waiting: list) -> None:
+    """The "Make safe now" lane above the tabs: one bordered row per Immediate job with an
+    Open button; sending it to the contractor happens in the pane."""
+    st.markdown(f"**Make safe now {len(waiting)}**")
+    st.caption(MAKE_SAFE_CAPTION)
+    if not waiting:
+        st.caption(NO_MAKE_SAFE)
+        return
+    for job in waiting:
+        with st.container(border=True):
+            who, what, action = st.columns(HUMAN_ROW_RATIOS, vertical_alignment="center")
+            who.markdown(f"**Job {ranking_table.short_id(job.job_id)}**")
+            fault = job.fault_type.value.replace("_", " ") if job.fault_type is not None else "—"
+            what.caption(f"{job.community_id} · {fault} · reported {job.reported_on.isoformat()}")
+            if action.button("Open", key=f"workspace_make_safe_open_{job.job_id}", width="stretch"):
+                state.set_selected_job_id(job.job_id)
+                state.set_map_pick(None)
+                st.rerun()
 
 
 def view(scored, other=None, table_lam=lam, against=None):
@@ -440,6 +485,7 @@ with centre:
     st.caption(keyboard.HINT)
     if added_text is not None:
         st.success(added_text)
+    make_safe_rows(make_safe_shown)
     tabs = st.tabs(
         [
             f"To decide {len(to_decide_shown)}",

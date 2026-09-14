@@ -1,5 +1,6 @@
-"""Write data/audit/sample.jsonl: three signed days, one revision and two overrides, so the
-audit log has history for the demo with no runtime interaction.
+"""Write data/audit/sample.jsonl: three signed days, one revision, two overrides and one
+make-safe record, so the audit log has history for the demo with no runtime interaction.
+Sign-offs rank only crew jobs: Immediate jobs go to the make-safe contractor, as in the app.
 
 Run from the repo root with the project interpreter; deterministic and idempotent. Wall-clock
 timestamps are seed-derived rather than real, so a rerun is byte-identical:
@@ -17,7 +18,7 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
 
-from fair_turn.core import audit, capacity_sim, constants, scoring  # noqa: E402
+from fair_turn.core import audit, capacity_sim, constants, decisions, scoring  # noqa: E402
 from fair_turn.core.capacity_sim import Closure, CrewBase, Site  # noqa: E402
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass  # noqa: E402
 from fair_turn.data import geography  # noqa: E402
@@ -88,6 +89,11 @@ def _open_jobs(
     return [j for j in jobs if j.reported_on <= today and result.completed_on[j.job_id] is None]
 
 
+def _crew_jobs(jobs: list[Job]) -> list[Job]:
+    """The jobs a crew ranking holds: Immediate jobs go to the make-safe contractor."""
+    return [j for j in jobs if not decisions.is_make_safe(j)]
+
+
 def _human_queue_job_id() -> str:
     """A committed non-adversarial extraction that still needs coordinator review."""
     for row in _load_json(BUILD / "extraction.json"):
@@ -126,9 +132,9 @@ def main() -> int:
     if path.exists():
         path.unlink()
 
-    # Step 3: rank the open jobs for each day and append a signed-off entry per day.
+    # Step 3: rank the open crew jobs for each day and append a signed-off entry per day.
     for day, lam, reason in zip(days, lams, reasons, strict=True):
-        ranked = scoring.rank(_open_jobs(jobs, sites, crews, closures, day), day, lam)
+        ranked = scoring.rank(_crew_jobs(_open_jobs(jobs, sites, crews, closures, day)), day, lam)
         ranked_ids = tuple(s.job.job_id for s in ranked)
         today_ids = ranked_ids[:10]
         recorded_at = _recorded_at(day, rng)
@@ -163,7 +169,7 @@ def main() -> int:
     )
 
     ranked_middle = scoring.rank(
-        _open_jobs(jobs, sites, crews, closures, middle_day), middle_day, lams[1]
+        _crew_jobs(_open_jobs(jobs, sites, crews, closures, middle_day)), middle_day, lams[1]
     )
     overrides = (
         (ranked_middle[2], 1, "crew already on site"),
@@ -231,6 +237,24 @@ def main() -> int:
             action="accept",
             detail="signed order retained for crew allocation",
             reason="coordinator accepted the proposed visit plan",
+            recorded_at=_recorded_at(days[2], rng),
+        ),
+    )
+
+    # Last, so every earlier seeded draw is unchanged: one Immediate job reported on the last
+    # day, sent to the make-safe contractor.
+    make_safe_ids = sorted(
+        j.job_id for j in jobs if decisions.is_make_safe(j) and j.reported_on == days[2]
+    )
+    if not make_safe_ids:
+        raise RuntimeError(f"no Immediate job with every required field reported on {days[2]}")
+    audit.append(
+        path,
+        audit.MakeSafe(
+            day=days[2],
+            job_id=make_safe_ids[0],
+            actor=SIGNER,
+            reason="make-safe contractor booked by phone",
             recorded_at=_recorded_at(days[2], rng),
         ),
     )

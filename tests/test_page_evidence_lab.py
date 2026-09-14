@@ -255,3 +255,27 @@ def test_seed_audit_script_is_idempotent(tmp_path, monkeypatch) -> None:
     seed_audit.main()
     second = (tmp_path / "sample.jsonl").read_bytes()
     assert first == second
+
+
+def test_seed_audit_signs_only_crew_jobs_and_sends_one_make_safe(tmp_path, monkeypatch) -> None:
+    """Immediate jobs go to the make-safe contractor, never into a sign-off (PRD 3.1)."""
+    import sys
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import seed_audit  # the script itself, not a package under fair_turn
+
+    from fair_turn.core import audit
+
+    monkeypatch.setattr(seed_audit, "AUDIT", tmp_path)
+    seed_audit.main()
+    records = audit.read(tmp_path / "sample.jsonl")
+    labels = json.loads((ROOT / "data" / "build" / "labels.json").read_text("utf-8"))
+    immediate = {label["job_id"] for label in labels if label["safety_class"] == "immediate"}
+    sign_offs = [r for r in records if isinstance(r, audit.SignOff)]
+    assert sign_offs
+    for record in sign_offs:
+        assert not immediate & set(record.ranked_job_ids)
+        assert not immediate & set(record.today_job_ids)
+    (make_safe,) = [r for r in records if isinstance(r, audit.MakeSafe)]
+    assert make_safe.reason.strip()
+    assert make_safe.job_id in immediate

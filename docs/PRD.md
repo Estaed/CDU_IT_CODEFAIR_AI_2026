@@ -86,6 +86,13 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
   must handle are part of the daily view, not only a count. "Within capacity" means the job count only; travel, trade
   and access feasibility belong to the visit plan (3.3) and the workspace never claims
   them.
+- **Make safe now.** *Added 2026-09-15, Tarik's decision:* Immediate jobs leave the ranked
+  queue and sit in a "Make safe now" section above the To decide tab. The weighting does not
+  move them and they take no place in today's crew capacity: an emergency make-safe
+  contractor does this work within the FS17 four hours. Each has one "Sent to make-safe
+  contractor" action with a required reason, logged as an audit record with actor and both
+  clocks; the job then leaves the section. A job in the review queue stays there until its
+  fields are set. Today's steps do not count these jobs.
 - **Row content.** Rank, change against efficiency-first, job id, community id, fault
   type, safety class, days used of the NT window (one column, replacing the Phase 1 pair
   days open / days left), score to one decimal with its factor bar. Household health
@@ -400,6 +407,9 @@ The wait-time metrics need a toy dispatch model, not a router:
 - A crew visiting a remote community serves all its pending jobs up to capacity in one
   visit (batching). A community over 200 km from base costs the crew a travel day.
 - A closed road blocks the visit until the road reopens.
+- *Added 2026-09-15:* Immediate jobs are completed on the day they are reported by the
+  emergency make-safe contractor (section 3.1): they spend no crew slot, no travel and are
+  not held by a closed road, and they count in the medians with a wait of 0.
 - Wait = completion day − report day. Median wait is computed per town/remote.
 - No service durations exist, so nothing downstream shows work or travel hours.
 

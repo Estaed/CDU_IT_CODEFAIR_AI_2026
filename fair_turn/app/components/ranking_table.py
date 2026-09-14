@@ -21,6 +21,9 @@ from fair_turn.data.artefacts import to_jobs
 
 UNCHANGED = "·"
 REVIEW_REQUESTED = "review_requested"
+TABLE_HEADER_HEIGHT = 38
+TABLE_ROW_HEIGHT = 35
+MAX_VISIBLE_TABLE_ROWS = 20
 
 
 def _runtime_stamp(path: Path) -> tuple[int, int]:
@@ -193,16 +196,36 @@ def rows_for(
     return pd.DataFrame(records, columns=columns)
 
 
+def table_height(n_rows: int) -> int:
+    """Return room for a dataframe header and up to 20 complete rows, avoiding inner scrollbars."""
+    return TABLE_HEADER_HEIGHT + TABLE_ROW_HEIGHT * min(max(n_rows, 0), MAX_VISIBLE_TABLE_ROWS)
+
+
 def column_config(frame: pd.DataFrame) -> dict:
-    """A progress bar per factor column and for the total score, each scaled to the largest
-    value in the frame."""
-    bars = [c for c in frame.columns if c in scoring.FACTOR_NAMES or c == "score_bar"]
-    return {
-        name: st.column_config.ProgressColumn(
+    """Workspace display columns plus progress bars for score factors used by other callers."""
+    score_max = max(float(frame["score_bar"].max()), 1.0) if len(frame) else 1.0
+    config = {
+        "rank": st.column_config.NumberColumn("#", width="small"),
+        "rank change": st.column_config.TextColumn(
+            "Delta", width="small", help="Change against efficiency-first"
+        ),
+        "job_id": st.column_config.TextColumn("Job", width="medium", pinned=True),
+        "community id": st.column_config.TextColumn("Community", width="medium"),
+        "fault type": st.column_config.TextColumn("Fault", width="small"),
+        "safety class": st.column_config.TextColumn("Class", width="small"),
+        "window": st.column_config.TextColumn(
+            "Window", width="small", help="Days used of the NT window"
+        ),
+        "score": st.column_config.NumberColumn("Score", format="%.1f", width="small"),
+        "score_bar": st.column_config.ProgressColumn(
+            "Factors", format="%.1f", min_value=0.0, max_value=score_max
+        ),
+    }
+    for name in (column for column in frame.columns if column in scoring.FACTOR_NAMES):
+        config[name] = st.column_config.ProgressColumn(
             _label(name),
             min_value=0.0,
             max_value=max(float(frame[name].max()), 1.0) if len(frame) else 1.0,
             format="%.2f",
         )
-        for name in bars
-    }
+    return config

@@ -1,6 +1,6 @@
 # Task-38: Workspace table shows the whole row; a job is always selected; filters as pills
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* `review-visual` 2026-09-14 found the row's safety class, window, score and factor bar behind a horizontal scroll and the page opening on an empty pane; the fixes are `column_config` and an auto-selection, both decided.

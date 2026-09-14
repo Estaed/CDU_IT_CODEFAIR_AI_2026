@@ -99,7 +99,7 @@ def _open_needs_human(art, missing) -> str:
 # --- capacity split, review exclusion, compare view ------------------------------------------
 
 
-def test_todays_list_is_capacity_and_review_jobs_are_in_no_frame(tmp_path) -> None:
+def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) -> None:
     at = _run(_script(tmp_path))
     today, backlog = _frame(at, 0), _frame(at, 1)
     cap = ranking_table.capacity("All")
@@ -113,7 +113,48 @@ def test_todays_list_is_capacity_and_review_jobs_are_in_no_frame(tmp_path) -> No
     queue = {j.job_id for j in ranking_table.open_jobs(LAST_DAY) if j.needs_human}
     assert queue
     assert not queue & (set(today["job_id"]) | set(backlog["job_id"]))
-    assert details_pane.NOTHING_SELECTED in [i.value for i in at.info]
+    top = _ranked()[0].job
+    assert f"{top.job_id} · {top.community_id}" in [s.value for s in at.subheader]
+    assert details_pane.NOTHING_SELECTED not in [i.value for i in at.info]
+
+
+def test_todays_list_has_display_config_and_bounded_height(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    proto = at.tabs[0].dataframe[0].proto
+    config = json.loads(proto.columns)
+    assert set(COLUMNS) <= set(config)
+    assert {
+        name: config[name]["label"]
+        for name in (
+            "rank",
+            "rank change",
+            "job_id",
+            "community id",
+            "fault type",
+            "safety class",
+            "window",
+            "score",
+            "score_bar",
+        )
+    } == {
+        "rank": "#",
+        "rank change": "Delta",
+        "job_id": "Job",
+        "community id": "Community",
+        "fault type": "Fault",
+        "safety class": "Class",
+        "window": "Window",
+        "score": "Score",
+        "score_bar": "Factors",
+    }
+    assert config["score_bar"]["type_config"] == {
+        "type": "progress",
+        "format": "%.1f",
+        "min_value": 0.0,
+        "max_value": float(_frame(at, 0)["score_bar"].max()),
+    }
+    assert ranking_table.table_height(ranking_table.capacity("All")) == 528
+    assert ranking_table.table_height(21) == ranking_table.table_height(20)
 
 
 def test_compare_renders_two_frames_with_identical_columns(tmp_path) -> None:
@@ -128,6 +169,19 @@ def test_compare_renders_two_frames_with_identical_columns(tmp_path) -> None:
 
 
 # --- weighting and the effect sentence -------------------------------------------------------
+
+
+def test_filter_pills_clear_to_the_full_list(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    assert len(at.sidebar.pills) == 2
+    fault = at.sidebar.pills[0]
+    fault.select("cooling").run(timeout=60)
+    assert not at.exception
+    filtered_count = len(_frame(at, 0)) + len(_frame(at, 1))
+    at.sidebar.button(key="workspace_clear_filters").click().run(timeout=60)
+    assert not at.exception
+    full_count = len(_frame(at, 0)) + len(_frame(at, 1))
+    assert filtered_count < full_count
 
 
 def _effect(at: AppTest) -> str:

@@ -66,8 +66,15 @@ def _open(tmp_path: Path) -> AppTest:
 
 def _main_text(at: AppTest) -> str:
     """Every text element outside the sidebar, plus metric labels and values, lower-cased.
-    The sidebar's weighting control names travel cost as a setting, not as an outcome."""
-    values = [e.value for kind in TEXT_KINDS for e in getattr(at.main, kind)]
+    The sidebar's weighting control names travel cost as a setting, not as an outcome, and so
+    does the selected job's "Ranked ..." why-sentence (a job is selected on first render since
+    Task-38); both are excluded, so the words in REVEAL can only come from the outcome panel."""
+    values = [
+        e.value
+        for kind in TEXT_KINDS
+        for e in getattr(at.main, kind)
+        if not str(e.value).startswith("Ranked ")
+    ]
     values += [f"{m.label} {m.value}" for m in at.main.metric]
     return "\n".join(values).lower()
 

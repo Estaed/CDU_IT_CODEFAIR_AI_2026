@@ -58,8 +58,18 @@ def filters() -> tuple[str, list[str], list[str]]:
     regions = [state.ALL_REGIONS, *constants.REGIONS]
     region = st.selectbox("Region", regions, index=regions.index(state.get_region()))
     state.set_region(region)
-    faults = st.multiselect("Fault type", [f.value for f in FaultType], key=FAULT_FILTER_KEY)
-    safeties = st.multiselect("Safety class", list(constants.SAFETY_CLASSES), key=SAFETY_FILTER_KEY)
+    faults = st.pills(
+        "Fault type",
+        [f.value for f in FaultType],
+        selection_mode="multi",
+        key=FAULT_FILTER_KEY,
+    )
+    safeties = st.pills(
+        "Safety class",
+        list(constants.SAFETY_CLASSES),
+        selection_mode="multi",
+        key=SAFETY_FILTER_KEY,
+    )
     st.button("Clear filters", on_click=clear_filters, key="workspace_clear_filters")
     st.caption(
         "Fault and safety filters change what the lists and the map show, never today's "

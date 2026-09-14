@@ -62,6 +62,8 @@ current = ranking_table.apply_hand_moves(scoring.rank(rankable, today, lam), sta
 cap = ranking_table.capacity(region)
 today_list, backlog = current[:cap], current[cap:]
 review_count = sum(1 for j in jobs if j.needs_human or j.job_id in review_ids)
+if state.get_selected_job_id() is None and today_list:
+    state.set_selected_job_id(today_list[0].job.job_id)
 
 
 def is_remote(community_id: str) -> bool:
@@ -122,10 +124,22 @@ with centre:
             if compare:
                 left, right = st.columns(2)
                 left.caption(f"Current: {label}")
-                left.dataframe(view(scored, against=baseline), hide_index=True)
+                current_frame = view(scored, against=baseline)
+                left.dataframe(
+                    current_frame,
+                    hide_index=True,
+                    column_config=ranking_table.column_config(current_frame),
+                    width="stretch",
+                    height=ranking_table.table_height(len(scored)),
+                )
                 right.caption("Efficiency first (λ = 1.00)")
+                efficiency_frame = view(efficiency_first, other=current, table_lam=1.0)
                 right.dataframe(
-                    view(efficiency_first, other=current, table_lam=1.0), hide_index=True
+                    efficiency_frame,
+                    hide_index=True,
+                    column_config=ranking_table.column_config(efficiency_frame),
+                    width="stretch",
+                    height=ranking_table.table_height(len(efficiency_first)),
                 )
                 continue
             frame = view(scored, against=baseline)
@@ -138,6 +152,7 @@ with centre:
                 column_config=ranking_table.column_config(frame),
                 key=f"workspace_{name}_{selected}",
                 width="stretch",
+                height=ranking_table.table_height(len(scored)),
             )
             picked = job_list.selected_job_id(frame, event.selection.rows)
             if picked is not None and picked != selected:

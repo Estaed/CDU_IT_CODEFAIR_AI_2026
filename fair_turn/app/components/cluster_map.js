@@ -90,10 +90,23 @@ function addLayers(map, data) {
 }
 
 function update(entry, data) {
+  const previous = entry.data.selected;
   entry.data = data;
   if (!entry.loaded) return; // the load handler applies the latest data
   entry.map.getSource("jobs").setData(data.features);
   entry.map.setFilter("selected-ring", ["==", ["get", "community_id"], data.selected]);
+  // Only a changed selection moves the camera; a mode switch or a filter leaves it alone.
+  if (data.selected && data.selected !== previous) {
+    const target = data.features.features.find(
+      (f) => f.properties.community_id === data.selected,
+    );
+    if (target) {
+      entry.map.easeTo({
+        center: target.geometry.coordinates,
+        zoom: Math.max(entry.map.getZoom(), data.layout.selected_zoom),
+      });
+    }
+  }
 }
 
 export default async function (component) {

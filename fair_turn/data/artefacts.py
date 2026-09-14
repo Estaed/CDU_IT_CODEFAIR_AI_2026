@@ -12,6 +12,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
+from fair_turn.core import verify_spans
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -105,7 +106,7 @@ def _job(
 
 
 def to_jobs(art: Artefacts, human_set: dict | None = None, intake: list | None = None) -> list[Job]:
-    """One job per label row plus extracted runtime intake reports."""
+    """One job per label row plus one per runtime intake report, from its verified fields."""
     human_set = human_set or {}
     jobs = [
         _job(
@@ -117,11 +118,14 @@ def to_jobs(art: Artefacts, human_set: dict | None = None, intake: list | None =
         for label in art.labels
     ]
     for report in intake or []:
-        if report.status != "extracted":
-            continue
-        if report.extraction is None:
+        if report.status == "extracted" and report.extraction is None:
             raise ValueError(f"{report.job_id}: extracted intake report has no extraction")
-        extraction = report.extraction
+        # Re-verified on every read: a field whose phrase is not in the text stays empty, so
+        # a report that needs review is a job in the human queue, never a ranked one.
+        verified = verify_spans.verify(report.text, report.extraction or {})
+        values = human_set.get(report.job_id, {})
+        fault = values.get("fault_type", verified.fault_type)
+        safety = values.get("safety_class", verified.safety_class)
         community = art.communities[report.community_id]
         jobs.append(
             Job(
@@ -129,11 +133,9 @@ def to_jobs(art: Artefacts, human_set: dict | None = None, intake: list | None =
                 community_id=report.community_id,
                 is_remote=community["is_remote"] == "True",
                 reported_on=report.reported_on,
-                fault_type=FaultType(extraction["fault_type"]),
-                safety_class=SafetyClass(extraction["safety_class"]),
-                health_risk=frozenset(
-                    HealthRiskFactor(value) for value in extraction["health_risk"]
-                ),
+                fault_type=FaultType(fault) if fault else None,
+                safety_class=SafetyClass(safety) if safety else None,
+                health_risk=frozenset(HealthRiskFactor(value) for value in verified.health_risk),
                 logistics_factor=float(community["logistics_factor"]),
             )
         )

@@ -312,7 +312,7 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
             state.set_hand_moves((*moves, HandMove(job_id, rank, to_rank, reason)))
             st.rerun()
 
-        actions: list[tuple[str, str]] = []
+        actions: list[tuple[str, str, str]] = []
         displaced = None
         if rank <= cap:
             st.caption(
@@ -320,9 +320,9 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
                 "or send it to the review queue."
             )
             if rank > 1:
-                actions.append(("up", "Move up one place"))
+                actions.append(("up", "↑ Up", "Move this job up one place in today's list"))
             if rank < len(ids):
-                actions.append(("down", "Move down one place"))
+                actions.append(("down", "↓ Down", "Move this job down one place in today's list"))
         elif cap > 0:
             displaced = ids[cap - 1]
             st.caption(
@@ -333,15 +333,23 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
                 f"Promoting puts this job at rank {cap} and moves "
                 f"{ranking_table.short_id(displaced)} to the backlog."
             )
-            actions.append(("promote", "Promote into today's list"))
-        actions.append(("review", "Send to review queue"))
+            actions.append(
+                (
+                    "promote",
+                    "Promote",
+                    "Promote this job into today's list at the last place",
+                )
+            )
+        actions.append(("review", "To review", "Send this job to the review queue"))
 
         key = f"actions_{job_id}"
         with st.form(key):
             reason = st.text_input("Why?", key=f"{key}_reason", placeholder=REASON_PLACEHOLDER)
             clicked = None
-            for column, (suffix, label) in zip(st.columns(len(actions)), actions, strict=True):
-                if column.form_submit_button(label, key=f"{key}_{suffix}"):
+            for column, (suffix, label, help_text) in zip(
+                st.columns(len(actions)), actions, strict=True
+            ):
+                if column.form_submit_button(label, key=f"{key}_{suffix}", help=help_text):
                     clicked = suffix
 
         if clicked is not None and not reason.strip():
@@ -370,7 +378,7 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
             st.rerun()
 
         if any(m.job_id == job_id for m in moves) and st.button(
-            "Undo my hand move", key=f"undo_{job_id}"
+            "Undo move", key=f"undo_{job_id}", help="Undo my hand move on this job"
         ):
             state.set_hand_moves(ranking_table.without_moves_for(moves, job_id))
             st.rerun()

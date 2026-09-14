@@ -4,11 +4,12 @@ import uuid
 from collections.abc import Callable
 from datetime import datetime
 
+import numpy as np
 import streamlit as st
 
 from fair_turn.app import state
 from fair_turn.app.components.ranking_table import open_jobs
-from fair_turn.core import audit, constants, scoring
+from fair_turn.core import audit, constants, scoring, verify_spans
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 from fair_turn.data import runtime
 from fair_turn.llm import intake as intake_llm
@@ -132,6 +133,79 @@ def _save(draft: dict, result: intake_llm.IntakeResult) -> tuple[bool, str]:
             ),
         )
     return wrote, job_id
+
+
+DEV_PROVIDER = "dev-replay"
+DEV_MODEL = "synthetic replay (no model call)"
+
+
+def _flat_extraction(row) -> dict:
+    """The schema-shaped dict of one committed extraction row, from its kept fields only."""
+    kept = row.kept
+    factors = sorted(name for name in kept if name.startswith("health_risk:"))
+    extraction = {
+        "health_risk": [kept[name].value for name in factors],
+        "health_risk_evidence": [kept[name].evidence for name in factors],
+        "location_mentioned": "location_mentioned" in kept,
+        "location_evidence": kept["location_mentioned"].evidence
+        if "location_mentioned" in kept
+        else "",
+        "crew_or_access_note": kept["crew_or_access_note"].evidence
+        if "crew_or_access_note" in kept
+        else "",
+    }
+    for field in verify_spans.REQUIRED_FIELDS:
+        if field in kept:
+            extraction[field] = kept[field].value
+            extraction[f"{field}_evidence"] = kept[field].evidence
+    return extraction
+
+
+def simulate_incoming(needs_human: bool) -> str:
+    """Replay one committed synthetic report as a new intake, through ``_save``; no model call.
+
+    Candidates are the labelled reports in one fixed seeded order; the next unused one whose
+    re-verified extraction has every required field (or misses one, for ``needs_human``) is
+    written. Returns the new job id."""
+    art = state.artefacts()
+    ids = sorted(label["job_id"] for label in art.labels)
+    order = [ids[i] for i in np.random.default_rng(constants.SEED).permutation(len(ids))]
+    used = {
+        record.text
+        for record in runtime.read(state.get_runtime_path())
+        if isinstance(record, runtime.IntakeReport) and record.provider == DEV_PROVIDER
+    }
+    community_of = {label["job_id"]: label["community_id"] for label in art.labels}
+    for source_id in order:
+        text = art.reports[source_id]
+        if text in used:
+            continue
+        extraction = _flat_extraction(art.extraction[source_id])
+        verified = verify_spans.verify(text, extraction)
+        if verified.needs_human != needs_human:
+            continue
+        failed = [f for f in verify_spans.REQUIRED_FIELDS if getattr(verified, f) is None]
+        result = intake_llm.IntakeResult(
+            extraction=extraction,
+            verified=verified,
+            status="needs_review" if failed else "extracted",
+            provider=DEV_PROVIDER,
+            model=DEV_MODEL,
+            prompt_version=DEV_PROVIDER,
+            latency_s=0.0,
+            validation=f"{', '.join(failed)} evidence not found in the report"
+            if failed
+            else "verified",
+            error=None,
+        )
+        draft = {
+            **new_draft(),
+            "text": text,
+            "community_id": community_of[source_id],
+            "reported_on": state.get_today(),
+        }
+        return _save(draft, result)[1]
+    raise ValueError("no unused synthetic report left to replay")
 
 
 def render(container) -> None:

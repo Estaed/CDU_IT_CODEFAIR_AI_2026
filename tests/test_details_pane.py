@@ -199,13 +199,15 @@ def test_action_buttons_say_what_they_do(art, tmp_path) -> None:
     ranked = scoring.rank(jobs, today, 1.0)
     cap = ranking_table.capacity("All")
     at = _run(tmp_path, ranked[1].job.job_id)
-    assert "Move up one place" in _buttons(at)
-    assert "Move down one place" in _buttons(at)
-    assert "Send to review queue" in _buttons(at)
+    assert {"↑ Up", "↓ Down", "To review"} <= set(_buttons(at))
+    helps = {button.label: button.help for button in at.button}
+    assert helps["↑ Up"] == "Move this job up one place in today's list"
+    assert helps["↓ Down"] == "Move this job down one place in today's list"
+    assert helps["To review"] == "Send this job to the review queue"
     assert any("every change needs a reason and is logged" in value for value in _markdown(at))
 
     backlog = _run(tmp_path, ranked[cap].job.job_id)
-    assert "Promote into today's list" in _buttons(backlog)
+    assert "Promote" in _buttons(backlog)
     assert any(
         caption.startswith("This job is in the backlog.")
         for caption in [element.value for element in backlog.caption]

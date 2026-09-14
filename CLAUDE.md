@@ -281,7 +281,7 @@ below were read from the environment after `uv sync` on 2026-09-12; `uv.lock` is
 | uv | 0.12.13 | Lockfile and sync. Installed via `pip install uv`. |
 | streamlit | 1.63.0 | The six screens. Bundles Vega-Lite and deck.gl in its own static JS (verified in `site-packages/streamlit/static/static/js`, 2026-09-12), so charts need no CDN. `streamlit.testing.v1.AppTest` runs pages headless: that is the build check. Trap: `use_container_width` is deprecated, use `width="stretch"`. Trap: the script reruns on every widget change, so nothing slow or networked may sit in a page body. |
 | altair | 6.2.2 | Every chart **and the map**. Spike 2026-09-12: `mark_geoshape` over inline GeoJSON plus `mark_circle` at lon/lat renders through Streamlit's bundled Vega-Lite with no URL in the spec. Region zoom is a selectbox filter re-rendering the projection; Vega-Lite geo projections do not pan/zoom. |
-| pydeck | 0.9.3 | **Added 2026-09-14.** The workspace map: `st.pydeck_chart(deck, on_select="rerun", selection_mode="single-object")` over a `ScatterplotLayer`, Carto `light` basemap with attribution. Streamlit's own dependency, so no new pin. Spike 2026-09-14: renders through `AppTest` with `socket.socket` refused (the style URL is fetched by the browser, never by the server) and the emitted proto carries `selection_mode`. The Altair outline stays as the no-tile fallback and the map for tests. |
+| pydeck | 0.9.3 | **Added 2026-09-14.** The workspace map: `st.pydeck_chart(deck, on_select="rerun", selection_mode="single-object")` over a `ScatterplotLayer`, Carto `light` basemap with attribution. Streamlit's own dependency, so no new pin. Spike 2026-09-14: renders through `AppTest` with `socket.socket` refused (the style URL is fetched by the browser, never by the server) and the emitted proto carries `selection_mode`. The Altair outline stays as the no-tile fallback and the map for tests. *Trap (2026-09-14, verified by execution):* pydeck turns every plain string kwarg into a data accessor (`radius_units="pixels"` serialises as `"@@=pixels"` and the layer silently falls back to metres, which is why markers were 1-3 px at NT zoom and swallowed a town when zoomed in); pass literal strings with inner quotes (`radius_units="'pixels'"`), and give every layer an explicit `id=` because `selection.objects` is keyed by layer id. |
 | pandas | 3.0.5 | Tables. pandas 3: strings are `str` dtype by default and copy-on-write is on, so chained assignment silently does nothing; assign with `.loc` or build new frames. |
 | numpy | 2.5.3 | Transitive; the seeded generator `numpy.random.default_rng(SEED)` is the only randomness source in synthesis and simulation. |
 | scikit-learn | 1.9.1 | Baseline bag-of-words classifier (TF-IDF + logistic regression) and per-field P/R/F1. |
@@ -437,7 +437,17 @@ Ollama; with `FAIR_TURN_PROVIDER` set, intake needs the named one.
   font literal; a test greps `fair_turn/app` for hex literals outside `theme.py`. This is
   what makes a later restyle a one-file change.
 - **Deviations:** the design's `Known Gaps` list (card padding, 48 px touch targets) is
-  accepted as-is; Streamlit fixes those and no custom CSS is used.
+  accepted as-is; Streamlit fixes those. *Amended 2026-09-14 (Tarik's decision after the
+  UI research in `reports/research-ui-*-2026-09-14.md`):* the look is a government
+  internal tool, set through `[theme]` keys first (`[theme.sidebar]`,
+  `dataframeHeaderBackgroundColor`, `headingFontSizes`, `metricValueFontSize` and the
+  rest reach six of the seven properties that matter); one scoped stylesheet,
+  `fair_turn/app/static/theme.css`, injected by `theme.py` through `st.html` only, covers
+  what the keys cannot (the tab underline and nothing structural). No JavaScript, no
+  animation, no `st.markdown(unsafe_allow_html=True)` (it adds a phantom `markdown` node
+  to every AppTest tree; `st.html` adds an `html` node reachable by `at.get("html")`).
+  Every `data-testid` selector in that file is unofficial and carries a comment saying
+  which Streamlit version it was checked against.
 - **`review-visual`** compares a screen against PRD section 3 prose and stays advisory. It
   never gates.
 
@@ -485,6 +495,10 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
    a 100 % substring-verification rate and the 20 adversarial items leave the rank
    unchanged (asserted on the artefact, so the gate needs no API key). No real community
    name from `data/raw/` appears in `data/build/`, `fair_turn/app/` or `docs/PRD.md`.
+   *Added 2026-09-14 (measured on Streamlit 1.63.0):* `st.expander` emits a `status`
+   node (`at.expander` returns nothing), `st.badge` emits a `markdown` node
+   (`at.badge` raises), `st.html` is found with `at.get("html")`; page tests assert
+   through those nodes.
 4. **Resources:** the AppTest smoke test runs with `socket.socket` patched to raise, so any
    network call fails the gate. Nothing else is started.
 5. **Not in the Definition of Done:** the F1 target of 0.85 (asserted by `run_eval.py`'s
@@ -535,8 +549,12 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
 - **Require** every NT policy number (window days, the 4 h make-safe, AUD 500), crew
   capacities, the date window, region names and the seed to be defined once in
   `fair_turn/core/constants.py`, with provenance rows in `constants.md`. No literal copies.
-- **Forbid** hex colours, sizes and fonts outside `.streamlit/config.toml` and
-  `fair_turn/app/theme.py`.
+- **Forbid** hex colours, sizes and fonts outside `.streamlit/config.toml`,
+  `fair_turn/app/theme.py` and, *added 2026-09-14*, `fair_turn/app/static/theme.css`
+  (the only stylesheet; injected by `theme.py` with `st.html`; a test asserts no other
+  module calls `st.html` with a `<style>` tag or `st.markdown` with
+  `unsafe_allow_html`). JavaScript, custom bidirectional components and npm builds
+  stay forbidden: `AppTest` cannot see them.
 - **Forbid** live weather and road requests; frozen tables only. *Amended 2026-09-14:*
   map tiles are allowed from the pydeck component only, with attribution, and the outline
   fallback must render when they do not load. Nothing in the server process fetches a tile.

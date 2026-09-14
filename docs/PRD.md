@@ -452,6 +452,11 @@ Numbered for reference from task files. Never renumbered.
    policy index (section 5). External: same NT copyright page as question 1; until
    answered, passages are quoted with attribution and the index is built by script from
    the public PDF, not committed as text.
+7. *Added 2026-09-14:* which WCAG conformance target the report claims. The research
+   (`reports/research-ui-streamlit-2026-09-14.md` §6a.8) found 2025-2026 sources saying
+   the Australian Human Rights Commission affirmed WCAG 2.2 AA as the minimum, while the
+   DTA page still read as 2.1 AA and could not be fetched. Tarik reads the DTA page; until
+   then the report says "designed against WCAG 2.1 AA" and names no audit.
 
 ## 11. Deferred decisions
 

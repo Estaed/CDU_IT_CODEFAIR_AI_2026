@@ -14,7 +14,7 @@ import streamlit as st
 from fair_turn.app.components.ranking_table import UNCHANGED
 
 # Row geometry: rank, job, community, class and window, score, the open button.
-COLUMN_RATIOS = [0.9, 1.7, 1.9, 1.5, 1.5, 1.2]
+COLUMN_RATIOS = [0.7, 1.9, 1.6, 1.4, 1.4, 1.6]
 # Named Streamlit badge colours, the same map the details pane uses.
 SAFETY_COLOURS = {"immediate": "red", "urgent": "orange", "routine": "gray"}
 SELECTED = "Selected"
@@ -39,8 +39,6 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
             )
             with rank:
                 st.markdown(f"**{row['rank']}**")
-                if is_selected:
-                    st.badge(SELECTED, color="orange")
                 if row["rank_change"] != UNCHANGED:
                     st.caption(row["rank_change"])
             with job:
@@ -59,10 +57,14 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
             with score:
                 st.markdown(f"{row['score']:.1f}")
                 st.progress(min(row["score"] / row["score_max"], 1.0))
-            if action.button(
-                OPEN,
-                key=f"{key}_open_{job_id}",
-                type="primary" if is_selected else "secondary",
-            ):
-                clicked = job_id
+            with action:
+                if st.button(
+                    OPEN,
+                    key=f"{key}_open_{job_id}",
+                    type="primary" if is_selected else "secondary",
+                    width="stretch",
+                ):
+                    clicked = job_id
+                if is_selected:
+                    st.badge(SELECTED, color="orange")
     return clicked

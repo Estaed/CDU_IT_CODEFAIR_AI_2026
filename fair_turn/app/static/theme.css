@@ -1,0 +1,19 @@
+/* checked against Streamlit 1.63.0; unofficial */
+button[data-baseweb="tab"][aria-selected="true"] {
+  color: #b4462a;
+}
+
+/* checked against Streamlit 1.63.0; unofficial */
+button[data-baseweb="tab"][aria-selected="true"]::after {
+  background-color: #b4462a;
+}
+
+/* checked against Streamlit 1.63.0; unofficial */
+[data-testid="stSidebarNav"] [aria-current="page"] {
+  font-weight: 600;
+}
+
+/* checked against Streamlit 1.63.0; unofficial */
+[data-testid="stMetricLabel"] {
+  font-size: 0.875rem;
+}

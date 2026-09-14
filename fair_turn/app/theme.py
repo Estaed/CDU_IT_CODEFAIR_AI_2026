@@ -1,5 +1,8 @@
-"""Chart palette and fixed UI strings. The only file under ``fair_turn/app`` that may hold a
-colour literal; values are copied from ``design/design-system/chart-palette.json``."""
+"""Chart palette, fixed UI strings and the one application stylesheet seam."""
+
+from pathlib import Path
+
+import streamlit as st
 
 from fair_turn.core.constants import REMOTE_REGIONS, TOWN_REGION
 
@@ -25,3 +28,9 @@ GRIDLINE = "#e0e0e0"
 AXIS_LABEL = "#525252"
 STROKE_WIDTH = 2
 PROVENANCE_LINE = "Geography real (BushTel/ABS); events synthetic"
+
+
+def inject_css() -> None:
+    """Add the scoped application stylesheet after page configuration."""
+    css = (Path(__file__).parent / "static" / "theme.css").read_text("utf-8")
+    st.html(f"<style>{css}</style>")

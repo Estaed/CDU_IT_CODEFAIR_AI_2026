@@ -19,6 +19,7 @@ import streamlit as st
 from fair_turn.app import intake, state, theme
 from fair_turn.app.components import (
     details_pane,
+    intro,
     job_list,
     metrics,
     ranking_table,
@@ -44,6 +45,7 @@ DISPLAY = [
 art = state.artefacts()
 today = state.get_today()
 st.title("Workspace")
+intro.purpose("workspace")
 
 with st.sidebar:
     lam, label = weighting.render()
@@ -296,3 +298,4 @@ status_slot.markdown(
 )
 today_rate = next((rate for day, rate in audit.override_rate(records) if day == today), 0.0)
 st.caption(f"Override rate: {today_rate:.0%} — see Evidence lab → Audit log")
+intro.about()

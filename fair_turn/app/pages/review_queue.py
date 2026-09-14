@@ -10,7 +10,7 @@ import pandas as pd
 import streamlit as st
 
 from fair_turn.app import state, theme
-from fair_turn.app.components import ranking_table
+from fair_turn.app.components import intro, ranking_table
 from fair_turn.app.components.highlight import render, spans
 from fair_turn.core import audit, constants, scoring, verify_spans
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
@@ -222,6 +222,7 @@ def _job_for_rank(
 
 art = state.artefacts()
 st.title("Review queue")
+intro.purpose("review_queue")
 st.caption(theme.PROVENANCE_LINE)
 
 today = state.get_today()
@@ -337,3 +338,5 @@ else:
     if leave_clicked:
         state.set_review_cursor((cursor + 1) % n)
         st.rerun()
+
+intro.about()

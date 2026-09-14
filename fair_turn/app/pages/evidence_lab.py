@@ -14,6 +14,7 @@ import pandas as pd
 import streamlit as st
 
 from fair_turn.app import state, theme
+from fair_turn.app.components import intro
 from fair_turn.core import audit, constants, feedback_sim
 from fair_turn.core.capacity_sim import Closure, Site
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
@@ -343,6 +344,7 @@ def render_audit_tab() -> None:
 
 state.artefacts()
 st.title("Evidence lab")
+intro.purpose("evidence_lab")
 st.caption(theme.PROVENANCE_LINE)
 
 extraction_tab, feedback_tab, audit_tab = st.tabs(
@@ -354,3 +356,4 @@ with feedback_tab:
     render_feedback_tab()
 with audit_tab:
     render_audit_tab()
+intro.about()

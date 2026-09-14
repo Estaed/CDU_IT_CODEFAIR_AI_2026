@@ -7,6 +7,7 @@ template's, so the wording lint bounds the answer text."""
 import streamlit as st
 
 from fair_turn.app import state, theme
+from fair_turn.app.components import intro
 from fair_turn.app.components.ranking_table import (
     apply_hand_moves,
     open_jobs,
@@ -25,6 +26,7 @@ def policy_index() -> policy.PolicyIndex:
 
 art = state.artefacts()
 st.title("Tenant view")
+intro.purpose("tenant")
 st.caption(theme.PROVENANCE_LINE)
 st.caption("Community ids shown in this project are pseudonymous, not real place names.")
 
@@ -63,6 +65,7 @@ if not typed:
         f"Type the job registration number from your report receipt. It starts with "
         f"{explain.JOB_ID_PREFIX} and ends with five digits, like {explain.JOB_ID_EXAMPLE}."
     )
+    intro.about()
     st.stop()
 
 today = state.get_today()
@@ -72,6 +75,7 @@ known = {label["job_id"].lower() for label in art.labels} | set(open_by_id)
 
 if typed.lower() not in known:
     render(explain.tenant_answer(state="unknown"))
+    intro.about()
     st.stop()
 
 job = open_by_id.get(typed.lower())
@@ -166,3 +170,4 @@ render(
         **common,
     )
 )
+intro.about()

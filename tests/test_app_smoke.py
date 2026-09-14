@@ -10,6 +10,8 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app import theme
+from fair_turn.app.components import intro
+from fair_turn.core import wording
 from fair_turn.core.types import Job
 from fair_turn.data import artefacts
 
@@ -42,7 +44,11 @@ def test_main_runs_offline(no_network) -> None:
     at = AppTest.from_file(str(APP / "main.py")).run(timeout=60)
     assert not at.exception
     assert at.title[0].value == "Workspace"  # the default page ran
-    assert theme.PROVENANCE_LINE in [c.value for c in at.sidebar.caption]
+    assert theme.PROVENANCE_LINE not in [c.value for c in at.sidebar.caption]
+
+
+def test_intro_copy_passes_the_wording_check() -> None:
+    assert all(not wording.check(text) for text in intro.COPY.values())
 
 
 @pytest.mark.parametrize("page", PAGE_FILES)
@@ -50,6 +56,23 @@ def test_page_runs_offline(page, no_network) -> None:
     at = AppTest.from_file(str(APP / "pages" / f"{page}.py")).run(timeout=60)
     assert not at.exception
     assert theme.PROVENANCE_LINE in [c.value for c in at.caption]
+
+
+@pytest.mark.parametrize("page", PAGE_FILES)
+def test_page_has_purpose_about_footer_and_one_stylesheet(page, tmp_path, no_network) -> None:
+    script = tmp_path / f"{page}_with_theme.py"
+    script.write_text(
+        "from fair_turn.app import theme\n"
+        "theme.inject_css()\n" + (APP / "pages" / f"{page}.py").read_text("utf-8"),
+        encoding="utf-8",
+        newline="",
+    )
+    at = AppTest.from_file(str(script)).run(timeout=60)
+    assert not at.exception
+    assert len(at.get("html")) == 1
+    assert "<style>" in at.get("html")[0].body
+    assert intro.COPY[page] in _all_text(at)
+    assert any(expander.label == "About this AI" for expander in at.get("expander"))
 
 
 def test_navigation_registers_exactly_the_five_pages() -> None:

@@ -1,6 +1,6 @@
 # Task-40: Government chrome through theme keys, the one stylesheet seam, page intros
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* Part 2 Fidelity was amended 2026-09-14 to name the exact mechanism (theme keys, one `theme.css` via `st.html`); the copy is drafted in `reports/research-ui-hitl-guidance-2026-09-14.md`.

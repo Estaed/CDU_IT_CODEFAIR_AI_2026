@@ -6,13 +6,14 @@ as manual coordination, and every plan decision written against the signed batch
 import streamlit as st
 
 from fair_turn.app import state, theme
-from fair_turn.app.components import ranking_table
+from fair_turn.app.components import intro, ranking_table
 from fair_turn.core import audit, constants, scoring, visit_plan
 from fair_turn.data import geography
 
 art = state.artefacts()
 today = state.get_today()
 st.title("Visit plan")
+intro.purpose("visit_plan")
 st.caption(theme.PROVENANCE_LINE)
 
 
@@ -274,3 +275,5 @@ else:
                     ),
                 )
                 st.rerun()
+
+intro.about()

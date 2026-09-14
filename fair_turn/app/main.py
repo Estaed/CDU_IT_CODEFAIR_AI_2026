@@ -11,7 +11,8 @@ import streamlit as st  # noqa: E402 -- sys.path shim above must run first
 
 from fair_turn.app import state, theme  # noqa: E402 -- sys.path shim above must run first
 
-st.set_page_config(page_title="Fair Turn", layout="wide")
+st.set_page_config(page_title="Fair Turn", layout="wide", initial_sidebar_state="expanded")
+theme.inject_css()
 state.artefacts()
 
 pg = st.navigation(
@@ -23,5 +24,4 @@ pg = st.navigation(
         st.Page("pages/evidence_lab.py", title="Evidence lab"),
     ]
 )
-st.sidebar.caption(theme.PROVENANCE_LINE)
 pg.run()

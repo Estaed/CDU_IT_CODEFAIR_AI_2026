@@ -8,6 +8,17 @@ backgroundColor = "#ffffff"
 secondaryBackgroundColor = "#f4f4f4"
 textColor = "#161616"
 borderColor = "#e0e0e0"
+# Surface 1 / backgroundColor token
+baseFontSize = 15
+# Smaller page title / textColor token
+headingFontSizes = { h1 = "1.75rem" }
+metricValueFontSize = "2rem"
+# Surface 1 / secondaryBackgroundColor token
+dataframeHeaderBackgroundColor = "#f4f4f4"
+# Border / borderColor token
+dataframeBorderColor = "#e0e0e0"
+showWidgetBorder = true
+showSidebarBorder = true
 baseRadius = "0px"
 buttonRadius = "0px"
 font = "IBM Plex Sans, sans-serif"
@@ -37,6 +48,12 @@ violetTextColor = "#491d8b"
 grayColor = "#8d8d8d"
 grayBackgroundColor = "#f4f4f4"
 grayTextColor = "#525252"
+
+# Surface 1 / secondaryBackgroundColor token
+[theme.sidebar]
+backgroundColor = "#f4f4f4"
+# Border / borderColor token
+borderColor = "#e0e0e0"
 
 [[theme.fontFaces]]
 family = "IBM Plex Sans"

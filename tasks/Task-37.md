@@ -1,6 +1,6 @@
 # Task-37: Map markers in pixels, direct single-job pick, compact multi-job chooser
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* the root cause is verified (Part 2 pydeck row, 2026-09-14) and the behaviour is fixed by PRD 3.1; only the two components change.

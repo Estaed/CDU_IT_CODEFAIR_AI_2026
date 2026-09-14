@@ -67,6 +67,20 @@ def _deck_nodes(at: AppTest):
     return [node for node in at if "deck" in node.type]
 
 
+def _map_choice_script(tmp_path: Path, community_id: str, job_ids: list[str]) -> Path:
+    path = tmp_path / "map_choice_app.py"
+    path.write_text(
+        "import streamlit as st\n"
+        "from fair_turn.app import state\n"
+        "from fair_turn.app.components import details_pane\n"
+        f"details_pane._map_choice(({community_id!r}, {job_ids!r}), state.get_selected_job_id())\n"
+        "st.write(state.get_selected_job_id())\n",
+        encoding="utf-8",
+        newline="",
+    )
+    return path
+
+
 def test_deck_spec_has_selected_layer_and_carto_style(points) -> None:
     spec = json.loads(workspace_map.build_deck(points, "JR-2025-00002").to_json())
     assert len(spec["layers"]) == 2
@@ -75,6 +89,48 @@ def test_deck_spec_has_selected_layer_and_carto_style(points) -> None:
     assert spec["mapProvider"] == "carto"
     assert "cartocdn.com" in spec["mapStyle"]
     assert all("cartocdn.com" in value for value in _urls(spec))
+
+
+def test_deck_spec_uses_pixel_markers_without_accessor_units(points) -> None:
+    points[-1]["open_jobs"] = 99
+    spec = json.loads(workspace_map.build_deck(points, "JR-2025-00002").to_json())
+    jobs, selected = spec["layers"]
+    for layer in (jobs, selected):
+        assert layer["radiusUnits"] == "pixels"
+        assert "@@=" not in layer["radiusUnits"]
+        assert layer["radiusMinPixels"] == workspace_map.MARKER_MIN_PX
+        assert layer["stroked"] is True
+    assert jobs["radiusMaxPixels"] == workspace_map.MARKER_MAX_PX
+    assert jobs["lineWidthMinPixels"] == workspace_map.MARKER_LINE_WIDTH_MIN_PX
+    # The highlight ring may grow past the marker cap and is drawn thicker.
+    assert selected["radiusMaxPixels"] == int(
+        workspace_map.MARKER_MAX_PX * workspace_map.SELECTED_RADIUS_MULTIPLIER
+    )
+    assert selected["lineWidthMinPixels"] == workspace_map.SELECTED_LINE_WIDTH_MIN_PX
+    assert [point["radius"] for point in spec["layers"][0]["data"]] == [7, 8, 14]
+    assert spec["layers"][1]["data"][0]["radius"] == 8 * workspace_map.SELECTED_RADIUS_MULTIPLIER
+
+
+def test_one_job_map_choice_selects_directly_without_a_selectbox(tmp_path, no_network) -> None:
+    at = AppTest.from_file(str(_map_choice_script(tmp_path, "COMMUNITY-01", ["JR-1"]))).run(
+        timeout=60
+    )
+    assert not at.exception
+    assert at.session_state["selected_job_id"] == "JR-1"
+    assert not at.selectbox
+
+
+def test_multi_job_map_choice_renders_one_compact_chooser(tmp_path, no_network) -> None:
+    job_ids = ["JR-1", "JR-2", "JR-3"]
+    at = AppTest.from_file(str(_map_choice_script(tmp_path, "COMMUNITY-01", job_ids))).run(
+        timeout=60
+    )
+    assert not at.exception
+    assert len(at.selectbox) == 1
+    assert at.selectbox[0].options == job_ids
+    assert not [button for button in at.button if button.label in job_ids]
+    at.selectbox[0].set_value("JR-2").run(timeout=60)
+    assert at.session_state["selected_job_id"] == "JR-2"
 
 
 def _urls(node) -> list[str]:

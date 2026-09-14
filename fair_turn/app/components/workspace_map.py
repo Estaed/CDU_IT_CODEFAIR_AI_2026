@@ -10,10 +10,12 @@ import streamlit as st
 from fair_turn.app import state, theme
 from fair_turn.app.components.map import nt_map
 
-MARKER_BASE_M = 4_000
-MARKER_STEP_M = 1_000
+MARKER_MIN_PX = 6
+MARKER_STEP_PX = 1
+MARKER_MAX_PX = 14
 SELECTED_RADIUS_MULTIPLIER = 1.6
-SELECTED_LINE_WIDTH_MIN_PIXELS = 3
+MARKER_LINE_WIDTH_MIN_PX = 1
+SELECTED_LINE_WIDTH_MIN_PX = 3
 
 
 def _rgb(hex_value: str) -> list[int]:
@@ -26,7 +28,7 @@ def _layer_points(points: list[dict]) -> list[dict]:
         {
             **point,
             "colour": _rgb(theme.REGION_COLOURS[point["region"]]),
-            "radius": MARKER_BASE_M + MARKER_STEP_M * int(point["open_jobs"]),
+            "radius": min(MARKER_MIN_PX + MARKER_STEP_PX * int(point["open_jobs"]), MARKER_MAX_PX),
         }
         for point in points
     ]
@@ -48,6 +50,11 @@ def build_deck(points: list[dict], selected_id: str | None) -> pdk.Deck:
         get_position=["lon", "lat"],
         get_radius="radius",
         get_fill_color="colour",
+        radius_units="'pixels'",
+        radius_min_pixels=MARKER_MIN_PX,
+        radius_max_pixels=MARKER_MAX_PX,
+        stroked=True,
+        line_width_min_pixels=MARKER_LINE_WIDTH_MIN_PX,
     )
     selected = pdk.Layer(
         "ScatterplotLayer",
@@ -57,9 +64,12 @@ def build_deck(points: list[dict], selected_id: str | None) -> pdk.Deck:
         get_position=["lon", "lat"],
         get_radius="radius",
         get_fill_color="colour",
+        radius_units="'pixels'",
+        radius_min_pixels=MARKER_MIN_PX,
+        radius_max_pixels=int(MARKER_MAX_PX * SELECTED_RADIUS_MULTIPLIER),
         stroked=True,
         get_line_color=_rgb(st.get_option("theme.primaryColor")),
-        line_width_min_pixels=SELECTED_LINE_WIDTH_MIN_PIXELS,
+        line_width_min_pixels=SELECTED_LINE_WIDTH_MIN_PX,
     )
     return pdk.Deck(
         layers=[jobs, selected],

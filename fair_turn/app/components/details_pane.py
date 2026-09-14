@@ -82,17 +82,25 @@ def _select(options: list[str], selected: str | None) -> str | None:
 
 
 def _map_choice(map_choice: tuple[str, list[str]] | None, selected: str | None) -> None:
-    """A marker holds a community: offer its jobs, never pick one."""
+    """Select one mapped job directly, or offer a compact chooser for several."""
     if map_choice is None:
         return
     community_id, job_ids = map_choice
     if selected in job_ids:
         return
-    st.markdown(f"Choose a job at {community_id}")
-    for job_id in job_ids:
-        if st.button(job_id, key=f"workspace_choose_{job_id}"):
-            state.set_selected_job_id(job_id)
-            st.rerun()
+    if len(job_ids) == 1:
+        state.set_selected_job_id(job_ids[0])
+        st.rerun()
+    choice = st.selectbox(
+        f"Choose a job at {community_id}",
+        job_ids,
+        index=None,
+        placeholder="Pick a job",
+        key=f"workspace_choose_{community_id}",
+    )
+    if choice is not None:
+        state.set_selected_job_id(choice)
+        st.rerun()
 
 
 def _human_set_badges(human_set: dict[str, str]) -> None:

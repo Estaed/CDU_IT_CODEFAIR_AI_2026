@@ -409,10 +409,11 @@ def test_policy_passages_render_with_title_section_and_date(tmp_path, monkeypatc
 # --- hand moves: one audit record each, none without a reason --------------------------------
 
 
-def _submit(at: AppTest, form: str, reason: str | None) -> AppTest:
+def _submit(at: AppTest, job_id: str, action: str, reason: str | None) -> AppTest:
+    form = f"actions_{job_id}"
     if reason is not None:
         at.text_input(key=f"{form}_reason").set_value(reason)
-    at.button(key=f"{form}_submit").click().run(timeout=60)
+    at.button(key=f"{form}_{action}").click().run(timeout=60)
     assert not at.exception
     return at
 
@@ -425,11 +426,11 @@ def test_promote_backlog_job_writes_one_promotion(tmp_path) -> None:
     at = _run(_script(tmp_path, _select(promoted)))
     assert promoted in list(_frame(at, 1)["job_id"])
 
-    _submit(at, f"promote_{promoted}", None)
+    _submit(at, promoted, "promote", None)
     assert details_pane.REASON_REQUIRED in [e.value for e in at.error]
     assert audit.read(audit_path) == []
 
-    _submit(at, f"promote_{promoted}", "crew already in the community")
+    _submit(at, promoted, "promote", "crew already in the community")
     records = audit.read(audit_path)
     assert len(records) == 1 and isinstance(records[0], audit.Promotion)
     assert (records[0].job_id, records[0].displaced_job_id) == (promoted, displaced)
@@ -444,7 +445,7 @@ def test_move_undo_and_send_to_review(tmp_path) -> None:
     audit_path = tmp_path / "audit.jsonl"
     at = _run(_script(tmp_path, _select(first)))
 
-    _submit(at, f"move_down_{first}", "tenant away until the afternoon")
+    _submit(at, first, "down", "tenant away until the afternoon")
     records = audit.read(audit_path)
     assert len(records) == 1 and isinstance(records[0], audit.Override)
     assert (records[0].job_id, records[0].from_rank, records[0].to_rank) == (first, 1, 2)
@@ -455,7 +456,7 @@ def test_move_undo_and_send_to_review(tmp_path) -> None:
     assert _today_ids(at)[:2] == [first, second]
     assert len(audit.read(audit_path)) == 1
 
-    _submit(at, f"review_{first}", "tenant describes a different fault")
+    _submit(at, first, "review", "tenant describes a different fault")
     records = audit.read(audit_path)
     assert len(records) == 2 and isinstance(records[1], audit.HumanSet)
     assert (records[1].field, records[1].value) == (

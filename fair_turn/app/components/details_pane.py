@@ -285,19 +285,6 @@ def _policy_expander(art: Artefacts, job: Job) -> None:
                     st.markdown(_text(passage.text))
 
 
-def _reason_form(key: str, label: str) -> str | None:
-    """A reason field and a submit button; the reason, or None when nothing may be written."""
-    with st.form(key):
-        reason = st.text_input("Reason", key=f"{key}_reason", placeholder=REASON_PLACEHOLDER)
-        submitted = st.form_submit_button(label, key=f"{key}_submit")
-    if not submitted:
-        return None
-    if not reason.strip():
-        st.error(REASON_REQUIRED)
-        return None
-    return reason.strip()
-
-
 def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_review: bool) -> None:
     with st.container(border=True):
         st.markdown("**Change this job's place** (every change needs a reason and is logged)")
@@ -321,17 +308,17 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
             state.set_hand_moves((*moves, HandMove(job_id, rank, to_rank, reason)))
             st.rerun()
 
+        actions: list[tuple[str, str]] = []
+        displaced = None
         if rank <= cap:
             st.caption(
                 "You can move this job up or down one place in today's list, "
                 "or send it to the review queue."
             )
-            if rank > 1 and (reason := _reason_form(f"move_up_{job_id}", "Move up one place")):
-                move(rank - 1, reason)
-            if rank < len(ids) and (
-                reason := _reason_form(f"move_down_{job_id}", "Move down one place")
-            ):
-                move(rank + 1, reason)
+            if rank > 1:
+                actions.append(("up", "Move up one place"))
+            if rank < len(ids):
+                actions.append(("down", "Move down one place"))
         elif cap > 0:
             displaced = ids[cap - 1]
             st.caption(
@@ -342,21 +329,37 @@ def _actions(job: Job, current: list[ScoredJob], cap: int, today: date, in_revie
                 f"Promoting puts this job at rank {cap} and moves "
                 f"{ranking_table.short_id(displaced)} to the backlog."
             )
-            if reason := _reason_form(f"promote_{job_id}", "Promote into today's list"):
-                audit.append(audit_path, audit.Promotion(today, job_id, displaced, reason))
-                state.set_hand_moves((*moves, HandMove(job_id, rank, cap, reason)))
-                st.rerun()
+            actions.append(("promote", "Promote into today's list"))
+        actions.append(("review", "Send to review queue"))
 
-        if reason := _reason_form(f"review_{job_id}", "Send to review queue"):
+        key = f"actions_{job_id}"
+        with st.form(key):
+            reason = st.text_input("Why?", key=f"{key}_reason", placeholder=REASON_PLACEHOLDER)
+            clicked = None
+            for column, (suffix, label) in zip(st.columns(len(actions)), actions, strict=True):
+                if column.form_submit_button(label, key=f"{key}_{suffix}"):
+                    clicked = suffix
+
+        if clicked is not None and not reason.strip():
+            st.error(REASON_REQUIRED)
+        elif clicked == "up":
+            move(rank - 1, reason.strip())
+        elif clicked == "down":
+            move(rank + 1, reason.strip())
+        elif clicked == "promote":
+            audit.append(audit_path, audit.Promotion(today, job_id, displaced, reason.strip()))
+            state.set_hand_moves((*moves, HandMove(job_id, rank, cap, reason.strip())))
+            st.rerun()
+        elif clicked == "review":
             audit.append(
                 audit_path,
                 audit.HumanSet(
                     day=today,
                     job_id=job_id,
                     field=ranking_table.REVIEW_REQUESTED,
-                    value=reason,
+                    value=reason.strip(),
                     actor="coordinator",
-                    reason=reason,
+                    reason=reason.strip(),
                 ),
             )
             state.set_hand_moves(ranking_table.without_moves_for(moves, job_id))

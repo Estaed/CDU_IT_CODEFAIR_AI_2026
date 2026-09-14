@@ -212,6 +212,14 @@ def test_action_buttons_say_what_they_do(art, tmp_path) -> None:
     )
 
 
+def test_actions_form_has_exactly_one_reason_box(art, tmp_path) -> None:
+    today, jobs = _open_jobs()
+    ranked = scoring.rank(jobs, today, 1.0)[1].job
+    at = _run(tmp_path, ranked.job_id)
+    assert len(at.text_input) == 1
+    assert at.text_input[0].label == "Why?"
+
+
 def test_badges_use_named_colours_without_hex_literals() -> None:
     source = (ROOT / "fair_turn" / "app" / "components" / "details_pane.py").read_text("utf-8")
     assert '"immediate": "red"' in source

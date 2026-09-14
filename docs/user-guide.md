@@ -48,8 +48,8 @@ says what to do.
    Press Review to open it. Fill each one in by hand, with a reason.
 3. **Check today's jobs.** Open a job from today's list, the map, or the Select job box.
    Read the report and the words marked in it. If the fields are right, press
-   ✓ Fields are right. If one is wrong, press ✗ Fix a field, pick the right value, and
-   say why. The row then shows ✓ Checked or ✗ Corrected. There is no button that passes
+   Fields are right. If one is wrong, press Fix a field, pick the right value, and
+   say why. The row then shows Checked or Corrected. There is no button that passes
    every job at once: each check is one job, read by you.
 4. **Use the map when it helps.** Circles group nearby communities. Click one and it
    splits into one dot per community. A dot with several jobs lets you choose; it never

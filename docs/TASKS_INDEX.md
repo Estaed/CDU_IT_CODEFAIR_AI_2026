@@ -92,6 +92,11 @@ amendments dated that night):
 - [x] One reason box per job; "Needs a human" tab in the daily view; region filter as a view
 - [x] Crews as one NT-wide pool in the list, simulation and visit plan; distance picks the crew, never the job
 - [x] Crew reach in the visit plan and simulation: a crew serves its region or within a day's drive of its base
+- [x] DEV OPTION in the sidebar: simulate an incoming report (no model call), including one that needs a person
+- [x] The map eases to the selected job's dot; shorter hand-move buttons
+- [x] Field checks in the job pane (Fields are right / Fix a field) with an audit record, row badges and the sign-off count; Today's steps strip (`reports/research-review-workflow-2026-09-14.md`)
+- [x] Plain-word "What to do here" steps and term definitions on the visit plan, tenant answer and Evidence lab
+- [x] Material icons instead of tick glyphs, two-line job rows, Evidence lab interval wording
 
 ## Routing
 

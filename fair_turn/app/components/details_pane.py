@@ -28,8 +28,8 @@ REASON_PLACEHOLDER = "Why? e.g. crew already nearby, tenant called back"
 PASSAGE_PREVIEW_CHARS = 400
 CHECK_TITLE = "Check the AI's reading"
 CHECK_CAPTION = "Read the report above. Are the fields the AI read from it right?"
-CHECK_OK = "✓ Fields are right"
-CHECK_FIX = "✗ Fix a field"
+CHECK_OK = "Fields are right"
+CHECK_FIX = "Fix a field"
 CHECK_IN_REVIEW = "This job needs a person first: open it in the Needs a human tab."
 FIXABLE_FIELDS = {"fault_type": FaultType, "safety_class": SafetyClass}
 FIELD_FACTOR = {
@@ -239,8 +239,11 @@ def _report_block(art: Artefacts, job_id: str) -> None:
 def _check_line(check: audit.FieldCheck) -> str:
     at = f"{check.recorded_at.astimezone():%H:%M}"
     if check.decision == "confirmed":
-        return f"✓ Checked by {check.actor} at {at}"
-    return f"✗ Corrected {_label(check.field)} to {_label(check.value)} by {check.actor} at {at}"
+        return f":material/check: Checked by {check.actor} at {at}"
+    return (
+        f":material/close: Corrected {_label(check.field)} to {_label(check.value)} "
+        f"by {check.actor} at {at}"
+    )
 
 
 def _fix_form(job_id: str, today: date) -> None:
@@ -283,8 +286,8 @@ def _fix_form(job_id: str, today: date) -> None:
 
 
 def _check_block(job_id: str, today: date, in_review: bool) -> None:
-    """✓ / ✗ on the model's reading of this job, placed after the report so the words it was
-    read from are already on screen. No per-row approve and no "accept all" (PRD 3.1)."""
+    """Check or fix the model's reading of this job, placed after the report so the words it
+    was read from are already on screen. No per-row approve and no "accept all" (PRD 3.1)."""
     with st.container(border=True):
         st.markdown(f"**{CHECK_TITLE}**")
         if in_review:
@@ -292,14 +295,24 @@ def _check_block(job_id: str, today: date, in_review: bool) -> None:
             return
         st.caption(CHECK_CAPTION)
         ok, fix = st.columns(2)
-        if ok.button(CHECK_OK, key=f"fieldcheck_ok_{job_id}", width="stretch"):
+        if ok.button(
+            CHECK_OK,
+            icon=":material/check:",
+            key=f"fieldcheck_ok_{job_id}",
+            width="stretch",
+        ):
             audit.append(
                 state.get_audit_path(),
                 audit.FieldCheck(today, job_id, "confirmed", state.get_actor()),
             )
             state.set_field_fix_job(None)
             st.rerun()
-        if fix.button(CHECK_FIX, key=f"fieldcheck_fix_{job_id}", width="stretch"):
+        if fix.button(
+            CHECK_FIX,
+            icon=":material/close:",
+            key=f"fieldcheck_fix_{job_id}",
+            width="stretch",
+        ):
             state.set_field_fix_job(job_id)
         if state.get_field_fix_job() == job_id:
             _fix_form(job_id, today)

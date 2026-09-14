@@ -20,7 +20,9 @@ def test_a_fresh_morning_marks_the_first_step_next_and_counts_what_is_left() -> 
     assert [s.done for s in steps] == [False, False, False, False]
     assert [s.is_next for s in steps] == [True, False, False, False]
     assert steps[0].text == "21 left: open the Needs a human tab and fill in each one."
-    assert steps[1].text == "3 of 14 checked: open a job, read the report, press ✓ or ✗."
+    assert steps[1].text == (
+        "3 of 14 checked: open a job, read the report, then press Fields are right or Fix a field."
+    )
     assert "Review and sign" in steps[2].text
     assert "visit plan" in steps[3].text
 

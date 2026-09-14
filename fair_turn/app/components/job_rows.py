@@ -11,21 +11,21 @@ whose button was pressed, so the page owns the selection seam exactly as it did 
 
 import streamlit as st
 
-from fair_turn.app.components.ranking_table import UNCHANGED, short_id
+from fair_turn.app.components.ranking_table import UNCHANGED, community_label, short_id
 
 # Row geometry: rank, job (fault type, id and community), class and window, score, the
-# open button.
-COLUMN_RATIOS = [0.7, 2.4, 1.8, 1.4, 1.6]
+# open button. Each cell holds at most two lines.
+COLUMN_RATIOS = [0.7, 2.6, 1.6, 1.3, 1.5]
 # Named Streamlit badge colours, the same map the details pane uses.
 SAFETY_COLOURS = {"immediate": "red", "urgent": "orange", "routine": "gray"}
 SELECTED = "Selected"
 NEEDS_HUMAN = "Needs a human"
 OPEN = "Open"
-# A job's latest field check today -> (badge colour, label); ``None`` is not checked yet.
+# A job's latest field check today -> (badge colour, icon, label); ``None`` is not checked yet.
 CHECK_BADGES = {
-    "confirmed": ("green", "✓ Checked"),
-    "corrected": ("red", "✗ Corrected"),
-    None: ("gray", "Not checked"),
+    "confirmed": ("green", ":material/check:", "Checked"),
+    "corrected": ("red", ":material/close:", "Corrected"),
+    None: ("gray", None, "Not checked"),
 }
 
 
@@ -51,16 +51,18 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
                     st.caption(row["rank_change"])
             with job:
                 st.markdown(f"**{row['fault_type'].replace('_', ' ').capitalize()}**")
-                st.caption(f"Job {short_id(job_id)} · {row['community_id']}")
-            with urgency:
-                st.badge(
-                    row["safety_class"].capitalize(), color=SAFETY_COLOURS[row["safety_class"]]
+                locality = "Remote" if row["is_remote"] else "Town"
+                st.caption(
+                    f"Job {short_id(job_id)} · {community_label(row['community_id'])} · {locality}"
                 )
-                colour, label = CHECK_BADGES[row["check"]]
-                st.badge(label, color=colour)
-                st.badge("Remote" if row["is_remote"] else "Town", color="gray")
-                if row["human_queue"]:
-                    st.badge(NEEDS_HUMAN, color="yellow")
+            with urgency:
+                with st.container(horizontal=True):
+                    st.badge(
+                        row["safety_class"].capitalize(),
+                        color=SAFETY_COLOURS[row["safety_class"]],
+                    )
+                    if row["human_queue"]:
+                        st.badge(NEEDS_HUMAN, color="yellow")
                 st.caption(row["window"])
             with score:
                 st.markdown(f"{row['score']:.1f}")
@@ -73,6 +75,9 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
                     width="stretch",
                 ):
                     clicked = job_id
-                if is_selected:
-                    st.badge(SELECTED, color="orange")
+                with st.container(horizontal=True):
+                    colour, icon, label = CHECK_BADGES[row["check"]]
+                    st.badge(label, icon=icon, color=colour)
+                    if is_selected:
+                        st.badge(SELECTED, color="orange")
     return clicked

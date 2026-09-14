@@ -110,15 +110,24 @@ def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
         "bag-of-words classifier used only for comparison, not the AI extractor this "
         "product uses."
     )
+
+    def _accuracy_ci_text(field: str) -> str:
+        extractor = ev["extractor"][field]
+        match_key = "accuracy" if "accuracy_ci" in extractor else "exact_set_match"
+        lo, hi = extractor[f"{match_key}_ci"]
+        return (
+            f"{field_help} The 95 % interval on {match_key.replace('_', ' ')} is {lo:.0%}–{hi:.0%}."
+        )
+
     for field, label in (
         ("fault_type", "Fault type"),
         ("safety_class", "Safety class"),
     ):
         expected_delta = ev["extractor"][field]["macro_f1"] - ev["baseline"][field]["macro_f1"]
         assert metrics[label].delta == f"{expected_delta * 100:+.0f} pts"
-        assert metrics[label].help == field_help
+        assert metrics[label].help == _accuracy_ci_text(field)
     assert metrics["Health risk"].delta == ""
-    assert metrics["Health risk"].help == field_help
+    assert metrics["Health risk"].help == _accuracy_ci_text("health_risk")
 
 
 def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:

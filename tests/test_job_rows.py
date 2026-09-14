@@ -87,14 +87,13 @@ def test_one_bordered_row_per_job_with_an_open_button(tmp_path, rows) -> None:
         assert f"**{row['fault_type'].capitalize()}**" in values
     captions = [caption.value for caption in at.caption]
     for row in rows:
-        assert f"Job {short_id(row['job_id'])} · {row['community_id']}" in captions
+        locality = "Remote" if row["is_remote"] else "Town"
+        assert f"Job {short_id(row['job_id'])} · {row['community_id']} · {locality}" in captions
     assert captions.count("6 of 2 d") == len(rows)
     assert "▲2" in captions
     assert ":red-badge[Immediate]" in values
     assert ":gray-badge[Routine]" in values
     assert f":yellow-badge[{job_rows.NEEDS_HUMAN}]" in values
-    assert values.count(":gray-badge[Remote]") == 2
-    assert values.count(":gray-badge[Town]") == 1
     assert len([node for node in at if getattr(node, "type", None) == "progress"]) == len(rows)
 
 
@@ -121,7 +120,7 @@ def test_each_row_shows_its_check_state_badge(tmp_path, rows) -> None:
     at = _run(_script(tmp_path, rows, None))
     badges = [m.value for m in at.markdown]
     assert sum("Not checked" in b for b in badges) == 1
-    assert sum("✓ Checked" in b for b in badges) == 1
-    assert sum("✗ Corrected" in b for b in badges) == 1
-    assert any("green" in b and "✓ Checked" in b for b in badges)
-    assert any("red" in b and "✗ Corrected" in b for b in badges)
+    assert sum(":material/check: Checked" in b for b in badges) == 1
+    assert sum(":material/close: Corrected" in b for b in badges) == 1
+    assert any("green" in b and ":material/check: Checked" in b for b in badges)
+    assert any("red" in b and ":material/close: Corrected" in b for b in badges)

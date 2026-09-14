@@ -136,8 +136,7 @@ def render_extraction_tab() -> None:
     interval = f"{substring['rate_ci'][0]:.1%} to {substring['rate_ci'][1]:.1%}"
     st.write(
         "The percent of reports read correctly out of 150 held-out synthetic reports, "
-        "compared with a bag-of-words baseline. Higher is better; the bracket is the "
-        "95 % interval."
+        "compared with a bag-of-words baseline. Higher is better."
     )
     st.caption(
         "Share of the 150 held-out reports read correctly; the attack count is the 20 "
@@ -182,13 +181,15 @@ def render_extraction_tab() -> None:
         extractor = ev["extractor"][field]
         baseline = ev["baseline"].get(field)
         delta = None if baseline is None else extractor["macro_f1"] - baseline["macro_f1"]
+        match_key = "accuracy" if "accuracy_ci" in extractor else "exact_set_match"
+        interval = _ci_span(extractor, match_key)
         column.metric(
             label,
             f"{extractor['macro_f1']:.0%}",
             delta=None if delta is None else f"{delta * 100:+.0f} pts",
             delta_color="normal",
             border=True,
-            help=field_help,
+            help=f"{field_help} The 95 % interval on {match_key.replace('_', ' ')} is {interval}.",
         )
     artefact_date = datetime.fromtimestamp(eval_path.stat().st_mtime).date().isoformat()
     st.caption(

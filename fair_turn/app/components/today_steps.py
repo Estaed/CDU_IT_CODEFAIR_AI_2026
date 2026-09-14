@@ -33,7 +33,11 @@ def steps(
             "Check today's jobs",
             all_checked,
             f"{checked} of {today_total} checked"
-            + ("." if all_checked else ": open a job, read the report, press ✓ or ✗."),
+            + (
+                "."
+                if all_checked
+                else ": open a job, read the report, then press Fields are right or Fix a field."
+            ),
         ),
         Step(
             "Choose the weighting and sign",
@@ -65,7 +69,7 @@ def render(day_steps: list[Step]) -> None:
         with column, st.container(border=True):
             st.markdown(f"**{number}. {step.title}**")
             if step.done:
-                st.badge("✓ Done", color="green")
+                st.badge("Done", icon=":material/check:", color="green")
             elif step.is_next:
                 st.badge("Next", color="orange")
             st.caption(step.text)

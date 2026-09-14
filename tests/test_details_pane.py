@@ -251,8 +251,10 @@ def test_check_block_sits_after_the_report_with_two_keyed_buttons(art, tmp_path)
     assert markdown.index(f"**{details_pane.CHECK_TITLE}**") < markdown.index(
         "**Why it sits here.**"
     )
-    assert at.button(key=f"fieldcheck_ok_{job_id}").label == "✓ Fields are right"
-    assert at.button(key=f"fieldcheck_fix_{job_id}").label == "✗ Fix a field"
+    assert at.button(key=f"fieldcheck_ok_{job_id}").label == "Fields are right"
+    assert at.button(key=f"fieldcheck_ok_{job_id}").proto.icon == ":material/check:"
+    assert at.button(key=f"fieldcheck_fix_{job_id}").label == "Fix a field"
+    assert at.button(key=f"fieldcheck_fix_{job_id}").proto.icon == ":material/close:"
 
 
 def test_fields_are_right_writes_one_confirmed_check_and_shows_it(tmp_path) -> None:
@@ -264,7 +266,9 @@ def test_fields_are_right_writes_one_confirmed_check_and_shows_it(tmp_path) -> N
     assert (check.job_id, check.decision, check.actor) == (job_id, "confirmed", "coordinator")
     today, _ = _open_jobs()
     assert check.day == today and check.recorded_at.tzinfo is not None
-    assert any(c.value.startswith("✓ Checked by coordinator at ") for c in at.caption)
+    assert any(
+        c.value.startswith(":material/check: Checked by coordinator at ") for c in at.caption
+    )
 
 
 def test_fix_a_field_needs_a_reason_then_writes_the_human_set_path(tmp_path) -> None:
@@ -301,7 +305,7 @@ def test_fix_a_field_needs_a_reason_then_writes_the_human_set_path(tmp_path) -> 
     assert stored == {job_id: {"safety_class": "urgent"}}
     text = _page_text(at)
     assert details_pane.SET_BY_COORDINATOR in text
-    assert "✗ Corrected safety class to urgent by Ada at " in text
+    assert ":material/close: Corrected safety class to urgent by Ada at " in text
     assert at.session_state["actor"] == "Ada"
 
 

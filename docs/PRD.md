@@ -122,20 +122,24 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
   (the pane names the job it displaces), send a job to the review queue, undo a hand move
   before signing; each with a written reason, each logged. Actions are disabled, with
   the reason shown, only for closed jobs and jobs in the review queue.
-- **Checking the AI's reading** (*added 2026-09-14 night, Tarik's request, shaped by
-  `reports/research-review-workflow-2026-09-14.md`*). In the selected-job pane, after the
-  report and its highlighted phrases, two buttons: **✓ Fields are right** (green) and
-  **✗ Fix a field** (red; opens the field, a value from the enum and a required reason, and
-  writes a human-set field). Each press is an audit record with actor, both clocks and the
-  job. Today's list rows show the result as a badge (✓ Checked, ✗ Corrected, or Not
-  checked). There is no per-row approve and no "accept all": the list itself is accepted
-  only by the daily signature, and a one-click approve per row is the rubber-stamp pattern
-  the research warns against. Checking never gates signing; the sign-off summary states
-  how many of today's jobs were checked and corrected.
+- ~~**Checking the AI's reading**: ✓ Fields are right / ✗ Fix a field as feedback, with no
+  per-job accept.~~ *Replaced 2026-09-15, Tarik's decision, restated twice after the
+  rubber-stamp risk in `reports/research-review-workflow-2026-09-14.md` was put to him:*
+- **Deciding each job.** Today's proposed jobs are a queue: **To decide**, **Accepted**,
+  **Needs a human**, **Backlog**. At the bottom of the selected-job pane, after the report,
+  the reasons, the score and the policy passages, the coordinator ticks "I have read the
+  report and the reasons above" (per job), then presses **Accept for today** (green) or
+  **Reject** (red, with a required reason and one of: not today, move to the backlog;
+  needs a person, send to the review queue; a field is wrong, fix it). Accepting moves the
+  job to Accepted, so To decide shrinks by one; rejecting it as not today lets the next
+  ranked job into To decide. A decision can be undone before signing. Every decision is an
+  audit record with actor and both clocks. Kept against rubber-stamping: the read tick per
+  job, no accept-all, a reason for every rejection, and the counts on the sign-off summary.
+  Keyboard: J next job, K previous, A accept (only after the read tick), X reject.
 - **Today's steps.** A strip at the top of the workspace shows the day's four steps with
   live state, so a first-time user needs no document: 1 Jobs that need a person (N left),
-  2 Check today's jobs (N of M checked), 3 Choose the weighting and sign, 4 Open the visit
-  plan. Each step says in one line what to do next. No auto-opened tour.
+  2 Decide today's jobs (N left; *amended 2026-09-15*), 3 Choose the weighting and sign,
+  4 Open the visit plan. Each step says in one line what to do next. No auto-opened tour.
 - **Selection.** One selected job, shared by the list, the map, the pane and the visit
   plan. A keyboard-reachable selectbox is the equivalent of every click. A map marker
   holding several jobs offers the choice; it never picks one.
@@ -148,7 +152,9 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
 - **Sign-off.** A daily batch, signed in an in-page form under the list: read-only
   summary of weighting, counts, hand moves with reasons and review-queue size; the exact
   frozen list one expander away; signer, decision (approve or defer), reason, the
-  decision date stated as the dataset day. Opening the form freezes a batch version; any
+  decision date stated as the dataset day. *Amended 2026-09-15:* the batch is the
+  **accepted** jobs in rank order, and signing opens only when no proposed job is left to
+  decide; after signing, the workspace says so and links the visit plan. Opening the form freezes a batch version; any
   change before submission invalidates the review. The signed list, weighting, reason,
   revisions and per-job overrides are written to the audit log with an audit reference
   shown on success. Later changes require a new signed revision to become the signed

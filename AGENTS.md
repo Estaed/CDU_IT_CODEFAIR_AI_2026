@@ -577,7 +577,9 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
   module calls `st.html` with a `<style>` tag or `st.markdown` with
   `unsafe_allow_html`). ~~JavaScript, custom bidirectional components and npm builds
   stay forbidden: `AppTest` cannot see them.~~ *Amended 2026-09-14 (night), Tarik's decision:* exactly one
-  JavaScript component, the workspace map (`app/components/cluster_map.py` + `.js` over
+  JavaScript component (*two since 2026-09-15, Tarik's request: the map and a keyboard
+  listener, `app/components/keyboard.py` + `.js`, that ignores keys typed into inputs and
+  never uses Streamlit's reserved R and C*), the workspace map (`app/components/cluster_map.py` + `.js` over
   vendored MapLibre), styled only inside its shadow root with the vendored MapLibre CSS
   and receiving every colour from `theme.py` through its data (no hex literal in the JS,
   tested). npm builds and any other custom component stay forbidden.

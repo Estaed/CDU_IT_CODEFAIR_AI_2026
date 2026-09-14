@@ -188,6 +188,15 @@ def set_map_pick(community_id: str | None) -> None:
     st.session_state["map_pick"] = community_id
 
 
+def get_pending_toast() -> str | None:
+    """The job id a dev replay just added; the page announces it once, then clears it."""
+    return _get("pending_toast", None)
+
+
+def set_pending_toast(job_id: str | None) -> None:
+    st.session_state["pending_toast"] = job_id
+
+
 def get_map_failed() -> str | None:
     """Why the clustered map could not load; set once, the outline stays for the session."""
     return _get("map_failed", None)

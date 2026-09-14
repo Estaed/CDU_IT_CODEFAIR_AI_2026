@@ -55,6 +55,12 @@ MAP_CAPTION = (
 )
 NO_HUMAN_JOBS = "No jobs need a person today."
 HUMAN_ROW_RATIOS = [2.2, 3.6, 1.2]  # job and community, what is missing, the Review button
+DEV_EXPANDER = "DEV OPTION · Simulate incoming reports"
+DEV_CAPTION = (
+    "Replays a synthetic report as if a tenant just sent it. No model call; for demos and testing."
+)
+DEV_ADD = "Add a new report"
+DEV_ADD_HUMAN = "Add one that needs a human"
 
 art = state.artefacts()
 today = state.get_today()
@@ -64,6 +70,15 @@ intro.purpose("workspace")
 with st.sidebar:
     lam, label = weighting.render()
     region, faults, safeties = weighting.filters()
+    with st.expander(DEV_EXPANDER):
+        st.caption(DEV_CAPTION)
+        for label_text, needs_person in ((DEV_ADD, False), (DEV_ADD_HUMAN, True)):
+            if st.button(label_text, key=f"workspace_dev_{int(needs_person)}", width="stretch"):
+                new_id = intake.simulate_incoming(needs_person)
+                state.set_selected_job_id(new_id)
+                state.set_map_pick(None)
+                state.set_pending_toast(new_id)
+                st.rerun()
 
 # Crews are one NT-wide pool: the ranking and the capacity split always cover every open job,
 # and the sidebar region only narrows the rows and the map points shown.
@@ -83,6 +98,33 @@ current = ranking_table.apply_hand_moves(scoring.rank(rankable, today, lam), sta
 cap = ranking_table.capacity(state.ALL_REGIONS)
 today_list, backlog = current[:cap], current[cap:]
 review_count = sum(1 for j in jobs if j.needs_human or j.job_id in review_ids)
+
+
+def ordinal(n: int) -> str:
+    suffix = "th" if 10 <= n % 100 <= 20 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def added_message(job_id: str) -> str:
+    """The toast for a replayed report: where it landed, in the words the lists use."""
+    head = f"Report {ranking_table.short_id(job_id)} added"
+    job = next((j for j in jobs if j.job_id == job_id), None)
+    if job is not None and job.needs_human:
+        missing = [
+            name
+            for name, value in (("fault type", job.fault_type), ("safety class", job.safety_class))
+            if value is None
+        ]
+        return f"{head}: it needs a person ({' and '.join(missing)} not found)"
+    rank = next((s.rank for s in current if s.job.job_id == job_id), None)
+    if rank is None:
+        return f"{head}."
+    return f"{head}: it ranks {ordinal(rank)}" + ("" if rank <= cap else ", in the backlog")
+
+
+if (announced := state.get_pending_toast()) is not None:
+    state.set_pending_toast(None)
+    st.toast(added_message(announced))
 
 
 def in_view(job) -> bool:

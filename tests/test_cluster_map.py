@@ -94,6 +94,7 @@ def test_payload_carries_theme_colours_layout_and_the_selection(points) -> None:
     assert data["layout"]["cluster_radius"] == cluster_map.CLUSTER_RADIUS_PX
     assert data["layout"]["cluster_max_zoom"] == cluster_map.CLUSTER_MAX_ZOOM
     assert data["layout"]["height"] == cluster_map.MAP_HEIGHT_PX
+    assert data["layout"]["selected_zoom"] == cluster_map.CLUSTER_MAX_ZOOM + 1
     assert data["urls"]["module"].startswith("app/static/maplibre/")
     assert cluster_map.payload(points, None)["selected"] == ""
 
@@ -115,6 +116,9 @@ def test_script_has_no_colour_literal_and_reuses_the_map_on_rerun() -> None:
     assert 'setTriggerValue("picked"' in source
     assert 'setTriggerValue("failed"' in source
     assert "getClusterExpansionZoom" in source
+    # A changed selection eases the camera to at least the payload's zoom past clustering.
+    assert "data.selected !== previous" in source
+    assert "data.layout.selected_zoom" in source
 
 
 def test_component_renders_offline_with_its_features(tmp_path, no_network, points) -> None:

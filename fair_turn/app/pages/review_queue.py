@@ -115,8 +115,8 @@ def _reason(field: str, dropped) -> str:
 def _build_items(art: Artefacts, today: date) -> list[QueueItem]:
     items = []
     for job in ranking_table.open_jobs(today):
-        if not job.needs_human:
-            continue
+        if not job.needs_human or job.job_id not in art.extraction:
+            continue  # an intake job is listed by ``_intake_items``
         row = extraction_for(art, job.job_id)
         kept = {field: ev.evidence for field, ev in row.kept.items()}
         human_set = state.get_human_set(job.job_id)

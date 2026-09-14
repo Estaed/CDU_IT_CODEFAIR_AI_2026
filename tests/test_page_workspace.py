@@ -16,7 +16,7 @@ from streamlit.testing.v1 import AppTest
 from fair_turn.app.components import cluster_map, details_pane, job_rows, ranking_table, run_sheet
 from fair_turn.core import audit, constants, scoring
 from fair_turn.core.batch import HandMove
-from fair_turn.data import artefacts, policy
+from fair_turn.data import artefacts, policy, runtime
 
 ROOT = Path(__file__).resolve().parent.parent
 WORKSPACE = ROOT / "fair_turn" / "app" / "pages" / "workspace.py"
@@ -612,3 +612,72 @@ def test_apply_hand_moves_renumbers_and_ignores_unknown_ids() -> None:
     )
     assert [s.job.job_id for s in moved] == [ids[3], ids[0], ids[1], ids[2]]
     assert [s.rank for s in moved] == [1, 2, 3, 4]
+
+
+# --- DEV OPTION: replay a synthetic report as a new intake -----------------------------------
+
+
+def _intake_rows() -> list[dict]:
+    """Runtime records in the file the page writes (isolated by ``tests/conftest.py``)."""
+    path = runtime.RUNTIME_DIR / "runtime.jsonl"
+    lines = path.read_text("utf-8").splitlines() if path.exists() else []
+    return [json.loads(line) for line in lines]
+
+
+def _next_ids(art, count: int) -> list[str]:
+    ids = {label["job_id"] for label in art.labels}
+    out = []
+    for _ in range(count):
+        out.append(runtime.next_job_id(ids | set(out)))
+    return out
+
+
+def _toasts(at: AppTest) -> list[str]:
+    return [t.value for t in at.toast]
+
+
+def test_dev_add_a_new_report_lands_in_the_ranking(art, tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    assert not _intake_rows()
+    at.button(key="workspace_dev_0").click().run(timeout=60)
+    assert not at.exception
+    (row,) = _intake_rows()
+    assert row["job_id"] == _next_ids(art, 1)[0]
+    assert row["provider"] == "dev-replay" and row["status"] == "extracted"
+    assert row["model"] == "synthetic replay (no model call)"
+    assert row["reported_on"] == LAST_DAY.isoformat()
+    assert at.session_state["selected_job_id"] == row["job_id"]
+    # Matched on what the page shows: the new id is unknown to this process's cached open jobs.
+    short = ranking_table.short_id(row["job_id"])
+    in_today = any(c.value.startswith(f"Job {short} · ") for c in at.tabs[0].caption)
+    assert in_today or row["job_id"] in set(_frame(at, 2)["job_id"])
+    assert f"**Job {short}**" not in [m.value for m in at.tabs[1].markdown]
+    assert any(t.startswith(f"Report {short} added: it ranks ") for t in _toasts(at))
+    audit_rows = [
+        json.loads(line) for line in (tmp_path / "audit.jsonl").read_text("utf-8").splitlines()
+    ]
+    assert [r["job_id"] for r in audit_rows if r.get("provider") == "dev-replay"] == [row["job_id"]]
+
+
+def test_dev_add_one_that_needs_a_human_lands_in_that_tab(art, tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    at.button(key="workspace_dev_1").click().run(timeout=60)
+    assert not at.exception
+    (row,) = _intake_rows()
+    assert row["job_id"] == _next_ids(art, 1)[0]
+    assert row["status"] == "needs_review"
+    short = ranking_table.short_id(row["job_id"])
+    assert f"**Job {short}**" in [m.value for m in at.tabs[1].markdown]
+    assert not any(c.value.startswith(f"Job {short} · ") for c in at.tabs[0].caption)
+    assert row["job_id"] not in set(_frame(at, 2)["job_id"])
+    assert any(t.startswith(f"Report {short} added: it needs a person (") for t in _toasts(at))
+
+
+def test_dev_pressing_twice_gives_two_distinct_ids(art, tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    at.button(key="workspace_dev_0").click().run(timeout=60)
+    at.button(key="workspace_dev_0").click().run(timeout=60)
+    assert not at.exception
+    rows = _intake_rows()
+    assert [row["job_id"] for row in rows] == _next_ids(art, 2)
+    assert len({row["text"] for row in rows}) == 2

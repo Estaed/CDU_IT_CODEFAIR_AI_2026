@@ -9,7 +9,8 @@ outline for the rest of the session.
 
 Everything the script needs arrives in ``data``: the GeoJSON, the colours (from ``theme`` and
 the ``[theme]`` config, so the JS file carries no colour literal) and the layout numbers
-below. On a rerun the same map object receives the new data, so the camera is never reset.
+below. On a rerun the same map object receives the new data, so the camera is never reset;
+it moves only when the selected community changes after mount, easing to that community.
 """
 
 from pathlib import Path
@@ -22,6 +23,9 @@ from fair_turn.app.components import workspace_map
 MAP_HEIGHT_PX = 420
 CLUSTER_RADIUS_PX = 45
 CLUSTER_MAX_ZOOM = 8
+# A newly selected community eases to at least this zoom: one step past clustering, so its
+# own dot and selected ring show instead of a cluster circle.
+SELECTED_ZOOM = CLUSTER_MAX_ZOOM + 1
 POINT_MIN_RADIUS_PX = 6
 POINT_MAX_RADIUS_PX = 14
 POINT_MAX_JOBS = 8  # a community with this many open jobs or more draws the largest dot
@@ -105,6 +109,7 @@ def payload(points: list[dict], selected_community_id: str | None) -> dict:
             "timeout_ms": LOAD_TIMEOUT_MS,
             "centre": list(CENTRE),
             "zoom": ZOOM,
+            "selected_zoom": SELECTED_ZOOM,
         },
         "urls": {"style": STYLE_URL, "module": MODULE_PATH, "css": CSS_PATH},
     }

@@ -149,7 +149,34 @@ class PlanDecision:
         )
 
 
-Record = SignOff | Revision | Override | HumanSet | Intake | Promotion | PlanDecision
+@dataclass(frozen=True)
+class FieldCheck:
+    """A reviewer's check of the fields the model read from one job's report (PRD 3.1).
+
+    ``confirmed`` needs no reason; ``corrected`` names the field, the new value and why."""
+
+    day: date
+    job_id: str
+    decision: str
+    actor: str
+    reason: str = ""
+    field: str = ""
+    value: str = ""
+    recorded_at: datetime | None = None
+
+    def __post_init__(self) -> None:
+        if self.decision not in {"confirmed", "corrected"}:
+            raise ValueError("decision must be confirmed or corrected")
+        if self.decision == "corrected" and not (self.reason.strip() and self.field and self.value):
+            raise ValueError("a correction needs a field, a value and a reason")
+        object.__setattr__(
+            self,
+            "recorded_at",
+            datetime.now().astimezone() if self.recorded_at is None else _aware(self.recorded_at),
+        )
+
+
+Record = SignOff | Revision | Override | HumanSet | Intake | Promotion | PlanDecision | FieldCheck
 
 _KIND_OF = {
     SignOff: "sign_off",
@@ -159,6 +186,7 @@ _KIND_OF = {
     Intake: "intake",
     Promotion: "promotion",
     PlanDecision: "plan_decision",
+    FieldCheck: "field_check",
 }
 _CLASS_OF = {kind: cls for cls, kind in _KIND_OF.items()}
 _DATETIME_FIELDS = {"signed_at", "at", "recorded_at"}
@@ -271,8 +299,21 @@ def export_rows(records: list[Record]) -> list[dict]:
             row["detail"] = f"displaced {record.displaced_job_id}"
         elif isinstance(record, PlanDecision):
             row["detail"] = f"{record.action} v{record.batch_version}: {record.detail}"
+        elif isinstance(record, FieldCheck):
+            row["job_id"] = record.job_id
+            row["signer"] = record.actor
+            row["detail"] = (
+                f"corrected {record.field} = {record.value}"
+                if record.decision == "corrected"
+                else "confirmed"
+            )
         rows.append(row)
     return rows
+
+
+def latest_checks(records: list[Record], day: date) -> dict[str, FieldCheck]:
+    """The newest field check per job on the decision ``day``, in file order."""
+    return {r.job_id: r for r in records if isinstance(r, FieldCheck) and r.day == day}
 
 
 def override_rate(records: list[Record]) -> list[tuple[date, float]]:

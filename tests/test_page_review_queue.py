@@ -4,14 +4,15 @@ from a chip, the name is remembered across jobs, and the clarification message i
 from a template."""
 
 import socket
-from datetime import date
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app.components import ranking_table
-from fair_turn.core import audit, wording
+from fair_turn.app.intake import _flat_extraction
+from fair_turn.core import audit, constants, wording
 from fair_turn.data import artefacts, runtime
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -453,3 +454,45 @@ def test_clarification_draft_falls_back_when_no_required_field_is_missing(tmp_pa
     draft = at.text_area(key=f"clarify_msg_{job_id}").value
     assert "enough about the repair" in draft
     assert wording.check(draft) == []
+
+
+# --- an intake job sent to review ----------------------------------------------------------------
+
+
+def test_an_intake_job_sent_to_review_renders_from_its_runtime_record(art, tmp_path) -> None:
+    today = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
+    source = next(label for label in art.labels if not art.extraction[label["job_id"]].needs_human)
+    job_id = runtime.next_job_id(label["job_id"] for label in art.labels)
+    text = art.reports[source["job_id"]]
+    runtime.append(
+        tmp_path / "runtime.jsonl",
+        runtime.IntakeReport(
+            job_id,
+            source["community_id"],
+            today,
+            text,
+            _flat_extraction(art.extraction[source["job_id"]]),
+            "extracted",
+            "dev-replay",
+            "test",
+            "dev-replay",
+            0.0,
+            {"ok": True},
+            "draft-review-intake",
+            datetime.now(),
+        ),
+    )
+    audit.append(
+        tmp_path / "audit.jsonl",
+        audit.HumanSet(today, job_id, "review_requested", "check", "coordinator", "Check it."),
+    )
+    script = _wrapper_script(tmp_path)
+    body = script.read_text(encoding="utf-8")
+    script.write_text(
+        body.replace("exec(", f'state.set_review_focus("{job_id}")\nexec(', 1), encoding="utf-8"
+    )
+
+    at = AppTest.from_file(str(script)).run(timeout=60)
+    assert not at.exception
+    assert _short(job_id) in at.header[0].value
+    assert "review_requested needs review" in at.header[0].value

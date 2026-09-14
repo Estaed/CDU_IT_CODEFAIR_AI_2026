@@ -37,34 +37,34 @@ Fair Turn has five pages, reached from the sidebar.
 
 ## 3. A coordinator's morning, step by step
 
-This step list follows how other dispatch tools already work.
+This step list follows how other dispatch tools already work. The same four day steps sit
+in a strip at the top of the Workspace. Each tile says if it is done, and the next one
+says what to do.
 
 1. **Read the numbers at the top of the Workspace.** They say how many jobs are open,
    how many need a person's help, and how the list has moved since the last change.
-2. **Clear the review queue first.** These are jobs with a field the system could not
-   read. The Needs a human tab, next to today's list, names what is missing in each one.
-   Press Review to open it. Fill each one in by hand, with a reason, before ranking the
-   day.
-3. **Choose a weighting and read the effect sentence.** Pick Efficiency first, Balanced,
-   or Need first. A sentence under the list says how many remote and town jobs move in
-   or out under that setting.
-4. **Check the map.** Circles group nearby communities and show how many jobs are open.
-   Zoom in, or click a circle, and it splits into one dot per community, coloured by
-   region. Click a dot to open its jobs. A dot with several jobs offers a choice; it
-   never picks one job. The region filter only narrows what you see. Crews and today's
-   list still cover the whole NT.
-5. **Open a job and read "why it sits here."** The selected-job pane shows the report
-   text, the fields read from it with their source words highlighted, and the
-   plain-language reason for its place in the list.
-6. **Move a job, or send it to the review queue, with a reason.** Every hand move is
+2. **Jobs that need a person.** These are jobs with a field the system could not read.
+   The Needs a human tab, next to today's list, names what is missing in each one.
+   Press Review to open it. Fill each one in by hand, with a reason.
+3. **Check today's jobs.** Open a job from today's list, the map, or the Select job box.
+   Read the report and the words marked in it. If the fields are right, press
+   ✓ Fields are right. If one is wrong, press ✗ Fix a field, pick the right value, and
+   say why. The row then shows ✓ Checked or ✗ Corrected. There is no button that passes
+   every job at once: each check is one job, read by you.
+4. **Use the map when it helps.** Circles group nearby communities. Click one and it
+   splits into one dot per community. A dot with several jobs lets you choose; it never
+   picks one job. The region filter only narrows what you see.
+5. **Move a job, or send it to the review queue, with a reason.** Every hand move is
    written down and shown to anyone who looks at that job later.
-7. **Review the list, then sign it.** Signing freezes today's list as a numbered batch;
-   the signer, the weighting, and the reason all go to the log.
-8. **Read the outcomes.** Wait times and travel cost appear only after the first
+6. **Choose the weighting and sign.** Pick a setting in the sidebar: Efficiency first,
+   Balanced, or Need first. The effect line under the numbers says how many remote and
+   town jobs move in or out. Then press Review and sign, under the list. The summary
+   says how many jobs you checked. Signing does not wait for checks. It freezes today's
+   list as a numbered batch, and the signer and the reason go to the log.
+7. **Read the outcomes.** Wait times and travel cost appear only after the first
    signature, so they cannot steer the order before it is set.
-9. **Open the visit plan.** It turns the signed list into a run sheet. Distance picks
-   which crew goes, never which job is done. It also shows how many extra road km today's
-   weighting costs against the efficiency-first list.
+8. **Open the visit plan.** It turns the signed list into crew run sheets. Distance
+   picks which crew goes, never which job is done.
 
 Source: `reports/research-ui-dispatch-products-2026-09-14.md`, "Usage logic a coordinator
 would recognise".

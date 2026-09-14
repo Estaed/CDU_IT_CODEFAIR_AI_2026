@@ -89,10 +89,21 @@ def _records() -> list[audit.Record]:
         ),
         audit.Promotion(date(2026, 9, 1), "job-6", "job-7", "reason", recorded_at),
         audit.PlanDecision(date(2026, 9, 1), 2, "accept", "route accepted", "reason", recorded_at),
+        audit.FieldCheck(date(2026, 9, 1), "job-8", "confirmed", "Tarik", recorded_at=recorded_at),
+        audit.FieldCheck(
+            date(2026, 9, 1),
+            "job-9",
+            "corrected",
+            "Tarik",
+            "report says the wiring sparks",
+            "safety_class",
+            "urgent",
+            recorded_at,
+        ),
     ]
 
 
-def test_round_trip_preserves_all_seven_kinds(tmp_path: Path) -> None:
+def test_round_trip_preserves_all_eight_kinds(tmp_path: Path) -> None:
     path = tmp_path / "log.jsonl"
     records = _records()
     for record in records:
@@ -147,6 +158,14 @@ def test_export_rows_has_exact_string_only_schema_and_stable_hash() -> None:
     assert rows[4]["detail"] == "claude/sonnet prompt v1: extracted (valid), 1.2 s"
     assert rows[5]["detail"] == "displaced job-7"
     assert rows[6]["detail"] == "accept v2: route accepted"
+    assert rows[7]["kind"] == "field_check"
+    assert (rows[7]["job_id"], rows[7]["signer"], rows[7]["detail"]) == (
+        "job-8",
+        "Tarik",
+        "confirmed",
+    )
+    assert rows[8]["detail"] == "corrected safety_class = urgent"
+    assert rows[8]["reason"] == "report says the wiring sparks"
     assert [row["hash"] for row in rows] == [row["hash"] for row in audit.export_rows(records)]
 
 
@@ -207,3 +226,40 @@ def test_decision_status_and_plan_action_are_validated() -> None:
         audit.Intake(date(2026, 9, 1), "job", "provider", "model", "v1", 1.0, "valid", "unknown")
     with pytest.raises(ValueError):
         audit.PlanDecision(date(2026, 9, 1), 1, "invalid", "detail", "reason")
+
+
+# --- field checks (PRD 3.1, "Checking the AI's reading") ---------------------------------------
+
+
+def test_field_check_round_trip_keeps_both_clocks(tmp_path: Path) -> None:
+    path = tmp_path / "log.jsonl"
+    day = date(2025, 12, 30)  # the dataset day, far from the wall clock
+    before = datetime.now().astimezone()
+    record = audit.FieldCheck(day, "job-1", "confirmed", "Tarik")
+    audit.append(path, record)
+    (read_back,) = audit.read(path)
+    assert read_back == record
+    assert read_back.day == day
+    assert read_back.recorded_at.tzinfo is not None
+    assert read_back.recorded_at >= before
+    row = audit.export_rows([read_back])[0]
+    assert row["kind"] == "field_check"
+    assert row["decision_day"] == "2025-12-30"
+    assert row["recorded_at"] == read_back.recorded_at.isoformat()
+    assert row["decision_day"] != row["recorded_at"][:10]
+
+
+def test_field_check_decision_and_correction_reason_are_validated() -> None:
+    with pytest.raises(ValueError):
+        audit.FieldCheck(date(2026, 9, 1), "job-1", "approved", "Tarik")
+    with pytest.raises(ValueError):
+        audit.FieldCheck(date(2026, 9, 1), "job-1", "corrected", "Tarik", " ", "fault_type", "roof")
+    audit.FieldCheck(date(2026, 9, 1), "job-1", "confirmed", "Tarik", reason="")
+
+
+def test_latest_checks_keeps_the_newest_per_job_on_that_day() -> None:
+    day = date(2026, 9, 1)
+    first = audit.FieldCheck(day, "job-1", "confirmed", "A")
+    second = audit.FieldCheck(day, "job-1", "corrected", "B", "why", "fault_type", "roof")
+    other_day = audit.FieldCheck(date(2026, 9, 2), "job-2", "confirmed", "A")
+    assert audit.latest_checks([first, second, other_day, _sign_off()], day) == {"job-1": second}

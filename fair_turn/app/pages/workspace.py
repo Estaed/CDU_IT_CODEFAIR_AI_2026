@@ -28,6 +28,7 @@ from fair_turn.app.components import (
     ranking_table,
     run_sheet,
     sign_off_form,
+    today_steps,
     weighting,
     workspace_map,
 )
@@ -66,6 +67,7 @@ art = state.artefacts()
 today = state.get_today()
 st.title("Workspace")
 intro.purpose("workspace")
+steps_slot = st.container()  # filled at the end, once a submit in this rerun has settled
 
 with st.sidebar:
     lam, label = weighting.render()
@@ -98,6 +100,9 @@ current = ranking_table.apply_hand_moves(scoring.rank(rankable, today, lam), sta
 cap = ranking_table.capacity(state.ALL_REGIONS)
 today_list, backlog = current[:cap], current[cap:]
 review_count = sum(1 for j in jobs if j.needs_human or j.job_id in review_ids)
+checks = {
+    job_id: check.decision for job_id, check in audit.latest_checks(audit_records, today).items()
+}
 
 
 def ordinal(n: int) -> str:
@@ -234,6 +239,7 @@ def today_rows(frame, scored) -> list[dict]:
             "score": float(row["score"]),
             "score_max": score_max,
             "human_queue": needs_human[row["job_id"]],
+            "check": checks.get(row["job_id"]),
         }
         for _, row in frame.iterrows()
     ]
@@ -500,7 +506,9 @@ if frozen is not None:
             today,
             baseline=baseline,
         )[DISPLAY]
-        sign_off_form.render(frozen, status, on_submit, review_count, is_remote, frozen_rows)
+        sign_off_form.render(
+            frozen, status, on_submit, review_count, is_remote, frozen_rows, checks
+        )
 
 metrics.metrics_panel(today, state.ALL_REGIONS, lam, current, baseline, cap, is_remote, label)
 effect_message.info(
@@ -528,4 +536,23 @@ else:
 status_slot.markdown(
     f"Day {today} · Region {region} · {review_count} need review · Status: {status_text}"
 )
+signed_version = records[-1].batch_version if status == "signed" else None
+plan_accepted = signed_version is not None and any(
+    isinstance(r, audit.PlanDecision)
+    and r.day == today
+    and r.batch_version == signed_version
+    and r.action == "accept"
+    for r in audit.read(state.get_audit_path())
+)
+today_ids = [s.job.job_id for s in today_list]
+with steps_slot:
+    today_steps.render(
+        today_steps.steps(
+            review_left=review_count,
+            checked=sum(job_id in checks for job_id in today_ids),
+            today_total=len(today_ids),
+            signed=status == "signed",
+            plan_accepted=plan_accepted,
+        )
+    )
 intro.about()

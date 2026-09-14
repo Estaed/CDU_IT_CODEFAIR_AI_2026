@@ -681,3 +681,43 @@ def test_dev_pressing_twice_gives_two_distinct_ids(art, tmp_path) -> None:
     rows = _intake_rows()
     assert [row["job_id"] for row in rows] == _next_ids(art, 2)
     assert len({row["text"] for row in rows}) == 2
+
+
+# --- today's steps and the field check (PRD 3.1) ----------------------------------------------
+
+STEP_TITLES = (
+    "Jobs that need a person",
+    "Check today's jobs",
+    "Choose the weighting and sign",
+    "Open the visit plan",
+)
+
+
+def test_todays_steps_strip_sits_above_the_header_numbers(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    markdown = [m.value for m in at.main.markdown]
+    positions = [markdown.index(f"**{n}. {title}**") for n, title in enumerate(STEP_TITLES, 1)]
+    assert positions == sorted(positions)
+    status = next(i for i, value in enumerate(markdown) if value.startswith("Day "))
+    assert positions[-1] < status
+    assert any("Next" in value for value in markdown)
+    assert any(c.value.endswith("open a job, read the report, press ✓ or ✗.") for c in at.caption)
+
+
+def test_no_accept_all_control_on_the_workspace(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    labels = [b.label for b in at.button]
+    assert labels
+    assert not [label for label in labels if re.search(r"\ball\b", label, re.IGNORECASE)]
+
+
+def test_a_confirmed_check_shows_on_its_row_and_counts_in_the_steps(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    job_id = at.session_state["selected_job_id"]
+    total = len(_today_ids(at))
+    at.button(key=f"fieldcheck_ok_{job_id}").click().run(timeout=60)
+    assert not at.exception
+    row_badges = [m.value for m in at.tabs[0].markdown]
+    assert sum("✓ Checked" in value for value in row_badges) == 1
+    assert sum("Not checked" in value for value in row_badges) == total - 1
+    assert any(c.value.startswith(f"1 of {total} checked") for c in at.caption)

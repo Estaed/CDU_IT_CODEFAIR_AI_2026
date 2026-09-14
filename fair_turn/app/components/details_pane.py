@@ -11,7 +11,7 @@ from fair_turn.app import state
 from fair_turn.app.components import highlight, ranking_table
 from fair_turn.core import audit, explain, scoring
 from fair_turn.core.batch import HandMove
-from fair_turn.core.types import Job, SafetyClass, ScoredJob
+from fair_turn.core.types import FaultType, Job, SafetyClass, ScoredJob
 from fair_turn.data import policy, runtime
 from fair_turn.data.artefacts import Artefacts
 
@@ -26,6 +26,12 @@ REPORT_CAPTION = "What the tenant reported"
 FULL_PASSAGE = "Full passage"
 REASON_PLACEHOLDER = "Why? e.g. crew already nearby, tenant called back"
 PASSAGE_PREVIEW_CHARS = 400
+CHECK_TITLE = "Check the AI's reading"
+CHECK_CAPTION = "Read the report above. Are the fields the AI read from it right?"
+CHECK_OK = "✓ Fields are right"
+CHECK_FIX = "✗ Fix a field"
+CHECK_IN_REVIEW = "This job needs a person first: open it in the Needs a human tab."
+FIXABLE_FIELDS = {"fault_type": FaultType, "safety_class": SafetyClass}
 FIELD_FACTOR = {
     "fault_type": "safety",
     "safety_class": "safety",
@@ -230,6 +236,78 @@ def _report_block(art: Artefacts, job_id: str) -> None:
             st.caption("\n".join(legend))
 
 
+def _check_line(check: audit.FieldCheck) -> str:
+    at = f"{check.recorded_at.astimezone():%H:%M}"
+    if check.decision == "confirmed":
+        return f"✓ Checked by {check.actor} at {at}"
+    return f"✗ Corrected {_label(check.field)} to {_label(check.value)} by {check.actor} at {at}"
+
+
+def _fix_form(job_id: str, today: date) -> None:
+    """The in-page correction: the field, a value from its enum, a reason and a name. Saved
+    through the review queue's path (a runtime human-set field and its audit record) plus
+    one ``FieldCheck``. Plain widgets, not ``st.form``, so the values follow the field."""
+    with st.container(border=True):
+        field = st.selectbox(
+            "Field to fix", list(FIXABLE_FIELDS), format_func=_label, key=f"fieldfix_field_{job_id}"
+        )
+        value = st.selectbox(
+            "New value",
+            [e.value for e in FIXABLE_FIELDS[field]],
+            format_func=_label,
+            key=f"fieldfix_value_{job_id}_{field}",
+        )
+        reason = st.text_input("Why?", key=f"fieldfix_reason_{job_id}").strip()
+        actor = st.text_input(
+            "Your name", value=state.get_actor(), key=f"fieldfix_actor_{job_id}"
+        ).strip()
+        save, cancel = st.columns(2)
+        if cancel.button("Cancel", key=f"fieldfix_cancel_{job_id}", width="stretch"):
+            state.set_field_fix_job(None)
+            st.rerun()
+        if not save.button("Save correction", key=f"fieldfix_save_{job_id}", width="stretch"):
+            return
+        if not reason:
+            st.error(REASON_REQUIRED)
+            return
+        actor = actor or "coordinator"
+        state.set_actor(actor)
+        state.set_human_set(job_id, field, value, actor, reason)
+        path = state.get_audit_path()
+        audit.append(path, audit.HumanSet(today, job_id, field, value, actor, reason))
+        audit.append(
+            path, audit.FieldCheck(today, job_id, "corrected", actor, reason, field, value)
+        )
+        state.set_field_fix_job(None)
+        st.rerun()
+
+
+def _check_block(job_id: str, today: date, in_review: bool) -> None:
+    """✓ / ✗ on the model's reading of this job, placed after the report so the words it was
+    read from are already on screen. No per-row approve and no "accept all" (PRD 3.1)."""
+    with st.container(border=True):
+        st.markdown(f"**{CHECK_TITLE}**")
+        if in_review:
+            st.caption(CHECK_IN_REVIEW)
+            return
+        st.caption(CHECK_CAPTION)
+        ok, fix = st.columns(2)
+        if ok.button(CHECK_OK, key=f"fieldcheck_ok_{job_id}", width="stretch"):
+            audit.append(
+                state.get_audit_path(),
+                audit.FieldCheck(today, job_id, "confirmed", state.get_actor()),
+            )
+            state.set_field_fix_job(None)
+            st.rerun()
+        if fix.button(CHECK_FIX, key=f"fieldcheck_fix_{job_id}", width="stretch"):
+            state.set_field_fix_job(job_id)
+        if state.get_field_fix_job() == job_id:
+            _fix_form(job_id, today)
+        latest = audit.latest_checks(audit.read(state.get_audit_path()), today).get(job_id)
+        if latest is not None:
+            st.caption(_check_line(latest))
+
+
 def _fields_expander(art: Artefacts, job_id: str, human_set: dict[str, str]) -> None:
     row = art.extraction.get(job_id)
     evidence = _evidence(art, job_id)
@@ -429,6 +507,7 @@ def render(
     st.caption(f"Registration {selected} · {fault} · {safety} · {window}")
 
     _report_block(art, selected)
+    _check_block(selected, today, in_review)
     if in_review or scored is None:
         st.warning(IN_REVIEW)
     else:

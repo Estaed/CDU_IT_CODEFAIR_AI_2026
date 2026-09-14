@@ -110,14 +110,26 @@ def formatted(values: dict[str, float | None]) -> dict[str, str]:
     }
 
 
+SAME_AS_BASELINE = "Same as efficiency-first."
+
+
 def deltas(values: dict[str, float | None], baseline: dict[str, float | None]) -> dict:
-    """Signed change against the efficiency-first run; ``None`` when either side is missing."""
+    """Signed change against the efficiency-first run; ``None`` when either side is missing or
+    the two are equal (a zero delta is shown as no delta, not a red "+0.0")."""
     return {
         key: None
-        if values[key] is None or baseline[key] is None
+        if values[key] is None or baseline[key] is None or values[key] == baseline[key]
         else f"{values[key] - baseline[key]:+,.0f}"
         if key == "travel_cost"
         else f"{values[key] - baseline[key]:+.1f} days"
+        for key in values
+    }
+
+
+def same_as_baseline(values: dict[str, float | None], baseline: dict[str, float | None]) -> dict:
+    """Whether a tile's value exactly equals the baseline's (both present)."""
+    return {
+        key: values[key] is not None and baseline[key] is not None and values[key] == baseline[key]
         for key in values
     }
 
@@ -177,16 +189,22 @@ def metrics_panel(
     baseline_values = panel_values(simulation(today, 1.0), jobs, art.communities, region)
     shown = formatted(values)
     changes = deltas(values, baseline_values)
+    same = same_as_baseline(values, baseline_values)
     travel_help = "Whole NT." if region != state.ALL_REGIONS else None
     for column, key in zip(st.columns(len(LABELS)), LABELS, strict=True):
+        help_text = travel_help if key == "travel_cost" else "Against λ = 1.00."
+        if same[key]:
+            help_text = f"{help_text} {SAME_AS_BASELINE}" if help_text else SAME_AS_BASELINE
         column.metric(
             LABELS[key],
             shown[key],
             delta=changes[key],
             delta_color="inverse",  # lower wait, gap and travel cost are better
-            help=travel_help if key == "travel_cost" else "Against λ = 1.00.",
+            help=help_text,
             border=True,
         )
+        if same[key]:
+            column.caption(SAME_AS_BASELINE)
     st.caption(
         "Baseline: efficiency-first (travel-cost weight 1.00). Simulated over the 90-day set. "
         "Days and AUD."

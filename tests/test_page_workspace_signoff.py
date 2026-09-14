@@ -386,6 +386,29 @@ def test_formatting_and_deltas() -> None:
         "gap": "-0.5 days",
         "travel_cost": "+234",
     }
+    assert metrics.same_as_baseline(values, base) == {
+        "median_wait_remote": False,
+        "median_wait_town": False,
+        "gap": False,
+        "travel_cost": False,
+    }
+
+
+def test_a_zero_delta_shows_no_delta_but_is_marked_same_as_baseline() -> None:
+    equal = {"median_wait_remote": 5.0, "median_wait_town": None, "gap": 0.0, "travel_cost": 0.0}
+    base = {"median_wait_remote": 5.0, "median_wait_town": 3.0, "gap": 0.0, "travel_cost": 0.0}
+    changes = metrics.deltas(equal, base)
+    assert changes["median_wait_remote"] is None
+    assert changes["gap"] is None
+    assert changes["travel_cost"] is None
+    assert changes["median_wait_town"] is None  # missing on one side stays no-delta
+    same = metrics.same_as_baseline(equal, base)
+    assert same == {
+        "median_wait_remote": True,
+        "median_wait_town": False,  # missing on one side is not "same"
+        "gap": True,
+        "travel_cost": True,
+    }
 
 
 def test_sign_off_summary_counts_the_decisions() -> None:

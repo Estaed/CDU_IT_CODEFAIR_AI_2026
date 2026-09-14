@@ -68,27 +68,27 @@ def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
     extraction_rows = json.loads(EXTRACTION_PATH.read_text("utf-8"))
     adversarial_count = sum(row["is_adversarial"] for row in extraction_rows)
     expected = {
-        "Verified source phrases": f"{ev['substring_rate']['rate']:.1%}",
-        "Adversarial items, rank unchanged": f"{adversarial_count} of {adversarial_count}",
-        "Fault type macro-F1": f"{ev['extractor']['fault_type']['macro_f1']:.3f}",
-        "Safety class macro-F1": f"{ev['extractor']['safety_class']['macro_f1']:.3f}",
-        "Household health risk macro-F1": f"{ev['extractor']['health_risk']['macro_f1']:.3f}",
+        "Verified phrases": f"{ev['substring_rate']['rate']:.1%}",
+        "Adversarial unchanged": f"{adversarial_count} of {adversarial_count}",
+        "Fault type F1": f"{ev['extractor']['fault_type']['macro_f1']:.3f}",
+        "Safety class F1": f"{ev['extractor']['safety_class']['macro_f1']:.3f}",
+        "Health risk F1": f"{ev['extractor']['health_risk']['macro_f1']:.3f}",
     }
     metrics = {metric.label: metric for metric in at.metric}
     assert len(metrics) == 5
     assert {label: metric.value for label, metric in metrics.items()} == expected
     assert all(metric.proto.show_border for metric in metrics.values())
     rate_ci = ev["substring_rate"]["rate_ci"]
-    assert metrics["Verified source phrases"].help == (
+    assert metrics["Verified phrases"].help == (
         f"Wilson interval: {rate_ci[0]:.1%} to {rate_ci[1]:.1%}."
     )
     for field, label in (
-        ("fault_type", "Fault type macro-F1"),
-        ("safety_class", "Safety class macro-F1"),
+        ("fault_type", "Fault type F1"),
+        ("safety_class", "Safety class F1"),
     ):
         expected_delta = ev["extractor"][field]["macro_f1"] - ev["baseline"][field]["macro_f1"]
         assert metrics[label].delta == f"{expected_delta:+.3f}"
-    assert metrics["Household health risk macro-F1"].delta == ""
+    assert metrics["Health risk F1"].delta == ""
 
 
 def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:

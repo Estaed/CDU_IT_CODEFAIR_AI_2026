@@ -22,12 +22,12 @@ COLUMNS = [
     "rank",
     "rank change",
     "job_id",
-    "community id",
-    "fault type",
     "safety class",
     "window",
     "score",
     "score_bar",
+    "community id",
+    "fault type",
 ]
 OUTCOME_WORDS = ("wait", "travel", "median", "cost")
 
@@ -138,7 +138,7 @@ def test_todays_list_has_display_config_and_bounded_height(tmp_path) -> None:
         )
     } == {
         "rank": "#",
-        "rank change": "Delta",
+        "rank change": "Δ",
         "job_id": "Job",
         "community id": "Community",
         "fault type": "Fault",

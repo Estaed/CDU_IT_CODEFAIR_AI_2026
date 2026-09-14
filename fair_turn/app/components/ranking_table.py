@@ -24,6 +24,10 @@ REVIEW_REQUESTED = "review_requested"
 TABLE_HEADER_HEIGHT = 38
 TABLE_ROW_HEIGHT = 35
 MAX_VISIBLE_TABLE_ROWS = 20
+# Column widths in pixels (table geometry, not theme): sized so the decision columns fit the
+# list pane at 1440 px and the descriptive ones scroll.
+RANK_PX, DELTA_PX, JOB_PX, CLASS_PX, WINDOW_PX = 45, 55, 118, 78, 70
+SCORE_PX, FACTORS_PX, COMMUNITY_PX, FAULT_PX = 62, 90, 160, 120
 
 
 def _runtime_stamp(path: Path) -> tuple[int, int]:
@@ -205,20 +209,20 @@ def column_config(frame: pd.DataFrame) -> dict:
     """Workspace display columns plus progress bars for score factors used by other callers."""
     score_max = max(float(frame["score_bar"].max()), 1.0) if len(frame) else 1.0
     config = {
-        "rank": st.column_config.NumberColumn("#", width="small"),
+        "rank": st.column_config.NumberColumn("#", width=RANK_PX),
         "rank change": st.column_config.TextColumn(
-            "Delta", width="small", help="Change against efficiency-first"
+            "Δ", width=DELTA_PX, help="Change against efficiency-first"
         ),
-        "job_id": st.column_config.TextColumn("Job", width="medium", pinned=True),
-        "community id": st.column_config.TextColumn("Community", width="medium"),
-        "fault type": st.column_config.TextColumn("Fault", width="small"),
-        "safety class": st.column_config.TextColumn("Class", width="small"),
+        "job_id": st.column_config.TextColumn("Job", width=JOB_PX, pinned=True),
+        "community id": st.column_config.TextColumn("Community", width=COMMUNITY_PX),
+        "fault type": st.column_config.TextColumn("Fault", width=FAULT_PX),
+        "safety class": st.column_config.TextColumn("Class", width=CLASS_PX),
         "window": st.column_config.TextColumn(
-            "Window", width="small", help="Days used of the NT window"
+            "Window", width=WINDOW_PX, help="Days used of the NT window"
         ),
-        "score": st.column_config.NumberColumn("Score", format="%.1f", width="small"),
+        "score": st.column_config.NumberColumn("Score", format="%.1f", width=SCORE_PX),
         "score_bar": st.column_config.ProgressColumn(
-            "Factors", format="%.1f", min_value=0.0, max_value=score_max
+            "Factors", format="%.1f", min_value=0.0, max_value=score_max, width=FACTORS_PX
         ),
     }
     for name in (column for column in frame.columns if column in scoring.FACTOR_NAMES):

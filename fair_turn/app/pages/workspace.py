@@ -30,16 +30,18 @@ from fair_turn.app.components import (
 from fair_turn.core import audit, batch, scoring
 from fair_turn.data import runtime
 
+# Decision columns first: at 1440 px the table shows about 600 px before it scrolls, so the
+# class, window and score sit next to the rank and the descriptive columns come last.
 DISPLAY = [
     "rank",
     "rank change",
     "job id",
-    "community id",
-    "fault type",
     "safety class",
     "window",
     "score",
     "score_bar",
+    "community id",
+    "fault type",
 ]
 
 art = state.artefacts()
@@ -89,7 +91,7 @@ for column, label_text, value, delta, help_text in zip(
         "Override rate today",
     ),
     (f"{len(today_list)} of {cap}", remote_today, review_count, f"{today_rate:.0%}"),
-    (None, remote_today - remote_in_baseline, None, None),
+    (None, (remote_today - remote_in_baseline) or None, None, None),
     (
         "Jobs proposed within today's capacity: crews x jobs per crew per day (Part 2 constants).",
         "Change against the efficiency-first list.",
@@ -339,5 +341,4 @@ else:
 status_slot.markdown(
     f"Day {today} · Region {region} · {review_count} need review · Status: {status_text}"
 )
-st.caption(f"Override rate: {today_rate:.0%} — see Evidence lab → Audit log")
 intro.about()

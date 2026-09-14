@@ -74,13 +74,13 @@ def render_extraction_tab() -> None:
     interval = f"{substring['rate_ci'][0]:.1%} to {substring['rate_ci'][1]:.1%}"
     metrics = st.columns(5)
     metrics[0].metric(
-        "Verified source phrases",
+        "Verified phrases",
         f"{substring['rate']:.1%}",
         border=True,
         help=f"Wilson interval: {interval}.",
     )
     metrics[1].metric(
-        "Adversarial items, rank unchanged",
+        "Adversarial unchanged",
         f"{len(adversarial)} of {len(adversarial)}",
         border=True,
         help=(
@@ -92,7 +92,7 @@ def render_extraction_tab() -> None:
     for column, field, label in zip(
         metrics[2:],
         ("fault_type", "safety_class", "health_risk"),
-        ("Fault type macro-F1", "Safety class macro-F1", "Household health risk macro-F1"),
+        ("Fault type F1", "Safety class F1", "Health risk F1"),
         strict=True,
     ):
         extractor = ev["extractor"][field]

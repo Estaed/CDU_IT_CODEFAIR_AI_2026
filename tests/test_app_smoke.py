@@ -205,11 +205,9 @@ def test_evidence_lab_has_a_vega_lite_chart(no_network) -> None:
 def test_workspace_shows_override_rate_caption_linking_to_evidence_lab(no_network) -> None:
     at = AppTest.from_file(str(APP / "pages" / "workspace.py")).run(timeout=60)
     assert not at.exception
-    captions = [c.value for c in at.caption]
-    assert any(
-        c.startswith("Override rate: 0%") and "Evidence lab" in c and "Audit log" in c
-        for c in captions
-    ), captions
+    tile = next(m for m in at.metric if m.label == "Override rate today")
+    assert tile.value == "0%"
+    assert "Evidence lab" in tile.help and "Audit log" in tile.help
 
 
 def test_bad_extraction_row_raises(tmp_path) -> None:

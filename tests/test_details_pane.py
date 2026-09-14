@@ -333,3 +333,49 @@ def test_a_job_in_the_review_queue_gets_no_decision_buttons(tmp_path) -> None:
     at = _run(tmp_path, review.job_id)
     assert details_pane.DECISION_IN_REVIEW in [c.value for c in at.caption]
     assert not [b for b in at.button if (b.key or "").startswith("decide_")]
+
+
+# --- an intake or replayed job has no `art.extraction` row, but still has evidence ------------
+
+
+def test_an_intake_job_shows_its_verified_phrase_and_no_missing_source_message(tmp_path) -> None:
+    """A runtime ``IntakeReport`` has no ``art.extraction`` row (Bug 2); the pane must still
+    find its evidence by re-verifying the intake record's own extraction."""
+    today, jobs = _open_jobs()
+    community_id = jobs[0].community_id
+    job_id = "JR-2025-99999"
+    text = "The hot water system is broken and my elderly mother lives with me."
+    intake = runtime.IntakeReport(
+        job_id=job_id,
+        community_id=community_id,
+        reported_on=today,
+        text=text,
+        extraction={
+            "fault_type": "hot_water",
+            "fault_type_evidence": "hot water system is broken",
+            "safety_class": "urgent",
+            "safety_class_evidence": "hot water system is broken",
+            "health_risk": ["elderly"],
+            "health_risk_evidence": ["elderly mother lives with me"],
+            "location_mentioned": False,
+            "location_evidence": "",
+            "crew_or_access_note": "",
+        },
+        status="extracted",
+        provider="claude",
+        model="claude-sonnet",
+        prompt_version="v1",
+        latency_s=1.0,
+        validation={},
+        draft_token="draft-1",
+        at=today,
+    )
+    # `_script` points both the runtime and audit paths at files under `tmp_path`, so writing
+    # the intake record there before the page runs is enough for `ranking_table.open_jobs`
+    # (and so `details_pane`) to pick the job up.
+    runtime.append(tmp_path / "runtime.jsonl", intake)
+
+    text_page = _page_text(_run(tmp_path, job_id))
+    assert details_pane.NO_PHRASE not in text_page
+    assert "hot water system is broken" in text_page
+    assert "elderly mother lives with me" in text_page

@@ -9,7 +9,7 @@ import streamlit as st
 
 from fair_turn.app import state
 from fair_turn.app.components import highlight, ranking_table
-from fair_turn.core import audit, decisions, explain, scoring
+from fair_turn.core import audit, decisions, explain, scoring, verify_spans
 from fair_turn.core.batch import HandMove
 from fair_turn.core.types import FaultType, Job, SafetyClass, ScoredJob
 from fair_turn.data import policy, runtime
@@ -72,19 +72,30 @@ def _closed(art: Artefacts, community_id: str, today: date) -> bool:
     )
 
 
+def _intake_report(job_id: str) -> runtime.IntakeReport | None:
+    records = runtime.read(state.get_runtime_path())
+    return next(
+        (r for r in records if isinstance(r, runtime.IntakeReport) and r.job_id == job_id),
+        None,
+    )
+
+
 def _evidence(art: Artefacts, job_id: str) -> dict[str, str]:
     row = art.extraction.get(job_id)
-    return {} if row is None else {field: ev.evidence for field, ev in row.kept.items()}
+    if row is not None:
+        return {field: ev.evidence for field, ev in row.kept.items()}
+    record = _intake_report(job_id)
+    if record is None:
+        return {}
+    verified = verify_spans.verify(record.text, record.extraction or {})
+    return dict(verified.kept)
 
 
 def _report_text(art: Artefacts, job_id: str) -> str:
     if job_id in art.reports:
         return art.reports[job_id]
-    records = runtime.read(state.get_runtime_path())
-    return next(
-        (r.text for r in records if isinstance(r, runtime.IntakeReport) and r.job_id == job_id),
-        "",
-    )
+    record = _intake_report(job_id)
+    return record.text if record is not None else ""
 
 
 def _select_label(job: Job) -> str:

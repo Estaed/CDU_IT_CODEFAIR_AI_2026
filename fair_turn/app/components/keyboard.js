@@ -6,10 +6,29 @@
 
 const BOUND_FLAG = "__ftKeyboardBound";
 
+const TEXT_ENTRY_INPUT_TYPES = new Set([
+  "text",
+  "search",
+  "email",
+  "number",
+  "password",
+  "tel",
+  "url",
+  "date",
+  "datetime-local",
+  "month",
+  "time",
+  "week",
+  "",
+]);
+
 function isTypingTarget(el) {
   if (!el) return false;
   const tag = el.tagName ? el.tagName.toLowerCase() : "";
-  return tag === "input" || tag === "textarea" || tag === "select" || !!el.isContentEditable;
+  if (tag === "textarea" || tag === "select" || el.isContentEditable) return true;
+  if (tag !== "input") return false;
+  const type = (el.getAttribute("type") || "").toLowerCase();
+  return TEXT_ENTRY_INPUT_TYPES.has(type);
 }
 
 export default async function (component) {

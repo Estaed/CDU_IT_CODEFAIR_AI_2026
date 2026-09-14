@@ -99,7 +99,7 @@ amendments dated that night):
 - [x] Material icons instead of tick glyphs, two-line job rows, Evidence lab interval wording
 - [x] Per-job decisions (2026-09-15, Tarik's decision): To decide / Accepted / Needs a human / Backlog, read tick, Accept or Reject with a reason, undo, sign only when nothing is left to decide
 - [x] Keyboard component (J, K, A, X), metric tiles without false zero arrows, DEV report kinds
-- [ ] Keyboard and DEV kinds wired into the workspace; effect and metrics from the decided list (in progress)
+- [x] Keyboard and DEV kinds wired into the workspace; effect from the decided list; A works after a mouse tick; intake jobs show their source phrases
 
 ## Routing
 

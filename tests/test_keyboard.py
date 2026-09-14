@@ -40,6 +40,31 @@ def test_js_guards_against_a_second_listener_and_respects_modifiers_and_typing()
     assert "preventDefault" in source
 
 
+def test_js_only_treats_text_entry_input_types_as_typing_targets() -> None:
+    source = JS.read_text("utf-8")
+    text_entry_types = {
+        "text",
+        "search",
+        "email",
+        "number",
+        "password",
+        "tel",
+        "url",
+        "date",
+        "datetime-local",
+        "month",
+        "time",
+        "week",
+    }
+    for input_type in text_entry_types:
+        assert f'"{input_type}"' in source
+    assert '"checkbox"' not in source
+    assert '"radio"' not in source
+    assert '"button"' not in source
+    assert '"submit"' not in source
+    assert '"range"' not in source
+
+
 def _script(tmp_path: Path, fake: str | None = None) -> Path:
     lines = ["import streamlit as st", "from types import SimpleNamespace"]
     lines.append("from fair_turn.app.components import keyboard")

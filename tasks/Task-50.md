@@ -1,6 +1,6 @@
 # Task-50: User guide in English and an in-app "How to use" popover
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `claude` · effort `medium` · plan mode **no**
 > *Why:* Tarik (2026-09-14): nobody on the team could say what to do on the screen; the guide is the hand-off for teammates, judges and the report appendix.

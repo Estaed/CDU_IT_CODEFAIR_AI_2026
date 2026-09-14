@@ -26,6 +26,9 @@ venv/bin/streamlit run fair_turn/app/main.py
 
 Python 3.13 is required.
 
+New to the app? Read [`docs/user-guide.md`](docs/user-guide.md) first, or open the
+"How to use" popover in the sidebar of any page.
+
 ## The six screens
 
 1. **Triage board** — ranked open jobs for a day and region, an equity slider (λ = 1

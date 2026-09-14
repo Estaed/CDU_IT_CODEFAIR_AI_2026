@@ -165,27 +165,12 @@ def _flat_extraction(row) -> dict:
 ReportKind = Literal["immediate", "urgent", "routine", "needs_person"]
 
 
-def simulate_incoming(
-    kind: ReportKind | bool | None = None,
-    *,
-    needs_human: bool | None = None,
-) -> str:
+def simulate_incoming(kind: ReportKind) -> str:
     """Replay one committed synthetic report as a new intake, through ``_save``; no model call.
 
     Candidates are the labelled reports in one fixed seeded order; the next unused one whose
     re-verified extraction has that safety class and every required field is written, or, for
-    ``kind="needs_person"``, the next one missing a required field. Returns the new job id.
-
-    Thin compatibility: a caller may still pass ``needs_human=True/False`` (as a keyword, or
-    positionally in ``kind``, the old parameter's spot), read as ``needs_person``/``routine``
-    respectively, until the page that calls this is rewired."""
-    if isinstance(kind, bool):
-        needs_human = kind
-        kind = None
-    if kind is None:
-        if needs_human is None:
-            raise TypeError("simulate_incoming() needs 'kind' or the legacy 'needs_human'")
-        kind = "needs_person" if needs_human else "routine"
+    ``kind="needs_person"``, the next one missing a required field. Returns the new job id."""
     art = state.artefacts()
     ids = sorted(label["job_id"] for label in art.labels)
     order = [ids[i] for i in np.random.default_rng(constants.SEED).permutation(len(ids))]

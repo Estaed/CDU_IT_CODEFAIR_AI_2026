@@ -231,34 +231,6 @@ def test_simulate_incoming_needs_person_replays_a_report_missing_a_required_fiel
     assert extraction.get("fault_type") is None or extraction.get("safety_class") is None
 
 
-def test_simulate_incoming_legacy_needs_human_keyword_still_works(tmp_path) -> None:
-    at_person = _run_replay(tmp_path, "intake.simulate_incoming(needs_human=True)")
-    assert not at_person.exception
-    row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
-    assert row["status"] == "needs_review"
-
-
-def test_simulate_incoming_legacy_positional_bool_still_works(tmp_path) -> None:
-    """The current workspace call site passes a bare bool positionally: ``kind`` must still
-    accept it (True -> needs_person, False -> routine) until that call site is rewired."""
-    at_false = _run_replay(tmp_path, "intake.simulate_incoming(False)")
-    assert not at_false.exception
-    row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
-    assert row["extraction"]["safety_class"] == "routine"
-
-    at_true = _run_replay(tmp_path, "intake.simulate_incoming(True)")
-    assert not at_true.exception
-    lines = (tmp_path / "runtime.jsonl").read_text("utf-8").splitlines()
-    rows = [json.loads(line) for line in lines]
-    assert rows[-1]["status"] == "needs_review"
-
-
-def test_simulate_incoming_with_neither_kind_nor_needs_human_raises(tmp_path) -> None:
-    at = _run_replay(tmp_path, "intake.simulate_incoming()")
-    assert at.exception
-    assert "kind" in str(at.exception[0].value)
-
-
 def test_whitespace_error_keeps_text(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(intake, "CALL_OVERRIDE", valid_call)
     at = AppTest.from_file(_script(tmp_path))

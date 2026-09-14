@@ -53,7 +53,9 @@ says what to do.
    not today (it goes to the backlog and the next job takes its place), needs a person
    (it goes to the review queue), or a field is wrong (fix it, and the job is ranked
    again). Each reject needs a reason. Undo my decision takes it back until you sign.
-   There is no button that passes every job at once: each decision is one job.
+   There is no button that passes every job at once: each decision is one job. Keys
+   help here: J and K open the next and previous job in To decide, A accepts the open
+   job once its box is ticked, and X opens Reject.
 4. **Use the map when it helps.** Circles group nearby communities. Click one and it
    splits into one dot per community. A dot with several jobs lets you choose; it never
    picks one job. The region filter only narrows what you see.
@@ -85,6 +87,10 @@ would recognise".
    is saved as "not extracted", with the reason, and can be tried again.
 6. Sending the same report twice does not make two jobs. The box remembers the draft
    until it is saved, so a second press of Extract does not double-write the log.
+7. To test without a model, open **DEV OPTION** in the Workspace sidebar. Pick a kind of
+   report (Immediate, Urgent, Routine, or Needs a person) and press Add report. A made-up
+   report from the test set is added, and a green line above the tabs says where it went:
+   its rank and its tab. The line stays until your next action.
 
 ## 5. The keyboard path
 
@@ -93,6 +99,10 @@ required to reach a decision.
 
 - The **Select job** box in the sidebar is the keyboard way into the selected-job pane.
   Tab to it, then use the arrow keys or type to search by job id.
+- On the Workspace, J opens the next job in To decide and K the one before; both wrap
+  at the ends. A accepts the open job, but only after you tick "I have read the report",
+  and never once the list is signed. X opens the Reject form. Keys do nothing while you
+  type in a box, and no key signs the list.
 - Move, promote, and send-to-review are buttons with a reason field next to them; Tab
   reaches each one in turn.
 - Sign-off is a form. Tab through weighting, reason, and signer, then press Enter or

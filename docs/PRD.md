@@ -79,7 +79,11 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
 
 - **Today's list and backlog.** The default view is the jobs proposed within today's
   job-count capacity (crews × jobs per crew per day, section 6.3), ranked; the rest is
-  the backlog, same columns. "Within capacity" means the job count only; travel, trade
+  the backlog, same columns. *Amended 2026-09-14 (night):* capacity is one NT-wide crew
+  pool, so the list is always ranked and split NT-wide; the region filter narrows the
+  rows and the map only. A third tab, **Needs a human**, lists every open job in the
+  review queue with what is missing in words and a Review action, so the jobs a person
+  must handle are part of the daily view, not only a count. "Within capacity" means the job count only; travel, trade
   and access feasibility belong to the visit plan (3.3) and the workspace never claims
   them.
 - **Row content.** Rank, change against efficiency-first, job id, community id, fault
@@ -122,7 +126,9 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
   plan. A keyboard-reachable selectbox is the equivalent of every click. A map marker
   holding several jobs offers the choice; it never picks one.
 - **Map.** One dot per community at its real coordinates, coloured by region, sized by
-  open jobs, clustered by region at NT scale, pan and zoom. An attributed basemap may be
+  open jobs, clustered by region at NT scale, pan and zoom. *Amended 2026-09-14 (night):*
+  clusters form and split with zoom (a cluster's size is the jobs it holds), and the map
+  shows either today's list or all open jobs. An attributed basemap may be
   shown; if it cannot load, the local outline renders with the same markers. No route
   lines here.
 - **Sign-off.** A daily batch, signed in an in-page form under the list: read-only
@@ -163,12 +169,23 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
 ### 3.3 Visit plan — layout: wireframes §6
 
 - Opens after today's list is signed; before that it says so and offers the sign-off.
-- Jobs are assigned to the crew whose base serves their region, **in signed order**, up
-  to jobs per crew per day. Distance (haversine × road factor, deterministic) measures
-  each crew's day and may **suggest** a swap that shortens the drive while keeping every
-  affected job on the same day within its window. A suggestion shows old and new order
-  and the saving, and applies only when the coordinator accepts it with a reason. The
-  plan never reorders silently and never changes membership.
+- ~~Jobs are assigned to the crew whose base serves their region, **in signed order**, up
+  to jobs per crew per day. Distance measures each crew's day and may **suggest** a swap
+  that shortens the drive; a suggestion applies only when accepted with a reason.~~
+  *Amended 2026-09-14 (night), Tarik's decision:* regional assignment left 10 of the 14
+  signed jobs of the demo day unplanned, because the list pools capacity NT-wide and the
+  plan split it by region. Crews are now one pool, each driving from its home base.
+- **Distance decides which crew goes to a job; it never decides which job is served or
+  when.** That is the signed list. Road jobs are assigned to crew slots with the lowest
+  total round-trip kilometres (haversine × road factor, exact assignment), and each
+  crew's stops run in the shortest order (exact over its few stops). Order inside one
+  crew's day changes no job's day, so the Phase 1 rule "signed order by default" protected
+  nothing and is dropped. If road jobs exceed the slots, the lowest signed ranks are left
+  "signed, unplanned", never the farthest.
+- The plan states the price of the equity choice instead of hiding it: road kilometres
+  for the signed list, the kilometres the efficiency-first list (λ = 1.0, same day and
+  capacity) would need, and the difference. A leg over the travel-day distance of 6.3 is
+  flagged. The coordinator may still reorder a crew's stops with a reason.
 - Air and barge jobs are never routed: they stay listed as signed work needing manual
   coordination, with a next action and an owner, and remain visible after the road plan
   is accepted. A signed job that does not fit a crew's day is shown as "signed,
@@ -249,9 +266,10 @@ fields and enter the formula like any other.
 
 Rejected: a second, separate "equity weight" alongside λ (two levers, harder to defend
 in Q&A, no extra information). A learned ranker (post-hoc explanations, cannot show
-factors honestly; and nothing real to train on). The visit plan reordering stops by
-distance by default (it would let travel efficiency undo the signed equity decision one
-crew-day at a time; struck at the 2026-09-14 critique).
+factors honestly; and nothing real to train on). The visit plan choosing jobs by
+distance (it would let travel efficiency undo the signed equity decision one crew-day at a
+time; struck at the 2026-09-14 critique, and still the rule after the pooled-crew
+amendment: distance picks the crew, never the job).
 
 ## 5. The language model — what it does and does not do
 
@@ -348,7 +366,11 @@ names anywhere.
 The wait-time metrics need a toy dispatch model, not a router:
 
 - Each region has a fixed number of crews (*provisional:* 1 per remote region, 2 in the
-  town region). A crew completes up to 2 jobs per day. (Tightened 2026-09-13 from 2 / 3 / 4:
+  town region). A crew completes up to 2 jobs per day. *Amended 2026-09-14 (night):* the
+  crews form one NT-wide pool, each based at its region's service town. Each day the free
+  crews take the highest-ranked open communities, one each, and the pairing of crews to
+  those communities minimises kilometres from where each crew is. Distance never changes
+  which communities are served that day. (Tightened 2026-09-13 from 2 / 3 / 4:
   those values left the median remote wait at 2 days at every λ, so neither the equity
   slider nor the feedback loop had anything to show; the sweep is in
   `reports/otopilot-2026-09-13-report.md`.)
@@ -383,7 +405,7 @@ provider.
 | Human queue | Any job with an empty required field appears in the queue and never in the ranked list (unit test). A human-set field takes the job out of the queue and into the ranking (unit test; closes the Phase 1 gap in `BACKLOG.md`). |
 | Decide before reveal | Wait and travel outcomes are absent from the workspace before the first signature and present after (AppTest). |
 | Sign-off integrity | A change to the list, a field or the weighting between opening and submitting the form invalidates the review; a second submission of the same batch is rejected (unit test). |
-| Visit plan | Plan membership equals signed membership; default stop order equals signed order; every departure carries a reason and references the batch version (property test over random signed lists). |
+| Visit plan | Plan membership equals signed membership; overflow leaves the lowest signed ranks unplanned, never the farthest; each crew's stop order is the shortest route (checked against brute force); every coordinator edit carries a reason and references the batch version (property tests over random signed lists). *Amended 2026-09-14 (night).* |
 | Audit | Every sign-off, revision, override, human-set field, intake and plan action is in the log with a reason or provider detail (unit test); recorded-at is a real timestamp and decision day is the dataset day (unit test); the exported table round-trips. |
 | Provenance | The provenance caption is on every surface (AppTest). |
 | Runs in the room | With network access disabled and no provider configured, the app starts and every surface renders from the committed artefacts: intake disabled with the reason, outline map, policy passages from the local index or a clear "unavailable" (integration test, run once before submission). With network and a provider, intake and the basemap work (checked by a person before the demo). |

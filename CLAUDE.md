@@ -281,7 +281,8 @@ below were read from the environment after `uv sync` on 2026-09-12; `uv.lock` is
 | uv | 0.12.13 | Lockfile and sync. Installed via `pip install uv`. |
 | streamlit | 1.63.0 | The six screens. Bundles Vega-Lite and deck.gl in its own static JS (verified in `site-packages/streamlit/static/static/js`, 2026-09-12), so charts need no CDN. `streamlit.testing.v1.AppTest` runs pages headless: that is the build check. Trap: `use_container_width` is deprecated, use `width="stretch"`. Trap: the script reruns on every widget change, so nothing slow or networked may sit in a page body. |
 | altair | 6.2.2 | Every chart **and the map**. Spike 2026-09-12: `mark_geoshape` over inline GeoJSON plus `mark_circle` at lon/lat renders through Streamlit's bundled Vega-Lite with no URL in the spec. Region zoom is a selectbox filter re-rendering the projection; Vega-Lite geo projections do not pan/zoom. |
-| pydeck | 0.9.3 | **Added 2026-09-14.** The workspace map: `st.pydeck_chart(deck, on_select="rerun", selection_mode="single-object")` over a `ScatterplotLayer`, Carto `light` basemap with attribution. Streamlit's own dependency, so no new pin. Spike 2026-09-14: renders through `AppTest` with `socket.socket` refused (the style URL is fetched by the browser, never by the server) and the emitted proto carries `selection_mode`. The Altair outline stays as the no-tile fallback and the map for tests. *Trap (2026-09-14, verified by execution):* pydeck turns every plain string kwarg into a data accessor (`radius_units="pixels"` serialises as `"@@=pixels"` and the layer silently falls back to metres, which is why markers were 1-3 px at NT zoom and swallowed a town when zoomed in); pass literal strings with inner quotes (`radius_units="'pixels'"`), and give every layer an explicit `id=` because `selection.objects` is keyed by layer id. |
+| pydeck | 0.9.3 | **Added 2026-09-14; replaced as the workspace map the same night by MapLibre GL (next row), 2026-09-14 (night), Tarik's decision.** Was the workspace map: `st.pydeck_chart(deck, on_select="rerun", selection_mode="single-object")` over a `ScatterplotLayer`, Carto `light` basemap with attribution. Streamlit's own dependency, so no new pin. Spike 2026-09-14: renders through `AppTest` with `socket.socket` refused (the style URL is fetched by the browser, never by the server) and the emitted proto carries `selection_mode`. The Altair outline stays as the no-tile fallback and the map for tests. *Trap (2026-09-14, verified by execution):* pydeck turns every plain string kwarg into a data accessor (`radius_units="pixels"` serialises as `"@@=pixels"` and the layer silently falls back to metres, which is why markers were 1-3 px at NT zoom and swallowed a town when zoomed in); pass literal strings with inner quotes (`radius_units="'pixels'"`), and give every layer an explicit `id=` because `selection.objects` is keyed by layer id. |
+| MapLibre GL JS | 6.9.0 | **Added 2026-09-14 (night), Tarik's decision** ("we set the JS limit ourselves"). The workspace map, because zoom-driven clustering needs client code: a cluster's size is the jobs it holds and it splits as the coordinator zooms in. Vendored, BSD-3, at `fair_turn/app/static/maplibre/` (ES modules `maplibre-gl.mjs`, `-shared.mjs`, `-worker.mjs`, CSS, licence), served by Streamlit static serving as `application/javascript`, mounted through `st.components.v2.component` (no npm build). Carto Positron style with attribution. *Spike 2026-09-14:* renders and splits clusters in headless Chrome (puppeteer-core, WebGL through SwiftShader). *Traps:* v2 loads the component module from a blob URL, so `import('/app/...')` fails; build the URL from `window.location.origin`. MapLibre 6 ships no UMD `maplibre-gl.js`. `AppTest` cannot see inside the component: tests cover the GeoJSON builder and the page wiring, and a browser script checks the map. If the module, style or tiles fail, the component reports it and the Altair outline renders instead. |
 | pandas | 3.0.5 | Tables. pandas 3: strings are `str` dtype by default and copy-on-write is on, so chained assignment silently does nothing; assign with `.loc` or build new frames. |
 | numpy | 2.5.3 | Transitive; the seeded generator `numpy.random.default_rng(SEED)` is the only randomness source in synthesis and simulation. |
 | scikit-learn | 1.9.1 | Baseline bag-of-words classifier (TF-IDF + logistic regression) and per-field P/R/F1. |
@@ -301,7 +302,7 @@ Rejected, with reason, all 2026-09-12:
 
 - **Dash**, **FastAPI + HTMX**: more code per screen; Streamlit chosen for speed and one-command run. Visual restyle stays a one-file change through the theme (Fidelity & UI).
 - ~~**pydeck / `st.map`**: basemap styles are fetched from `basemaps.cartocdn.com` and the bundle carries Mapbox telemetry endpoints; bare layers with no basemap look worse than a geoshape outline.~~ *Reversed 2026-09-14:* the PRD now allows the network for the basemap; pydeck is the map (table above). `st.map` stays rejected (no selection events). **folium**: iframe with CDN Leaflet, no selection event back to Python. **plotly**: bundled, but a second chart grammar for nothing Altair lacks.
-- **MapLibre GL custom component** (the discovery brief's first pick, rejected 2026-09-14): needs an npm build and a custom component that `AppTest` cannot see; pydeck gives pan, zoom, markers and selection natively. Revisit only if the Task 22 spike shows pydeck's selection or clustering cannot carry the workspace.
+- ~~**MapLibre GL custom component** (the discovery brief's first pick, rejected 2026-09-14): needs an npm build and a custom component that `AppTest` cannot see; pydeck gives pan, zoom, markers and selection natively.~~ *Reversed 2026-09-14 (night), Tarik's decision:* pydeck cannot cluster by zoom; `st.components.v2` needs no npm build; the map's click path was already a human check, so the AppTest reason did not apply to it (stack table).
 - **ChromaDB or any vector store** (rejected 2026-09-14): the corpus is one fact sheet, about a hundred chunks; retrieval runs at build time over a finite query set and the result is a JSON artefact. A store adds a native dependency with an unspiked Python 3.13 / Windows story for a `numpy` dot product. **Query-time retrieval** in the app: rejected with it, because it would put a model call in a page body and break the offline render.
 - **`ollama` Python package, `httpx`, `requests`** (rejected 2026-09-14): two JSON POSTs to localhost do not earn a dependency; `urllib` from the standard library, in `fair_turn/llm` only.
 - **`st.dialog` for sign-off or intake** (rejected 2026-09-14): `AppTest`'s element tree has no dialog node (grep of `streamlit/testing/v1/element_tree.py`), so nothing inside one is testable. Both are in-page containers toggled from session state.
@@ -317,8 +318,9 @@ Rejected, with reason, all 2026-09-12:
 fair_turn/
   core/    pure Python, no pandas: constants, types, scoring, capacity_sim, feedback_sim,
            explain (sentence + tenant answer templates), verify_spans, wording (lexicon,
-           reading level), audit; Phase 2 adds visit_plan (signed order, distance
-           suggestions), batch (frozen sign-off batch, version, invalidation), effect
+           reading level), audit; Phase 2 adds visit_plan (pooled crews: exact min-km crew
+           assignment of the signed list, shortest stop order), assignment (exact
+           min-cost assignment, pure Python), batch (frozen sign-off batch, version, invalidation), effect
            (the two-stage effect sentence)
   data/    frozen raw files in, tables out: geography, synth labels (seeded), artefact I/O;
            Phase 2 adds policy (passages artefact lookup by typed key) and runtime
@@ -353,7 +355,7 @@ the test to say so; until then the old rule holds and intake code cannot land.
 **Deterministic steps pushed out of the model:** label drawing, scoring, the capacity
 simulation, the feedback simulation, both explanation texts, span verification, reading
 level and lexicon checks are plain Python. *Added 2026-09-14:* the effect sentence (a
-template over two rankings), the visit plan (signed order plus haversine suggestions), the
+template over two rankings), the visit plan (min-km crew assignment of the signed list; distance picks the crew, never the job), the
 sign-off batch freeze and invalidation, and **policy retrieval**: the query is not the
 report text but the job's typed key (safety class × town/remote × fault type), a finite
 set, so `build_policy_index.py` embeds the chunks and every query once, applies the
@@ -478,8 +480,12 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
    hypothesis: at λ = 0 the ranking is unchanged under any permutation of distances and
    road status. Any job with an empty required field is in the human queue and not in the
    ranked list. *Added 2026-09-14 (PRD §7):* `core.visit_plan.plan` (membership equals
-   the signed list, default order equals signed order, every suggestion carries a reason
-   slot and the batch version; hypothesis over random signed lists), `core.batch`
+   the signed list, overflow leaves the lowest signed ranks unplanned and never the
+   farthest, each crew's stop order is the brute-force shortest route, every edit carries
+   a reason and the batch version; hypothesis over random signed lists; *amended
+   2026-09-14 night*), `core.assignment` (equals brute force on small matrices),
+   `core.capacity_sim` (with k free crews the day's served communities are the first k in
+   rank order under any permutation of crew bases), `core.batch`
    (freeze, invalidate on any change, reject a second submit of the same version),
    `core.effect.sentence` (no wait or travel words before the first signature),
    `core.audit` (recorded-at is a real timestamp, decision day is the dataset day),
@@ -499,8 +505,9 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
    a 100 % substring-verification rate and the 20 adversarial items leave the rank
    unchanged (asserted on the artefact, so the gate needs no API key). No real community
    name from `data/raw/` appears in `data/build/`, `fair_turn/app/` or `docs/PRD.md`.
-   *Added 2026-09-14 (measured on Streamlit 1.63.0):* `st.expander` emits a `status`
-   node (`at.expander` returns nothing), `st.badge` emits a `markdown` node
+   *Added 2026-09-14 (measured on Streamlit 1.63.0):* `st.expander` emits an `expander`
+   node, found with `at.get("expander")` (*corrected 2026-09-14 night*: an earlier line here
+   said `status`; `st.status` is the one that emits `status`), `st.badge` emits a `markdown` node
    (`at.badge` raises), `st.html` is found with `at.get("html")`; page tests assert
    through those nodes.
 4. **Resources:** the AppTest smoke test runs with `socket.socket` patched to raise, so any
@@ -511,7 +518,8 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
    `docs/report-requirements.md`); licence confirmation for the road report (the remaining
    part of PRD open question 1); rerunning generation or extraction (needs the subscriptions).
    *Added 2026-09-14:* the click path of list ↔ map ↔ pane selection (no AppTest API; a
-   human check in Task 22 and `review-visual`); the Ollama extraction benchmark (the last task's
+   human check in Task 22 and `review-visual`; *added 2026-09-14 night:* the clustered map
+   is checked by a headless-Chrome script that saves screenshots under `design/screenshots/`); the Ollama extraction benchmark (the last task's
    exit code, quoted in the report); rebuilding the policy index (needs Ollama); the
    basemap actually loading (needs network; a human check before the demo).
 
@@ -531,9 +539,11 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
   empty and the value stays in the extraction audit record.
 - **Require** a human-set field to carry actor, reason and time and to render with the
   "Set by coordinator" badge.
-- **Forbid** the visit plan from changing membership of the signed list or ordering stops
-  by distance by default; suggestions apply only with a reason and reference the batch
-  version.
+- **Forbid** the visit plan from changing membership of the signed list. *Amended
+  2026-09-14 (night), Tarik's decision:* **distance decides which crew goes, never which job is served or
+  when**, in the visit plan and the capacity simulation alike; when road jobs exceed crew
+  slots the lowest signed ranks stay unplanned, never the farthest. A coordinator's stop
+  edit needs a reason and references the batch version.
 - **Require** two clocks in the audit log as two columns: decision day (dataset) and
   recorded-at (wall clock, ISO 8601). Never write one as the other.
 - **Forbid** API keys anywhere in the repo or the zip. Model access is the two logged-in
@@ -557,10 +567,15 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
   `fair_turn/app/theme.py` and, *added 2026-09-14*, `fair_turn/app/static/theme.css`
   (the only stylesheet; injected by `theme.py` with `st.html`; a test asserts no other
   module calls `st.html` with a `<style>` tag or `st.markdown` with
-  `unsafe_allow_html`). JavaScript, custom bidirectional components and npm builds
-  stay forbidden: `AppTest` cannot see them.
+  `unsafe_allow_html`). ~~JavaScript, custom bidirectional components and npm builds
+  stay forbidden: `AppTest` cannot see them.~~ *Amended 2026-09-14 (night), Tarik's decision:* exactly one
+  JavaScript component, the workspace map (`app/components/cluster_map.py` + `.js` over
+  vendored MapLibre), styled only inside its shadow root with the vendored MapLibre CSS
+  and receiving every colour from `theme.py` through its data (no hex literal in the JS,
+  tested). npm builds and any other custom component stay forbidden.
 - **Forbid** live weather and road requests; frozen tables only. *Amended 2026-09-14:*
-  map tiles are allowed from the pydeck component only, with attribution, and the outline
+  map tiles are allowed from the map component only (pydeck until 2026-09-14 night,
+  MapLibre after), with attribution, and the outline
   fallback must render when they do not load. Nothing in the server process fetches a tile.
 - **Forbid** the policy index from being queried with report text; the key is typed fields
   and the lookup is a file read.

@@ -1,6 +1,6 @@
 # Task-44: Evidence lab headline tiles and expanders
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* the numbers exist in `eval.json`; the change is presentation (KPI tiles first, tables behind expanders, limitations beside the numbers per NIST MEASURE 2.9 in `reports/research-ui-hitl-guidance-2026-09-14.md`).

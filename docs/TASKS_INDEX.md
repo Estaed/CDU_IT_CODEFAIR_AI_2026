@@ -70,7 +70,7 @@ Presentation wave (added 2026-09-14 from `reports/research-ui-*-2026-09-14.md`, 
 - [x] Task-40: Government chrome through theme keys, the one stylesheet seam, page intros
 - [ ] Task-41: Workspace KPI row, effect sentence in the main column, outcome tiles after signature
 - [ ] Task-42: Selected-job pane as a summary list with badges
-- [ ] Task-44: Evidence lab headline tiles and expanders
+- [x] Task-44: Evidence lab headline tiles and expanders
 
 ## Routing
 

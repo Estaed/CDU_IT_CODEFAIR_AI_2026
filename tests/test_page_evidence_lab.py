@@ -3,7 +3,9 @@ feedback loop moved from the retired Phase 1 page, and the audit log with its tw
 Network disabled as in ``tests/test_app_smoke.py``.
 """
 
+import json
 import socket
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -12,6 +14,8 @@ from streamlit.testing.v1 import AppTest
 ROOT = Path(__file__).resolve().parent.parent
 PAGE = ROOT / "fair_turn" / "app" / "pages" / "evidence_lab.py"
 SAMPLE_PATH = ROOT / "data" / "audit" / "sample.jsonl"
+EVAL_PATH = ROOT / "data" / "build" / "eval.json"
+EXTRACTION_PATH = ROOT / "data" / "build" / "extraction.json"
 
 
 def _refuse(*args, **kwargs):
@@ -58,9 +62,68 @@ def test_extraction_and_feedback_and_audit_each_show_a_chart(tmp_path) -> None:
     assert len(charts) == 4
 
 
-def test_extraction_tab_shows_three_field_tables(tmp_path) -> None:
+def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
     at = _run(tmp_path)
+    ev = json.loads(EVAL_PATH.read_text("utf-8"))
+    extraction_rows = json.loads(EXTRACTION_PATH.read_text("utf-8"))
+    adversarial_count = sum(row["is_adversarial"] for row in extraction_rows)
+    expected = {
+        "Verified source phrases": f"{ev['substring_rate']['rate']:.1%}",
+        "Adversarial items, rank unchanged": f"{adversarial_count} of {adversarial_count}",
+        "Fault type macro-F1": f"{ev['extractor']['fault_type']['macro_f1']:.3f}",
+        "Safety class macro-F1": f"{ev['extractor']['safety_class']['macro_f1']:.3f}",
+        "Household health risk macro-F1": f"{ev['extractor']['health_risk']['macro_f1']:.3f}",
+    }
+    metrics = {metric.label: metric for metric in at.metric}
+    assert len(metrics) == 5
+    assert {label: metric.value for label, metric in metrics.items()} == expected
+    assert all(metric.proto.show_border for metric in metrics.values())
+    rate_ci = ev["substring_rate"]["rate_ci"]
+    assert metrics["Verified source phrases"].help == (
+        f"Wilson interval: {rate_ci[0]:.1%} to {rate_ci[1]:.1%}."
+    )
+    for field, label in (
+        ("fault_type", "Fault type macro-F1"),
+        ("safety_class", "Safety class macro-F1"),
+    ):
+        expected_delta = ev["extractor"][field]["macro_f1"] - ev["baseline"][field]["macro_f1"]
+        assert metrics[label].delta == f"{expected_delta:+.3f}"
+    assert metrics["Household health risk macro-F1"].delta == ""
+
+
+def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
+    at = _run(tmp_path)
+    ev = json.loads(EVAL_PATH.read_text("utf-8"))
+    artefact_date = datetime.fromtimestamp(EVAL_PATH.stat().st_mtime).date().isoformat()
+    captions = [caption.value for caption in at.caption]
+    assert (
+        f"Build extractor: Claude Sonnet via claude -p (Part 2). Holdout: {ev['n_holdout']} items. "
+        f"Evaluation artefact date: {artefact_date}."
+    ) in captions
+    assert (
+        f"Macro-F1 target {ev['f1_target']:.2f}: fault type "
+        f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class "
+        f"{'met' if ev['target_met']['safety_class'] else 'not met'} "
+        "(the extractor over-predicts immediate)."
+    ) in captions
+    expanders = [expander for expander in at.get("expander") if expander.label.endswith("by class")]
+    assert [expander.label for expander in expanders] == [
+        "fault_type by class",
+        "safety_class by class",
+        "health_risk by class",
+    ]
     assert len(at.dataframe) == 4  # fault_type, safety_class, health_risk, then the audit table
+
+
+def test_feedback_purpose_and_audit_chart_precede_audit_controls(tmp_path) -> None:
+    at = _run(tmp_path)
+    assert (
+        "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting, "
+        "to show that an efficiency-only allocation makes remote demand look like it dried up."
+    ) in [markdown.value for markdown in at.markdown]
+    audit_tab = [tab for tab in at.tabs if tab.label == "Audit log"][0]
+    audit_chart = at.get("vega_lite_chart")[-1]
+    assert audit_tab.children[0] is audit_chart
 
 
 def test_audit_frame_first_row_is_the_newest_recorded_at(tmp_path) -> None:

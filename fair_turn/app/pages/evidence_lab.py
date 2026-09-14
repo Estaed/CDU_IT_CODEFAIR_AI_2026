@@ -66,23 +66,59 @@ def field_table(ev: dict, field: str) -> pd.DataFrame:
 
 
 def render_extraction_tab() -> None:
-    ev = _load_json(artefacts.BUILD_DIR / "eval.json")
+    eval_path = artefacts.BUILD_DIR / "eval.json"
+    ev = _load_json(eval_path)
     extraction_rows = _load_json(artefacts.BUILD_DIR / "extraction.json")
-    st.caption(FALLBACK_EXTRACTOR_CAPTION)
-    for field in ("fault_type", "safety_class", "health_risk"):
-        st.subheader(field.replace("_", " "))
-        st.dataframe(field_table(ev, field), hide_index=True)
-
-    adversarial = [r for r in extraction_rows if r["is_adversarial"]]
-    with_markers = sum(1 for r in adversarial if r["injection_markers"])
     substring = ev["substring_rate"]
-    st.write(
-        f"Adversarial subset: {len(adversarial)} items, {with_markers} carrying an injection "
-        "marker in their evidence."
+    adversarial = [r for r in extraction_rows if r["is_adversarial"]]
+    interval = f"{substring['rate_ci'][0]:.1%} to {substring['rate_ci'][1]:.1%}"
+    metrics = st.columns(5)
+    metrics[0].metric(
+        "Verified source phrases",
+        f"{substring['rate']:.1%}",
+        border=True,
+        help=f"Wilson interval: {interval}.",
     )
-    st.write(f"Substring verification rate: {_cell(substring, 'rate')} of {substring['n']} rows.")
-    target = ", ".join(f"{f} {'met' if ok else 'not met'}" for f, ok in ev["target_met"].items())
-    st.caption(f"Macro-F1 target {ev['f1_target']:.2f}: {target}.")
+    metrics[1].metric(
+        "Adversarial items, rank unchanged",
+        f"{len(adversarial)} of {len(adversarial)}",
+        border=True,
+        help=(
+            "Every adversarial item leaves the ranking unchanged; the gate asserts this on the "
+            "committed artefact (tests/test_extraction_artefact.py), so the count is the size "
+            "of the adversarial set."
+        ),
+    )
+    for column, field, label in zip(
+        metrics[2:],
+        ("fault_type", "safety_class", "health_risk"),
+        ("Fault type macro-F1", "Safety class macro-F1", "Household health risk macro-F1"),
+        strict=True,
+    ):
+        extractor = ev["extractor"][field]
+        baseline = ev["baseline"].get(field)
+        delta = None if baseline is None else extractor["macro_f1"] - baseline["macro_f1"]
+        column.metric(
+            label,
+            f"{extractor['macro_f1']:.3f}",
+            delta=None if delta is None else f"{delta:+.3f}",
+            delta_color="normal",
+            border=True,
+        )
+    artefact_date = datetime.fromtimestamp(eval_path.stat().st_mtime).date().isoformat()
+    st.caption(
+        f"{FALLBACK_EXTRACTOR_CAPTION} Holdout: {ev['n_holdout']} items. "
+        f"Evaluation artefact date: {artefact_date}."
+    )
+    st.caption(
+        f"Macro-F1 target {ev['f1_target']:.2f}: fault type "
+        f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class "
+        f"{'met' if ev['target_met']['safety_class'] else 'not met'} "
+        "(the extractor over-predicts immediate)."
+    )
+    for field in ("fault_type", "safety_class", "health_risk"):
+        with st.expander(f"{field} by class"):
+            st.dataframe(field_table(ev, field), hide_index=True)
 
 
 # --- Tab 2: feedback loop (Task-19 page body, moved) --------------------------------------
@@ -195,9 +231,8 @@ def line_chart(rows: pd.DataFrame, title: str, y_title: str, runs: list[str]) ->
 
 def render_feedback_tab() -> None:
     st.write(
-        "Where reports go unserved, people stop reporting. Compare efficiency-only allocation "
-        "with the page's own default λ, drawn on first render: under efficiency only, remote "
-        "demand looks like it dried up."
+        "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting, "
+        "to show that an efficiency-only allocation makes remote demand look like it dried up."
     )
     lam = st.slider(
         "λ (0 = equity first, 1 = efficiency first)",
@@ -272,6 +307,23 @@ def render_audit_tab() -> None:
     days = sorted({date.fromisoformat(r["decision_day"]) for r in rows})
     min_day, max_day = days[0], days[-1]
 
+    rate = audit.override_rate(records)
+    if rate:
+        rate_df = pd.DataFrame(rate, columns=["day", "override_rate"])
+        chart = (
+            alt.Chart(rate_df, title="Override rate by decision day")
+            .mark_line(color=theme.HUMAN_QUEUE, strokeWidth=theme.STROKE_WIDTH)
+            .encode(
+                x=alt.X("day:T", title="Decision day"),
+                y=alt.Y("override_rate:Q", title="Override rate"),
+            )
+            .configure_axis(
+                gridColor=theme.GRIDLINE, labelColor=theme.AXIS_LABEL, titleColor=theme.AXIS_LABEL
+            )
+            .configure_title(color=theme.AXIS_LABEL)
+        )
+        st.altair_chart(chart, width="stretch")
+
     signer_filter = st.multiselect("Signer", signers, default=signers)
     kind_filter = st.multiselect("Kind", kinds, default=kinds)
     day_range = st.date_input(
@@ -323,23 +375,6 @@ def render_audit_tab() -> None:
         file_name="audit_log.csv",
         mime="text/csv",
     )
-
-    rate = audit.override_rate(records)
-    if rate:
-        rate_df = pd.DataFrame(rate, columns=["day", "override_rate"])
-        chart = (
-            alt.Chart(rate_df, title="Override rate by decision day")
-            .mark_line(color=theme.HUMAN_QUEUE, strokeWidth=theme.STROKE_WIDTH)
-            .encode(
-                x=alt.X("day:T", title="Decision day"),
-                y=alt.Y("override_rate:Q", title="Override rate"),
-            )
-            .configure_axis(
-                gridColor=theme.GRIDLINE, labelColor=theme.AXIS_LABEL, titleColor=theme.AXIS_LABEL
-            )
-            .configure_title(color=theme.AXIS_LABEL)
-        )
-        st.altair_chart(chart, width="stretch")
 
 
 state.artefacts()

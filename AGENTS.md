@@ -324,9 +324,9 @@ Rejected, with reason, all 2026-09-12:
 fair_turn/
   core/    pure Python, no pandas: constants, types, scoring, capacity_sim, feedback_sim,
            explain (sentence + tenant answer templates), verify_spans, wording (lexicon,
-           reading level), audit; Phase 2 adds visit_plan (pooled crews: exact min-km crew
-           assignment of the signed list, shortest stop order), assignment (exact
-           min-cost assignment, pure Python), batch (frozen sign-off batch, version, invalidation), effect
+           reading level), audit; Phase 2 adds visit_plan (pooled crews with reach: in signed
+           order each job takes the nearest free crew that reaches it; shortest stop
+           order), batch (frozen sign-off batch, version, invalidation), effect
            (the two-stage effect sentence)
   data/    frozen raw files in, tables out: geography, synth labels (seeded), artefact I/O;
            Phase 2 adds policy (passages artefact lookup by typed key) and runtime
@@ -361,7 +361,7 @@ the test to say so; until then the old rule holds and intake code cannot land.
 **Deterministic steps pushed out of the model:** label drawing, scoring, the capacity
 simulation, the feedback simulation, both explanation texts, span verification, reading
 level and lexicon checks are plain Python. *Added 2026-09-14:* the effect sentence (a
-template over two rankings), the visit plan (min-km crew assignment of the signed list; distance picks the crew, never the job), the
+template over two rankings), the visit plan (in signed order, the nearest free crew within reach; distance picks the crew, never the job), the
 sign-off batch freeze and invalidation, and **policy retrieval**: the query is not the
 report text but the job's typed key (safety class × town/remote × fault type), a finite
 set, so `build_policy_index.py` embeds the chunks and every query once, applies the
@@ -548,8 +548,10 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
 - **Forbid** the visit plan from changing membership of the signed list. *Amended
   2026-09-14 (night), Tarik's decision:* **distance decides which crew goes, never which job is served or
   when**, in the visit plan and the capacity simulation alike; when road jobs exceed crew
-  slots the lowest signed ranks stay unplanned, never the farthest. A coordinator's stop
-  edit needs a reason and references the batch version.
+  slots the lowest signed ranks stay unplanned, never the farthest. A crew only takes
+  jobs it **reaches** (its own region, or within the travel-day distance of its base); a
+  job nobody reaches stays unplanned with that reason. A coordinator's stop edit needs a
+  reason and references the batch version.
 - **Require** two clocks in the audit log as two columns: decision day (dataset) and
   recorded-at (wall clock, ISO 8601). Never write one as the other.
 - **Forbid** API keys anywhere in the repo or the zip. Model access is the two logged-in

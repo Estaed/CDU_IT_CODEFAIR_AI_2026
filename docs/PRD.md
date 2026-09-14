@@ -176,9 +176,12 @@ place. Absorbs the Phase 1 board, job card and sign-off page.
   signed jobs of the demo day unplanned, because the list pools capacity NT-wide and the
   plan split it by region. Crews are now one pool, each driving from its home base.
 - **Distance decides which crew goes to a job; it never decides which job is served or
-  when.** That is the signed list. Road jobs are assigned to crew slots with the lowest
-  total round-trip kilometres (haversine × road factor, exact assignment), and each
-  crew's stops run in the shortest order (exact over its few stops). Order inside one
+  when.** That is the signed list. *Refined the same night after the first run sent the
+  Alice Springs crew 1,290 km to a Darwin door lock:* a crew **reaches** its own region
+  and any community within the travel-day distance of its base (6.3). In signed-rank order,
+  each road job takes a free slot of the nearest crew that reaches it; a job no crew with a
+  free slot reaches stays "signed, unplanned: no crew within reach", with that reason.
+  Each crew's stops run in the shortest order (exact over its few stops). Order inside one
   crew's day changes no job's day, so the Phase 1 rule "signed order by default" protected
   nothing and is dropped. If road jobs exceed the slots, the lowest signed ranks are left
   "signed, unplanned", never the farthest.
@@ -367,10 +370,10 @@ The wait-time metrics need a toy dispatch model, not a router:
 
 - Each region has a fixed number of crews (*provisional:* 1 per remote region, 2 in the
   town region). A crew completes up to 2 jobs per day. *Amended 2026-09-14 (night):* the
-  crews form one NT-wide pool, each based at its region's service town. Each day the free
-  crews take the highest-ranked open communities, one each, and the pairing of crews to
-  those communities minimises kilometres from where each crew is. Distance never changes
-  which communities are served that day. (Tightened 2026-09-13 from 2 / 3 / 4:
+  crews form one NT-wide pool, each based at its region's service town, and a crew reaches
+  its own region plus any community within the travel-day distance of its base. Each day,
+  in rank order, every open community takes the nearest free crew that reaches it. Reach is
+  physical feasibility; within it, distance never changes which community is served first. (Tightened 2026-09-13 from 2 / 3 / 4:
   those values left the median remote wait at 2 days at every λ, so neither the equity
   slider nor the feedback loop had anything to show; the sweep is in
   `reports/otopilot-2026-09-13-report.md`.)
@@ -405,7 +408,7 @@ provider.
 | Human queue | Any job with an empty required field appears in the queue and never in the ranked list (unit test). A human-set field takes the job out of the queue and into the ranking (unit test; closes the Phase 1 gap in `BACKLOG.md`). |
 | Decide before reveal | Wait and travel outcomes are absent from the workspace before the first signature and present after (AppTest). |
 | Sign-off integrity | A change to the list, a field or the weighting between opening and submitting the form invalidates the review; a second submission of the same batch is rejected (unit test). |
-| Visit plan | Plan membership equals signed membership; overflow leaves the lowest signed ranks unplanned, never the farthest; each crew's stop order is the shortest route (checked against brute force); every coordinator edit carries a reason and references the batch version (property tests over random signed lists). *Amended 2026-09-14 (night).* |
+| Visit plan | Plan membership equals signed membership; a job is planned only by a crew that reaches it, and slots go in signed-rank order, so overflow leaves the lowest signed ranks unplanned, never the farthest; each crew's stop order is the shortest route (checked against brute force); every coordinator edit carries a reason and references the batch version (property tests over random signed lists). *Amended 2026-09-14 (night).* |
 | Audit | Every sign-off, revision, override, human-set field, intake and plan action is in the log with a reason or provider detail (unit test); recorded-at is a real timestamp and decision day is the dataset day (unit test); the exported table round-trips. |
 | Provenance | The provenance caption is on every surface (AppTest). |
 | Runs in the room | With network access disabled and no provider configured, the app starts and every surface renders from the committed artefacts: intake disabled with the reason, outline map, policy passages from the local index or a clear "unavailable" (integration test, run once before submission). With network and a provider, intake and the basemap work (checked by a person before the demo). |

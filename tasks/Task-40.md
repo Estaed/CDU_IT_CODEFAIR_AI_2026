@@ -44,7 +44,7 @@ component carrying the purpose lines and the "About this AI" footer.
   visit_plan "This is the run sheet for the jobs you signed. The order is yours. Distance suggestions are only suggestions, and each one shows its reason."
   tenant "Here is where your repair sits today, and what moved it there. A housing officer checked and signed this list."
   evidence_lab "This page shows how well the system reads reports, measured on the synthetic set. It shows what it gets wrong as well as what it gets right."
-  about "Fair Turn reads free-text repair reports and suggests an order. It does not approve, refuse or schedule a repair. A housing coordinator decides and signs, and every decision is logged with who made it and when. Data in this demo is synthetic; geography is real (BushTel/ABS)."
+  about "Fair Turn reads free-text repair reports and suggests an order. It does not approve, refuse or schedule a repair. A housing coordinator decides and signs. Every decision is logged with who made it and when. The data in this demo is made up. The geography is real (BushTel/ABS)." (all six strings measured 2026-09-14 with `core.wording.check`: no findings; the earlier About text scored FK 7.62 and was rewritten)
   `purpose(page)` renders `st.markdown(COPY[page])` directly under the title;
   `about()` renders `st.expander("About this AI")` with `COPY["about"]` at the end of the page.
   Run every string through `core.wording.check` in a test (no deficit language, FK grade at most 7).

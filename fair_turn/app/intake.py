@@ -3,6 +3,7 @@
 import uuid
 from collections.abc import Callable
 from datetime import datetime
+from typing import Literal
 
 import numpy as np
 import streamlit as st
@@ -161,12 +162,30 @@ def _flat_extraction(row) -> dict:
     return extraction
 
 
-def simulate_incoming(needs_human: bool) -> str:
+ReportKind = Literal["immediate", "urgent", "routine", "needs_person"]
+
+
+def simulate_incoming(
+    kind: ReportKind | bool | None = None,
+    *,
+    needs_human: bool | None = None,
+) -> str:
     """Replay one committed synthetic report as a new intake, through ``_save``; no model call.
 
     Candidates are the labelled reports in one fixed seeded order; the next unused one whose
-    re-verified extraction has every required field (or misses one, for ``needs_human``) is
-    written. Returns the new job id."""
+    re-verified extraction has that safety class and every required field is written, or, for
+    ``kind="needs_person"``, the next one missing a required field. Returns the new job id.
+
+    Thin compatibility: a caller may still pass ``needs_human=True/False`` (as a keyword, or
+    positionally in ``kind``, the old parameter's spot), read as ``needs_person``/``routine``
+    respectively, until the page that calls this is rewired."""
+    if isinstance(kind, bool):
+        needs_human = kind
+        kind = None
+    if kind is None:
+        if needs_human is None:
+            raise TypeError("simulate_incoming() needs 'kind' or the legacy 'needs_human'")
+        kind = "needs_person" if needs_human else "routine"
     art = state.artefacts()
     ids = sorted(label["job_id"] for label in art.labels)
     order = [ids[i] for i in np.random.default_rng(constants.SEED).permutation(len(ids))]
@@ -182,7 +201,10 @@ def simulate_incoming(needs_human: bool) -> str:
             continue
         extraction = _flat_extraction(art.extraction[source_id])
         verified = verify_spans.verify(text, extraction)
-        if verified.needs_human != needs_human:
+        if kind == "needs_person":
+            if not verified.needs_human:
+                continue
+        elif verified.needs_human or verified.safety_class != kind:
             continue
         failed = [f for f in verify_spans.REQUIRED_FIELDS if getattr(verified, f) is None]
         result = intake_llm.IntakeResult(

@@ -185,7 +185,7 @@ def test_filter_pills_clear_to_the_full_list(tmp_path) -> None:
 
 
 def _effect(at: AppTest) -> str:
-    return next(m.value for m in at.sidebar.markdown if m.value.startswith("Effect: "))
+    return next(info.value for info in at.main.info if info.value.startswith("Effect: "))
 
 
 def test_effect_sentence_states_composition_only(tmp_path) -> None:
@@ -196,10 +196,34 @@ def test_effect_sentence_states_composition_only(tmp_path) -> None:
     assert not at.exception
     sentences.append(_effect(at))
     assert sentences[1].startswith("Effect: Need first moves ")
+    assert not [m for m in at.sidebar.markdown if m.value.startswith("Effect: ")]
     captions = [c.value for c in at.sidebar.caption]
     assert "Travel-cost weight 0.00. 0 ignores travel cost, 1 applies the full penalty." in captions
     for sentence in sentences:
         assert not [word for word in OUTCOME_WORDS if word in sentence.lower()]
+
+
+def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:
+    at = _run(_script(tmp_path))
+    labels = [metric.label for metric in at.main.metric]
+    assert labels == [
+        "Today's list",
+        "Remote households today",
+        "In review",
+        "Override rate today",
+    ]
+    cap = ranking_table.capacity("All")
+    assert at.main.metric[0].value == f"{cap} of {cap}"
+    assert at.main.metric[2].value == "21"
+    assert at.main.metric[3].value == "0%"
+    assert at.main.metric[0].proto.help == (
+        "Jobs proposed within today's capacity: crews x jobs per crew per day (Part 2 constants)."
+    )
+    assert at.main.metric[1].proto.help == "Change against the efficiency-first list."
+    assert at.main.metric[2].proto.help == "Jobs waiting for a person to set a field."
+    assert at.main.metric[3].proto.help == (
+        "Share of today's signed jobs moved by hand. See Evidence lab -> Audit log."
+    )
 
 
 # --- the details pane ------------------------------------------------------------------------

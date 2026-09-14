@@ -68,7 +68,7 @@ Presentation wave (added 2026-09-14 from `reports/research-ui-*-2026-09-14.md`, 
 - [x] Task-38: Workspace table shows the whole row; a job is always selected; filters as pills
 - [x] Task-39: Empty and refusal states that show what they refuse; review queue and tenant framing
 - [x] Task-40: Government chrome through theme keys, the one stylesheet seam, page intros
-- [ ] Task-41: Workspace KPI row, effect sentence in the main column, outcome tiles after signature
+- [x] Task-41: Workspace KPI row, effect sentence in the main column, outcome tiles after signature
 - [ ] Task-42: Selected-job pane as a summary list with badges
 - [x] Task-44: Evidence lab headline tiles and expanders
 

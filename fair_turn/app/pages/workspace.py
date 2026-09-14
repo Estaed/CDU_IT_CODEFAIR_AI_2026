@@ -27,7 +27,7 @@ from fair_turn.app.components import (
     weighting,
     workspace_map,
 )
-from fair_turn.core import audit, batch, effect, scoring
+from fair_turn.core import audit, batch, scoring
 from fair_turn.data import runtime
 
 DISPLAY = [
@@ -49,7 +49,6 @@ intro.purpose("workspace")
 
 with st.sidebar:
     lam, label = weighting.render()
-    effect_slot = st.empty()
     region, faults, safeties = weighting.filters()
 
 jobs = ranking_table.open_jobs(today)
@@ -70,15 +69,41 @@ def is_remote(community_id: str) -> bool:
     return art.communities[community_id]["is_remote"] == "True"
 
 
-effect_slot.markdown(
-    "Effect: " + effect.sentence("before_signature", current, baseline, cap, is_remote, label)
-)
-
 header, new_report = st.columns([4, 1])
 status_slot = header.empty()  # filled at the end, once a submit in this rerun has settled
 if new_report.button("New report"):
     state.set_intake_draft(intake.new_draft())
 st.caption(theme.PROVENANCE_LINE)
+remote_today = sum(is_remote(s.job.community_id) for s in today_list)
+remote_in_baseline = sum(is_remote(s.job.community_id) for s in baseline[:cap])
+today_rate = next(
+    (rate for day, rate in audit.override_rate(audit.read(state.get_audit_path())) if day == today),
+    0.0,
+)
+for column, label_text, value, delta, help_text in zip(
+    st.columns(4),
+    (
+        "Today's list",
+        "Remote households today",
+        "In review",
+        "Override rate today",
+    ),
+    (f"{len(today_list)} of {cap}", remote_today, review_count, f"{today_rate:.0%}"),
+    (None, remote_today - remote_in_baseline, None, None),
+    (
+        "Jobs proposed within today's capacity: crews x jobs per crew per day (Part 2 constants).",
+        "Change against the efficiency-first list.",
+        "Jobs waiting for a person to set a field.",
+        "Share of today's signed jobs moved by hand. See Evidence lab -> Audit log.",
+    ),
+    strict=True,
+):
+    column.metric(label_text, value, delta=delta, delta_color="normal", help=help_text, border=True)
+effect_message = st.empty()
+effect_message.info(
+    "Effect: "
+    + metrics.effect_sentence(today, region, lam, current, baseline, cap, is_remote, label)
+)
 if state.get_intake_draft() is not None:
     intake.render(st.container(border=True))
 
@@ -188,7 +213,6 @@ with pane:
     details_pane.render(art, jobs, current, cap, review_ids, today, lam, map_choice)
 
 st.divider()
-remote_today = sum(is_remote(s.job.community_id) for s in today_list)
 st.markdown(
     f"Today: {len(today_list)} jobs proposed within capacity {cap} · "
     f"{remote_today} remote / {len(today_list) - remote_today} town · "
@@ -292,6 +316,10 @@ if frozen is not None:
         sign_off_form.render(frozen, status, on_submit, review_count, is_remote, frozen_rows)
 
 metrics.metrics_panel(today, region, lam, current, baseline, cap, is_remote, label)
+effect_message.info(
+    "Effect: "
+    + metrics.effect_sentence(today, region, lam, current, baseline, cap, is_remote, label)
+)
 
 records = signed_today()
 status = decision_status(state.get_batch(), {r.batch_version for r in records})
@@ -311,6 +339,5 @@ else:
 status_slot.markdown(
     f"Day {today} · Region {region} · {review_count} need review · Status: {status_text}"
 )
-today_rate = next((rate for day, rate in audit.override_rate(records) if day == today), 0.0)
 st.caption(f"Override rate: {today_rate:.0%} — see Evidence lab → Audit log")
 intro.about()

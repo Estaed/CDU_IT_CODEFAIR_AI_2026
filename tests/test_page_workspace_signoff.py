@@ -23,6 +23,10 @@ PAGES = ROOT / "fair_turn" / "app" / "pages"
 WORKSPACE = PAGES / "workspace.py"
 REGION = constants.REMOTE_REGIONS[0]
 REVEAL = ("median wait", "travel cost")
+LOCKED_OUTCOMES = (
+    "Wait times and travel cost appear after you sign. We hide them until then so the numbers "
+    "do not steer your ordering."
+)
 TEXT_KINDS = ("title", "subheader", "markdown", "caption", "info", "warning", "success", "error")
 
 
@@ -115,8 +119,14 @@ def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
     at = _open(tmp_path)
     assert _header(at).endswith("Status: Draft")
     text = _main_text(at)
-    assert not [word for word in REVEAL if word in text]
-    assert len(at.metric) == 0
+    assert LOCKED_OUTCOMES.lower() in text
+    assert len(at.metric) == 4
+    assert not [
+        word
+        for word in REVEAL
+        if any(word in f"{metric.label} {metric.value}".lower() for metric in at.metric)
+    ]
+    assert any("Outcomes appear after you sign" in m.value for m in at.markdown)
     assert "sign_off_submit" not in _keys(at)
 
     _review(at)
@@ -146,7 +156,16 @@ def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
     assert record.today_job_ids == record.ranked_job_ids[:cap]
     assert any(record.audit_ref in s.value for s in at.success)
     assert "median wait" in _main_text(at)
-    assert len(at.metric) == 4
+    assert len(at.metric) == 8
+    assert [metric.label for metric in at.main.metric[4:]] == list(metrics.LABELS.values())
+    assert any(
+        info.value.startswith("Effect: ") and "Simulated over the 90-day set" in info.value
+        for info in at.main.info
+    )
+    assert (
+        "Baseline: efficiency-first (travel-cost weight 1.00). Simulated over the 90-day set. "
+        "Days and AUD."
+    ) in [c.value for c in at.caption]
     assert re.search(r"Status: Signed v1 \d{2}:\d{2} by A\. Coordinator$", _header(at))
 
     _run(at.button(key="sign_off_submit").click())
@@ -166,7 +185,11 @@ def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
 
 def metrics_hidden(at: AppTest) -> bool:
     text = _main_text(at)
-    return len(at.metric) == 0 and not [word for word in REVEAL if word in text]
+    return (
+        len(at.metric) == 4
+        and LOCKED_OUTCOMES.lower() in text
+        and any("Outcomes appear after you sign" in m.value for m in at.markdown)
+    )
 
 
 def test_empty_fields_are_flagged_inline_and_defer_is_recorded(tmp_path) -> None:

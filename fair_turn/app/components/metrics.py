@@ -21,7 +21,7 @@ LABELS = {
     "median_wait_remote": "Remote median wait",
     "median_wait_town": "Town median wait",
     "gap": "Gap (remote minus town)",
-    "travel_cost": "Travel cost",
+    "travel_cost": "Total travel cost",
 }
 NOT_AVAILABLE = "n/a"
 
@@ -126,6 +126,35 @@ def deltas(values: dict[str, float | None], baseline: dict[str, float | None]) -
     }
 
 
+def effect_sentence(
+    today: date,
+    region: str,
+    lam: float,
+    current: list[ScoredJob],
+    baseline: list[ScoredJob],
+    cap: int,
+    is_remote: Callable[[str], bool],
+    label: str,
+) -> str:
+    """The two-stage effect sentence shown above the workspace list."""
+    if not state.get_signed_today():
+        return effect.sentence("before_signature", current, baseline, cap, is_remote, label)
+    art = state.artefacts()
+    jobs = to_jobs(art)
+    values = panel_values(simulation(today, lam), jobs, art.communities, region)
+    baseline_values = panel_values(simulation(today, 1.0), jobs, art.communities, region)
+    return effect.sentence(
+        "after_signature",
+        current,
+        baseline,
+        cap,
+        is_remote,
+        label,
+        current_metrics=values,
+        baseline_metrics=baseline_values,
+    )
+
+
 def metrics_panel(
     today: date,
     region: str,
@@ -136,26 +165,20 @@ def metrics_panel(
     is_remote: Callable[[str], bool],
     label: str,
 ) -> None:
-    """The outcome sentence and the four metrics; nothing at all before today's signature
-    (decide before reveal). ``current`` and ``baseline`` are the workspace's rankings."""
+    """The outcome metrics, locked until today's signature (decide before reveal).
+    ``current`` and ``baseline`` are the workspace's rankings."""
     if not state.get_signed_today():
+        with st.container(border=True):
+            st.markdown("**Outcomes appear after you sign**")
+            st.caption(
+                "Wait times and travel cost appear after you sign. We hide them until then so "
+                "the numbers do not steer your ordering."
+            )
         return
     art = state.artefacts()
     jobs = to_jobs(art)
     values = panel_values(simulation(today, lam), jobs, art.communities, region)
     baseline_values = panel_values(simulation(today, 1.0), jobs, art.communities, region)
-    st.markdown(
-        effect.sentence(
-            "after_signature",
-            current,
-            baseline,
-            cap,
-            is_remote,
-            label,
-            current_metrics=values,
-            baseline_metrics=baseline_values,
-        )
-    )
     shown = formatted(values)
     changes = deltas(values, baseline_values)
     travel_help = "Whole NT." if region != state.ALL_REGIONS else None
@@ -166,4 +189,9 @@ def metrics_panel(
             delta=changes[key],
             delta_color="inverse",  # lower wait, gap and travel cost are better
             help=travel_help if key == "travel_cost" else "Against λ = 1.00.",
+            border=True,
         )
+    st.caption(
+        "Baseline: efficiency-first (travel-cost weight 1.00). Simulated over the 90-day set. "
+        "Days and AUD."
+    )

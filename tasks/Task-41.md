@@ -1,6 +1,6 @@
 # Task-41: Workspace KPI row, effect sentence in the main column, outcome tiles after signature
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* the elements are fixed (dispatcher consoles open on a KPI bar, `reports/research-ui-dispatch-products-2026-09-14.md` §1; decide-before-reveal stays, `reports/research-ui-hitl-guidance-2026-09-14.md`); PRD 3.1 rules are unchanged.

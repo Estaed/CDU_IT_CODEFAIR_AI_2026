@@ -490,8 +490,8 @@ runs in order, stopping at the first failure: `ruff check .`, `ruff format --che
 5. **Not in the Definition of Done:** the F1 target of 0.85 (asserted by `run_eval.py`'s
    exit code and quoted in the report, not by the gate, because it needs an API run);
    visual fidelity; hosted deployment; the report PDF and slides (human checklist against
-   `docs/report-requirements.md`); licence confirmation for BushTel and the road report
-   (PRD open question 1); rerunning generation or extraction (needs the subscriptions).
+   `docs/report-requirements.md`); licence confirmation for the road report (the remaining
+   part of PRD open question 1); rerunning generation or extraction (needs the subscriptions).
    *Added 2026-09-14:* the click path of list ↔ map ↔ pane selection (no AppTest API; a
    human check in Task 22 and `review-visual`); the Ollama extraction benchmark (the last task's
    exit code, quoted in the report); rebuilding the policy index (needs Ollama); the

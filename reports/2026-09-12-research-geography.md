@@ -30,12 +30,11 @@ aggregator hits were used as leads and are not cited as facts.
   Fetch once, freeze to a CSV in the repo — do not call the API at demo time.
 
 ### Claim B — BushTel data is released under an open licence
-**Verdict: unknown — TBD, needs validation.** The site footer says only "Copyright © 2026 Northern
-Territory Government" and links `https://nt.gov.au/copyright-disclaimer-and-privacy`, which returns
-403 behind Cloudflare to automated fetches (checked 2026-09-12). The data.nt.gov.au portal's own
-attribution terms do not extend to BushTel. **What would settle it:** reading that copyright page in
-a browser, or emailing opendata@nt.gov.au. Until then, cite BushTel with attribution and do not
-claim a CC licence in the report.
+**Verdict: confirmed 2026-09-14 by email from the BushTel team.** BushTel follows the NT Open
+Data Creative Commons licence. The required attribution is: Department of Housing, Local
+Government and Community Development, Northern Territory, BushTel community data, sourced
+12 September 2026, https://bushtel.nt.gov.au/. The confirmation also says the attribution must
+not suggest Northern Territory Government endorsement.
 
 ### Claim C — data.nt.gov.au publishes a CC-BY dataset of remote communities with coordinates
 **Verdict: confirmed, but no population.** "Remote Communities with 3G/4G Mobile Coverage 2021"

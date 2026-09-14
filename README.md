@@ -144,7 +144,7 @@ Reduced from `data/raw/PROVENANCE.md`:
 
 | Source | Licence |
 |---|---|
-| BushTel (communities, community detail) | NT Government, licence to be confirmed |
+| BushTel (communities, community detail) | NT Open Data Creative Commons licence; attribution: Department of Housing, Local Government and Community Development, Northern Territory, BushTel community data, sourced 12 September 2026, https://bushtel.nt.gov.au/ |
 | NT road report (obstructions) | to be confirmed |
 | NT open data mobile coverage 2021 | Creative Commons Attribution |
 | Natural Earth admin-1 outline | Public domain |

@@ -435,9 +435,11 @@ provider.
 
 Numbered for reference from task files. Never renumbered.
 
-1. BushTel and NT road-report licence terms (© NT Government, no licence stated). Ask
-   opendata@nt.gov.au or confirm on the nt.gov.au copyright page before the report cites
-   derived tables.
+1. **Partly answered 2026-09-14:** the BushTel team confirmed by email that BushTel follows
+   the NT Open Data Creative Commons licence. Required attribution: Department of Housing,
+   Local Government and Community Development, Northern Territory, BushTel community data,
+   sourced 12 September 2026, https://bushtel.nt.gov.au/. The NT road-report licence remains
+   open and must be confirmed before the report cites derived road-report tables.
 2. Which Challenge Day and which judging panel is real (two live pages disagree, see
    `README.md`). Tarik asks the organisers; 30 September stays the deadline either way.
 3. Team members, roles and team number (2–4 enrolled students required; needed on the

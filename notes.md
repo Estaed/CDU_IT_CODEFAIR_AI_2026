@@ -179,7 +179,8 @@ Datasets is a judging criterion; every source below goes into the report.
   oversight. Title in the UI stays "maintenance coordinator", matching the brief.
 - **Raw data frozen 2026-09-12** in `data/raw/` (BushTel 797 places + 162 details, road
   report 80 obstructions, NT open data mobile-coverage XLSX). See `data/raw/PROVENANCE.md`.
-  Fetch script: `scripts/fetch_raw_sources.py`. BushTel and road-report licences still TBD.
+  Fetch script: `scripts/fetch_raw_sources.py`. BushTel follows the NT Open Data Creative
+  Commons licence (BushTel team email, 2026-09-14); the road-report licence is still TBD.
 
 ## Decisions at PRD time (2026-09-12) — now recorded in docs/PRD.md
 

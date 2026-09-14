@@ -98,10 +98,31 @@ def _sign(tmp_path: Path, today_ids: tuple[str, ...], ranked_ids: tuple[str, ...
 
 def test_empty_input_explains_the_number_format(tmp_path) -> None:
     at = _open(tmp_path, None)
+    assert [title.value for title in at.title] == ["Tenant answer"]
     assert at.info
     assert explain.JOB_ID_PREFIX in at.info[0].value
     assert "receipt" in at.info[0].value
     assert not at.subheader
+
+
+def test_example_selectbox_offers_open_jobs_from_each_queue_state(tmp_path) -> None:
+    at = _open(tmp_path, None)
+    examples = at.selectbox[0]
+
+    assert examples.label == "Or try an example"
+    assert examples.options and len(examples.options) == 3
+    example_ids = [label.split(" - ", 1)[0] for label in examples.options]
+    assert all(
+        job_id in {j.job_id for j in ranking_table.open_jobs(TODAY)} for job_id in example_ids
+    )
+    assert "ranked today" in examples.options[0]
+    assert "backlog" in examples.options[1]
+    assert "review queue" in examples.options[2]
+
+    chosen = example_ids[0]
+    at = examples.select_index(0).run(timeout=60)
+    assert not at.exception
+    assert f"Job {chosen}" in [caption.value for caption in at.caption]
 
 
 def test_known_id_renders_four_bordered_question_blocks(tmp_path, art) -> None:

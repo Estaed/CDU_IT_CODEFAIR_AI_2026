@@ -89,6 +89,24 @@ def test_dropped_value_never_appears_on_the_page(art, tmp_path) -> None:
     assert dropped_value not in _page_text(at)
 
 
+def test_queue_shows_progress_membership_rule_and_field_cue(tmp_path) -> None:
+    at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
+
+    assert not at.exception
+    assert (
+        'st.progress((cursor + 1) / n, text=f"{cursor + 1} of {n} to review")'
+        in REVIEW_QUEUE.read_text(encoding="utf-8")
+    )
+    assert any(
+        "Jobs arrive here when a field has no matching words" in caption.value
+        for caption in at.caption
+    )
+    assert any(
+        "No matching words in the report. Set this field yourself, and say why." in markdown.value
+        for markdown in at.markdown
+    )
+
+
 # --- marking rankable --------------------------------------------------------------------------
 
 

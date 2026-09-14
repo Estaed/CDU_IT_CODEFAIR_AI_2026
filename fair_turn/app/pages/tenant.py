@@ -10,6 +10,7 @@ from fair_turn.app import state, theme
 from fair_turn.app.components import intro
 from fair_turn.app.components.ranking_table import (
     apply_hand_moves,
+    capacity,
     open_jobs,
     review_requested_ids,
 )
@@ -25,12 +26,39 @@ def policy_index() -> policy.PolicyIndex:
 
 
 art = state.artefacts()
-st.title("Tenant view")
+st.title("Tenant answer")
 intro.purpose("tenant")
 st.caption(theme.PROVENANCE_LINE)
 st.caption("Community ids shown in this project are pseudonymous, not real place names.")
 
+today = state.get_today()
+jobs = open_jobs(today)
+records = audit.read(state.get_audit_path())
+review_ids = review_requested_ids(records, today)
+rankable = [j for j in jobs if not j.needs_human and j.job_id not in review_ids]
+ranked = apply_hand_moves(scoring.rank(rankable, today, state.get_lam()), state.get_hand_moves())
+today_capacity = capacity(state.ALL_REGIONS)
+example_ids = [
+    sorted(s.job.job_id for s in ranked[:today_capacity])[0],
+    sorted(s.job.job_id for s in ranked[today_capacity:])[0],
+    sorted(j.job_id for j in jobs if j.needs_human or j.job_id in review_ids)[0],
+]
+example_labels = {
+    example_ids[0]: f"{example_ids[0]} - ranked today",
+    example_ids[1]: f"{example_ids[1]} - backlog",
+    example_ids[2]: f"{example_ids[2]} - review queue",
+}
+
+
 typed = st.text_input("Job registration number").strip()
+example = st.selectbox(
+    "Or try an example",
+    example_ids,
+    index=None,
+    placeholder="Pick an example job",
+    format_func=example_labels.__getitem__,
+)
+typed = example or typed
 
 
 def visit_order_for(job_id: str, version: int) -> tuple[int, str] | None:
@@ -68,8 +96,6 @@ if not typed:
     intro.about()
     st.stop()
 
-today = state.get_today()
-jobs = open_jobs(today)
 open_by_id = {j.job_id.lower(): j for j in jobs}
 known = {label["job_id"].lower() for label in art.labels} | set(open_by_id)
 
@@ -84,8 +110,6 @@ if job is None:
     st.stop()
 
 st.caption(f"Job {job.job_id}")
-records = audit.read(state.get_audit_path())
-review_ids = review_requested_ids(records, today)
 lam = state.get_lam()
 passages = (
     []

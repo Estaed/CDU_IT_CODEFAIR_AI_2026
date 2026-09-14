@@ -184,7 +184,10 @@ def test_workspace_intake_disabled_without_provider(tmp_path, no_network, monkey
 def test_visit_plan_shows_unsigned_message(no_network) -> None:
     at = AppTest.from_file(str(APP / "pages" / "visit_plan.py")).run(timeout=60)
     assert not at.exception
-    assert "Sign today's list first" in [i.value for i in at.info]
+    assert (
+        "Nothing to plan yet. Sign today's batch on the workspace and the run sheet appears here."
+        in [i.value for i in at.info]
+    )
 
 
 def test_workspace_hides_median_wait_before_signature(no_network) -> None:

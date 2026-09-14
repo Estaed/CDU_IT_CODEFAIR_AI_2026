@@ -1,6 +1,6 @@
 # Task-39: Empty and refusal states that show what they refuse; review queue and tenant framing
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `medium` · plan mode **no**
 > *Why:* copy and states are fixed by the research reports and PRD 3.2-3.4; no design choice is open.

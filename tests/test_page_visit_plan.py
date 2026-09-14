@@ -107,8 +107,22 @@ def _page_text(at: AppTest) -> str:
 def test_unsigned_state_points_back_to_the_workspace(tmp_path) -> None:
     audit_path = tmp_path / "audit.jsonl"
     at = _open(tmp_path, audit_path)
-    assert "Sign today's list first" in [i.value for i in at.info]
-    assert "visit_go_to_workspace" in {b.key for b in at.button}
+    assert [i.value for i in at.info] == [
+        "Nothing to plan yet. Sign today's batch on the workspace and the run sheet appears here.",
+    ]
+    assert "Columns of the run sheet" in [caption.value for caption in at.caption]
+    assert list(at.dataframe[0].value.columns) == [
+        "stop",
+        "crew",
+        "job",
+        "community",
+        "distance km",
+    ]
+    assert at.dataframe[0].value.empty
+    assert (
+        'st.page_link("pages/workspace.py", label="Go to the workspace")'
+        in VISIT_PLAN.read_text(encoding="utf-8")
+    )
 
 
 def test_crew_stops_are_in_signed_order_and_barge_job_stays_manual(tmp_path, art) -> None:

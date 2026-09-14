@@ -3,7 +3,9 @@ distance used only to measure and to suggest never-silent swaps, air/barge work 
 as manual coordination, and every plan decision written against the signed batch version.
 """
 
+import pandas as pd
 import streamlit as st
+from streamlit.errors import StreamlitPageNotFoundError
 
 from fair_turn.app import state, theme
 from fair_turn.app.components import intro, ranking_table
@@ -40,9 +42,22 @@ signoffs_today = sorted(
 )
 
 if not signoffs_today:
-    st.info("Sign today's list first")
-    if st.button("Go to the workspace", key="visit_go_to_workspace"):
-        st.switch_page("pages/workspace.py")
+    with st.container(border=True):
+        st.info(
+            "Nothing to plan yet. Sign today's batch on the workspace and the run sheet "
+            "appears here."
+        )
+        st.caption("Columns of the run sheet")
+        st.dataframe(
+            pd.DataFrame(columns=("stop", "crew", "job", "community", "distance km")),
+            hide_index=True,
+            width="stretch",
+        )
+        try:
+            st.page_link("pages/workspace.py", label="Go to the workspace")
+        except StreamlitPageNotFoundError:
+            # AppTest opens this page without the navigation registry that resolves page links.
+            pass
 else:
     signoff = signoffs_today[-1]
     st.markdown(f"Signed list {signoff.day} v{signoff.batch_version} by {signoff.signer}")

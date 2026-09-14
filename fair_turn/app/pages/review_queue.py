@@ -224,6 +224,10 @@ art = state.artefacts()
 st.title("Review queue")
 intro.purpose("review_queue")
 st.caption(theme.PROVENANCE_LINE)
+st.caption(
+    "Jobs arrive here when a field has no matching words in the report, failed the schema, or was "
+    "not extracted. The system never fills a field on its own."
+)
 
 today = state.get_today()
 queue = _queue(art, today)
@@ -238,6 +242,7 @@ else:
     state.set_review_cursor(cursor)
     item = queue[cursor]
     human_set = state.get_human_set(item.job_id)
+    st.progress((cursor + 1) / n, text=f"{cursor + 1} of {n} to review")
 
     fields_label = ", ".join(FIELD_LABELS.get(f, f) for f in item.missing) or "fields"
     st.header(
@@ -258,13 +263,21 @@ else:
     with left:
         st.markdown(render(item.text, spans(item.text, item.kept)))
     with right:
-        st.dataframe(pd.DataFrame(_table_records(item, human_set)))
+        st.dataframe(
+            pd.DataFrame(_table_records(item, human_set)),
+            column_config={
+                "Phrase or reason": st.column_config.TextColumn("Phrase or reason", width="large")
+            },
+            hide_index=True,
+            width="stretch",
+        )
 
     settable_missing = [f for f in item.missing if f in HUMAN_SETTABLE]
     chosen: dict[str, str] = {}
     for field in settable_missing:
         enum_cls = HUMAN_SETTABLE[field]
         options = ["—", *[e.value for e in enum_cls]]
+        st.markdown("No matching words in the report. Set this field yourself, and say why.")
         choice = st.selectbox(
             f"Set {FIELD_LABELS[field]}", options, key=f"set_{field}_{item.job_id}"
         )

@@ -45,10 +45,10 @@ def open_jobs(today: date) -> list[Job]:
 
 
 @st.cache_data
-def _open_jobs_cached(today: date, runtime_stamp: tuple[int, int], _runtime_path: Path):
-    """Cached on ``(today, runtime_stamp)``; the path is not hashed (leading underscore)."""
+def _open_jobs_cached(today: date, runtime_stamp: tuple[int, int], runtime_path: Path):
+    """Cached on the day, runtime-file identity and its current size and timestamp."""
     art = state.artefacts()
-    records = runtime.read(_runtime_path)
+    records = runtime.read(runtime_path)
     intake = [r for r in records if isinstance(r, runtime.IntakeReport)]
     jobs = to_jobs(art, human_set=runtime.human_set_for(records), intake=intake)
     sites = {

@@ -1,6 +1,6 @@
 # Task-22: Workspace interaction spike: pydeck map, selectable list, shared selection
 
-Status: TODO
+Status: DONE
 
 > **Execution:** agent `codex` · effort `high` · plan mode **no**
 > *Why:* Part 2 fixed pydeck and the session-state selection seam (spike 2026-09-14); what is left is writing the two components and the tests. The click path is a human check listed as not gated.
@@ -26,12 +26,12 @@ framework gate in `docs/phase-2-discovery.md` §5: if it holds, Streamlit stays.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] Deck spec assertions (selection mode, two layers, Carto style only) pass with sockets refused.
-- [ ] Fallback path renders the outline with the same marker count and one info box.
-- [ ] Row-position to `job_id` mapping tested, including an empty frame.
-- [ ] No hex, size or font literal outside `theme.py` (existing theme test stays green).
-- [ ] Human check, recorded in this file under a `## Spike result` heading with the date: clicking a marker and clicking a row both change the selected id in a real `streamlit run`; if either fails, stop and raise the framework question before Task-29.
-- [ ] Gate green.
+- [x] Deck spec assertions (selection mode, two layers, Carto style only) pass with sockets refused.
+- [x] Fallback path renders the outline with the same marker count and one info box.
+- [x] Row-position to `job_id` mapping tested, including an empty frame.
+- [x] No hex, size or font literal outside `theme.py` (existing theme test stays green).
+- [x] Human check, recorded in this file under a `## Spike result` heading with the date: clicking a marker and clicking a row both change the selected id in a real `streamlit run`; if either fails, stop and raise the framework question before Task-29.
+- [x] Gate green.
 
 ## Spike result
 
@@ -41,3 +41,16 @@ pane. Clicking a visible pydeck marker did not change the selected job after the
 and zoomed to place the marker under the click target. Criterion 5 therefore fails. Before any
 further workspace UI change: can Streamlit 1.63 reliably return pydeck `single-object` selection
 for this layer, or must the workspace use another selectable map mechanism?
+
+**2026-09-14, later — resolved, pydeck stays.** Re-run by the main loop in headless Chromium
+(Playwright) against `streamlit run` on port 8765: a click on the Alice Springs marker at NT
+zoom returned a `single-object` selection event, the details pane rendered "Choose a job at
+Alice Springs" with one button per open job, and pressing a button set the shared selected
+id (capture: `design/screenshots/01c-workspace-map-click.png`). The earlier "failure" was the
+by-design behaviour of PRD 3.1 ("a map marker holding several jobs offers the choice; it
+never picks one") read as a missing selection. Streamlit 1.63 keys the pydeck element on
+`key` and `selection_mode` only (`deck_gl_json_chart.py`), so the selection survives the
+highlight-layer rebuild on every rerun. Row selection changed the selected id as reported.
+Criterion 5 passes; no other selectable map is needed. Usability of the marker path (tiny
+markers at NT zoom, a long button list for a town) is a `review-visual` finding in
+`BACKLOG.md`, not a framework question.

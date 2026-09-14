@@ -1,22 +1,31 @@
-"""Signed-order visit planning with optional, explicit distance suggestions (PRD section 3.3)."""
+"""Pooled visit plan for the signed list (PRD section 3.3, pooled crews decided 2026-09-14).
 
-import math
-from collections.abc import Callable
+Distance chooses which crew goes, never which job is served. Membership is the signed list:
+air and barge stops stay manual coordination, closed-road stops stay listed with their
+reason, and when road stops outnumber crew slots the ones left over are the lowest signed
+ranks. Road stops are assigned to crew slots at minimum round-trip km; each crew then drives
+the shortest route over its stops. The coordinator may reorder a crew with a reason.
+"""
+
+from collections.abc import Sequence
 from dataclasses import dataclass
+from itertools import permutations
 from typing import Literal
 
-from fair_turn.core.constants import (
-    CREWS_PER_REMOTE_REGION,
-    CREWS_TOWN,
-    JOBS_PER_CREW_DAY,
-    REMOTE_REGIONS,
-    SUGGESTION_MIN_SAVING_KM,
-)
+from fair_turn.core.assignment import min_cost_assignment
+from fair_turn.core.capacity_sim import CrewBase, haversine_km
+from fair_turn.core.constants import JOBS_PER_CREW_DAY, TRAVEL_DAY_KM
+
+MANUAL_NEXT_ACTION = "book air/barge freight"
+MANUAL_OWNER = "coordinator"
+ROAD_CLOSED = "road closed"
+OVER_CAPACITY = "over crew capacity"
+_KM_EPS = 1e-9
 
 
 @dataclass(frozen=True)
 class Stop:
-    """A signed job with the information required to make a crew visit plan."""
+    """A signed job with what the plan needs to place it."""
 
     job_id: str
     community_id: str
@@ -26,34 +35,23 @@ class Stop:
     access: Literal["road", "air", "barge"]
     road_open: bool
     signed_rank: int
-    window_days_left: int
-
-
-@dataclass(frozen=True)
-class Crew:
-    """A crew base and its one-day job capacity."""
-
-    base: str
-    region: str
-    lat: float
-    lon: float
-    jobs_per_day: int
+    road_factor: float  # multiplier on haversine km for the community's road access
 
 
 @dataclass(frozen=True)
 class CrewPlan:
-    """One crew's signed-order stops and measured return route."""
+    """One crew's stops in driving order, with every leg including the return to base."""
 
-    crew: Crew
+    crew: CrewBase
     stops: tuple[Stop, ...]
     legs_km: tuple[float, ...]
+    travel_day_legs: tuple[bool, ...]  # leg over the capacity model's travel-day distance
     km: float
-    within_capacity: bool
 
 
 @dataclass(frozen=True)
 class Unplanned:
-    """A signed road stop that cannot fit this plan."""
+    """A signed road stop with no crew slot today, and why."""
 
     stop: Stop
     reason: str
@@ -61,31 +59,20 @@ class Unplanned:
 
 @dataclass(frozen=True)
 class Manual:
-    """A signed non-road stop requiring freight coordination."""
+    """A signed air or barge stop: coordinated by hand, never routed."""
 
     stop: Stop
     next_action: str
-
-
-@dataclass(frozen=True)
-class Suggestion:
-    """An adjacent stop swap that a coordinator may accept explicitly."""
-
-    crew_base: str
-    job_a: str
-    job_b: str
-    old_order: tuple[str, ...]
-    new_order: tuple[str, ...]
-    saving_km: float
+    owner: str
 
 
 @dataclass(frozen=True)
 class PlanChange:
-    """An accepted explanation for a departure from signed order."""
+    """A coordinator's reordering of one crew, with the reason and the km it changed."""
 
     job_ids: tuple[str, ...]
     reason: str
-    saving_km: float
+    km_change: float  # new route km minus old
 
 
 @dataclass(frozen=True)
@@ -98,200 +85,141 @@ class Plan:
     manual: tuple[Manual, ...]
     changes: tuple[PlanChange, ...]
 
+    @property
+    def road_km(self) -> float:
+        return sum(crew.km for crew in self.crews)
 
-def crew_capacity(region: str) -> int:
-    """Return the signed-list capacity allocated to a region for one day."""
-    crew_count = CREWS_PER_REMOTE_REGION if region in REMOTE_REGIONS else CREWS_TOWN
-    return crew_count * JOBS_PER_CREW_DAY
-
-
-# Copied here because the core layer cannot import the data layer.
-def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Return the great-circle distance between two latitude/longitude points in kilometres."""
-    p1, p2 = math.radians(lat1), math.radians(lat2)
-    dphi, dlmb = math.radians(lat2 - lat1), math.radians(lon2 - lon1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
-    return 2 * 6371.0 * math.asin(math.sqrt(a))
+    @property
+    def within_capacity(self) -> bool:
+        return not any(item.reason == OVER_CAPACITY for item in self.unplanned)
 
 
-def _measure(
-    crew: Crew, stops: tuple[Stop, ...], road_factor: Callable[[Stop], float]
-) -> tuple[tuple[float, ...], float]:
+def _measure(crew: CrewBase, stops: Sequence[Stop]) -> tuple[tuple[float, ...], float]:
+    """Legs base -> stops -> base; a leg takes the road factor of its community end."""
     if not stops:
         return (), 0.0
     points = [(crew.lat, crew.lon), *((stop.lat, stop.lon) for stop in stops)]
-    legs = tuple(
-        haversine_km(*points[index], *points[index + 1]) * road_factor(stops[index])
+    legs = [
+        haversine_km(*points[index], *points[index + 1]) * stops[index].road_factor
         for index in range(len(stops))
+    ]
+    legs.append(haversine_km(*points[-1], crew.lat, crew.lon) * stops[-1].road_factor)
+    return tuple(legs), sum(legs)
+
+
+def _shortest(crew: CrewBase, stops: Sequence[Stop]) -> tuple[Stop, ...]:
+    """The exact shortest base -> stops -> base order; ties keep the earliest permutation of
+    the signed order."""
+    ordered = sorted(stops, key=lambda stop: stop.signed_rank)
+    best, best_km = tuple(ordered), _measure(crew, ordered)[1]
+    for candidate in permutations(ordered):
+        km = _measure(crew, candidate)[1]
+        if km < best_km - _KM_EPS:
+            best, best_km = candidate, km
+    return best
+
+
+def _crew_plan(crew: CrewBase, stops: Sequence[Stop]) -> CrewPlan:
+    legs, km = _measure(crew, stops)
+    return CrewPlan(crew, tuple(stops), legs, tuple(leg > TRAVEL_DAY_KM for leg in legs), km)
+
+
+def _split_count(assigned: list[list[Stop]]) -> int:
+    """How many extra crews the communities are spread over (0 when none is split)."""
+    crews_of: dict[str, set[int]] = {}
+    for index, stops in enumerate(assigned):
+        for stop in stops:
+            crews_of.setdefault(stop.community_id, set()).add(index)
+    return sum(len(indices) - 1 for indices in crews_of.values())
+
+
+def _route_km(crew: CrewBase, stops: Sequence[Stop]) -> float:
+    return _measure(crew, _shortest(crew, stops))[1]
+
+
+def _consolidate(crews: Sequence[CrewBase], assigned: list[list[Stop]]) -> list[list[Stop]]:
+    """Move or swap stops so one community's stops share a crew, only when that does not
+    raise the total route km. Each accepted change strictly reduces the split count."""
+    changed = True
+    while changed:
+        changed = False
+        split = _split_count(assigned)
+        if split == 0:
+            break
+        for a, b in permutations(range(len(crews)), 2):
+            here = {stop.community_id for stop in assigned[a]}
+            for stop in assigned[b]:
+                if stop.community_id not in here:
+                    continue
+                rest_b = [s for s in assigned[b] if s is not stop]
+                options: list[tuple[list[Stop], list[Stop]]] = []
+                if len(assigned[a]) < JOBS_PER_CREW_DAY:
+                    options.append(([*assigned[a], stop], rest_b))
+                options += [
+                    ([*(s for s in assigned[a] if s is not other), stop], [*rest_b, other])
+                    for other in assigned[a]
+                    if other.community_id != stop.community_id
+                ]
+                before = _route_km(crews[a], assigned[a]) + _route_km(crews[b], assigned[b])
+                for new_a, new_b in options:
+                    trial = list(assigned)
+                    trial[a] = sorted(new_a, key=lambda s: s.signed_rank)
+                    trial[b] = sorted(new_b, key=lambda s: s.signed_rank)
+                    after = _route_km(crews[a], trial[a]) + _route_km(crews[b], trial[b])
+                    if _split_count(trial) < split and after <= before + _KM_EPS:
+                        assigned, changed = trial, True
+                        break
+                if changed:
+                    break
+            if changed:
+                break
+    return assigned
+
+
+def plan(batch_version: int, stops: Sequence[Stop], crews: Sequence[CrewBase]) -> Plan:
+    """Place every signed stop: manual, unplanned with a reason, or on a crew's route."""
+    ordered = sorted(stops, key=lambda stop: stop.signed_rank)
+    manual = tuple(
+        Manual(stop, MANUAL_NEXT_ACTION, MANUAL_OWNER) for stop in ordered if stop.access != "road"
     )
-    return_leg = haversine_km(*points[-1], crew.lat, crew.lon) * road_factor(stops[-1])
-    measured = (*legs, return_leg)
-    return measured, sum(measured)
+    road = [stop for stop in ordered if stop.access == "road"]
+    unplanned = [Unplanned(stop, ROAD_CLOSED) for stop in road if not stop.road_open]
+    drivable = [stop for stop in road if stop.road_open]
 
+    slots = [index for index in range(len(crews)) for _ in range(JOBS_PER_CREW_DAY)]
+    fits, over = drivable[: len(slots)], drivable[len(slots) :]  # overflow by signed rank only
+    unplanned += [Unplanned(stop, OVER_CAPACITY) for stop in over]
 
-def _crew_plan(
-    crew: Crew,
-    stops: tuple[Stop, ...],
-    road_factor: Callable[[Stop], float],
-    over_capacity_regions: set[str],
-) -> CrewPlan:
-    legs_km, km = _measure(crew, stops, road_factor)
-    return CrewPlan(
-        crew=crew,
-        stops=stops,
-        legs_km=legs_km,
-        km=km,
-        within_capacity=len(stops) <= crew.jobs_per_day
-        and crew.region not in over_capacity_regions,
-    )
+    costs = [
+        [2 * haversine_km(crews[c].lat, crews[c].lon, s.lat, s.lon) * s.road_factor for c in slots]
+        for s in fits
+    ]
+    assigned: list[list[Stop]] = [[] for _ in crews]
+    for stop, slot in zip(fits, min_cost_assignment(costs), strict=True):
+        assigned[slots[slot]].append(stop)
+    assigned = _consolidate(crews, assigned)
 
-
-def plan(
-    batch_version: int,
-    stops: list[Stop],
-    crews: list[Crew],
-    road_factor: Callable[[Stop], float],
-) -> Plan:
-    """Allocate signed road stops without silently changing their signed order."""
-    assigned: dict[int, list[Stop]] = {index: [] for index in range(len(crews))}
-    unplanned: list[Unplanned] = []
-    manual: list[Manual] = []
-
-    for stop in sorted(stops, key=lambda item: item.signed_rank):
-        if stop.access != "road":
-            manual.append(Manual(stop, "book air/barge freight"))
-            continue
-        if not stop.road_open:
-            unplanned.append(Unplanned(stop, "road closed"))
-            continue
-        candidates = [
-            (index, crew) for index, crew in enumerate(crews) if crew.region == stop.region
-        ]
-        if not candidates:
-            unplanned.append(Unplanned(stop, "no crew for region"))
-            continue
-        assignment = next(
-            (
-                (index, crew)
-                for index, crew in candidates
-                if len(assigned[index]) < crew.jobs_per_day
-            ),
-            None,
-        )
-        if assignment is None:
-            unplanned.append(Unplanned(stop, "over crew capacity"))
-            continue
-        crew_index, _ = assignment
-        assigned[crew_index].append(stop)
-
-    over_capacity_regions = {
-        item.stop.region for item in unplanned if item.reason == "over crew capacity"
-    }
     crew_plans = tuple(
-        _crew_plan(crew, tuple(assigned[index]), road_factor, over_capacity_regions)
-        for index, crew in enumerate(crews)
+        _crew_plan(crew, _shortest(crew, stops_for))
+        for crew, stops_for in zip(crews, assigned, strict=True)
     )
-    return Plan(batch_version, crew_plans, tuple(unplanned), tuple(manual), ())
+    unplanned.sort(key=lambda item: item.stop.signed_rank)
+    return Plan(batch_version, crew_plans, tuple(unplanned), manual, ())
 
 
-def suggestions(current: Plan, road_factor: Callable[[Stop], float]) -> list[Suggestion]:
-    """Return eligible adjacent swaps, ordered from greatest to smallest distance saving."""
-    result: list[Suggestion] = []
-    for crew_plan in current.crews:
-        old_order = tuple(stop.job_id for stop in crew_plan.stops)
-        for index, first in enumerate(crew_plan.stops[:-1]):
-            second = crew_plan.stops[index + 1]
-            if first.window_days_left < 1 or second.window_days_left < 1:
-                continue
-            swapped = list(crew_plan.stops)
-            swapped[index], swapped[index + 1] = swapped[index + 1], swapped[index]
-            _, swapped_km = _measure(crew_plan.crew, tuple(swapped), road_factor)
-            saving_km = crew_plan.km - swapped_km
-            if saving_km >= SUGGESTION_MIN_SAVING_KM:
-                result.append(
-                    Suggestion(
-                        crew_plan.crew.base,
-                        first.job_id,
-                        second.job_id,
-                        old_order,
-                        tuple(stop.job_id for stop in swapped),
-                        saving_km,
-                    )
-                )
-    return sorted(result, key=lambda item: item.saving_km, reverse=True)
-
-
-def _require_reason(reason: str) -> None:
+def edit_order(current: Plan, crew_id: str, new_order: list[str], reason: str) -> Plan:
+    """Reorder one crew's stops, same membership, with the coordinator's reason."""
     if not reason.strip():
         raise ValueError("A coordinator reason is required.")
-
-
-def _replace_crew(current: Plan, original: CrewPlan, changed: CrewPlan, change: PlanChange) -> Plan:
-    crews = tuple(changed if item is original else item for item in current.crews)
-    return Plan(
-        current.batch_version, crews, current.unplanned, current.manual, (*current.changes, change)
-    )
-
-
-def apply(
-    current: Plan,
-    suggestion: Suggestion,
-    reason: str,
-    road_factor: Callable[[Stop], float],
-) -> Plan:
-    """Accept one displayed suggestion and record the coordinator's reason."""
-    _require_reason(reason)
-    crew_plan = next(
-        (
-            item
-            for item in current.crews
-            if item.crew.base == suggestion.crew_base
-            and tuple(stop.job_id for stop in item.stops) == suggestion.old_order
-        ),
-        None,
-    )
+    crew_plan = next((item for item in current.crews if item.crew.crew_id == crew_id), None)
     if crew_plan is None:
-        raise ValueError("The crew order no longer matches this suggestion.")
-    by_id = {stop.job_id: stop for stop in crew_plan.stops}
-    changed = _crew_plan(
-        crew_plan.crew,
-        tuple(by_id[job_id] for job_id in suggestion.new_order),
-        road_factor,
-        {item.stop.region for item in current.unplanned if item.reason == "over crew capacity"},
-    )
-    return _replace_crew(
-        current,
-        crew_plan,
-        changed,
-        PlanChange((suggestion.job_a, suggestion.job_b), reason, suggestion.saving_km),
-    )
-
-
-def edit_order(
-    current: Plan,
-    crew_base: str,
-    new_order: list[str],
-    reason: str,
-    road_factor: Callable[[Stop], float],
-) -> Plan:
-    """Apply a manually ordered, same-membership crew route with an explicit reason."""
-    _require_reason(reason)
-    crew_plan = next((item for item in current.crews if item.crew.base == crew_base), None)
-    if crew_plan is None:
-        raise ValueError("Unknown crew base.")
-    old_order = tuple(stop.job_id for stop in crew_plan.stops)
-    if sorted(new_order) != sorted(old_order):
+        raise ValueError("Unknown crew.")
+    if sorted(new_order) != sorted(stop.job_id for stop in crew_plan.stops):
         raise ValueError("A manual edit must keep the same job membership.")
     by_id = {stop.job_id: stop for stop in crew_plan.stops}
-    changed = _crew_plan(
-        crew_plan.crew,
-        tuple(by_id[job_id] for job_id in new_order),
-        road_factor,
-        {item.stop.region for item in current.unplanned if item.reason == "over crew capacity"},
-    )
-    return _replace_crew(
-        current,
-        crew_plan,
-        changed,
-        PlanChange(tuple(new_order), reason, crew_plan.km - changed.km),
+    changed = _crew_plan(crew_plan.crew, [by_id[job_id] for job_id in new_order])
+    crews = tuple(changed if item is crew_plan else item for item in current.crews)
+    change = PlanChange(tuple(new_order), reason, changed.km - crew_plan.km)
+    return Plan(
+        current.batch_version, crews, current.unplanned, current.manual, (*current.changes, change)
     )

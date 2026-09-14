@@ -16,9 +16,9 @@ import streamlit as st
 from fair_turn.app import state, theme
 from fair_turn.app.components import intro
 from fair_turn.core import audit, constants, feedback_sim
-from fair_turn.core.capacity_sim import Closure, Site
+from fair_turn.core.capacity_sim import Closure, CrewBase, Site
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
-from fair_turn.data import artefacts
+from fair_turn.data import artefacts, geography
 
 FALLBACK_EXTRACTOR_CAPTION = "Build extractor: Claude Sonnet via claude -p (Part 2)."
 
@@ -216,10 +216,12 @@ DECAY_CAPTION = (
 CITATION_SENTENCE = f"The mechanism follows {CITATIONS} on under-reporting."
 
 
-def simulation_inputs(art: artefacts.Artefacts) -> tuple[list[Job], dict[str, Site], list[Closure]]:
-    """Jobs from the label rows, a site per community and the closures."""
+def simulation_inputs(
+    art: artefacts.Artefacts,
+) -> tuple[list[Job], dict[str, Site], tuple[CrewBase, ...], list[Closure]]:
+    """Jobs from the label rows, a site per community, the NT-wide crew pool and the closures."""
     rows = art.communities
-    sites = {cid: Site(r["region"], float(r["km_to_base"])) for cid, r in rows.items()}
+    sites = geography.sim_sites(rows)
     jobs = [
         Job(
             job_id=label["job_id"],
@@ -241,13 +243,13 @@ def simulation_inputs(art: artefacts.Artefacts) -> tuple[list[Job], dict[str, Si
         )
         for c in art.closures
     ]
-    return jobs, sites, closures
+    return jobs, sites, geography.crews(rows), closures
 
 
 @st.cache_data(show_spinner="Replaying 90 days")
 def weekly_series(lam: float, decay: float) -> feedback_sim.WeeklySeries:
-    jobs, sites, closures = simulation_inputs(state.artefacts())
-    return feedback_sim.run(jobs, sites, lam, decay, constants.SEED, closures)
+    jobs, sites, crews, closures = simulation_inputs(state.artefacts())
+    return feedback_sim.run(jobs, sites, crews, lam, decay, constants.SEED, closures)
 
 
 def run_label(lam: float) -> str:

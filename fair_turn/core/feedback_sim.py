@@ -15,13 +15,13 @@ that run is the plain capacity run over the same horizon exactly.
 """
 
 import hashlib
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
 from statistics import median
 
 from fair_turn.core import capacity_sim, constants
-from fair_turn.core.capacity_sim import Closure, SimResult, Site
+from fair_turn.core.capacity_sim import Closure, CrewBase, SimResult, Site
 from fair_turn.core.types import Job
 
 REPORTING_FLOOR = 0.2  # a community never stops reporting entirely
@@ -43,12 +43,6 @@ class WeeklySeries:
     sim: SimResult  # the window-plus-tail capacity run over the admitted reports
 
 
-def _crews() -> dict[str, int]:
-    crews = {region: constants.CREWS_PER_REMOTE_REGION for region in constants.REMOTE_REGIONS}
-    crews[constants.TOWN_REGION] = constants.CREWS_TOWN
-    return crews
-
-
 def _keep_draw(job_id: str, seed: int) -> float:
     """A uniform value in [0, 1) fixed by the seed and the job id."""
     digest = hashlib.sha256(f"{seed}:{job_id}".encode()).digest()
@@ -61,6 +55,7 @@ def _simulate(
     days: int,
     closures: list[Closure],
     communities: Mapping[str, Site],
+    crews: Sequence[CrewBase],
 ) -> SimResult:
     return capacity_sim.simulate(
         jobs,
@@ -68,7 +63,7 @@ def _simulate(
         constants.WINDOW_START,
         days,
         closures,
-        _crews(),
+        crews,
         constants.JOBS_PER_CREW_DAY,
         constants.TRAVEL_DAY_KM,
         communities,
@@ -100,12 +95,14 @@ def _median(values: list[int]) -> float | None:
 def run(
     labels: list[Job],
     communities: Mapping[str, Site],
+    crews: Sequence[CrewBase],
     lam: float,
     decay: float,
     seed: int,
     closures: Iterable[Closure] = (),
 ) -> WeeklySeries:
-    """Replay the window week by week at ``lam`` with reporting decay ``decay``."""
+    """Replay the window week by week at ``lam`` with reporting decay ``decay``, the NT-wide
+    crew pool ``crews`` serving every region."""
     closures = list(closures)
     start, days = constants.WINDOW_START, constants.WINDOW_DAYS
     weeks = -(-days // WEEK_DAYS)
@@ -115,7 +112,7 @@ def run(
         week_end = week_start + timedelta(days=WEEK_DAYS)
         week_jobs = [j for j in labels if week_start <= j.reported_on < week_end]
         if decay and admitted:
-            state = _simulate(admitted, lam, w * WEEK_DAYS, closures, communities)
+            state = _simulate(admitted, lam, w * WEEK_DAYS, closures, communities, crews)
             m = _multipliers(admitted, state, week_start, decay)
             week_jobs = [
                 j for j in week_jobs if _keep_draw(j.job_id, seed) < m.get(j.community_id, 1.0)
@@ -123,7 +120,7 @@ def run(
         admitted.extend(week_jobs)
 
     horizon = days + COMPLETION_TAIL_DAYS
-    sim = _simulate(admitted, lam, horizon, closures, communities)
+    sim = _simulate(admitted, lam, horizon, closures, communities, crews)
     end = start + timedelta(days=horizon)
     series = WeeklySeries([], [], [], [], [], [], sim)
     for w in range(weeks):

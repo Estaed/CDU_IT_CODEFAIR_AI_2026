@@ -13,8 +13,9 @@ import streamlit as st
 
 from fair_turn.app import state
 from fair_turn.core import capacity_sim, constants, effect
-from fair_turn.core.capacity_sim import Closure, SimResult, Site
+from fair_turn.core.capacity_sim import Closure, SimResult
 from fair_turn.core.types import Job, ScoredJob
+from fair_turn.data import geography
 from fair_turn.data.artefacts import Artefacts, to_jobs
 
 LABELS = {
@@ -33,8 +34,6 @@ def sim_inputs(art: Artefacts) -> dict:
     a function this module could import, and that file belongs to Task-14, so they are
     rebuilt here the same way.
     """
-    crews = {region: constants.CREWS_PER_REMOTE_REGION for region in constants.REMOTE_REGIONS}
-    crews[constants.TOWN_REGION] = constants.CREWS_TOWN
     return {
         "jobs": to_jobs(art),
         "closures": [
@@ -45,13 +44,10 @@ def sim_inputs(art: Artefacts) -> dict:
             )
             for c in art.closures
         ],
-        "crews_per_region": crews,
+        "crews": geography.crews(art.communities),
         "jobs_per_crew_day": constants.JOBS_PER_CREW_DAY,
         "travel_day_km": constants.TRAVEL_DAY_KM,
-        "sites": {
-            cid: Site(row["region"], float(row["km_to_base"]))
-            for cid, row in art.communities.items()
-        },
+        "sites": geography.sim_sites(art.communities),
     }
 
 

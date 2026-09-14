@@ -20,8 +20,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
 
 from fair_turn.core import capacity_sim, constants, feedback_sim  # noqa: E402
-from fair_turn.core.capacity_sim import Closure, Site  # noqa: E402
+from fair_turn.core.capacity_sim import Closure, CrewBase, Site  # noqa: E402
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass  # noqa: E402
+from fair_turn.data import geography  # noqa: E402
 
 BUILD = ROOT / "data" / "build"
 OUT = BUILD / "report"
@@ -36,10 +37,6 @@ def _load_json(path: Path):
 def _communities(build: Path) -> dict[str, dict[str, str]]:
     with (build / "communities.csv").open(newline="", encoding="utf-8") as f:
         return {r["community_id"]: r for r in csv.DictReader(f)}
-
-
-def _sites(communities: dict[str, dict[str, str]]) -> dict[str, Site]:
-    return {cid: Site(r["region"], float(r["km_to_base"])) for cid, r in communities.items()}
 
 
 def _jobs(build: Path, communities: dict[str, dict[str, str]]) -> list[Job]:
@@ -72,12 +69,6 @@ def _closures(build: Path) -> list[Closure]:
     ]
 
 
-def _crews() -> dict[str, int]:
-    crews = {region: constants.CREWS_PER_REMOTE_REGION for region in constants.REMOTE_REGIONS}
-    crews[constants.TOWN_REGION] = constants.CREWS_TOWN
-    return crews
-
-
 def _fmt(value: float | None) -> str:
     return "" if value is None else f"{value:.{DIGITS}f}"
 
@@ -90,7 +81,7 @@ def _write_csv(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
 
 
 def price_of_fairness(
-    jobs: list[Job], sites: dict[str, Site], closures: list[Closure]
+    jobs: list[Job], sites: dict[str, Site], crews: tuple[CrewBase, ...], closures: list[Closure]
 ) -> list[dict]:
     rows = []
     for step in range(11):
@@ -101,7 +92,7 @@ def price_of_fairness(
             constants.WINDOW_START,
             constants.WINDOW_DAYS,
             closures,
-            _crews(),
+            crews,
             constants.JOBS_PER_CREW_DAY,
             constants.TRAVEL_DAY_KM,
             sites,
@@ -118,10 +109,12 @@ def price_of_fairness(
     return rows
 
 
-def feedback_loop(jobs: list[Job], sites: dict[str, Site], closures: list[Closure]) -> list[dict]:
+def feedback_loop(
+    jobs: list[Job], sites: dict[str, Site], crews: tuple[CrewBase, ...], closures: list[Closure]
+) -> list[dict]:
     rows = []
     for run_name, lam in (("lam_1.0", 1.0), ("lam_0.5", 0.5)):
-        series = feedback_sim.run(jobs, sites, lam, FEEDBACK_DECAY, constants.SEED, closures)
+        series = feedback_sim.run(jobs, sites, crews, lam, FEEDBACK_DECAY, constants.SEED, closures)
         for i, week_start in enumerate(series.week_start):
             rows.append(
                 {
@@ -258,7 +251,8 @@ def main(output_dir: Path = OUT) -> int:
     labels = _load_json(BUILD / "labels.json")
     communities = _communities(BUILD)
     extraction = _load_json(BUILD / "extraction.json")
-    sites = _sites(communities)
+    sites = geography.sim_sites(communities)
+    crews = geography.crews(communities)
     jobs = _jobs(BUILD, communities)
     closures = _closures(BUILD)
 
@@ -277,7 +271,7 @@ def main(output_dir: Path = OUT) -> int:
     _write_csv(
         output_dir / "price_of_fairness.csv",
         ["lam", "median_wait_remote", "median_wait_town", "gap", "travel_cost"],
-        price_of_fairness(jobs, sites, closures),
+        price_of_fairness(jobs, sites, crews, closures),
     )
     _write_csv(
         output_dir / "feedback_loop.csv",
@@ -290,7 +284,7 @@ def main(output_dir: Path = OUT) -> int:
             "median_wait_remote",
             "gap",
         ],
-        feedback_loop(jobs, sites, closures),
+        feedback_loop(jobs, sites, crews, closures),
     )
     return 0
 

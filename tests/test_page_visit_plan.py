@@ -1,7 +1,8 @@
-"""The visit plan (PRD 3.3, wireframes §6): unsigned state points back to the workspace,
-crew stops render in signed order, air/barge work stays manual and out of every crew
-container, a suggestion applies only with a reason, and an accepted plan is marked
-superseded once a later signature lands."""
+"""The visit plan (PRD 3.3, wireframes §6, pooled crews 2026-09-14): unsigned state points
+back to the workspace; after a signature the rule sentence and the three road-km metrics
+render, crew rows use short job numbers with the registration in a caption, air/barge work
+stays manual and out of every crew container, an order edit needs a reason and is audited
+against the batch version, and an accepted plan is marked superseded by a later signature."""
 
 import re
 import socket
@@ -13,7 +14,6 @@ from streamlit.testing.v1 import AppTest
 
 from fair_turn.app.components import ranking_table
 from fair_turn.core import audit, constants
-from fair_turn.core import visit_plan as visit_plan_module
 from fair_turn.data import artefacts
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -21,6 +21,12 @@ PAGES = ROOT / "fair_turn" / "app" / "pages"
 VISIT_PLAN = PAGES / "visit_plan.py"
 TODAY = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
 TEXT_KINDS = ("title", "subheader", "markdown", "caption", "info", "error", "success")
+RULE = "Distance chooses which crew goes, never which job is served. The jobs are the signed list."
+KM_METRICS = (
+    "Road km, this signed list",
+    "Road km, efficiency-first list",
+    "Road km cost of today's weighting",
+)
 
 
 def _refuse(*args, **kwargs):
@@ -37,19 +43,20 @@ def art() -> artefacts.Artefacts:
     return artefacts.load_all()
 
 
-def _same_region_road_pair(art: artefacts.Artefacts) -> tuple[str, str]:
-    by_region: dict[str, list[str]] = {}
-    for job in ranking_table.open_jobs(TODAY):
-        if job.needs_human:
-            continue
-        row = art.communities[job.community_id]
-        if row["road_access"] == "barge_or_air":
-            continue
-        by_region.setdefault(row["region"], []).append(job.job_id)
-    for ids in by_region.values():
-        if len(ids) >= 2:
-            return ids[0], ids[1]
-    raise AssertionError("fixture needs two open road jobs in the same region")
+def _road_pair(art: artefacts.Artefacts) -> tuple[str, str]:
+    ids = [
+        job.job_id
+        for job in ranking_table.open_jobs(TODAY)
+        if not job.needs_human
+        and art.communities[job.community_id]["road_access"] != "barge_or_air"
+        and not any(
+            c["community_id"] == job.community_id
+            and c["closed_from"] <= TODAY.isoformat() <= c["closed_to"]
+            for c in art.closures
+        )
+    ]
+    assert len(ids) >= 2, "fixture needs two open road jobs"
+    return ids[0], ids[1]
 
 
 def _barge_job_id(art: artefacts.Artefacts) -> str:
@@ -119,76 +126,83 @@ def test_unsigned_state_points_back_to_the_workspace(tmp_path) -> None:
         "distance km",
     ]
     assert at.dataframe[0].value.empty
+    assert RULE not in _page_text(at)
+    assert not at.metric
     assert (
         'st.page_link("pages/workspace.py", label="Go to the workspace")'
         in VISIT_PLAN.read_text(encoding="utf-8")
     )
 
 
-def test_crew_stops_are_in_signed_order_and_barge_job_stays_manual(tmp_path, art) -> None:
+def test_rule_sentence_and_road_km_metrics_render_after_a_signature(tmp_path, art) -> None:
     audit_path = tmp_path / "audit.jsonl"
-    road_a, road_b = _same_region_road_pair(art)
+    road_a, road_b = _road_pair(art)
     barge = _barge_job_id(art)
     _sign(audit_path, 1, [road_a, road_b, barge], "A. Coordinator")
 
     at = _open(tmp_path, audit_path)
     text = _page_text(at)
     assert f"Signed list {TODAY} v1 by A. Coordinator" in text
-    assert "Signed work needing manual coordination" in text
-    assert barge in text
-    assert "air/barge access, no road route" in text
-
-    markdowns = [m.value for m in at.main.markdown]
-    index_a = next(i for i, v in enumerate(markdowns) if road_a in v and "signed rank 1" in v)
-    index_b = next(i for i, v in enumerate(markdowns) if road_b in v and "signed rank 2" in v)
-    assert index_a < index_b
-
-    assert not any(re.search(rf"\d+\.\s+{re.escape(barge)}\b", v) for v in markdowns)
+    assert RULE in text
+    metrics = {m.label: m.value for m in at.main.metric}
+    assert set(metrics) == set(KM_METRICS)
+    assert all(value.endswith(" km") for value in metrics.values())
+    plan = at.session_state["plan"]
+    assert metrics[KM_METRICS[0]] == f"{plan.road_km:,.0f} km"
 
 
-def test_suggestion_requires_a_reason_and_swaps_the_two_stops_once_accepted(
-    tmp_path, art, monkeypatch
-) -> None:
+def test_crew_rows_use_short_numbers_and_barge_work_stays_manual(tmp_path, art) -> None:
     audit_path = tmp_path / "audit.jsonl"
-    road_a, road_b = _same_region_road_pair(art)
-    _sign(audit_path, 1, [road_a, road_b], "A. Coordinator")
-
-    probe = _open(tmp_path, audit_path)
-    plan = probe.session_state["plan"]
-    crew_plan = next(cp for cp in plan.crews if {road_a, road_b} <= {s.job_id for s in cp.stops})
-    old_order = tuple(s.job_id for s in crew_plan.stops)
-    new_order = tuple(reversed(old_order))
-    suggestion = visit_plan_module.Suggestion(
-        crew_base=crew_plan.crew.base,
-        job_a=old_order[0],
-        job_b=old_order[1],
-        old_order=old_order,
-        new_order=new_order,
-        saving_km=99.0,
-    )
-    monkeypatch.setattr(visit_plan_module, "suggestions", lambda current, factor: [suggestion])
+    road_a, road_b = _road_pair(art)
+    barge = _barge_job_id(art)
+    _sign(audit_path, 1, [road_a, road_b, barge], "A. Coordinator")
 
     at = _open(tmp_path, audit_path)
-    at = _run(at.button(key="visit_suggestion_accept_0").click())
+    markdowns = [m.value for m in at.main.markdown]
+    captions = [c.value for c in at.main.caption]
+    for rank, job_id in ((1, road_a), (2, road_b)):
+        short = ranking_table.short_id(job_id)
+        assert any(
+            re.search(rf"^\d+\.\s+{re.escape(short)}\b", v) and f"signed rank {rank}" in v
+            for v in markdowns
+        )
+        assert any(job_id in c for c in captions)
+        assert not any(job_id in v for v in markdowns)
+
+    text = _page_text(at)
+    assert "Signed work needing manual coordination" in text
+    assert "air/barge access, no road route" in text
+    assert "Next action: book air/barge freight — owner: coordinator" in text
+    barge_short = ranking_table.short_id(barge)
+    assert not any(re.search(rf"^\d+\.\s+{re.escape(barge_short)}\b", v) for v in markdowns)
+    assert {s.job_id for cp in at.session_state["plan"].crews for s in cp.stops} == {
+        road_a,
+        road_b,
+    }
+
+
+def test_order_edit_needs_a_reason_and_is_audited_with_the_batch_version(tmp_path, art) -> None:
+    audit_path = tmp_path / "audit.jsonl"
+    road_a, road_b = _road_pair(art)
+    _sign(audit_path, 1, [road_a, road_b], "A. Coordinator")
+
+    at = _open(tmp_path, audit_path)
+    at = _run(at.button(key="visit_edit_apply").click())
     assert any("A reason is required." in e.value for e in at.error)
     assert not [r for r in audit.read(audit_path) if isinstance(r, audit.PlanDecision)]
 
-    at.text_input(key="visit_suggestion_reason_0").set_value("Avoid a repeat drive.")
-    at = _run(at.button(key="visit_suggestion_accept_0").click())
-
+    at.text_input(key="visit_edit_reason").set_value("Tenant asked for the afternoon.")
+    at = _run(at.button(key="visit_edit_apply").click())
     decisions = [r for r in audit.read(audit_path) if isinstance(r, audit.PlanDecision)]
-    assert len(decisions) == 1
-    assert decisions[0].action == "suggestion_accept"
-    assert decisions[0].reason == "Avoid a repeat drive."
-
-    new_plan = at.session_state["plan"]
-    new_crew_plan = next(cp for cp in new_plan.crews if cp.crew.base == crew_plan.crew.base)
-    assert tuple(s.job_id for s in new_crew_plan.stops) == new_order
+    assert [(d.action, d.batch_version, d.reason) for d in decisions] == [
+        ("edit", 1, "Tenant asked for the afternoon.")
+    ]
+    assert at.session_state["plan"].changes[-1].reason == "Tenant asked for the afternoon."
 
 
 def test_a_new_signature_supersedes_an_accepted_plan(tmp_path, art) -> None:
     audit_path = tmp_path / "audit.jsonl"
-    road_a, road_b = _same_region_road_pair(art)
+    road_a, road_b = _road_pair(art)
     _sign(audit_path, 1, [road_a, road_b], "A. Coordinator")
 
     at = _open(tmp_path, audit_path)
@@ -206,7 +220,7 @@ def test_a_new_signature_supersedes_an_accepted_plan(tmp_path, art) -> None:
 
 def test_no_hours_appear_anywhere_on_the_page(tmp_path, art) -> None:
     audit_path = tmp_path / "audit.jsonl"
-    road_a, road_b = _same_region_road_pair(art)
+    road_a, road_b = _road_pair(art)
     barge = _barge_job_id(art)
     _sign(audit_path, 1, [road_a, road_b, barge], "A. Coordinator")
 

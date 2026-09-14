@@ -6,6 +6,7 @@ retired board tests."""
 
 import re
 import socket
+import statistics
 from datetime import timedelta
 from pathlib import Path
 
@@ -283,19 +284,36 @@ def test_map_for_one_region_drops_outline_and_other_regions(art) -> None:
     assert 0 < len(ids) < len(art.communities)
 
 
-def test_region_panel_equals_a_simulation_of_that_region_alone(art) -> None:
-    """Crews only take jobs in their own region and scores do not depend on other jobs, so
-    the region's medians in the full run equal those of a run over the region's jobs only."""
+def test_region_panel_is_the_full_pooled_run_restricted_to_that_region(art) -> None:
+    """Crews are one NT-wide pool (2026-09-14), so a region is not a separate simulation: its
+    panel medians are the full run's waits over that region's jobs, open jobs censored at the
+    day after the run, and travel cost stays whole NT."""
     today = constants.WINDOW_START + timedelta(days=45)
     jobs = artefacts.to_jobs(art)
     full = _simulate(art, today, 0.0)
+    end = today + timedelta(days=1)
     for region in (REGION, constants.TOWN_REGION):
-        own = [j for j in jobs if art.communities[j.community_id]["region"] == region]
-        alone = _simulate(art, today, 0.0, own)
+        own = [
+            j
+            for j in jobs
+            if art.communities[j.community_id]["region"] == region
+            and not j.needs_human
+            and j.reported_on < end
+        ]
+        waits = {
+            remote: sorted(
+                full.wait_days[j.job_id]
+                if full.wait_days[j.job_id] is not None
+                else (end - j.reported_on).days
+                for j in own
+                if j.is_remote == remote
+            )
+            for remote in (True, False)
+        }
         values = metrics.panel_values(full, jobs, art.communities, region)
-        assert values["median_wait_remote"] == alone.median_wait_remote
-        assert values["median_wait_town"] == alone.median_wait_town
-        assert values["gap"] == alone.gap
+        for remote, key in ((True, "median_wait_remote"), (False, "median_wait_town")):
+            expected = float(statistics.median(waits[remote])) if waits[remote] else None
+            assert values[key] == expected
         assert values["travel_cost"] == full.travel_cost
     town = metrics.panel_values(full, jobs, art.communities, constants.TOWN_REGION)
     assert town["median_wait_town"] is not None

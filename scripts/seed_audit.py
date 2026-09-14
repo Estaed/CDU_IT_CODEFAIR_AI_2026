@@ -18,8 +18,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
 
 from fair_turn.core import audit, capacity_sim, constants, scoring  # noqa: E402
-from fair_turn.core.capacity_sim import Closure, Site  # noqa: E402
+from fair_turn.core.capacity_sim import Closure, CrewBase, Site  # noqa: E402
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass  # noqa: E402
+from fair_turn.data import geography  # noqa: E402
 
 BUILD = ROOT / "data" / "build"
 AUDIT = ROOT / "data" / "audit"
@@ -66,20 +67,20 @@ def _closures() -> list[Closure]:
     ]
 
 
-def _crews() -> dict[str, int]:
-    crews = {region: constants.CREWS_PER_REMOTE_REGION for region in constants.REMOTE_REGIONS}
-    crews[constants.TOWN_REGION] = constants.CREWS_TOWN
-    return crews
-
-
-def _open_jobs(jobs: list[Job], sites: dict[str, Site], closures: list[Closure], today: date):
+def _open_jobs(
+    jobs: list[Job],
+    sites: dict[str, Site],
+    crews: tuple[CrewBase, ...],
+    closures: list[Closure],
+    today: date,
+):
     result = capacity_sim.simulate(
         jobs,
         lam=1.0,
         start=constants.WINDOW_START,
         days=(today - constants.WINDOW_START).days + 1,
         closures=closures,
-        crews_per_region=_crews(),
+        crews=crews,
         jobs_per_crew_day=constants.JOBS_PER_CREW_DAY,
         travel_day_km=constants.TRAVEL_DAY_KM,
         sites=sites,
@@ -104,7 +105,8 @@ def _recorded_at(day: date, rng: random.Random) -> datetime:
 def main() -> int:
     # Step 1: load the community/job/closure rows the capacity simulation needs.
     communities = _communities()
-    sites = {cid: Site(r["region"], float(r["km_to_base"])) for cid, r in communities.items()}
+    sites = geography.sim_sites(communities)
+    crews = geography.crews(communities)
     jobs = _jobs(communities)
     closures = _closures()
 
@@ -126,7 +128,7 @@ def main() -> int:
 
     # Step 3: rank the open jobs for each day and append a signed-off entry per day.
     for day, lam, reason in zip(days, lams, reasons, strict=True):
-        ranked = scoring.rank(_open_jobs(jobs, sites, closures, day), day, lam)
+        ranked = scoring.rank(_open_jobs(jobs, sites, crews, closures, day), day, lam)
         ranked_ids = tuple(s.job.job_id for s in ranked)
         today_ids = ranked_ids[:10]
         recorded_at = _recorded_at(day, rng)
@@ -160,7 +162,9 @@ def main() -> int:
         ),
     )
 
-    ranked_middle = scoring.rank(_open_jobs(jobs, sites, closures, middle_day), middle_day, lams[1])
+    ranked_middle = scoring.rank(
+        _open_jobs(jobs, sites, crews, closures, middle_day), middle_day, lams[1]
+    )
     overrides = (
         (ranked_middle[2], 1, "crew already on site"),
         (ranked_middle[4], 2, "tenant escalated to the coordinator directly"),

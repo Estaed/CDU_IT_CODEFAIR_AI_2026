@@ -6,8 +6,7 @@ is two logged-in CLIs).
 
 | Name | Value | What it is for | Source |
 |---|---|---|---|
-| `CREW_BASE_COORDS` | Darwin, Katherine, Tennant Creek, Alice Springs and Nhulunbuy latitude/longitude pairs | Crew-base locations for visit-plan distance measurement | BushTel town records, `data/raw/bushtel_community_detail_2026-09-12.json` (`Point.Latitude`, `Point.Longitude`) |
-| `SUGGESTION_MIN_SAVING_KM` | 50 km | Minimum distance reduction before the visit plan offers a swap | Provisional project decision, PRD section 3.3 |
+| `CREW_BASE_COORDS` | Darwin, Katherine, Tennant Creek, Alice Springs and Nhulunbuy latitude/longitude pairs | Crew-base locations: where each crew of the NT-wide pool starts in the capacity model and the visit plan (pooled crews, 2026-09-14) | BushTel town records, `data/raw/bushtel_community_detail_2026-09-12.json` (`Point.Latitude`, `Point.Longitude`) |
 | `TEAM_NUMBER` | AIC014 | Submission file name, report cover, slide footer | CDU registration; confirmed by Tarik 2026-09-12. The sibling Data Innovation Challenge entry is DIC005, never this one. |
 | `SEED` | 20260912 | Only randomness source for synthesis and simulation | Project decision, the date Part 2 was written |
 | `WINDOW_START` | 2025-10-01 | First day of the synthetic event window | PRD §6.2 |

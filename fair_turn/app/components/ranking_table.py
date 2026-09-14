@@ -14,9 +14,9 @@ import streamlit as st
 from fair_turn.app import state
 from fair_turn.core import audit, capacity_sim, constants, explain, scoring
 from fair_turn.core.batch import HandMove
-from fair_turn.core.capacity_sim import Closure, Site
+from fair_turn.core.capacity_sim import Closure
 from fair_turn.core.types import Job, SafetyClass, ScoredJob
-from fair_turn.data import runtime
+from fair_turn.data import geography, runtime
 from fair_turn.data.artefacts import to_jobs
 
 UNCHANGED = "·"
@@ -58,9 +58,6 @@ def _open_jobs_cached(today: date, runtime_stamp: tuple[int, int], runtime_path:
     records = runtime.read(runtime_path)
     intake = [r for r in records if isinstance(r, runtime.IntakeReport)]
     jobs = to_jobs(art, human_set=runtime.human_set_for(records), intake=intake)
-    sites = {
-        cid: Site(row["region"], float(row["km_to_base"])) for cid, row in art.communities.items()
-    }
     closures = [
         Closure(
             c["community_id"],
@@ -69,18 +66,16 @@ def _open_jobs_cached(today: date, runtime_stamp: tuple[int, int], runtime_path:
         )
         for c in art.closures
     ]
-    crews = {region: constants.CREWS_PER_REMOTE_REGION for region in constants.REMOTE_REGIONS}
-    crews[constants.TOWN_REGION] = constants.CREWS_TOWN
     result = capacity_sim.simulate(
         jobs,
         lam=1.0,
         start=constants.WINDOW_START,
         days=(today - constants.WINDOW_START).days + 1,
         closures=closures,
-        crews_per_region=crews,
+        crews=geography.crews(art.communities),
         jobs_per_crew_day=constants.JOBS_PER_CREW_DAY,
         travel_day_km=constants.TRAVEL_DAY_KM,
-        sites=sites,
+        sites=geography.sim_sites(art.communities),
     )
     return [j for j in jobs if j.reported_on <= today and result.completed_on[j.job_id] is None]
 

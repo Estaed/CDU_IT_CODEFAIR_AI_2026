@@ -381,6 +381,10 @@ no interface classes):
   default only if it is not below Claude on both required fields (PRD §5, "running is
   not acceptance"). Nothing before that task pulls or calls an Ollama chat model. Not a
   secret, so an environment variable, documented in the README, never `secrets.toml`.
+  *Amended 2026-09-14 (Task-48, Tarik's request):* the intake container offers a provider
+  selectbox (`none`, `claude`, `ollama`) that overrides the variable for the session only,
+  through `configured(override=...)`; the variable stays the default and nothing is
+  written to disk. Still no model call outside the intake action.
 - *Added 2026-09-14:* `data/policy.py` reads `policy_passages.json`. A pilot with a
   bigger corpus would swap the build script for a live index behind the same lookup;
   today a JSON file keyed by the typed key.

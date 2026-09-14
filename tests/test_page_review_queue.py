@@ -2,6 +2,7 @@
 a reason, reports the resulting rank, and its cursor wraps at both ends."""
 
 import socket
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -138,6 +139,38 @@ def test_mark_rankable_with_empty_reason_writes_nothing_and_shows_error(art, tmp
     assert at.error
     assert runtime.read(runtime_path) == []
     assert audit.read(audit_path) == []
+
+
+def test_review_requested_job_without_missing_fields_reports_rank(art, tmp_path) -> None:
+    job_id = "JR-2025-00004"
+    script = _wrapper_script(tmp_path)
+    script.write_text(
+        script.read_text(encoding="utf-8").replace(
+            "exec(compile(", "state.set_review_cursor(-1)\nexec(compile(", 1
+        ),
+        encoding="utf-8",
+    )
+    audit_path = tmp_path / "audit.jsonl"
+    audit.append(
+        audit_path,
+        audit.HumanSet(
+            day=date(2025, 12, 30),
+            job_id=job_id,
+            field="review_requested",
+            value="review",
+            actor="coordinator",
+            reason="Check the evidence before dispatch.",
+        ),
+    )
+
+    at = AppTest.from_file(str(script)).run(timeout=60)
+    assert job_id in at.header[0].value
+
+    at.text_input(key=f"reason_{job_id}").set_value("Review complete.").run(timeout=60)
+    at.button(key=f"mark_{job_id}").click().run(timeout=60)
+
+    assert not at.exception
+    assert any("is now rank" in message.value for message in at.success)
 
 
 # --- empty state -------------------------------------------------------------------------------

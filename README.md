@@ -128,8 +128,9 @@ venv/Scripts/python scripts/build_policy_index.py
 ```
 
 The indexed source, `data/raw/nt_fs17_repairs_and_maintenance_2025-10.pdf`, is © NT Government
-and is quoted with attribution in the app; its licence for this use is PRD open question 6
-(not yet confirmed).
+and is quoted with attribution in the app. Its reuse is fair dealing for research and
+review under the NT Government copyright statement (no Creative Commons licence is stated
+on FS17); a pilot would need DHLGCD permission before republishing the text.
 
 Ollama chat extraction (`qwen3:8b`) is a separate, later benchmark (Task-36) against the same
 150-item and adversarial tables Claude is scored on; it is not the default provider unless that

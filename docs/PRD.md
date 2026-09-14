@@ -449,9 +449,8 @@ Numbered for reference from task files. Never renumbered.
 5. Report file-name prefix for AI Challenge teams (the requirement page's rule names the
    Data Challenge).
 6. Licence terms for indexing and quoting the NT DHLGCD fact sheets (FS17 first) in the
-   policy index (section 5). External: same NT copyright page as question 1; until
-   answered, passages are quoted with attribution and the index is built by script from
-   the public PDF, not committed as text.
+   policy index (section 5). *Resolved 2026-09-14 from the NT Government copyright page: material may be reused only as fair dealing for private study, research, criticism or review, or under a Creative Commons licence where one is expressly stated. FS17 carries no CC statement, so this competition entry quotes short passages with attribution as research and review; a pilot would need DHLGCD permission before republishing the text.* Passages stay quoted with attribution and the
+   index is built by script from the public PDF, not committed as text.
 7. *Added 2026-09-14:* which WCAG conformance target the report claims. The research
    (`reports/research-ui-streamlit-2026-09-14.md` §6a.8) found 2025-2026 sources saying
    the Australian Human Rights Commission affirmed WCAG 2.2 AA as the minimum, while the

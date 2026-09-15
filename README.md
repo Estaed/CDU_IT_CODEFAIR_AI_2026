@@ -3,8 +3,12 @@
 Decision support for triaging housing maintenance requests across the Northern Territory:
 free-text fault reports are read into typed fields, a transparent formula ranks the open
 jobs, and a coordinator owns the equity trade-off between efficiency and remote-community
-need through a single slider, signs the list, and can explain it to a tenant. Entry for
-the CDU IT Code Fair 2026 AI Challenge, brief 1 (housing maintenance triage). Team `<N>`.
+need through one weighting (Efficiency first, Balanced, Need first), decides each job, signs
+the list, and can explain it to a tenant. Entry for the CDU IT Code Fair 2026 AI Challenge,
+brief 1 (housing maintenance triage). Team `<N>`.
+
+**Status (2026-09-15):** feature-complete and in the hands of the team for testing. Changes
+from here follow the feedback in `reports/` (see "Testing it and sending feedback").
 
 ## Run it (no accounts, no network)
 
@@ -94,10 +98,16 @@ and labelled by the build pipeline, not real tenant data.
 Full tables: `data/build/eval.json` (machine-readable), `data/build/eval_tables.md`
 (rendered), `data/build/report/` (the tables and figures the project report quotes).
 
-Extractor macro-F1 against the *provisional* 0.85 target, on the 150-item holdout set:
+Extractor (Claude Sonnet) macro-F1 against the *provisional* 0.85 target, on the 150-item
+holdout set; every shown field is a literal substring of its report (1,472 of 1,472):
 
 - `fault_type`: **0.919** — target met.
-- `safety_class`: **0.564** — target not met, reported as such.
+- `safety_class`: **0.564** — target not met, reported as such (Immediate is over-called:
+  recall 0.93, precision 0.27).
+- `health_risk`: **0.909** (not a required field).
+
+Local models were benchmarked on the same set (`data/build/eval_ollama*.json`, `MODELS.md`):
+`qwen3:8b` reached 0.688 / 0.561 and was not adopted.
 
 ## Rebuilding the artefacts
 
@@ -111,6 +121,7 @@ venv/Scripts/python scripts/generate_text.py       # needs a logged-in `claude` 
 venv/Scripts/python scripts/extract.py             # needs a logged-in `claude` CLI (Sonnet)
 venv/Scripts/python scripts/run_eval.py
 venv/Scripts/python scripts/export_report_tables.py
+venv/Scripts/python scripts/seed_audit.py            # the committed audit sample
 ```
 
 `generate_text.py` and `extract.py` are the only steps that call a model, through a
@@ -140,8 +151,9 @@ venv/Scripts/streamlit run fair_turn/app/main.py
 
 `claude` requires a logged-in `claude` CLI on the machine (Sonnet, the same wrapper the build
 uses); `ollama` is selectable with `FAIR_TURN_PROVIDER=ollama` and runs `qwen3:8b` locally
-(`ollama pull qwen3:8b` first). The default stays `claude` until Task-36's benchmark
-(`scripts/benchmark_provider.py`) says otherwise. A submitted report,
+(`ollama pull qwen3:8b` first). The benchmark (`scripts/benchmark_provider.py`, results
+above) kept `claude` as the default. The intake box also has a provider selector that
+overrides the variable for the session. A submitted report,
 its extraction, and any coordinator-set field are appended to `data/runtime/runtime.jsonl`
 (gitignored, never committed) and merged into the ranking alongside the committed artefacts.
 

@@ -29,21 +29,57 @@ Python 3.13 is required.
 New to the app? Read [`docs/user-guide.md`](docs/user-guide.md) first, or open the
 "How to use" popover in the sidebar of any page.
 
-## The six screens
+## The five screens
 
-1. **Triage board** — ranked open jobs for a day and region, an equity slider (λ = 1
-   efficiency to λ = 0 need only), two rankings side by side, hidden metrics until
-   sign-off, a needs-a-human queue, and a map of communities by region.
-2. **Job card** — the report text with every extracted field highlighted at its source
-   phrase, the score's factor breakdown, and an override with a written reason.
-3. **Sign-off** — choose λ, write a reason, sign; the signed list and any later revision
-   go to the audit log.
-4. **Tenant view** — look up a job by registration number and get a plain-language answer:
-   what was understood, why it sits where it does, and where it would sit at λ = 0.
-5. **Feedback loop** — replay the 90-day synthetic dataset at λ = 1 against a chosen λ,
-   showing reporting rate and wait-time gap between town and remote communities.
-6. **Audit log** — every signed day's λ, reason, revisions and overrides, the override
-   rate over time, exportable as a table.
+1. **Workspace** — the coordinator's page. Today's list within crew capacity, the backlog,
+   a Needs a human tab, the map, the selected-job pane with every field shown at its source
+   phrase, the weighting (Efficiency first, Balanced, Need first), one accept or reject per
+   job with a reason, and the sign-off form. Also the New report intake box and a DEV OPTION
+   that adds a made-up test report.
+2. **Review queue** — one job at a time where a required field has no source phrase in the
+   report. The coordinator sets the field by hand, with a reason, and the job enters the
+   ranking marked "Set by coordinator".
+3. **Visit plan** — the signed list as crew run sheets. Distance decides which crew goes,
+   never which job is done; signed jobs no crew can take today are listed with the reason.
+4. **Tenant answer** — one job looked up by registration number, answered in plain
+   language: where it sits, why, and the NT policy window, with the passage it comes from.
+5. **Evidence lab** — how well the extractor reads reports against the labelled set, the
+   90-day feedback-loop simulation, and the audit log with its two clocks.
+
+## Repository map
+
+For a teammate, or an AI agent helping one. Read in this order: this file,
+`docs/user-guide.md`, then `docs/PRD.md` section 3.
+
+| Path | What it is |
+|---|---|
+| `CLAUDE.md`, `AGENTS.md` | Project rules (Part 1) and the binding architecture (Part 2). `AGENTS.md` is generated from `CLAUDE.md`; never edit it by hand. The opening "TarikOS" section is the owner's personal assistant setup: on any other machine the session hook prints a warning that the brain was not found. Ignore it; Part 1 and Part 2 are what bind. |
+| `docs/PRD.md` | The product spec. Section 3 says what each screen shows, section 6 the models behind the numbers, section 7 the acceptance checks. Amendments are dated in place. |
+| `docs/user-guide.md` | How to use the app, a coordinator's morning step by step, the keyboard path, the glossary. |
+| `docs/competition-*.md`, `docs/report-requirements.md` | The organiser's brief, deliverables and judging criteria, transcribed verbatim. |
+| `docs/TASKS_INDEX.md`, `tasks/` | The build history, one file per task. All done; kept as the record of why things are the way they are. |
+| `design/` | Wireframes, the design system, screenshots of the built screens. |
+| `fair_turn/core` | The rules as pure Python: scoring, capacity and feedback simulations, visit plan, audit, wording. No pandas, no Streamlit, no network. |
+| `fair_turn/data`, `fair_turn/eval`, `fair_turn/llm` | Artefact loading, evaluation metrics, and the model wrappers (only `scripts/` and `app/intake.py` call them). |
+| `fair_turn/app` | The Streamlit app: `main.py`, one file per screen under `pages/`, shared pieces under `components/`. |
+| `scripts/` | The build pipeline, `gate.py` (lint, format, tests) and `package_submission.py`. |
+| `data/raw`, `data/build`, `data/audit` | Frozen public sources with provenance, the committed artefacts the app runs from, and the seeded audit sample. `data/runtime/` is local and never committed. |
+| `reports/` | Research and run reports, including the usability test. |
+| `BACKLOG.md`, `constants.md`, `MODELS.md`, `notes.md` | Deferred work with reasons, every policy number with its source, the model decisions with evidence, and the original raw dump. |
+| `tests/` | Unit, property and headless page tests; run them through `scripts/gate.py`. |
+
+## Testing it and sending feedback
+
+1. Run the app (above), open the "How to use" popover in the sidebar, and follow a
+   coordinator's morning in `docs/user-guide.md` section 3. Try to break it.
+2. Write what you found as `reports/feedback-<your-name>-<date>.md`, using the sections of
+   `reports/usability-test-fair-turn-2026-09-15.md`: page, exact steps, expected, actual, and
+   the labels that confused you. A GitHub issue works too.
+3. Nothing lands on `main` without `scripts/gate.py` green. Work on a branch; the gate is
+   the only reviewer that cannot be argued with.
+4. If an AI agent is helping you: give it this file, `docs/user-guide.md` and
+   `docs/PRD.md` section 3. It must not edit `CLAUDE.md` Part 2 or anything under
+   `data/build/`; those are decisions and artefacts, not code.
 
 ## What is real and what is synthetic
 

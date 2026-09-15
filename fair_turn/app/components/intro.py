@@ -23,8 +23,8 @@ COPY: dict[str, str] = {
         "each job. It never decides which jobs are done: that is the list you signed."
     ),
     "tenant": (
-        "Here is where your repair sits today, and what moved it there. A housing officer checked "
-        "and signed this list."
+        "Here is where your repair sits today, and what moved it there. A housing officer decides "
+        "and signs the list; the answer below says whether today's list is signed yet."
     ),
     "evidence_lab": (
         "This page shows how well the system reads reports, measured on the synthetic set. It "

@@ -32,7 +32,8 @@ intro.purpose("visit_plan")
 st.markdown(
     "**What to do here**\n\n"
     "1. Check each crew's stops and kilometres.\n"
-    "2. A job marked *no crew within reach* needs a phone call to arrange it.\n"
+    "2. A job under *Signed, not planned today* needs a phone call: "
+    "the reason next to it says why.\n"
     "3. Accept the plan, or reject it with a reason."
 )
 st.caption(theme.PROVENANCE_LINE)
@@ -136,12 +137,8 @@ else:
         border=True,
     )
     st.caption(
-        "Jobs with no crew within reach: this signed list "
+        "Signed jobs not planned today: this signed list "
         f"{current_plan.out_of_reach}, efficiency-first list {efficiency_plan.out_of_reach}."
-    )
-    st.caption(
-        '"No crew within reach" means no available crew can get to that job and back '
-        "within the day; it needs a phone call to arrange instead."
     )
 
     if no_longer_open:
@@ -172,22 +169,34 @@ else:
                 leg = crew_plan.legs_km[index - 1]
                 flag = " · travel day" if crew_plan.travel_day_legs[index - 1] else ""
                 row_text, row_button = st.columns([6, 1])
+                same_place = (
+                    "same place as the crew base"
+                    if index == 1
+                    else "same place as the previous stop"
+                )
+                leg_text = f"0 km ({same_place})" if leg < 1 else f"{leg:,.0f} km"
                 row_text.markdown(
                     f"{index}. {_job_label(stop.job_id)} · "
                     f"{ranking_table.community_label(stop.community_id)} · "
                     f"{_fault_label(job)} · signed rank {stop.signed_rank} · "
-                    f"{leg:,.0f} km{flag}"
+                    f"{leg_text}{flag}"
                 )
                 if row_button.button("Select", key=f"visit_select_{crew.crew_id}_{stop.job_id}"):
                     state.set_selected_job_id(stop.job_id)
             back_flag = " · travel day" if crew_plan.travel_day_legs[-1] else ""
-            st.markdown(f"Back to {crew.base} · {crew_plan.legs_km[-1]:,.0f} km{back_flag}")
+            return_leg = crew_plan.legs_km[-1]
+            return_text = (
+                "0 km (same place as the previous stop)"
+                if return_leg < 1
+                else f"{return_leg:,.0f} km"
+            )
+            st.markdown(f"Back to {crew.base} · {return_text}{back_flag}")
             st.markdown(f"Crew total: {crew_plan.km:,.0f} km")
             st.caption("Registrations: " + ", ".join(stop.job_id for stop in crew_plan.stops))
 
-    st.subheader("Signed work needing manual coordination")
+    st.subheader("Signed, air or barge access: arrange freight")
     if not current_plan.manual:
-        st.markdown("No manual coordination needed.")
+        st.markdown("No air or barge jobs on this list.")
     for manual_item in current_plan.manual:
         st.markdown(
             f"{_job_label(manual_item.stop.job_id)}  {manual_item.stop.community_id}  "
@@ -196,14 +205,14 @@ else:
         st.markdown(f"Next action: {manual_item.next_action} — owner: {manual_item.owner}")
         st.caption(f"Registration: {manual_item.stop.job_id}")
 
-    st.subheader("Signed, unplanned")
+    st.subheader("Signed, not planned today")
     if not current_plan.unplanned:
-        st.markdown("Nothing signed is unplanned.")
+        st.markdown("Every signed road job has a crew today.")
     for unplanned_item in current_plan.unplanned:
         st.markdown(
             f"{_job_label(unplanned_item.stop.job_id)}  {unplanned_item.stop.community_id}  "
             f"signed rank {unplanned_item.stop.signed_rank}  "
-            f"signed, unplanned: {unplanned_item.reason}"
+            f"not planned: {unplanned_item.reason}"
         )
         st.caption(f"Registration: {unplanned_item.stop.job_id}")
 

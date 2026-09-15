@@ -67,4 +67,4 @@ def render(day_steps: list[Step]) -> None:
                 st.badge("Done", icon=":material/check:", color="green")
             elif step.is_next:
                 st.badge("Next", color="orange")
-            st.caption(step.text)
+            st.markdown(step.text)

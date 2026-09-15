@@ -20,8 +20,8 @@ from fair_turn.core.constants import JOBS_PER_CREW_DAY, TRAVEL_DAY_KM
 MANUAL_NEXT_ACTION = "book air/barge freight"
 MANUAL_OWNER = "coordinator"
 ROAD_CLOSED = "road closed"
-NO_FREE_SLOT = "no crew within reach has a free slot"
-NO_REACH = "no crew reaches this community"
+NO_FREE_SLOT = "every crew that reaches it is full today"
+NO_REACH = "no crew reaches this community and back in a day"
 _KM_EPS = 1e-9
 
 

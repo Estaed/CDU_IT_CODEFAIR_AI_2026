@@ -31,7 +31,7 @@ def _row(rank: int, job_id: str, **overrides) -> dict:
         "is_remote": rank != 1,
         "fault_type": "cooling",
         "safety_class": "urgent",
-        "window": "6 of 2 d",
+        "window": "6 of 2 days",
         "score": 4.0 - rank,
         "score_max": 4.0,
         "human_queue": False,
@@ -89,7 +89,7 @@ def test_one_bordered_row_per_job_with_an_open_button(tmp_path, rows) -> None:
     for row in rows:
         locality = "Remote" if row["is_remote"] else "Town"
         assert f"Job {short_id(row['job_id'])} · {row['community_id']} · {locality}" in captions
-    assert captions.count("6 of 2 d") == len(rows)
+    assert captions.count("6 of 2 days") == len(rows)
     assert "▲2" in captions
     assert ":red-badge[Immediate]" in values
     assert ":gray-badge[Routine]" in values

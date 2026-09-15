@@ -183,7 +183,10 @@ def _factor_rows(
             ("urgency", "—", "from NT window: Based on 1 of 2 fields (safety class missing)")
         )
     else:
-        total = ranking_table.window_text(job, today).split(" of ", 1)[1].removesuffix(" d")
+        if job.safety_class is SafetyClass.IMMEDIATE:
+            total = f"{constants.MAKE_SAFE_HOURS} h"
+        else:
+            total = str(round(scoring.window_days(job)))
         rows.append(
             (
                 "urgency",

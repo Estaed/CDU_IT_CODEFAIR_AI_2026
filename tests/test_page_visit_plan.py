@@ -159,11 +159,11 @@ def test_reach_caption_counts_jobs_no_crew_within_reach_can_take(tmp_path, art) 
 
     at = _open(tmp_path, audit_path)
     lines = [
-        c.value for c in at.main.caption if c.value.startswith("Jobs with no crew within reach")
+        c.value for c in at.main.caption if c.value.startswith("Signed jobs not planned today")
     ]
     assert len(lines) == 1
     match = re.fullmatch(
-        r"Jobs with no crew within reach: this signed list (\d+), efficiency-first list (\d+)\.",
+        r"Signed jobs not planned today: this signed list (\d+), efficiency-first list (\d+)\.",
         lines[0],
     )
     assert match
@@ -189,7 +189,7 @@ def test_crew_rows_use_short_numbers_and_barge_work_stays_manual(tmp_path, art) 
         assert not any(job_id in v for v in markdowns)
 
     text = _page_text(at)
-    assert "Signed work needing manual coordination" in text
+    assert "Signed, air or barge access: arrange freight" in text
     assert "air/barge access, no road route" in text
     assert "Next action: book air/barge freight — owner: coordinator" in text
     barge_short = ranking_table.short_id(barge)
@@ -256,7 +256,10 @@ def test_what_to_do_here_list_renders(tmp_path) -> None:
     text = _page_text(at)
     assert "**What to do here**" in text
     assert "Check each crew's stops and kilometres." in text
-    assert "A job marked *no crew within reach* needs a phone call to arrange it." in text
+    assert (
+        "A job under *Signed, not planned today* needs a phone call: "
+        "the reason next to it says why." in text
+    )
     assert "Accept the plan, or reject it with a reason." in text
 
 

@@ -783,7 +783,7 @@ def test_todays_steps_strip_sits_above_the_header_numbers(tmp_path) -> None:
     status = next(i for i, value in enumerate(markdown) if value.startswith("Day "))
     assert positions[-1] < status
     assert any("Next" in value for value in markdown)
-    assert any(c.value.endswith("then Accept or Reject.") for c in at.caption)
+    assert any(m.value.endswith("then Accept or Reject.") for m in at.markdown)
 
 
 def test_no_accept_all_control_on_the_workspace(tmp_path) -> None:
@@ -952,8 +952,8 @@ def test_accept_needs_the_read_tick_and_moves_the_job_to_accepted(tmp_path) -> N
         m.value.startswith(":material/check: Accepted by coordinator at ") for m in at.markdown
     )
     assert any(
-        c.value == f"{cap - 1} left: open each job, read it to the bottom, then Accept or Reject."
-        for c in at.caption
+        m.value == f"{cap - 1} left: open each job, read it to the bottom, then Accept or Reject."
+        for m in at.markdown
     )
 
     at.button(key=f"decide_undo_{job_id}").click().run(timeout=60)

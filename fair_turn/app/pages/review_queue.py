@@ -248,7 +248,7 @@ def _table_records(item: QueueItem, human_set: dict[str, str]) -> list[dict[str,
 def _job_for_rank(
     art: Artefacts, item: QueueItem, chosen: dict[str, str], today: date
 ) -> tuple[Job, list[Job]]:
-    """The job to score for the "Mark rankable" success line, and the pool to rank it
+    """The job to score for the "Save and rank" success line, and the pool to rank it
     against: today's open jobs plus itself. ``item`` may no longer be in ``open_jobs``
     once its human-set fields make it dispatchable (PRD 3.2), so the source is looked up
     in order: today's open jobs, a runtime intake report, the build labels; the job built
@@ -390,7 +390,7 @@ else:
 
     col_mark, col_open, col_leave = st.columns(3)
     with col_mark:
-        mark_clicked = st.button("Mark rankable", key=f"mark_{item.job_id}")
+        mark_clicked = st.button("Save and rank", key=f"mark_{item.job_id}")
     with col_open:
         if st.button("Open in workspace", key=f"open_{item.job_id}"):
             state.set_selected_job_id(item.job_id)

@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from statistics import median
 
-from fair_turn.core import capacity_sim, constants
+from fair_turn.core import capacity_sim, constants, decisions, scoring
 from fair_turn.core.capacity_sim import Closure, CrewBase, SimResult, Site
 from fair_turn.core.types import Job
 
@@ -41,6 +41,25 @@ class WeeklySeries:
     median_wait_remote: list[float | None]
     gap: list[float | None]  # remote median minus town median
     sim: SimResult  # the window-plus-tail capacity run over the admitted reports
+
+
+def served_within_window(sim: SimResult, jobs: list[Job]) -> tuple[float | None, float | None]:
+    """Share of rankable reports (``needs_human`` false, not make-safe) completed within their
+    own NT window, ``scoring.window_days(job)``, as ``(remote, town)``; ``None`` for an empty
+    locality. A job still open at the horizon counts as not served."""
+    total = {True: 0, False: 0}
+    served = {True: 0, False: 0}
+    for job in jobs:
+        if job.needs_human or decisions.is_make_safe(job):
+            continue
+        total[job.is_remote] += 1
+        completed = sim.completed_on.get(job.job_id)
+        if completed is not None and (completed - job.reported_on).days <= scoring.window_days(job):
+            served[job.is_remote] += 1
+    return tuple(
+        served[locality] / total[locality] if total[locality] else None
+        for locality in (True, False)
+    )
 
 
 def _keep_draw(job_id: str, seed: int) -> float:

@@ -259,6 +259,18 @@ For judges and governance, outside the coordinator's flow. Three tabs:
   that efficiency-only allocation makes remote demand look like it dried up, and that
   the equity setting prevents it. Framed with Ensign 2018, D'Amour 2020, Kontokosta &
   Hong for under-reporting; the decay rate is ours (report 6).
+  *Amended 2026-09-15 (measured after the usability test in
+  `reports/usability-test-fair-turn-2026-09-15.md`):* the replay does not produce that
+  contrast at any λ or decay. With 89 remote communities, about ten remote reports a day
+  and seven crews at two jobs per visit, the binding limit is community visits per day, and
+  about half of remote reports wait over 28 days at every weighting (never served within
+  118 days: 300 at λ = 0, 355 at λ = 1; town median wait 5 vs 3 days; 117k vs 81k km).
+  Purpose, restated: show that the weighting decides who waits and what that costs in town
+  wait and kilometres, and that it does not change how many remote reports go unserved:
+  that is capacity. A fourth chart shows the share of reports completed within their own
+  NT window, town/remote, for both runs; the decay slider shows reporting fading wherever
+  reports go unserved, under both runs. The removed claim must not reappear in the page
+  text or the report.
 - **Audit log.** Every signed day: weighting, reason, revisions, per-job overrides with
   reasons, signer, plan acceptances, intake and human-set events with actor and
   provider detail. Two clocks as two columns, never merged: the **decision day**
@@ -404,6 +416,8 @@ The wait-time metrics need a toy dispatch model, not a router:
   those values left the median remote wait at 2 days at every λ, so neither the equity
   slider nor the feedback loop had anything to show; the sweep is in
   `reports/otopilot-2026-09-13-report.md`.)
+  *2026-09-15:* the tightened values swing the other way: remote is saturated at every λ,
+  see 3.5. Left as is for this phase; a visit that clears more than two jobs is in BACKLOG.
 - A crew visiting a remote community serves all its pending jobs up to capacity in one
   visit (batching). A community over 200 km from base costs the crew a travel day.
 - A closed road blocks the visit until the road reopens.
@@ -442,7 +456,7 @@ provider.
 | Audit | Every sign-off, revision, override, human-set field, intake and plan action is in the log with a reason or provider detail (unit test); recorded-at is a real timestamp and decision day is the dataset day (unit test); the exported table round-trips. |
 | Provenance | The provenance caption is on every surface (AppTest). |
 | Runs in the room | With network access disabled and no provider configured, the app starts and every surface renders from the committed artefacts: intake disabled with the reason, outline map, policy passages from the local index or a clear "unavailable" (integration test, run once before submission). With network and a provider, intake and the basemap work (checked by a person before the demo). |
-| Feedback loop | With decay > 0, the λ = 1 run shows a falling remote reporting rate and a widening gap; the λ = 0 run does not (assertion on the simulation output). |
+| Feedback loop | *Amended 2026-09-15:* with decay > 0, remote reporting fades under both runs and town reporting fades less; the λ = 0 run completes at least as many remote reports within the horizon as the λ = 1 run, at more kilometres and a longer town median wait; the share completed within the NT window is reported per run and locality (assertions on the simulation output). |
 | Retrieval | Every shown passage carries source title, section and effective date and is a literal substring of an indexed document (unit test). |
 | Keyboard path | List → pane → move → sign is walkable with native controls only (checked by a person in the Task 22 spike, then by `review-visual`). |
 | Deliverables | Report ≤ 8 pages, Calibri/Arial, sizes per `docs/report-requirements.md`, team number in header and footer; sections as required, Discussion = ethics, AI usage declaration in appendix. Slide deck: 10-minute version and 5-minute cut. Checked by a person against the checklist in that file. |

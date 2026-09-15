@@ -57,7 +57,7 @@ def test_what_to_do_here_list_renders(tmp_path) -> None:
     text = "\n".join(m.value for m in at.markdown)
     assert "**What to do here**" in text
     assert "Extraction quality: how often the AI read a report correctly." in text
-    assert "Feedback loop: what happens to remote reporting if only efficiency counts." in text
+    assert "Feedback loop: what the weighting costs, and what it cannot buy without crews." in text
     assert "Audit log: every decision, who made it and when." in text
 
 
@@ -79,9 +79,9 @@ def test_three_tabs_render(tmp_path) -> None:
 def test_extraction_and_feedback_and_audit_each_show_a_chart(tmp_path) -> None:
     at = _run(tmp_path)
     charts = at.get("vega_lite_chart")
-    # Tab 1: one macro-F1 bar chart. Tab 2: three feedback-loop line charts (reports, wait,
-    # gap). Tab 3: one override-rate line.
-    assert len(charts) == 5
+    # Tab 1: one macro-F1 bar chart. Tab 2: three feedback-loop line charts and one
+    # service-window share chart. Tab 3: one override-rate line.
+    assert len(charts) == 6
 
 
 def test_extraction_headline_metrics_read_from_eval_artefact(tmp_path) -> None:
@@ -172,8 +172,9 @@ def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
 def test_feedback_purpose_and_audit_chart_precede_audit_controls(tmp_path) -> None:
     at = _run(tmp_path)
     assert (
-        "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting, "
-        "to show that an efficiency-only allocation makes remote demand look like it dried up."
+        "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting. "
+        "The weighting decides who waits and what that costs in town wait and kilometres; it does "
+        "not change how many remote reports go unserved. That is crew capacity."
     ) in [markdown.value for markdown in at.markdown]
     audit_tab = [tab for tab in at.tabs if tab.label == "Audit log"][0]
     audit_chart = at.get("vega_lite_chart")[-1]
@@ -212,7 +213,7 @@ def test_audit_column_list(tmp_path) -> None:
     ]
 
 
-def test_filtering_by_kind_matches_the_csv_export(tmp_path) -> None:
+def test_filtering_by_kind_uses_plain_english_labels(tmp_path) -> None:
     at = _run(tmp_path)
     kind_widget = [w for w in at.multiselect if w.label == "Kind"][0]
     only_kind = kind_widget.value[:1]

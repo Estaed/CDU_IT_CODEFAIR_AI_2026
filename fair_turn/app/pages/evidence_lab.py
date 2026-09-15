@@ -328,14 +328,36 @@ def line_chart(rows: pd.DataFrame, title: str, y_title: str, runs: list[str]) ->
     )
 
 
+def window_share_chart(rows: pd.DataFrame, runs: list[str]) -> alt.Chart:
+    return (
+        alt.Chart(rows, title="Share of reports completed within their NT window")
+        .mark_bar()
+        .encode(
+            x=alt.X("run:N", sort=runs, title="Run"),
+            xOffset=alt.XOffset("locality:N"),
+            y=alt.Y("value:Q", title="Share", axis=alt.Axis(format=".0%")),
+            color=alt.Color(
+                "locality:N",
+                scale=alt.Scale(domain=["town", "remote"], range=[theme.TOWN, theme.REMOTE]),
+                title="Locality",
+            ),
+        )
+        .configure_axis(
+            gridColor=theme.GRIDLINE, labelColor=theme.AXIS_LABEL, titleColor=theme.AXIS_LABEL
+        )
+        .configure_title(color=theme.AXIS_LABEL)
+    )
+
+
 def render_feedback_tab() -> None:
     st.write(
-        "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting, "
-        "to show that an efficiency-only allocation makes remote demand look like it dried up."
+        "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting. "
+        "The weighting decides who waits and what that costs in town wait and kilometres; it does "
+        "not change how many remote reports go unserved. That is crew capacity."
     )
     st.write(
-        "Watch the remote line in the first chart: under efficiency-only it falls as unserved "
-        "communities stop reporting; under the chosen weighting it holds."
+        "Reporting fades wherever reports go unserved, under both runs: watch the reports-per-week "
+        "lines fall together. The decay rate is a labelled assumption on the slider."
     )
     lam = st.slider(
         "λ (0 = equity first, 1 = efficiency first)",
@@ -362,6 +384,13 @@ def render_feedback_tab() -> None:
     runs[run_label(lam)] = weekly_series(lam, decay)
     order = list(runs)
     rows = chart_rows(runs)
+    jobs, *_ = simulation_inputs(state.artefacts())
+    window_rows = []
+    for run, series in runs.items():
+        remote, town = feedback_sim.served_within_window(series.sim, jobs)
+        for locality, value in (("town", town), ("remote", remote)):
+            if value is not None:
+                window_rows.append({"run": run, "locality": locality, "value": value})
     st.altair_chart(
         line_chart(rows["reports"], "Reports per week", "Reports", order), width="stretch"
     )
@@ -372,6 +401,7 @@ def render_feedback_tab() -> None:
         line_chart(rows["gap"], "Gap: remote minus town median wait", "Days", order),
         width="stretch",
     )
+    st.altair_chart(window_share_chart(pd.DataFrame(window_rows), order), width="stretch")
     st.caption(CITATION_SENTENCE)
 
 
@@ -394,6 +424,18 @@ LOCAL_ZONE_CAPTION = (
     "Times are shown in the local zone of the machine that recorded them (ISO 8601 with offset)."
 )
 NO_SIGNER = "(none)"
+KIND_LABELS = {
+    "sign_off": "List signed",
+    "revision": "Weighting revised",
+    "override": "Rank changed by coordinator",
+    "human_set": "Field set by coordinator",
+    "intake": "Report received",
+    "promotion": "Job promoted",
+    "plan_decision": "Visit plan decision",
+    "field_check": "Field checked",
+    "job_decision": "Job decision",
+    "make_safe": "Sent to make-safe contractor",
+}
 
 
 def render_audit_tab() -> None:
@@ -410,6 +452,7 @@ def render_audit_tab() -> None:
     )
     signers = sorted({r["signer"] or NO_SIGNER for r in rows})
     kinds = sorted({r["kind"] for r in rows})
+    kind_options = {KIND_LABELS[kind]: kind for kind in kinds}
     days = sorted({date.fromisoformat(r["decision_day"]) for r in rows})
     min_day, max_day = days[0], days[-1]
 
@@ -433,7 +476,9 @@ def render_audit_tab() -> None:
 
     filter_columns = st.columns(3)
     signer_filter = filter_columns[0].multiselect("Signer", signers, default=signers)
-    kind_filter = filter_columns[1].multiselect("Kind", kinds, default=kinds)
+    kind_labels = list(kind_options)
+    kind_filter_labels = filter_columns[1].multiselect("Kind", kind_labels, default=kind_labels)
+    kind_filter = [kind_options[label] for label in kind_filter_labels]
     day_range = filter_columns[2].date_input(
         "Decision day range", value=(min_day, max_day), min_value=min_day, max_value=max_day
     )
@@ -454,10 +499,12 @@ def render_audit_tab() -> None:
         and start <= date.fromisoformat(r["decision_day"]) <= end
     ]
     frame = pd.DataFrame(filtered, columns=AUDIT_COLUMNS)
+    display_frame = frame.assign(kind=frame["kind"].map(KIND_LABELS))
 
     st.caption(
         f"Showing {len(filtered)} of {len(rows)} rows · kind "
-        f"{', '.join(kind_filter) or NO_SIGNER}; signer {', '.join(signer_filter) or NO_SIGNER}; "
+        f"{', '.join(kind_filter_labels) or NO_SIGNER}; "
+        f"signer {', '.join(signer_filter) or NO_SIGNER}; "
         f"decision day {start.isoformat()} to {end.isoformat()}."
     )
     st.caption(LOCAL_ZONE_CAPTION)
@@ -471,7 +518,7 @@ def render_audit_tab() -> None:
         st.info("No rows match the filters.")
     else:
         st.dataframe(
-            frame,
+            display_frame,
             hide_index=True,
             column_config={
                 # Streamlit has no monospace column type; TextColumn is the closest fit,
@@ -497,7 +544,7 @@ st.markdown(
     "This page is for checking the system, not for daily work.\n\n"
     "**What to do here**\n\n"
     "1. Extraction quality: how often the AI read a report correctly.\n"
-    "2. Feedback loop: what happens to remote reporting if only efficiency counts.\n"
+    "2. Feedback loop: what the weighting costs, and what it cannot buy without crews.\n"
     "3. Audit log: every decision, who made it and when."
 )
 st.caption(theme.PROVENANCE_LINE)

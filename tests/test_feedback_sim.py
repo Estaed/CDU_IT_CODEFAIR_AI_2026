@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from fair_turn.core import capacity_sim, constants, feedback_sim
+from fair_turn.core import capacity_sim, constants, decisions, feedback_sim
 from fair_turn.core.capacity_sim import Closure, CrewBase, Site
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 from fair_turn.data import geography
@@ -92,15 +92,40 @@ def test_decay_zero_is_the_plain_capacity_run() -> None:
     assert result.median_wait_remote[0] == expected
 
 
-def test_efficiency_only_makes_remote_demand_look_like_it_dried_up() -> None:
-    result = series(1.0, DECAY)
-    assert sum(result.reports_remote[-4:]) < sum(result.reports_remote[:4])
-    assert result.gap[11] > result.gap[0]
+def test_reporting_fades_under_both_runs_and_town_fades_less() -> None:
+    for lam in (1.0, 0.0):
+        decayed, plain = series(lam, DECAY), series(lam, 0.0)
+        remote_drop = 1 - sum(decayed.reports_remote) / sum(plain.reports_remote)
+        town_drop = 1 - sum(decayed.reports_town) / sum(plain.reports_town)
+        assert remote_drop > 0
+        assert town_drop < remote_drop
 
 
-def test_equity_setting_keeps_remote_reporting() -> None:
-    result = series(0.0, DECAY)
-    assert sum(result.reports_remote[-4:]) >= 0.9 * sum(result.reports_remote[:4])
+def test_equity_run_serves_no_fewer_remote_reports_at_more_km_and_town_wait() -> None:
+    jobs, *_ = artefacts()
+    equity, efficiency = series(0.0, 0.0), series(1.0, 0.0)
+
+    def served(s: feedback_sim.WeeklySeries) -> int:
+        return sum(
+            wait is not None
+            for job in jobs
+            if job.is_remote
+            for wait in [s.sim.wait_days[job.job_id]]
+        )
+
+    assert served(equity) >= served(efficiency)
+    assert equity.sim.travel_km > efficiency.sim.travel_km
+    assert equity.sim.median_wait_town > efficiency.sim.median_wait_town
+
+
+def test_served_within_window_is_a_share_and_excludes_make_safe() -> None:
+    jobs, *_ = artefacts()
+    s = series(1.0, 0.0)
+    remote, town = feedback_sim.served_within_window(s.sim, jobs)
+    assert remote is not None and town is not None
+    assert 0.0 < remote < town <= 1.0
+    only_make_safe = [job for job in jobs if decisions.is_make_safe(job)]
+    assert feedback_sim.served_within_window(s.sim, only_make_safe) == (None, None)
 
 
 def test_decay_thins_only_where_reports_went_unserved() -> None:

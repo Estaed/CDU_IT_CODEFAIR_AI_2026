@@ -7,6 +7,8 @@ need through one weighting (Efficiency first, Balanced, Need first), decides eac
 the list, and can explain it to a tenant. Entry for the CDU IT Code Fair 2026 AI Challenge,
 brief 1 (housing maintenance triage). Team `<N>`.
 
+![The Fair Turn workspace: today's steps, the list within crew capacity, and the effect of the weighting](design/screenshots/readme/workspace.png)
+
 **Status (2026-09-15):** feature-complete and in the hands of the team for testing. Changes
 from here follow the feedback in `reports/` (see "Testing it and sending feedback").
 
@@ -40,15 +42,34 @@ New to the app? Read [`docs/user-guide.md`](docs/user-guide.md) first, or open t
    phrase, the weighting (Efficiency first, Balanced, Need first), one accept or reject per
    job with a reason, and the sign-off form. Also the New report intake box and a DEV OPTION
    that adds a made-up test report.
+
+   ![Workspace map with clustered jobs beside the selected-job pane, each field shown at its source phrase](design/screenshots/readme/workspace-map.png)
+
 2. **Review queue** — one job at a time where a required field has no source phrase in the
    report. The coordinator sets the field by hand, with a reason, and the job enters the
    ranking marked "Set by coordinator".
+
+   ![Review queue: a job whose safety class had no source phrase, waiting for the coordinator](design/screenshots/readme/review-queue.png)
+
 3. **Visit plan** — the signed list as crew run sheets. Distance decides which crew goes,
    never which job is done; signed jobs no crew can take today are listed with the reason.
+
+   ![Visit plan: road kilometres against the efficiency-first list, and each crew's stops](design/screenshots/readme/visit-plan.png)
+
 4. **Tenant answer** — one job looked up by registration number, answered in plain
    language: where it sits, why, and the NT policy window, with the passage it comes from.
+
+   ![Tenant answer in plain language, with the NT policy source](design/screenshots/readme/tenant-answer.png)
+
 5. **Evidence lab** — how well the extractor reads reports against the labelled set, the
    90-day feedback-loop simulation, and the audit log with its two clocks.
+
+   ![Evidence lab: extraction quality against the bag-of-words baseline](design/screenshots/readme/evidence-extraction.png)
+
+   ![Evidence lab: the 90-day feedback-loop simulation, reports per week and median wait](design/screenshots/readme/evidence-feedback.png)
+
+Screenshots show the synthetic dataset day 2025-12-30, after deciding and signing today's
+list with the Efficiency first weighting.
 
 ## Repository map
 

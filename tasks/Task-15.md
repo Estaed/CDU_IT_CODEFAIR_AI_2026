@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Altair map pattern is fixed by the Part 2 spike; the reveal rule is a boolean in `state`; assertions on chart presence and hidden state decide.
 
 **Lane**

@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Deterministic planner with property tests; PRD §3.3 and Part 2's constraint fix the rule (signed order is the plan, distance only suggests).
 
 **Lane**

@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* the pane's content is fixed by PRD 3.1 and wireframes §3; this task changes its form to the GOV.UK summary-list pattern (`reports/research-ui-streamlit-2026-09-14.md` §6a.2) and adds status badges.
 
 **Lane**

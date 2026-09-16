@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* One page over existing store and audit functions; wireframes §4 and PRD §3.2 fix the copy and the states.
 
 **Lane**

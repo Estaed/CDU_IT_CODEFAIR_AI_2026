@@ -2,7 +2,7 @@
 
 Status: DONE (2026-09-12)
 
-> **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `high`
 > *Why:* decides how real places become ids and what a "road access class" is from BushTel prose; data judgement, not mechanics. PRD open question 1 (licence) does not block.
 
 **Lane**

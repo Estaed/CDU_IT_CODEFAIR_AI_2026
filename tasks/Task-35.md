@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* Cross-cutting checks and documentation with a command for every item; the "Runs in the room" bar in PRD §7 is the criterion.
 
 **Lane**

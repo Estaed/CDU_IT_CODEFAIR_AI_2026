@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* PRD §3.1 prose is the source of truth and the smoke test plus element assertions are the criterion; no eye check is gated.
 
 **Lane**

@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `high`
 > *Why:* spends a subscription window (check with `limit`); the injection defences and the human-queue outcome are judged in Q&A; artefact invariants are gated. Rerouted 2026-09-13: extractor is Claude Sonnet, not Codex (operator decision, Part 2 stack table); code written by Claude bees, run and gate in the main loop.
 
 **Lane**

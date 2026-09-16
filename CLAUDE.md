@@ -103,19 +103,23 @@ first group is a sequence. Nothing here is a ladder to climb once and leave behi
   Part 2 exists.
 
 **Per task, in a loop**
-- **Read the task file's `Execution` and `Lane` blocks first.** `Execution` names the agent,
-  the effort and whether Plan mode opens; `Lane` carries the delegation contract (OWNS,
+- **Read the task file's `Execution` and `Lane` blocks first.** `Execution` names the agent
+  and the effort; `Lane` carries the delegation contract (OWNS,
   MUST NOT TOUCH, GATE, DEPENDS ON). Both were written by `generate-tasks` with the PRD and
   Part 2 in view — a session reading the task cold does not have that context and must not
   re-litigate it.
-- Native Plan mode — **only when the `Execution` block says so.** Map the file changes, wait
-  for approval, then implement.
+- **No Plan mode on tasks.** A task runs directly from its file. The task file is the
+  contract — `Lane` (OWNS / GATE), the Acceptance Criteria and Part 2 are binding; the
+  Execution Guide is the recommended route, not a script. Deviate from the guide when you
+  have a concrete reason, stay inside OWNS, and say what you changed and why in the report.
+  An open "how" is a ⛔ question to the operator, closed before the task runs — never a
+  planning session at run time.
 - `verify-task` — the goal-oriented fix loop, and **the gate**: nothing else marks a task
   DONE. **Run from the main loop, never by the lane that wrote the code** — the agent that
   produced the work must not be the one that relaxes its test.
 
 **Unattended, when you want to leave the desk**
-- `otopilot` — runs the tasks routed to `codex` with Plan mode closed, in parallel worktree
+- `otopilot` — runs the tasks routed to `codex` that carry no ⛔ stop marker, in parallel worktree
   lanes, and runs each lane's `GATE` command itself. You approve one wave plan; everything
   after that is unattended, and you come back to a report. It refuses to start on a dirty
   tree, a red baseline, a missing `Lane` block, or any unanswered blocking question — clear

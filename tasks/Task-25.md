@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Two pure modules with exhaustive unit tests; PRD §3.1 and wireframes §3/§5 fix every rule.
 
 **Lane**

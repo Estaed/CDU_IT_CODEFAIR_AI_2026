@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Every element is specified in PRD §3.1 and wireframes §3; the components and core functions exist by now. Visual fidelity is advisory (`review-visual` after DONE).
 
 **Lane**

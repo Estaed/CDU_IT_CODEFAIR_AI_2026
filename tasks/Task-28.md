@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* The provider contract, the states and the persistence rules are written; tests run against a fake provider so no subscription is spent.
 
 **Lane**

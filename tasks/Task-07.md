@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* append-only JSONL with a fixed record shape (PRD §3.3, §3.6); round-trip tests decide.
 
 **Lane**

@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* Rendering over `core/visit_plan.py`; states and copy fixed in wireframes §6 and PRD §3.3.
 
 **Lane**

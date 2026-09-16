@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `high`
 > *Why:* spends the Claude subscription window (check with `limit` first); prompt design decides text realism; the artefact validity is gated, the run itself is not.
 
 **Lane**

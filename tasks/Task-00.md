@@ -2,7 +2,7 @@
 
 Status: DONE (2026-09-12)
 
-> **Execution:** agent `claude` (main loop) · effort `medium` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `medium`
 > *Why:* every constant needs a provenance row and a judgement about its source; the rest is mechanical but small.
 
 **Lane**

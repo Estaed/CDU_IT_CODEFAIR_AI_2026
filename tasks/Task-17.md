@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* two forms over `core.audit` with fixed records (PRD §3.3, §3.6); behaviour is asserted through the log file.
 
 **Lane**

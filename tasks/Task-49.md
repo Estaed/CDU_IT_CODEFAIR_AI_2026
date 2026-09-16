@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` · effort `medium` · plan mode **no**
+> **Execution:** agent `claude` · effort `medium`
 > *Why:* Tarik (2026-09-14): a marker that holds many jobs looks like one job. Per-household locations do not exist (only pseudonymous community coordinates, PRD §6), so the honest fix is a count on the marker.
 
 **Lane**

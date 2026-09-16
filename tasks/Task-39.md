@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* copy and states are fixed by the research reports and PRD 3.2-3.4; no design choice is open.
 
 **Lane**

@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Code is fully specified and tested with a fake embedder; the one real build run needs Ollama on Tarik's machine, so the main loop runs the script once after the bee's gate is green. PRD open question 6 (fact-sheet licence) is external, owner Tarik: meanwhile the script fetches the public PDF, quotes passages with attribution, and the report states the licence status.
 
 **Lane**

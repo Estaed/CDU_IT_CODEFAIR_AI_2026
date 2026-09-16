@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* Part 2 Fidelity was amended 2026-09-14 to name the exact mechanism (theme keys, one `theme.css` via `st.html`); the copy is drafted in `reports/research-ui-hitl-guidance-2026-09-14.md`.
 
 **Lane**

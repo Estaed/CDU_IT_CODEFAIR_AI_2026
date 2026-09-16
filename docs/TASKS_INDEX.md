@@ -105,58 +105,58 @@ amendments dated that night):
 
 Summary of each task's Execution and Lane blocks; the task file wins on disagreement.
 
-| Task | Agent | Plan mode | Effort | Depends on |
-|---|---|---|---|---|
-| 00 | claude | no | medium | none |
-| 01 | claude | no | high | 00 |
-| 02 | codex | no | high | 00 |
-| 03 | claude | yes | high | 01, 02 |
-| 04 | codex | no | high | 02 |
-| 05 | codex | no | high | 04 |
-| 06 | codex | no | high | 02 |
-| 07 | codex | no | medium | 02 |
-| 08 | claude | no | high | 02 |
-| 09 | claude | no | high | 08 |
-| 10 | claude | no | high | 03, 09 |
-| 11 | claude | no | high | 10 |
-| 12 | codex | no | high | 11 |
-| 13 | claude | no | high | 07, 11 |
-| 14 | codex | no | high | 13 |
-| 15 | codex | no | high | 14, 04 |
-| 16 | codex | no | high | 14 |
-| 17 | codex | no | medium | 15, 16 |
-| 18 | codex | no | medium | 17 |
-| 19 | codex | no | high | 13, 05 |
-| 20 | claude | no | medium | 12, 19 |
-| 21 | codex | no | medium | 12, 05 |
-| 22 | codex | no | high | none |
-| 23 | codex | no | medium | none |
-| 24 | codex | no | high | none |
-| 25 | codex | no | high | 24 |
-| 26 | codex | no | high | 25 |
-| 27 | codex | no | high | none (real build run: main loop, needs Ollama `bge-m3`) |
-| 28 | codex | no | high | 23, 24 |
-| 29 | codex | no | high | 22, 23, 25, 27, 28 |
-| 30 | codex | no | high | 29 |
-| 31 | codex | no | medium | 23, 24, 28 |
-| 32 | codex | no | medium | 26, 30 |
-| 33 | codex | no | high | 26, 30 |
-| 34 | codex | no | medium | 24, 30 |
-| 35 | codex | no | medium | 31, 32, 33, 34 |
-| 36 | codex | no | high | 28, 35 (real benchmark run: main loop, pulls `qwen3:8b`) |
-| 37 | codex | no | high | none |
-| 38 | codex | no | high | 40 |
-| 39 | codex | no | medium | 40 |
-| 40 | codex | no | medium | none |
-| 41 | codex | no | high | 38, 40 |
-| 42 | codex | no | high | 37, 40 |
-| 44 | codex | no | medium | 40 |
-| 45 | claude | no | high | 38, 41, 42 |
-| 46 | claude | no | high | 40 |
-| 47 | claude | no | high | 39 |
-| 48 | claude | no | medium | none |
-| 49 | claude | no | medium | 37 |
-| 50 | claude | no | medium | 40 |
+| Task | Agent | Effort | Depends on |
+|---|---|---|---|
+| 00 | claude | medium | none |
+| 01 | claude | high | 00 |
+| 02 | codex | high | 00 |
+| 03 | claude | high | 01, 02 |
+| 04 | codex | high | 02 |
+| 05 | codex | high | 04 |
+| 06 | codex | high | 02 |
+| 07 | codex | medium | 02 |
+| 08 | claude | high | 02 |
+| 09 | claude | high | 08 |
+| 10 | claude | high | 03, 09 |
+| 11 | claude | high | 10 |
+| 12 | codex | high | 11 |
+| 13 | claude | high | 07, 11 |
+| 14 | codex | high | 13 |
+| 15 | codex | high | 14, 04 |
+| 16 | codex | high | 14 |
+| 17 | codex | medium | 15, 16 |
+| 18 | codex | medium | 17 |
+| 19 | codex | high | 13, 05 |
+| 20 | claude | medium | 12, 19 |
+| 21 | codex | medium | 12, 05 |
+| 22 | codex | high | none |
+| 23 | codex | medium | none |
+| 24 | codex | high | none |
+| 25 | codex | high | 24 |
+| 26 | codex | high | 25 |
+| 27 | codex | high | none (real build run: main loop, needs Ollama `bge-m3`) |
+| 28 | codex | high | 23, 24 |
+| 29 | codex | high | 22, 23, 25, 27, 28 |
+| 30 | codex | high | 29 |
+| 31 | codex | medium | 23, 24, 28 |
+| 32 | codex | medium | 26, 30 |
+| 33 | codex | high | 26, 30 |
+| 34 | codex | medium | 24, 30 |
+| 35 | codex | medium | 31, 32, 33, 34 |
+| 36 | codex | high | 28, 35 (real benchmark run: main loop, pulls `qwen3:8b`) |
+| 37 | codex | high | none |
+| 38 | codex | high | 40 |
+| 39 | codex | medium | 40 |
+| 40 | codex | medium | none |
+| 41 | codex | high | 38, 40 |
+| 42 | codex | high | 37, 40 |
+| 44 | codex | medium | 40 |
+| 45 | claude | high | 38, 41, 42 |
+| 46 | claude | high | 40 |
+| 47 | claude | high | 39 |
+| 48 | claude | medium | none |
+| 49 | claude | medium | 37 |
+| 50 | claude | medium | 40 |
 
 **Parallel waves** (from the dependency graph, for `otopilot`): after 00 → {01, 02}; after
 02 → {04, 06, 07, 08}; then {03, 05, 09}; 10 → 11 → {12, 13}; after 13 → {14, 19}; 14 →

@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* templates over `ScoredJob` factors, fully specified by PRD §3.1, §3.4 and §7; checked by unit tests and the wording lint.
 
 **Lane**

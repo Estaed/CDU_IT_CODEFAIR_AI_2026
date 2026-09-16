@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` (main loop) · effort `high` · plan mode **yes**
+> **Execution:** agent `claude` (main loop) · effort `high`
 > *Why:* the skew design (which mechanisms differ town/remote and by how much) is the trust twist's evidence base; the how is still open in places and the choices go in the report.
 
 **Lane**

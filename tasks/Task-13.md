@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `high`
 > *Why:* sets the Streamlit patterns every page task copies (navigation, cached loading, session state keys, socket-blocked smoke test); an architecture-shaped task.
 
 **Lane**

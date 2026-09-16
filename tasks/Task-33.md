@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Template work with a machine-checked reading level and factor coverage; PRD §3.4 and wireframes §7 fix every block and state.
 
 **Lane**

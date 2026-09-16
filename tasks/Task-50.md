@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` · effort `medium` · plan mode **no**
+> **Execution:** agent `claude` · effort `medium`
 > *Why:* Tarik (2026-09-14): nobody on the team could say what to do on the screen; the guide is the hand-off for teammates, judges and the report appendix.
 
 **Lane**

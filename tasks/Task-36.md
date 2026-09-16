@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* The code (chat wrapper, benchmark script, eval table) is specified and tested with fakes; the pull and the real run are the main loop's on Tarik's machine, and the decision rule is written in Part 2. Tarik's call 2026-09-14: this is the last Phase 2 step; nothing before it pulls or calls an Ollama chat model.
 
 **Lane**

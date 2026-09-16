@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* fully specified by PRD §4 and Part 2; pure Python; the criterion is tests plus a hypothesis property.
 
 **Lane**

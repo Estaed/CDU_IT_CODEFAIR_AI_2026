@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` · effort `medium` · plan mode **no**
+> **Execution:** agent `claude` · effort `medium`
 > *Why:* Tarik (2026-09-14) wants to switch the extractor and submit a test report without touching the environment. Part 2 seam amended the same day: the environment variable stays the default, the UI may override it for the session.
 
 **Lane**

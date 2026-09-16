@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* PRD §6.3 fixes the toy model; pure Python over `core.types`; tests decide.
 
 **Lane**

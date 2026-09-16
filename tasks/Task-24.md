@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Pure core with a fixed schema and round-trip tests; the constraint list in Part 2 is the spec.
 
 **Lane**

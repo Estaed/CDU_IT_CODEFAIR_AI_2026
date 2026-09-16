@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* report 6's protocol is fully specified (P/R/F1, Wilson, SemEval spans, baseline); pure computation over committed artefacts; the script's exit code is the criterion.
 
 **Lane**

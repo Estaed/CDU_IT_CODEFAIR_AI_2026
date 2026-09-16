@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* the root cause is verified (Part 2 pydeck row, 2026-09-14) and the behaviour is fixed by PRD 3.1; only the two components change.
 
 **Lane**

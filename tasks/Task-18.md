@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* one lookup form over `explain.tenant_answer` (PRD §3.4); wording lint and equality with the counterfactual rank decide.
 
 **Lane**

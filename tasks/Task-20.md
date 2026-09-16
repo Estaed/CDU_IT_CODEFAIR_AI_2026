@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` (main loop) · effort `medium` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `medium`
 > *Why:* the README is judge-facing prose and the zip contents are a submission decision; the packaging script itself is mechanical and tested.
 
 **Lane**

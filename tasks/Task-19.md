@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* charts over `feedback_sim.run` output (PRD §3.5); the assumption slider and the three charts are fully specified; chart presence and data equality are asserted.
 
 **Lane**

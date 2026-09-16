@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* Part 2 names every file and rule; the work is plumbing with unit and layer tests as the criterion.
 
 **Lane**

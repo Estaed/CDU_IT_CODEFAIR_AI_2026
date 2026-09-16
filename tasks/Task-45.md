@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` · effort `high` · plan mode **no**
+> **Execution:** agent `claude` · effort `high`
 > *Why:* Tarik (2026-09-14): the checkbox column reads as multi-select and the dataframe is hard for a person to scan; Streamlit 1.63 has no row-click selection on `st.dataframe`, so today's list becomes a list of bordered rows (GOV.UK task-list / MOJ card pattern, `reports/research-ui-dispatch-products-2026-09-14.md` §1, `reports/research-ui-hitl-guidance-2026-09-14.md`).
 
 **Lane**

@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* PRD §3.2 fully specifies the card; highlight rendering is string work over verified spans; override writes an audit record; all assertable.
 
 **Lane**

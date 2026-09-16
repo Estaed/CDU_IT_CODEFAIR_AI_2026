@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* `core/batch.py` carries the rules; this task is the form, the header status and the wiring, all assertable through AppTest.
 
 **Lane**

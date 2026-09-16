@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `medium` · plan mode **no**
+> **Execution:** agent `codex` · effort `medium`
 > *Why:* Three existing surfaces move into tabs; the audit table's column and clock rules are fixed in PRD §3.5 and Part 2.
 
 **Lane**

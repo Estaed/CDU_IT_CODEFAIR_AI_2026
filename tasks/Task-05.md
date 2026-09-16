@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `codex` · effort `high` · plan mode **no**
+> **Execution:** agent `codex` · effort `high`
 > *Why:* PRD §3.5 and report 6 fix the shape (reporting rate as a function of past service, decay as a slider parameter); pure Python; assertion-tested.
 
 **Lane**

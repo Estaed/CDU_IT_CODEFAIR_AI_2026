@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `high`
 > *Why:* 2026-09-12 — rerouted from `codex` and done in the main loop: Codex is held back until the Claude window renews, and this task gates 09, 10 and 11 which spend that window. Original reason: the schema is the contract both CLIs receive and the substring rule is the grounding invariant; both fully specified in PRD §5 and Part 2.
 
 **Lane**

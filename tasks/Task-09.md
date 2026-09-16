@@ -2,7 +2,7 @@
 
 Status: DONE
 
-> **Execution:** agent `claude` (main loop) · effort `high` · plan mode **no**
+> **Execution:** agent `claude` (main loop) · effort `high`
 > *Why:* touches Tarik's logged-in CLIs and their quirks (stdin handling, quota windows); tests use fake executables, the one real call is a manual smoke check.
 
 **Lane**

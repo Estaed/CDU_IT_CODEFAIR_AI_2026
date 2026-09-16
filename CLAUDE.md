@@ -87,9 +87,6 @@ first group is a sequence. Nothing here is a ladder to climb once and leave behi
   which lane here). Each carries its own instructions; delete the instructions, not the
   file. `constants.md` and `MODELS.md` may be deleted outright if this project genuinely
   has no such values or lanes — say so in Part 2 rather than leaving them empty.
-- **`.gitattributes`** ships with the template and is not project-specific: it forces LF
-  on shell scripts and CRLF on Windows launchers regardless of which OS commits, because a
-  wrong-ending `.sh` fails its shebang and a wrong-ending `.cmd` can fail under cmd.exe.
 - `notes.md` — before any skill runs, dump what the thing has to do while looking at it.
   Features, data sources, and the calls already being made ("not in v1", "their third
   party, our own build"). Two minutes of this is what `create-prd` needs as input; see
@@ -163,51 +160,12 @@ first group is a sequence. Nothing here is a ladder to climb once and leave behi
 `docs/TASKS_INDEX.md`, never this file. Status written here goes stale within a week and
 is then loaded into every session as a fact.
 
-### 0. Three tiers of instruction — know which one you are using
-
-A prompt, a rule and a protocol are not the same strength, and reaching for the
-weak one where the strong one is needed is why the same mistake keeps returning.
-
-1. **Prompt** — said once, in one turn. Gone next session. Fine for "use a table
-   here", useless for anything that must hold every time.
-2. **Rule** — written into this file or `Kurallar.md`. Survives sessions and is
-   loaded into context, but it is still something the agent has to *remember to
-   obey* while doing something else.
-3. **Protocol** — structural. Not remembered, enforced. The work cannot proceed
-   without it: `verify-task` is the only thing that marks DONE; `AGENTS.md` is
-   generated from `CLAUDE.md` so the two cannot drift; a commit gate that refuses
-   until the benchmark moves.
-
-Escalate when a rule has failed twice. Repeating it louder a third time is how a
-rule file grows into noise nobody reads. Ask instead: what would make this
-impossible to get wrong?
-
-Not everything deserves a protocol — they cost something to build and they bite
-when the work legitimately needs an exception. Reserve them for the places where
-a silent miss is expensive.
-
-### 0. Vault / Brain Integration (Session Management)
-**Projects are temporary, the Brain is permanent.**
-Whenever a meaningful session ends (a task is completed, a major architectural decision is
-made, or a difficult bug is resolved), you MUST NOT close the session without leaving a
-trace in the vault.
-
-- Summarize the core lessons learned, technical shifts, or completed milestones.
-- **Never write to `D:\TarikOS\daily\<YYYY-MM-DD>.md` by hand.** `daily/` is owned by
-  the SessionEnd flush worker; it records the conversation and the compiler later turns
-  that machine log into `knowledge/`.
-- Leave the relational handoff in `D:\TarikOS\850-Companion 🔮\`: PREPEND a new
-  `## Session:` block at the TOP of `Last-Session.md`, update the specific active story
-  in `Threads.md` rather than bulk-appending, and append a short entry to `Journal.md`
-  when the session materially changes the shared story. The Last-Session archiver keeps
-  only the newest three blocks live.
-- Name the model in hand-written Last-Session and Journal entries.
-
 ### 1. Ask, don't assume
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
-- If something is unclear, ask **before writing a single line**. Never make silent assumptions about intent, architecture, or requirements.
-- State your assumptions explicitly, out loud, even the ones you're confident in.
-- If multiple interpretations exist, present them — don't pick one silently.
+- State assumptions out loud; if several readings exist, present them.
+- **Precedence:** a task file is the answer to "what do you want" — run it. Ask only when an
+  ambiguity changes the contract (Lane, Acceptance Criteria, Part 2); otherwise take the
+  simplest reading consistent with Part 2 and say so in the report.
 - If a simpler approach exists, say so. Push back when warranted.
 
 ### 2. Simplicity first
@@ -238,19 +196,14 @@ trace in the vault.
 If you're unsure about something, run a small, localized, low-risk experiment and bring the hypothesis *and* the results to discuss. Confidence without certainty causes damage. Say "I don't know" plainly.
 
 ### 6. Better ideas are welcome
-Suggest better ways of doing things, especially ideas with lasting impact over tactical fixes. Suggest, then wait for a decision; don't unilaterally act on your own suggestion.
+Suggest better ways of doing things, especially ideas with lasting impact over tactical
+fixes. Suggest, then wait for a decision on product and architecture. Delegation, model
+choice and vault hygiene follow `Kurallar.md`, which decides without asking.
 
-### 7. The repository is English-only, no matter what language we're speaking
-Everything written to disk in this repo is English: identifiers (classes, methods,
-variables, files, folders), comments, commit messages, test descriptions — and also
-`CLAUDE.md`, `docs/`, `design/` and every `tasks/Task-XX.md`. Only the **conversation**
-follows whatever language we are speaking.
-
-Not a style preference. A codebase mixing languages in its identifiers is genuinely
-harder to read later, and English is what every library and error message it will ever
-consult is already written in. The documents share the constraint for a different reason:
-they are read by delegate lanes, by reviewers and by whoever inherits this repo, none of
-whom are in this conversation. Turkish lives in `D:\TarikOS` — the brain — and nowhere else.
+### 7. The repository is English-only
+Everything written to disk in this repo is English: identifiers, comments, commit messages,
+`CLAUDE.md`, `docs/`, `design/`, `tasks/`. Only the conversation follows the language we
+speak. Turkish lives in the brain (`D:\TarikOS`) and nowhere else.
 
 ### 8. Part 2 is binding until it is changed on purpose
 Part 2 below is not advice; every task was written against it. When the code contradicts

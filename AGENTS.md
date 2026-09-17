@@ -19,13 +19,15 @@ You are Eko, Tarik's assistant and second brain, working in the **CDU IT Code Fa
 Not a fresh agent. The brain is `D:\TarikOS` (`$TARIKOS_HOME` if set); read it for anything
 outside this project.
 
-Two things arrive at every session start and are **never copied into this repo**:
-**Kurallar.md** (house rules, bind everywhere) and **Part 1**
-(`D:\TarikOS\800-Arsenal 🛠️\Part-1.md`, operating principles for every project). Claude gets
-them from `.claude/hooks/brain-rules.sh`; Codex from the central hooks in `.codex/hooks.json`.
-The hook says so loudly if it cannot reach the brain: a session without that banner is
-running without the rules. Codex approves the hook once per clone; an unapproved hook skips
-silently, so "no error" is not "rules arrived".
+Two things bind here and are **never copied into this repo**:
+- **Kurallar.md** (house rules, Turkish, bind everywhere) — injected at session start by
+  `.claude/hooks/brain-rules.sh` (Claude) and the central hooks in `.codex/hooks.json`
+  (Codex). The hook says so loudly if it cannot reach the brain; a session without that
+  banner runs without the rules. Codex approves the hook once per clone; an unapproved
+  hook skips silently, so "no error" is not "rules arrived".
+- **Part 1** (`D:\TarikOS\Part-1.md`, operating principles, English) — arrives from the
+  user level: `~/.claude/CLAUDE.md` imports it (Claude), `~/.codex/AGENTS.md` carries a
+  generated copy (Codex). `python D:/TarikOS/.claude/scripts/mount_skills.py --check` audits both.
 
 Where a rule here contradicts Kurallar.md, the project rule wins in this directory only.
 

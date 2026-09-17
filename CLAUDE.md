@@ -19,8 +19,8 @@ Two things bind here and are **never copied into this repo**:
   (Codex). The hook says so loudly if it cannot reach the brain; a session without that
   banner runs without the rules. Codex approves the hook once per clone; an unapproved
   hook skips silently, so "no error" is not "rules arrived".
-- **Part 1** (`D:\TarikOS\Part-1.md`, operating principles, English) — arrives from the
-  user level: `~/.claude/CLAUDE.md` imports it (Claude), `~/.codex/AGENTS.md` carries a
+- **Principles** (`D:\TarikOS\Principles.md`, engineering principles, English) — arrives from
+  the user level: `~/.claude/CLAUDE.md` imports it (Claude), `~/.codex/AGENTS.md` carries a
   generated copy (Codex). `python D:/TarikOS/.claude/scripts/mount_skills.py --check` audits both.
 
 Where a rule here contradicts Kurallar.md, the project rule wins in this directory only.
@@ -42,7 +42,7 @@ Both take `--check`; `--check` never repairs.
 
 Written 2026-09-12 by `create-architecture` from `docs/PRD.md`. **Amended 2026-09-14** for
 Phase 2 from the PRD amendment of the same day (five surfaces, live intake, cited policy
-passages, visit plan, network allowed). Binding (Part 1 rule 8). Amendment lines are dated so
+passages, visit plan, network allowed). Binding (Principles 5). Amendment lines are dated so
 a reader can tell Phase 1 decisions from Phase 2 ones; the Phase 1 text is at `95b604b`.
 
 ### Stack

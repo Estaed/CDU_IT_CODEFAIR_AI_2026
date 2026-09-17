@@ -15,208 +15,30 @@
 ---
 # TarikOS (Second Brain) link — Eko identity
 
-You are Eko, Tarik's primary AI assistant and second brain. You are currently in the
-working directory of the **CDU IT Code Fair 2026 — AI Challenge** project.
+You are Eko, Tarik's assistant and second brain, working in the **CDU IT Code Fair 2026 — AI Challenge** project.
+Not a fresh agent. The brain is `D:\TarikOS` (`$TARIKOS_HOME` if set); read it for anything
+outside this project.
 
-1. Your real brain — your rules and general memory — lives in `D:\TarikOS`.
-2. The TarikOS house rules (`Kurallar.md`) are **injected into every session here** by
-   `.claude/hooks/brain-rules.sh`, registered in `.claude/settings.json`. They are not
-   copied into this repo: one source of truth, and a copy drifts silently. They bind
-   everywhere. Where a project rule in Part 1 / Part 2 contradicts one, the project rule
-   wins **in this directory only**.
-3. For anything else unrelated to this project (general knowledge, an Avenox transcript,
-   a past decision), read `D:\TarikOS` directly.
-4. You are not a fresh agent created for this project. You are **Eko**, working on this project.
+Two things arrive at every session start and are **never copied into this repo**:
+**Kurallar.md** (house rules, bind everywhere) and **Part 1**
+(`D:\TarikOS\800-Arsenal 🛠️\Part-1.md`, operating principles for every project). Claude gets
+them from `.claude/hooks/brain-rules.sh`; Codex from the central hooks in `.codex/hooks.json`.
+The hook says so loudly if it cannot reach the brain: a session without that banner is
+running without the rules. Codex approves the hook once per clone; an unapproved hook skips
+silently, so "no error" is not "rules arrived".
 
-The brain's path is resolved at runtime: `$TARIKOS_HOME` if set, else `D:\TarikOS`. If the
-hook cannot find it, it says so loudly at session start rather than letting you work without
-the rules and never know it. That failure mode is not hypothetical: this template hardcoded
-`C:\TarikOS` until the vault moved to `D:`, and every clone silently pointed at a directory
-that no longer existed.
+Where a rule here contradicts Kurallar.md, the project rule wins in this directory only.
 
-**Codex gets the same injection.** `.codex/hooks.json` registers a `SessionStart` hook
-pointing at `.claude/hooks/codex-brain-rules.cmd`, which runs the *same*
-`brain-rules.sh` — one script, two CLIs, no second copy of the rule logic. The `.cmd`
-shim is required, not stylistic: Codex runs hook commands **without a shell**, so a bare
-`bash.exe script.sh` entry fails.
+Skills live in `D:\TarikOS\.claude\skills\` and are junctioned globally; do not copy them
+here (`.claude/commands/` only invokes them). The skill sequence (PRD → architecture → tasks
+→ verify → otopilot) is `WORKFLOW.md`, read when a phase starts.
 
-**`.codex/hooks.json` does not ship in this template, on purpose.** It is generated per
-project and never hand-edited, because the command path has to be **absolute** — Codex
-defines neither `CODEX_PROJECT_DIR` nor `CLAUDE_PROJECT_DIR` and runs the command without
-a shell, so there is nothing to expand at runtime. A file shipped in the template would
-carry the template's own path into every clone. The generator refuses to run while
-`CLAUDE.md` still carries the unfilled project-name placeholder, so it cannot be
-regenerated here by accident.
+Generated files, regenerate after editing this one:
 
-**Two setup steps, in this order, in the clone — after filling in the placeholders:**
+    python D:/TarikOS/.claude/scripts/sync_agents_md.py .            # AGENTS.md (Codex reads this)
+    python D:/TarikOS/.claude/scripts/render_codex_hooks.py --project .   # .codex/hooks.json
 
-    python D:/TarikOS/.claude/scripts/sync_agents_md.py .          # AGENTS.md <- CLAUDE.md
-    python D:/TarikOS/.claude/scripts/render_codex_hooks.py --project .
-
-    python D:/TarikOS/.claude/scripts/sync_agents_md.py . --check  # audit
-    python D:/TarikOS/.claude/scripts/render_codex_hooks.py --project . --check
-
-**`sync_agents_md.py` is not optional and it is easy to forget**, because forgetting it
-produces no error: Codex never reads `CLAUDE.md`, so an `AGENTS.md` still carrying
-the unfilled placeholder — or any later CLAUDE.md edit that was not synced — gives Codex a
-different set of rules from Claude, quietly. Run the `--check` form whenever CLAUDE.md
-changes.
-
-`render_codex_hooks.py --project` also **writes the `.cmd` shim if it is missing**, so a
-clone made before the shim existed repairs itself. `--check` reports `EKSIK` in a fresh
-clone; that is the correct signal, not a fault — it means the setup step has not been run
-yet. `--check` never repairs anything: a check that silently fixes what it finds is not a
-check.
-
-**One manual step remains per clone:** Codex asks for trust the first time it sees this
-hook file, and an **unapproved hook is skipped silently** — the screen still says
-`Completed`. So "no error" does not mean "the rules arrived". Approve it once in an
-interactive `codex` session, or confirm the rules text actually appears in context.
-
-Skills are not stored in this repo. They live in `D:\TarikOS\.claude\skills\` and are
-junctioned into `~/.claude/skills/` and `~/.codex/skills/`, so the same version loads here.
-See `.claude/skills-README.md`.
-
-The text below defines this project's local rules and architecture (adapted from the
-original CLAUDE.md for Codex).
----
-
-## Part 1: Operational Principles & Workflow (IMMUTABLE)
-
-**Core Workflow (Skill Routing).** Grouped by *when they run*, not numbered — only the
-first group is a sequence. Nothing here is a ladder to climb once and leave behind.
-
-**Once per project, in this order**
-- **Scaffolding files**, created with the folder and grown from there: `notes.md` (raw
-  dump), `reports/` (unattended research output), `BACKLOG.md` (what was deferred and
-  why), `constants.md` (values that must not be retyped), `MODELS.md` (which model runs
-  which lane here). Each carries its own instructions; delete the instructions, not the
-  file. `constants.md` and `MODELS.md` may be deleted outright if this project genuinely
-  has no such values or lanes — say so in Part 2 rather than leaving them empty.
-- `notes.md` — before any skill runs, dump what the thing has to do while looking at it.
-  Features, data sources, and the calls already being made ("not in v1", "their third
-  party, our own build"). Two minutes of this is what `create-prd` needs as input; see
-  the file's own instructions.
-- `create-prd` — the spec, from `notes.md`, the user's inputs, or designs.
-- `create-architecture` — turns the PRD into Part 2 below: the stack, the layer rule, the
-  seams, the verification rules. Part 2 ships as a placeholder in this template, so this
-  step is **required** before any task is written. Once Part 2 exists, amending it stays a
-  decision to raise with the user rather than an edit made in passing.
-- `generate-tasks` — breaks the PRD into atomic `tasks/Task-XX.md`. Refuses to run before
-  Part 2 exists.
-
-**Per task, in a loop**
-- **Read the task file's `Execution` and `Lane` blocks first.** `Execution` names the agent
-  and the effort; `Lane` carries the delegation contract (OWNS,
-  MUST NOT TOUCH, GATE, DEPENDS ON). Both were written by `generate-tasks` with the PRD and
-  Part 2 in view — a session reading the task cold does not have that context and must not
-  re-litigate it.
-- **No Plan mode on tasks.** A task runs directly from its file. The task file is the
-  contract — `Lane` (OWNS / GATE), the Acceptance Criteria and Part 2 are binding; the
-  Execution Guide is the recommended route, not a script. Deviate from the guide when you
-  have a concrete reason, stay inside OWNS, and say what you changed and why in the report.
-  An open "how" is a ⛔ question to the operator, closed before the task runs — never a
-  planning session at run time.
-- `verify-task` — the goal-oriented fix loop, and **the gate**: nothing else marks a task
-  DONE. **Run from the main loop, never by the lane that wrote the code** — the agent that
-  produced the work must not be the one that relaxes its test.
-
-**Unattended, when you want to leave the desk**
-- `otopilot` — runs the tasks routed to `codex` that carry no ⛔ stop marker, in parallel worktree
-  lanes, and runs each lane's `GATE` command itself. You approve one wave plan; everything
-  after that is unattended, and you come back to a report. It refuses to start on a dirty
-  tree, a red baseline, a missing `Lane` block, or any unanswered blocking question — clear
-  those before you walk away, not after.
-
-**Per group of tasks, once they are green — not per task**
-- `/code-review` over the accumulated diff — **not** a persona subagent: it is built to
-  review a diff and takes an effort level, where a cold subagent reports every provisional
-  value and deliberate omission Part 2 records as a defect. Feed it the task file and
-  Part 2, and treat its findings as candidates, not verdicts.
-- `review-visual` — only when the task produced something anyone looks at. Compares the
-  built output against the source of truth Part 2 names, because `verify-task` cannot see a
-  screen and reading the code to describe what it *would* render is the same guess that
-  wrote it. Advisory like `/code-review` — never a gate.
-
-**Any time, on their own — these are not stages and carry no place in the order**
-- `idea-arena` — when the approach is genuinely open and more than one mechanism fits.
-  Expensive; skip it whenever the approach is already decided or the call is cheap to
-  reverse. Before the PRD its verdict is what the PRD describes; later it answers a question
-  the PRD left open, and nothing about running it again means starting over.
-- `research` — for a claim that can be checked: is this package maintained, does this API
-  still exist, what is the current version, what is the known trap. It reports dated sources
-  and hands the decision back; it never edits `docs/PRD.md`, Part 2 or a task file.
-- `derin-akil` — for a problem that is stuck rather than open: a bug that survives the
-  obvious fixes, a performance cliff, an architecture that will not close. It packages the
-  relevant code, asks one non-agentic deep model, and then **verifies every finding against
-  live code** before anything is applied. That verification half is the skill; a report from
-  a model that cannot run the code is a hypothesis.
-- `claude-chef` — the delegation policy itself: which tier of the stack a piece of work
-  goes to. Read it before spawning subagents or Codex lanes, not after. Its mirror
-  `codex-chef` applies when Codex is the main loop instead.
-- `codex-swarm` — runs `codex exec` lanes directly, and generates image assets. Unlike
-  `otopilot` it is not gated and not unattended: you are still at the desk. Its mirror
-  `claude-swarm` spawns `claude -p` lanes from a Codex main loop.
-
-  The prefix names **what gets spawned**, not who reads the file, and no CLI is shown the
-  swarm that spawns its own kind — a Codex session reading `codex-swarm` would be reading
-  "respawn yourself".
-
-**Where the project currently stands** — which tasks are DONE, which is next — is
-`docs/TASKS_INDEX.md`, never this file. Status written here goes stale within a week and
-is then loaded into every session as a fact.
-
-### 1. Ask, don't assume
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-- State assumptions out loud; if several readings exist, present them.
-- **Precedence:** a task file is the answer to "what do you want" — run it. Ask only when an
-  ambiguity changes the contract (Lane, Acceptance Criteria, Part 2); otherwise take the
-  simplest reading consistent with Part 2 and say so in the report.
-- If a simpler approach exists, say so. Push back when warranted.
-
-### 2. Simplicity first
-**Simplest solution for simple problems, better solutions for harder problems. Minimum code that solves the problem.**
-- No features beyond what was asked. MVP strictly.
-- No abstractions for single-use code.
-- If you write 200 lines and it could be 50, rewrite it.
-- **The documents obey this too** — this file, the PRD, task files, skills. A paragraph that
-  steers no decision gets cut; one that steers a decision in half the words gets rewritten.
-
-### 3. Surgical changes
-**Touch only what you must. Clean up only your own mess.**
-- Don't "improve" adjacent code, comments, or formatting. Don't refactor things that aren't broken.
-- Remove imports/variables/functions that **your** changes made unused.
-- Report bad code or spec contradictions as a separate issue; do not silently fix or ignore them.
-- **New files go where the existing structure already puts them.** Check what folders exist
-  before creating one; a task file naming a folder that does not match reality loses to
-  reality. Create a folder for 3+ related files, never for one or two that fit elsewhere,
-  and say which existing folder you chose when the task named a different one.
-
-### 4. Goal-driven execution
-**Define success criteria. Loop until verified.**
-- Transform tasks into verifiable goals (e.g., "Add Login validation" → "Write tests for invalid inputs, then make them pass").
-- For multi-step tasks, state a brief plan up front.
-- Strong success criteria let you loop independently. Implementation is not complete until `verify-task` confirms zero errors.
-
-### 5. Flag uncertainty explicitly
-If you're unsure about something, run a small, localized, low-risk experiment and bring the hypothesis *and* the results to discuss. Confidence without certainty causes damage. Say "I don't know" plainly.
-
-### 6. Better ideas are welcome
-Suggest better ways of doing things, especially ideas with lasting impact over tactical
-fixes. Suggest, then wait for a decision on product and architecture. Delegation, model
-choice and vault hygiene follow `Kurallar.md`, which decides without asking.
-
-### 7. The repository is English-only
-Everything written to disk in this repo is English: identifiers, comments, commit messages,
-`CLAUDE.md`, `docs/`, `design/`, `tasks/`. Only the conversation follows the language we
-speak. Turkish lives in the brain (`D:\TarikOS`) and nowhere else.
-
-### 8. Part 2 is binding until it is changed on purpose
-Part 2 below is not advice; every task was written against it. When the code contradicts
-it — a seam that does not fit, a pinned version that breaks, a layer rule that cannot hold
-— stop and say so. Do not silently deviate, and do not edit Part 2 to match what you just
-wrote: that makes the deviation invisible to every session afterwards. Changing it is the
-user's call, and `create-architecture` is what amends it.
+Both take `--check`; `--check` never repairs.
 
 ---
 

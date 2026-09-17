@@ -1,5 +1,6 @@
 #!/bin/bash
-# Injects the TarikOS house rules (Kurallar.md) into every session in this project.
+# Injects the TarikOS house rules (Kurallar.md) and Part 1 (operating principles)
+# into every session in this project.
 #
 # Why this exists as a hook and not as a line in CLAUDE.md: CLAUDE.md already says
 # "you may read the brain". That is a rule -- something the agent has to remember to
@@ -17,7 +18,7 @@
 
 # Windows console code page is OEM (437/857 here). python3 treats it as the default
 # for stdin/stdout and turns UTF-8 bytes into latin-1 characters one by one:
-# "Hafiza" -> "HafÄ±za". The corruption is silent and irreversible. Measured: without
+# "Memory" -> mojibake. The corruption is silent and irreversible. Measured: without
 # these two lines this very hook emitted mojibake on its first run.
 PYTHONUTF8=1
 PYTHONIOENCODING=utf-8
@@ -33,15 +34,15 @@ emit() {
   fi
   # No python3: say so instead of exiting 0 with nothing. A silent skip here would look
   # exactly like a working hook.
-  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"Beyin uyarisi: python3 yok, TarikOS kurallari enjekte edilemedi."}}\n'
+  printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"Brain warning: python3 is unavailable, so the TarikOS house rules could not be injected."}}\n'
 }
 
 RULES_FILE="$BRAIN/850-Companion 🔮/Kurallar.md"
 if [ ! -f "$RULES_FILE" ]; then
-  emit "[Beyin uyarısı] TarikOS kuralları okunamadı — beklenen yol: $RULES_FILE
-Beyin taşınmış olabilir. Doğru yolu bul, TARIKOS_HOME ortam değişkenini ayarla ya da
-bu projedeki .claude/hooks/brain-rules.sh içindeki varsayılanı düzelt. Bu oturum
-TarikOS ev kuralları OLMADAN çalışıyor."
+  emit "[Brain warning] TarikOS house rules could not be read — expected path: $RULES_FILE
+The brain may have moved. Find the correct path, set the TARIKOS_HOME environment variable,
+or update the default in this project's .claude/hooks/brain-rules.sh. This session is
+running WITHOUT the TarikOS house rules."
   exit 0
 fi
 
@@ -63,12 +64,35 @@ NOTE=""
 if [ "${#RULES}" -gt "$CAP" ]; then
   RULES=${RULES:0:$((CAP - 100))}
   NOTE="
-[not: kurallar ${CAP} karakterde kırpıldı — tamamı için $RULES_FILE]"
+[note: rules truncated at ${CAP} characters — read the full file at $RULES_FILE]"
 fi
 
-emit "[Hafıza: TarikOS Kuralları] Bu proje dizininde de geçerlidir. Beyin: $BRAIN
-$RULES$NOTE
+# Part 1: the operating principles every project shares. They used to be ~90 lines copied
+# into each CLAUDE.md and drifted per repo (2026-09-17 audit: four repos, three versions).
+# Now one file in the brain, pulled here. Budget: Kurallar 7000 + Part 1 2200 + framing
+# stays under the 10.000-character hook wall; Part-1.md is ~1.9 KB, keep it that way.
+PART1_FILE="$BRAIN/800-Arsenal 🛠️/Part-1.md"
+PART1_CAP=2200
+if [ -f "$PART1_FILE" ]; then
+  PART1=$(cat "$PART1_FILE" 2>/dev/null)
+  if [ "${#PART1}" -gt "$PART1_CAP" ]; then
+    PART1="${PART1:0:$((PART1_CAP - 100))}
+[note: Part 1 truncated at ${PART1_CAP} characters — read the full file at $PART1_FILE]"
+  fi
+  PART1="
 
-Bu projenin kendi CLAUDE.md Part 1 / Part 2 kuralları da bağlayıcıdır ve çakışma
-hâlinde proje kuralı bu dizinde önceliklidir."
+[Memory: Part 1 — operating principles] Binding in every project. Source: $PART1_FILE
+$PART1"
+else
+  PART1="
+
+[Brain warning] Part 1 could not be read — expected path: $PART1_FILE. This session is
+running WITHOUT the project operating principles."
+fi
+
+emit "[Memory: TarikOS house rules] These also apply in this project directory. Brain: $BRAIN
+$RULES$NOTE$PART1
+
+This project's own CLAUDE.md Part 2 is also binding. If it conflicts with a house rule,
+the project rule takes precedence in this directory."
 exit 0

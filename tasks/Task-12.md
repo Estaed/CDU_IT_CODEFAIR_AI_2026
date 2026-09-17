@@ -29,4 +29,4 @@ and a pass/fail on the F1 target.
 - [ ] `test_metrics.py` passes with hand-verified numbers.
 - [ ] `run_eval.py` writes both artefacts and its exit code follows the F1 rule; the artefacts are committed.
 - [ ] Every proportion in `eval.json` carries a Wilson 95 % interval.
-- [ ] Gate green (the gate does not run `run_eval.py`; Part 2 §Verification 5).
+- [ ] Gate green (the gate does not run `run_eval.py`; Blueprint §Verification 5).

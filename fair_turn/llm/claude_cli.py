@@ -1,4 +1,4 @@
-"""``claude -p`` as the generator, build time only (Part 2 stack table).
+"""``claude -p`` as the generator, build time only (Blueprint stack table).
 
 The prompt goes on stdin: a variadic flag would swallow a trailing prompt argument, and
 the CLI waits then errors if stdin is open with nothing on it. The JSON result's

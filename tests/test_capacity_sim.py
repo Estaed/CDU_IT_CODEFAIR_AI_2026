@@ -1,5 +1,5 @@
 """Capacity simulation: the PRD section 6.3 toy model on hand-built fixtures, plus a timed run
-over the committed labels (CLAUDE.md Part 2 verification rule 2).
+over the committed labels (CLAUDE.md Blueprint verification rule 2).
 
 The pooled rule under test: a crew reaches its home region and anything within the
 travel-day distance of its base; inside reach, communities are served in rank order, each by

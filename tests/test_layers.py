@@ -1,4 +1,4 @@
-"""Layer rule from CLAUDE.md Part 2, enforced rather than remembered.
+"""Layer rule from CLAUDE.md Blueprint, enforced rather than remembered.
 
 Two halves: which third-party libraries a layer may never import, and which sibling
 layers it may import. `scripts/` is outside the rule and may import anything.
@@ -49,7 +49,7 @@ def test_import_direction() -> None:
         for f in _sources(layer):
             targets = set(rx.findall(f.read_text("utf-8"))) - {layer}
             if layer == "app" and f.name == "intake.py":
-                targets -= {"llm"}  # Part 2 (2026-09-14): the one app module allowed to import llm
+                targets -= {"llm"}  # Blueprint (2026-09-14): only app module allowed to import llm
             if targets - allowed:
                 bad[str(f.relative_to(PKG))] = sorted(targets - allowed)
     assert not bad, bad

@@ -26,7 +26,7 @@ The seven that bind Fair Turn, verbatim, and what each implies:
 | # | Guideline | Concrete element for Fair Turn |
 |---|---|---|
 | G1 | "Make clear what the system can do" | A one-sentence purpose line at the top of every page, stating what the model does *and does not* do here (see §"Copy"). |
-| G2 | "Make clear how well the system can do what it can do" | A persistent accuracy chip near the extracted fields: per-field F1 from `data/build/` eval, with the sample size and the date, linking to Evidence lab. Not model confidence (Part 2 forbids it) — measured, dated performance. |
+| G2 | "Make clear how well the system can do what it can do" | A persistent accuracy chip near the extracted fields: per-field F1 from `data/build/` eval, with the sample size and the date, linking to Evidence lab. Not model confidence (Blueprint forbids it) — measured, dated performance. |
 | G4 | "Show contextually relevant information" | The source phrase shown beside each extracted field, in place, not on another page. |
 | G9 | "Support efficient correction" | Override and "set by coordinator" must be reachable from the row itself, one control, not a separate screen. |
 | G11 | "Make clear why the system did what it did" | The why-sentence sits next to the rank number, always visible — not behind a tooltip. |
@@ -34,7 +34,7 @@ The seven that bind Fair Turn, verbatim, and what each implies:
 | G17 | "Provide global controls" | The equity weighting λ is exactly this: one global control, labelled, with its effect visible. Keep it above the list, not in a sidebar corner. |
 | G18 | "Notify users about changes" | When a human edit invalidates a frozen batch, say so on screen with the old and new version, not silently. |
 
-**Contradiction to note:** G2 ("how well") and Part 2's ban on model confidence are *not* in
+**Contradiction to note:** G2 ("how well") and Blueprint's ban on model confidence are *not* in
 conflict — G2 asks for aggregate, measured performance; the ban is on per-item self-reported
 confidence. Say this out loud in the report; a judge may otherwise read the missing confidence
 as a gap.
@@ -54,7 +54,7 @@ What it says a screen should show:
 - Prefer **partial explanations** over total transparency — the impactful elements only. →
   Show the top three scoring factors inline; put the full factor table behind a disclosure.
 - **Data sources: scope, reach, removal.** → A provenance caption on every page (already a
-  Part 2 verification rule) is the scope element; name the dataset and that it is synthetic.
+  Blueprint verification rule) is the scope element; name the dataset and that it is synthetic.
 - Trust is built from **ability, reliability, benevolence** and "the process … is slow and
   deliberate". → Do not front-load one big disclaimer; repeat small, honest statements per page.
 - Feedback + Controls: let people **turn the feature off** and offer a **manual fallback**;
@@ -172,7 +172,7 @@ User Comprehension and Trust" (checked 2026-09-14 via
 Explanations in an Educational Recommender System", within-subject n=54,
 <https://arxiv.org/abs/2603.25624> (checked 2026-09-14) — format interacts with personal
 characteristics; no single winner.
-→ **Element:** keep the deterministic why-sentence (it is auditable and Part 2 owns the template)
+→ **Element:** keep the deterministic why-sentence (it is auditable and Blueprint owns the template)
 **and** add a small horizontal bar of the same factors, drawn from the same numbers. Same data,
 two encodings; the bar is not a second source of truth.
 
@@ -274,7 +274,7 @@ and the human decision is the thing they watch happen.
 - Frame it as the designed safety path, not a failure bucket: status + cue + pathway in the empty
   state (Kaplan 2021).
 - Source phrase shown in place beside each field; an empty field labelled "no source phrase found"
-  (HAX G4; the Part 2 rule that an unverified field renders empty).
+  (HAX G4; the Blueprint rule that an unverified field renders empty).
 - Set-by-coordinator control on the row itself, with a short reason box and suggested reasons
   (HAX G9; Skitka/Mosier accountability, kept low-friction).
 - One line naming what the model does not do here: it never sets a field, it only proposes one
@@ -287,7 +287,7 @@ and the human decision is the thing they watch happen.
 - If a later edit invalidates the batch, say so on screen with old and new version (HAX G18).
 
 **Tenant answer**
-- Plain-language why-sentence, year-7 reading level, no deficit words (Part 2 `core/wording.py`).
+- Plain-language why-sentence, year-7 reading level, no deficit words (Blueprint `core/wording.py`).
 - One counterfactual line, generated deterministically, phrased as fact not promise
   (Wachter et al. 2017/2018).
 - A visible "how to question this" line — the NT framework's own word is "challenge"

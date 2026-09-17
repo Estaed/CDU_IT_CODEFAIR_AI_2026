@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `claude` (main loop) · effort `high`
-> *Why:* spends a subscription window (check with `limit`); the injection defences and the human-queue outcome are judged in Q&A; artefact invariants are gated. Rerouted 2026-09-13: extractor is Claude Sonnet, not Codex (operator decision, Part 2 stack table); code written by Claude bees, run and gate in the main loop.
+> *Why:* spends a subscription window (check with `limit`); the injection defences and the human-queue outcome are judged in Q&A; artefact invariants are gated. Rerouted 2026-09-13: extractor is Claude Sonnet, not Codex (operator decision, Blueprint stack table); code written by Claude bees, run and gate in the main loop.
 
 **Lane**
 - OWNS: `scripts/extract.py`, `data/build/adversarial.json`, `data/build/extraction.json`, `tests/test_extraction_artefact.py`, `fair_turn/llm/prompts.py` (append the extraction prompt; Task-10 owns the file); widened 2026-09-13 to `fair_turn/llm/codex_cli.py`, `tests/fakes/fake_codex.py`, `tests/test_cli_wrappers.py` because the wrapper truncates a multi-line prompt through the `codex.CMD` shim (prompt must go on stdin with `-`)

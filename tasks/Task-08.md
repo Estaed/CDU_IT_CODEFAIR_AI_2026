@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `claude` (main loop) · effort `high`
-> *Why:* 2026-09-12 — rerouted from `codex` and done in the main loop: Codex is held back until the Claude window renews, and this task gates 09, 10 and 11 which spend that window. Original reason: the schema is the contract both CLIs receive and the substring rule is the grounding invariant; both fully specified in PRD §5 and Part 2.
+> *Why:* 2026-09-12 — rerouted from `codex` and done in the main loop: Codex is held back until the Claude window renews, and this task gates 09, 10 and 11 which spend that window. Original reason: the schema is the contract both CLIs receive and the substring rule is the grounding invariant; both fully specified in PRD §5 and Blueprint.
 
 **Lane**
 - OWNS: `fair_turn/llm/schema.py`, `fair_turn/core/verify_spans.py`, `tests/test_schema.py`, `tests/test_verify_spans.py`

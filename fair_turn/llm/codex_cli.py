@@ -1,4 +1,4 @@
-"""``codex exec`` as the extractor, build time only (Part 2 stack table).
+"""``codex exec`` as the extractor, build time only (Blueprint stack table).
 
 The prompt goes on stdin behind the positional ``-``: on Windows ``codex`` resolves to a
 ``codex.CMD`` shim that truncates a positional prompt at its first newline, and an open

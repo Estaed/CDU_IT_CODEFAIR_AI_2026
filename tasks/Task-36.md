@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `high`
-> *Why:* The code (chat wrapper, benchmark script, eval table) is specified and tested with fakes; the pull and the real run are the main loop's on Tarik's machine, and the decision rule is written in Part 2. Tarik's call 2026-09-14: this is the last Phase 2 step; nothing before it pulls or calls an Ollama chat model.
+> *Why:* The code (chat wrapper, benchmark script, eval table) is specified and tested with fakes; the pull and the real run are the main loop's on Tarik's machine, and the decision rule is written in Blueprint. Tarik's call 2026-09-14: this is the last Phase 2 step; nothing before it pulls or calls an Ollama chat model.
 
 **Lane**
 - OWNS: `fair_turn/llm/ollama.py` (`chat` function), `fair_turn/llm/intake.py` (remove `NotAcceptedYet`, route `ollama`), `scripts/benchmark_provider.py`, `tests/test_ollama.py`, `data/build/eval_ollama.json`, `MODELS.md`, plus (added by the orchestrator 2026-09-14, attempt 2) the `ollama` case in `tests/test_intake.py`, the `NotAcceptedYet` reference in `fair_turn/app/intake.py`, and the README sentence that says Ollama is not accepted yet
@@ -27,5 +27,5 @@ not the fact that it runs, decide whether Ollama becomes the intake default.
 ## Acceptance Criteria (DoD)
 
 - [x] `chat` failure modes and the decision rule tested with fakes.
-- [x] Main loop: `ollama pull qwen3:8b`, then `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b` from the repo root; `eval_ollama.json` and `MODELS.md` committed with the numbers; if the decision is `ollama`, the README default and Part 2's seam line are updated in the same commit (Part 2 edit raised to Tarik first, rule 8).
+- [x] Main loop: `ollama pull qwen3:8b`, then `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b` from the repo root; `eval_ollama.json` and `MODELS.md` committed with the numbers; if the decision is `ollama`, the README default and Blueprint's seam line are updated in the same commit (Blueprint edit raised to Tarik first, rule 8).
 - [x] Gate green.

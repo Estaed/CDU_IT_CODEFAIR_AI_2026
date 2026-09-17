@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `high`
-> *Why:* fully specified by PRD §4 and Part 2; pure Python; the criterion is tests plus a hypothesis property.
+> *Why:* fully specified by PRD §4 and Blueprint; pure Python; the criterion is tests plus a hypothesis property.
 
 **Lane**
 - OWNS: `fair_turn/core/types.py`, `fair_turn/core/scoring.py`, `tests/test_scoring.py`

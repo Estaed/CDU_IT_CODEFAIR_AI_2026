@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `high`
-> *Why:* Part 2 fixed pydeck and the session-state selection seam (spike 2026-09-14); what is left is writing the two components and the tests. The click path is a human check listed as not gated.
+> *Why:* Blueprint fixed pydeck and the session-state selection seam (spike 2026-09-14); what is left is writing the two components and the tests. The click path is a human check listed as not gated.
 
 **Lane**
 - OWNS: `fair_turn/app/components/workspace_map.py`, `fair_turn/app/components/job_list.py`, `tests/test_workspace_components.py`

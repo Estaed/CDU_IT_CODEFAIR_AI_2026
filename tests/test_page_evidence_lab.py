@@ -136,7 +136,8 @@ def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
     artefact_date = datetime.fromtimestamp(EVAL_PATH.stat().st_mtime).date().isoformat()
     captions = [caption.value for caption in at.caption]
     assert (
-        f"Build extractor: Claude Sonnet via claude -p (Part 2). Holdout: {ev['n_holdout']} items. "
+        "Build extractor: Claude Sonnet via claude -p (Blueprint). "
+        f"Holdout: {ev['n_holdout']} items. "
         f"Evaluation artefact date: {artefact_date}."
     ) in captions
     assert (

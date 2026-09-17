@@ -63,7 +63,7 @@ red, orange, yellow, blue, green, violet, gray/grey, primary.
 node whose body is the directive `':red-badge[:material/warning: Needs a human]'`. `at.badge` raises
 `AttributeError`. A test asserting on a badge must assert on markdown text containing `-badge[`.
 *For Fair Turn:* `st.badge` is the right element for "Set by coordinator" and "Needs a human", and
-it is free. But Part 2's verification rules currently assume elements are addressable by name — a
+it is free. But Blueprint's verification rules currently assume elements are addressable by name — a
 badge assertion has to go through `at.markdown`.
 
 **1.5 `st.container(border=True, height=..., horizontal=..., gap=..., vertical_alignment=...)`.**
@@ -159,7 +159,7 @@ cannot be closed mid-demo.
 
 **1.14 `st.dialog` limitations.** Verdict: **confirmed and unchanged.**
 `st.dialog(title, *, width='small', dismissible=True, icon=None, on_dismiss='ignore')` (A).
-Part 2 already records the blocking fact: AppTest's element tree has no dialog node. Nothing in
+Blueprint already records the blocking fact: AppTest's element tree has no dialog node. Nothing in
 1.53–1.63 changes that (C). The in-page-container decision stands.
 
 **1.15 `[theme]` config keys valid in 1.63.**
@@ -193,7 +193,7 @@ it.
 **Caveat / the one way to break it:** any `@import url(...)`, `url(https://...)` background, or
 `@font-face { src: url(https://fonts.gstatic.com/...) }` inside that CSS *is* a browser fetch. It
 would not fail the gate (the gate refuses sockets in the **server** process, not the browser), so
-this is a silent offline break — exactly the class of failure Part 2's network rule exists to
+this is a silent offline break — exactly the class of failure Blueprint's network rule exists to
 prevent. Fair Turn already vendors IBM Plex through `theme.fontFaces`, so no font import is needed.
 **Known strip trap:** none for `<style>` (§1.9, allowlisted by name). `<script>` is passed to
 DOMPurify's allowlist too but is **not executed** unless `unsafe_allow_javascript=True` — so a
@@ -324,7 +324,7 @@ Google Fonts — which would be an offline break of exactly the kind described i
 **Recommendation regardless of the answer:** do not add it. Everything Fair Turn would have used it
 for — bordered metric cards, badges, vertical space, a styled container — became native between
 1.44 and 1.51 (C). Adding a dependency with an unaudited network story to a project whose gate
-refuses sockets is a poor trade, and Part 2 already rejects dependencies on this reasoning.
+refuses sockets is a poor trade, and Blueprint already rejects dependencies on this reasoning.
 
 **4.5 Release notes as design evidence, 2025-03-25 → 2026-09-01 (C).**
 The direction of travel is explicit and worth stating: theming moved *out* of CSS
@@ -440,7 +440,7 @@ services must comply with **WCAG 2.2 Level AA**.
 primary DTA page `dataanddigital.gov.au/accessibility` **timed out** on fetch (2026-09-14) and was
 not read, so the exact wording of the government's own commitment is **TBD — needs validation**.
 Practically the gap is small for Fair Turn: 2.2 adds focus-appearance, target size (minimum),
-dragging movements and consistent help. Note that Part 2 already accepts the design's Known Gap on
+dragging movements and consistent help. Note that Blueprint already accepts the design's Known Gap on
 48 px touch targets — under 2.2 that maps to SC 2.5.8 Target Size (Minimum), 24×24 CSS px, which
 Streamlit's own controls generally meet.
 Underlying legal basis in both readings: the **Disability Discrimination Act 1992**.
@@ -479,7 +479,7 @@ production bundle (A, enumerated 2026-09-14). Relevant ones that exist today:
 **Warning, stated plainly:** these are **not a public API**. They are test hooks in a minified
 bundle; they have been renamed before and Streamlit does not version them. Any CSS keyed to them is
 a maintenance bet that survives exactly until the next upgrade, and it will fail *silently and
-visually* — the gate will stay green while the page looks wrong. Given Part 2's rule that a silent
+visually* — the gate will stay green while the page looks wrong. Given Blueprint's rule that a silent
 miss is what deserves a protocol, CSS keyed to `data-testid` should be the last resort, kept to a
 handful of declarations in one file, and every declaration should degrade to "slightly less pretty",
 never to "unreadable".
@@ -503,7 +503,7 @@ never to "unreadable".
 5. **Set the government chrome with `[theme]` keys only:** `[theme.sidebar] backgroundColor`,
    `showSidebarBorder`, `baseRadius=0`, `buttonRadius=0`, `showWidgetBorder`, `borderColor`,
    `dataframeHeaderBackgroundColor`, `dataframeBorderColor`, `headingFontSizes`,
-   `metricValueFontSize`. Zero CSS, one file, already the Part 2 token rule (§6b).
+   `metricValueFontSize`. Zero CSS, one file, already the Blueprint token rule (§6b).
 6. **A KPI row at the top of the Workspace and the Evidence lab:**
    `st.metric(label, value, delta=..., border=True, help=..., chart_data=...)` inside
    `st.container(horizontal=True)`. This is what turns the Evidence lab's wall of tables into a
@@ -534,15 +534,15 @@ measured on this machine 2026-09-14 (§1.4, §1.11).
 
 ## Where this belongs
 
-- **Part 2, stack table, "Why it is here" column — pydeck row.** The `@@=` string-accessor trap
-  (§3.2) belongs beside the other CLI traps Part 2 already records. It is the same class of fact:
+- **Blueprint, stack table, "Why it is here" column — pydeck row.** The `@@=` string-accessor trap
+  (§3.2) belongs beside the other CLI traps Blueprint already records. It is the same class of fact:
   something that silently produces wrong output and cost a debugging session. The explicit-layer-`id`
   requirement belongs with it.
-- **Part 2, Fidelity & UI.** The `[theme]` key table in §6b is an extension of the existing "Tokens,
+- **Blueprint, Fidelity & UI.** The `[theme]` key table in §6b is an extension of the existing "Tokens,
   defined once" rule, and the tab-underline exception is the one place that rule cannot reach.
   Whether limited `st.html` CSS is permitted at all is an **amendment to Key Constraints** and
   therefore the user's call, not an edit made in passing (Part 1 rule 8).
-- **Part 2, Verification Rules, per-check detail.** The two AppTest node-type traps (§1.4, §1.11)
+- **Blueprint, Verification Rules, per-check detail.** The two AppTest node-type traps (§1.4, §1.11)
   and the `at.get("html")` access path change how assertions must be written. This is the kind of
   fact that belongs in the gate's documentation, not in a task file.
 - **PRD open question.** The WCAG 2.1 vs 2.2 AA contradiction (§6a.8). Fair Turn is judged on trust;

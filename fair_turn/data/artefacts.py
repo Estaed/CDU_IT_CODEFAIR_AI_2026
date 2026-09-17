@@ -1,4 +1,4 @@
-"""The only reader of ``data/build/`` and ``data/audit/`` the app uses (Part 2 seam).
+"""The only reader of ``data/build/`` and ``data/audit/`` the app uses (Blueprint seam).
 
 Pure file reads: a pilot would read intake instead. Every extraction row is validated on
 load, so a malformed artefact fails at startup rather than on a page.

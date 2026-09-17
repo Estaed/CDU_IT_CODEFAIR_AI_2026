@@ -20,7 +20,7 @@ from fair_turn.core.capacity_sim import Closure, CrewBase, Site
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 from fair_turn.data import artefacts, geography
 
-FALLBACK_EXTRACTOR_CAPTION = "Build extractor: Claude Sonnet via claude -p (Part 2)."
+FALLBACK_EXTRACTOR_CAPTION = "Build extractor: Claude Sonnet via claude -p (Blueprint)."
 NO_RECORDS_MESSAGE = (
     "No decisions logged yet. Rows appear here once a report is signed, a visit plan is "
     "accepted or rejected, or a coordinator makes an override."
@@ -522,7 +522,7 @@ def render_audit_tab() -> None:
             hide_index=True,
             column_config={
                 # Streamlit has no monospace column type; TextColumn is the closest fit,
-                # a known gap (Part 2 "Deviations").
+                # a known gap (Blueprint "Deviations").
                 "recorded_at": st.column_config.TextColumn("Recorded at"),
                 "audit_ref": st.column_config.TextColumn("Audit ref"),
                 "job_id": st.column_config.TextColumn("Job id"),

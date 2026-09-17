@@ -78,7 +78,7 @@ For a teammate, or an AI agent helping one. Read in this order: this file,
 
 | Path | What it is |
 |---|---|
-| `CLAUDE.md`, `AGENTS.md` | Project rules (Part 1) and the binding architecture (Part 2). `AGENTS.md` is generated from `CLAUDE.md`; never edit it by hand. The opening "TarikOS" section is the owner's personal assistant setup: on any other machine the session hook prints a warning that the brain was not found. Ignore it; Part 1 and Part 2 are what bind. |
+| `CLAUDE.md`, `AGENTS.md` | Project rules (Part 1) and the binding architecture (Blueprint). `AGENTS.md` is generated from `CLAUDE.md`; never edit it by hand. The opening "TarikOS" section is the owner's personal assistant setup: on any other machine the session hook prints a warning that the brain was not found. Ignore it; Part 1 and Blueprint are what bind. |
 | `docs/PRD.md` | The product spec. Section 3 says what each screen shows, section 6 the models behind the numbers, section 7 the acceptance checks. Amendments are dated in place. |
 | `docs/user-guide.md` | How to use the app, a coordinator's morning step by step, the keyboard path, the glossary. |
 | `docs/competition-*.md`, `docs/report-requirements.md` | The organiser's brief, deliverables and judging criteria, transcribed verbatim. |
@@ -103,7 +103,7 @@ For a teammate, or an AI agent helping one. Read in this order: this file,
 3. Nothing lands on `main` without `scripts/gate.py` green. Work on a branch; the gate is
    the only reviewer that cannot be argued with.
 4. If an AI agent is helping you: give it this file, `docs/user-guide.md` and
-   `docs/PRD.md` section 3. It must not edit `CLAUDE.md` Part 2 or anything under
+   `docs/PRD.md` section 3. It must not edit `CLAUDE.md` Blueprint or anything under
    `data/build/`; those are decisions and artefacts, not code.
 
 ## What is real and what is synthetic

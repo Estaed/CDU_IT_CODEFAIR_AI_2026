@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `high`
-> *Why:* the root cause is verified (Part 2 pydeck row, 2026-09-14) and the behaviour is fixed by PRD 3.1; only the two components change.
+> *Why:* the root cause is verified (Blueprint pydeck row, 2026-09-14) and the behaviour is fixed by PRD 3.1; only the two components change.
 
 **Lane**
 - OWNS: `fair_turn/app/components/workspace_map.py`, `fair_turn/app/components/details_pane.py` (only `_map_choice` and what it needs), `tests/test_workspace_components.py`
@@ -15,7 +15,7 @@ Status: DONE
 
 Markers on the workspace map are 1-3 px at NT zoom and swallow a town when zoomed in, because
 pydeck serialised `radius_units` as a data accessor and the layer fell back to metres
-(Part 2, pydeck row). Fix the units, size markers in pixels, and make a marker that holds one
+(Blueprint, pydeck row). Fix the units, size markers in pixels, and make a marker that holds one
 job select it directly; a marker that holds several offers a compact chooser, never a column of
 buttons (`review-visual` 2026-09-14, BACKLOG).
 

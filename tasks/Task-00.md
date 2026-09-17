@@ -13,7 +13,7 @@ Status: DONE (2026-09-12)
 
 ## Objective
 
-Create the five package layers Part 2 names, the single source of every policy number,
+Create the five package layers Blueprint names, the single source of every policy number,
 the theme tokens, and the two repo-wide lints (deficit language, hex literals) so that
 every later task is written against them instead of retyping values.
 

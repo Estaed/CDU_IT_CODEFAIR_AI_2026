@@ -24,7 +24,7 @@ that says why it is locked.
 - KPI row (`workspace.py`, directly under the provenance caption, before the intake container):
   four `st.metric(..., border=True)` in `st.columns(4)`:
   1. "Today's list" value `f"{len(today_list)} of {cap}"`, help "Jobs proposed within today's
-     capacity: crews x jobs per crew per day (Part 2 constants)."
+     capacity: crews x jobs per crew per day (Blueprint constants)."
   2. "Remote households today" value `remote_today`, `delta=remote_today - remote_in_baseline`
      where the baseline is the efficiency-first list (`baseline[:cap]`), `delta_color="normal"`,
      help "Change against the efficiency-first list."

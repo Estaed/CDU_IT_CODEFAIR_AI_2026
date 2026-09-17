@@ -1,7 +1,7 @@
 """The NT map of open jobs (PRD 3.1): the territory outline and one dot per community.
 
 Everything is inline data, so the chart renders through Streamlit's bundled Vega-Lite with
-no network (Part 2 spike). Vega-Lite geo projections do not pan or zoom; choosing a region
+no network (Blueprint spike). Vega-Lite geo projections do not pan or zoom; choosing a region
 drops the outline and the other regions' dots, and the projection fits what is left.
 """
 

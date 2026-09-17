@@ -25,7 +25,7 @@ composition before the first signature and outcomes after it.
 
 ## Acceptance Criteria (DoD)
 
-- [ ] Every status transition in Part 2's decision-state table is tested, valid and invalid.
+- [ ] Every status transition in Blueprint's decision-state table is tested, valid and invalid.
 - [ ] Stale and duplicate submissions are refused with a reason.
 - [ ] Before-signature sentence never names wait, travel, median or cost (test).
 - [ ] Gate green.

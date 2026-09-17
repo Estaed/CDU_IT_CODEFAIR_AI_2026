@@ -124,5 +124,5 @@ ship the CSV; haversine as the documented in-code fallback. No routing call at d
 ## Where this belongs
 
 PRD data section (sources 1-5, with licence status and the "frozen snapshot, synthetic history"
-rule); CLAUDE.md Part 2 only for the routing/distance decision (source 6) and the "no network calls
+rule); CLAUDE.md Blueprint only for the routing/distance decision (source 6) and the "no network calls
 at demo time" constraint.

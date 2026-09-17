@@ -1,14 +1,14 @@
 # Constants — values that must not be retyped
 
 One definition each, in `fair_turn/core/constants.py`. Every other module reads from there;
-Part 2 Key Constraints forbid literal copies. Secrets never go here (none exist: model access
+Blueprint Key Constraints forbid literal copies. Secrets never go here (none exist: model access
 is two logged-in CLIs).
 
 | Name | Value | What it is for | Source |
 |---|---|---|---|
 | `CREW_BASE_COORDS` | Darwin, Katherine, Tennant Creek, Alice Springs and Nhulunbuy latitude/longitude pairs | Crew-base locations: where each crew of the NT-wide pool starts in the capacity model and the visit plan (pooled crews, 2026-09-14) | BushTel town records, `data/raw/bushtel_community_detail_2026-09-12.json` (`Point.Latitude`, `Point.Longitude`) |
 | `TEAM_NUMBER` | AIC014 | Submission file name, report cover, slide footer | CDU registration; confirmed by Tarik 2026-09-12. The sibling Data Innovation Challenge entry is DIC005, never this one. |
-| `SEED` | 20260912 | Only randomness source for synthesis and simulation | Project decision, the date Part 2 was written |
+| `SEED` | 20260912 | Only randomness source for synthesis and simulation | Project decision, the date Blueprint was written |
 | `WINDOW_START` | 2025-10-01 | First day of the synthetic event window | PRD §6.2 |
 | `WINDOW_DAYS` | 90 | Length of the window (to 29 Dec 2025) | PRD §6.2 |
 | `SAFETY_CLASSES` | immediate, urgent, routine | NT's three repair classes | DHLGCD FS17 "Repairs and maintenance", 10/2025 |

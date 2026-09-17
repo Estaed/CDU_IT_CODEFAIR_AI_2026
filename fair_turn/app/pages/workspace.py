@@ -227,7 +227,7 @@ for column, label_text, value, delta, help_text in zip(
     ),
     (None, (remote_today - remote_in_baseline) or None, None, None),
     (
-        "Jobs proposed within today's capacity: crews x jobs per crew per day (Part 2 constants).",
+        "Jobs proposed within today's capacity: crews x jobs per crew per day (Blueprint).",
         "Change against the efficiency-first list.",
         "Jobs waiting for a person to set a field.",
         "Share of today's signed jobs moved by hand. See Evidence lab -> Audit log.",

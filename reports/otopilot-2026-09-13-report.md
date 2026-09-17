@@ -32,7 +32,7 @@ labels (remote median / town median at λ = 1 → λ = 0, open at end):
 | 1 / 2, 1 | 27.5 / 6 | 24 / 14 | 875 / 946 |
 
 The same slack also flattens the board's equity slider (the gap does not move with λ at
-the current constants), so this is a Part 2 / constants decision, not a Task-05 fix.
+the current constants), so this is a Blueprint / constants decision, not a Task-05 fix.
 **Decision (operator, 2026-09-13): option (a).** Constants tightened to 1 / 2 / 2 in `c274d5c` with provenance rows in `constants.md` and the PRD §6.3 prose updated. Options as presented: (a) tighten the provisional capacity constants in `constants.py` + `constants.md`
 (PRD §6.3 already labels them provisional; Task-04's fixture tests are unaffected, its
 30-day artefact test checks only speed and consistency); (b) change the Task-05 assertion

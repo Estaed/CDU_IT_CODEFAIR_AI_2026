@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `claude` · effort `high`
-> *Why:* Tarik (2026-09-14) asked for the human's work here to shrink. The model may not pre-fill the field (PRD 3.2, Part 2 Key Constraints: the rejected model value never renders, so a "just accept" button would anchor the reviewer), so the saving comes from fewer keystrokes: preset reasons, a remembered name, and a templated clarification message.
+> *Why:* Tarik (2026-09-14) asked for the human's work here to shrink. The model may not pre-fill the field (PRD 3.2, Blueprint Key Constraints: the rejected model value never renders, so a "just accept" button would anchor the reviewer), so the saving comes from fewer keystrokes: preset reasons, a remembered name, and a templated clarification message.
 
 **Lane**
 - OWNS: `fair_turn/app/pages/review_queue.py`, `fair_turn/app/state.py` (only `get_actor` / `set_actor`), `tests/test_page_review_queue.py`

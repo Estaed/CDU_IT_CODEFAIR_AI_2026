@@ -26,7 +26,7 @@ Verdict: **largely NO — the decisive negative finding.**
 
 **Changes for us:** 311 is a **taxonomy seed, not a style seed.** We can justify our fault-type taxonomy and its relative frequencies against NYC's `complaint_type`/`descriptor` pairs (HEAT/HOT WATER, PLUMBING, DOOR/WINDOW, ELECTRIC), and must write the *voice* ourselves from NT context. Saying "no public corpus of tenant-voice repair text exists" is a stronger dataset answer than a vague citation.
 
-**Where this belongs:** PRD (data-generation method + the "no real corpus" limitation); Part 2 Key Constraints (label tuple drawn in Python first; generator ≠ extractor).
+**Where this belongs:** PRD (data-generation method + the "no real corpus" limitation); Blueprint Key Constraints (label tuple drawn in Python first; generator ≠ extractor).
 
 ---
 
@@ -48,7 +48,7 @@ Verdict: **confirmed from the official pricing page only** (platform.claude.com/
 Opus 5 **$5 / $25** · Sonnet 5 **$2 / $10** · Sonnet 4.6 $3 / $15 · Haiku 4.5 **$1 / $5** · Fable 5.1 $10 / $50. Batch API = **50% off both directions** (Haiku 4.5 batch $0.50 / $2.50). Cache hits = 0.1x base input. Note: **Claude 4.7 and later use a newer tokenizer producing ~30% more tokens for the same text** — cost estimates written against older figures under-count.
 **Changes for us:** extraction on **Haiku 4.5**, batched, for the per-report cost line the report needs. Compute the real figure from the response `usage` at build time rather than asserting it.
 
-**Where this belongs:** Part 2 stack table (SDK, model IDs, `output_config`); Part 2 Key Constraints (citations forbidden with structured outputs; evidence substring check mandatory); PRD (eval method).
+**Where this belongs:** Blueprint stack table (SDK, model IDs, `output_config`); Blueprint Key Constraints (citations forbidden with structured outputs; evidence substring check mandatory); PRD (eval method).
 
 ---
 
@@ -66,14 +66,14 @@ Verdict: **yes, two independent sources.** NT Health / nt.gov.au: newborns, infa
 Verdict: **BoM no, Open-Meteo yes.** BoM's API is explicitly **not for public use without express permission**; FTP products are personal/in-organisation use only, no onward supply, no commercial use (bom.gov.au/copyright; bom.gov.au/catalogue/data-feeds.shtml). **Open-Meteo**: no API key, no sign-up, free non-commercial to 10,000 calls/day, data under **CC BY 4.0** with required attribution and a link (open-meteo.com/en/licence, /en/pricing).
 **Changes for us:** use **Open-Meteo** if we pull live temperatures, attributed in the UI footer. Safer for a demo: **ship a small static CSV of NT climate normals** so the prototype runs offline for judges, citing BoM climate pages as the source of the numbers rather than calling BoM.
 
-**Where this belongs:** PRD (urgency factor definition + citations); Part 2 stack table (Open-Meteo, optional, CC BY attribution); Part 2 Key Constraints (no BoM API calls).
+**Where this belongs:** PRD (urgency factor definition + citations); Blueprint stack table (Open-Meteo, optional, CC BY attribution); Blueprint Key Constraints (no BoM API calls).
 
 ---
 
 ## 4. Prototype stack
 
 **Claim: Streamlit current version.**
-Verdict: **1.63.0**, `requires_python >=3.10`, supports 3.10–3.14 (pypi.org/pypi/streamlit/json, fetched 2026-09-12). Secondary coverage dates 1.63.0 to **2026-09-01**; docs.streamlit.io release notes is the primary to re-check. **Install, then read the lockfile** — Part 2's stack table must not carry this number on my word.
+Verdict: **1.63.0**, `requires_python >=3.10`, supports 3.10–3.14 (pypi.org/pypi/streamlit/json, fetched 2026-09-12). Secondary coverage dates 1.63.0 to **2026-09-01**; docs.streamlit.io release notes is the primary to re-check. **Install, then read the lockfile** — Blueprint's stack table must not carry this number on my word.
 
 **Claim: NT-scale maps render with no API key.**
 Verdict: **yes with free tiles; NOT offline.** `st.map` uses **Carto** tiles by default and needs **no Mapbox key**; a Mapbox key is only required if you choose Mapbox in a `pydeck.Deck` (docs.streamlit.io st.map, fetched 2026-09-12). Folium ships the `xyzservices` tilesets — `OpenStreetMap`, `CartoDB Positron`, `CartoDB Voyager` — all keyless; Carto basemaps are free to **5 million tile requests/month** with **Carto + OpenStreetMap attribution required on every map** (docs.carto.com/faqs/carto-basemaps).
@@ -87,7 +87,7 @@ Verdict: **supported, mechanism confirmed by Streamlit's own caching docs; speci
 - Secrets: `.streamlit/secrets.toml` via `st.secrets`, never hardcoded, never committed.
 **Changes for us:** extraction runs **once, offline, as a build step** writing a JSON/parquet artefact the app loads; the Streamlit app makes **zero LLM calls during ranking**, so judges can run it **without an API key**. Only the tenant-explanation draft is a live call, cached on job id. This falls out of the architecture anyway — the LLM extracts and explains, it does not rank.
 
-**Where this belongs:** Part 2 stack table (Streamlit 1.63.0, pydeck/folium, Python >=3.10 — versions re-read from the lockfile); Part 2 Architecture (extraction as an offline build step, app reads artefacts); Part 2 Key Constraints (no LLM call in a rerun path; no API key required to run the demo).
+**Where this belongs:** Blueprint stack table (Streamlit 1.63.0, pydeck/folium, Python >=3.10 — versions re-read from the lockfile); Blueprint Architecture (extraction as an offline build step, app reads artefacts); Blueprint Key Constraints (no LLM call in a rerun path; no API key required to run the demo).
 
 ---
 

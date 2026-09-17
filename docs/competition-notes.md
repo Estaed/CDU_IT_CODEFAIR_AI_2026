@@ -164,6 +164,6 @@ the chosen brief is the specific thing the judges will probe in Q&A.
 
 This folder is a Project Ignition clone. `CLAUDE.md` and its Codex twin `AGENTS.md` carry the
 workflow: dump raw thinking into `notes.md`, then `create-prd`, then `create-architecture` to
-write Part 2, then `generate-tasks`, then `verify-task` per task. `.codex/hooks.json` has been
-generated for this path. Part 2 of `CLAUDE.md` is still the placeholder and must be written
+write Blueprint, then `generate-tasks`, then `verify-task` per task. `.codex/hooks.json` has been
+generated for this path. Blueprint of `CLAUDE.md` is still the placeholder and must be written
 before any task is generated.

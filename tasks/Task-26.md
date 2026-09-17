@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `high`
-> *Why:* Deterministic planner with property tests; PRD §3.3 and Part 2's constraint fix the rule (signed order is the plan, distance only suggests).
+> *Why:* Deterministic planner with property tests; PRD §3.3 and Blueprint's constraint fix the rule (signed order is the plan, distance only suggests).
 
 **Lane**
 - OWNS: `fair_turn/core/visit_plan.py`, `tests/test_visit_plan.py`, `fair_turn/core/constants.py` (append-only: `CREW_BASE_COORDS`, `SUGGESTION_MIN_SAVING_KM`), `constants.md` (append provenance rows for the two)

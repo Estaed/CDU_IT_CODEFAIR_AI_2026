@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `claude` · effort `medium`
-> *Why:* Tarik (2026-09-14) wants to switch the extractor and submit a test report without touching the environment. Part 2 seam amended the same day: the environment variable stays the default, the UI may override it for the session.
+> *Why:* Tarik (2026-09-14) wants to switch the extractor and submit a test report without touching the environment. Blueprint seam amended the same day: the environment variable stays the default, the UI may override it for the session.
 
 **Lane**
 - OWNS: `fair_turn/app/intake.py`, `fair_turn/llm/intake.py` (only: `configured(override: str | None = None)`), `tests/test_intake.py`, `tests/test_page_workspace.py` (only the intake-disabled assertions if they change)

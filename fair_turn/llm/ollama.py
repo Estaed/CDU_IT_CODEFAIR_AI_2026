@@ -1,4 +1,4 @@
-"""Ollama embedding access for build-time artefact generation (Part 2 stack table)."""
+"""Ollama embedding access for build-time artefact generation (Blueprint stack table)."""
 
 import json
 import urllib.error

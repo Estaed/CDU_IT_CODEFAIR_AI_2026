@@ -43,7 +43,7 @@ none skipped). Commit `3f98952`. Task-27 lane itself: orchestrator gate GREEN, `
 | Task | Attempts | Outcome | Bee elapsed | Main commit |
 |---|---:|---|---|---|
 | Task-25 batch freeze, effect sentence | 1 | **green** | 8.3 min | `8924e5a` |
-| Task-28 intake seam and action | 1 | **green** after one orchestrator fix outside the lane: `tests/test_layers.py::test_import_direction` still forbade `app -> llm`; the Task-23 contract had put the exception only in the new by-file test. Part 2 names `app/intake.py` as the one allowed importer, so the direction check now exempts that file (`6a9950a`). The bee reported BLOCKED correctly rather than editing a file it did not own. | 11.8 min | `7d04c4a` |
+| Task-28 intake seam and action | 1 | **green** after one orchestrator fix outside the lane: `tests/test_layers.py::test_import_direction` still forbade `app -> llm`; the Task-23 contract had put the exception only in the new by-file test. Blueprint names `app/intake.py` as the one allowed importer, so the direction check now exempts that file (`6a9950a`). The bee reported BLOCKED correctly rather than editing a file it did not own. | 11.8 min | `7d04c4a` |
 
 Quota delta, wave B: Codex 5 h 65 % → 82 % (two bees plus Task-26 launched at 03:53, which
 is still running); Claude 5 h 61 % → 66 %. Codex bee gates see `test_cli_wrappers` timeout
@@ -143,7 +143,7 @@ after a human sees it; if it fails, the framework question opens before more UI 
 1. **Task-36 real run:** `ollama pull qwen3:8b` (5.2 GB) then
    `venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b`;
    commit `data/build/eval_ollama.json` and the `MODELS.md` row; if the decision is `ollama`,
-   the README default and the Part 2 seam line change in the same commit (Part 2 edit is
+   the README default and the Blueprint seam line change in the same commit (Blueprint edit is
    rule 8: raise it first). Then `verify-task` ticks Task-36.
 2. `review-visual` over the five surfaces (above).
 3. `BACKLOG.md` night entries: Task-29's five deviations, the policy-index threshold, the

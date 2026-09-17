@@ -4,7 +4,7 @@ Entry for AI Challenge brief 1, housing maintenance triage (`docs/task-briefs.md
 Written 2026-09-12 from `notes.md` and the eight reports under `reports/`. Amended
 2026-09-14 for Phase 2 from `docs/phase-2-discovery.md` and `design/phase-2-wireframes.md`
 §12; the Phase 1 text is in git history at `2d8c349`. This document says what and why. How
-(stack, folders, commands) is `CLAUDE.md` Part 2.
+(stack, folders, commands) is `CLAUDE.md` Blueprint.
 
 **Three sources of truth, one per question.** *What* each surface shows and which rules
 bind it: this document, section 3. *How it is laid out and behaves* (panes, controls,
@@ -302,7 +302,7 @@ need  = urgency + safety + household health risk
   today; λ = 0 ignores distance entirely. The "price of fairness" (Bertsimas 2011) is the
   travel cost difference between the two, shown in the metrics panel.
 
-Exact weights and normalisation are Part 2's; the PRD fixes the shape and that the
+Exact weights and normalisation are Blueprint's; the PRD fixes the shape and that the
 formula reads **only typed fields**, never model free text. Human-set fields are typed
 fields and enter the formula like any other.
 

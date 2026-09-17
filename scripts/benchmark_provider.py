@@ -4,7 +4,7 @@ Runs the 150 holdout reports and the 20 adversarial items through ``llm.intake.e
 the named provider and model, scores fault_type, safety_class and health_risk with
 ``fair_turn.eval.metrics`` the way ``run_eval.py`` does, and decides the intake default:
 ``ollama`` only if its macro-F1 is not below the build extractor's in eval.json for both
-required fields and every adversarial item leaves the rank unchanged (Part 2, the provider
+required fields and every adversarial item leaves the rank unchanged (Blueprint, the provider
 seam). From the repo root, after ``ollama pull qwen3:8b``:
     venv/Scripts/python scripts/benchmark_provider.py --provider ollama --model qwen3:8b
 Writes data/build/eval_<provider>.json, prints the decision line and exits 0 either way: the

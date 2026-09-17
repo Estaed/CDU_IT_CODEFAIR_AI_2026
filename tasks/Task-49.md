@@ -21,7 +21,7 @@ count too; nothing else about selection changes.
 - Add a third `pdk.Layer("TextLayer", id="counts", ...)` over the same points filtered to
   `open_jobs > 1`: `get_position=["lon", "lat"]`, `get_text="label"` (a string column
   `label=str(open_jobs)`), `get_size=COUNT_FONT_PX` (named constant, 12), `size_units="'pixels'"`
-  (inner quotes, the Part 2 pydeck trap), `get_color` from `theme` (white on the coloured
+  (inner quotes, the Blueprint pydeck trap), `get_color` from `theme` (white on the coloured
   marker: use `_rgb(st.get_option("theme.backgroundColor"))`), `get_text_anchor="'middle'"`,
   `get_alignment_baseline="'center'"`, `pickable=False`. Keep it last in `layers` so it draws
   on top.

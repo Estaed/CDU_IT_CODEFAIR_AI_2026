@@ -1,5 +1,5 @@
 ---
-description: Architecture — decide the stack and write CLAUDE.md Part 2 from the PRD
+description: Architecture — decide the stack and write CLAUDE.md Blueprint from the PRD
 argument-hint: "[optional constraints, e.g. a stack the user already committed to]"
 ---
 

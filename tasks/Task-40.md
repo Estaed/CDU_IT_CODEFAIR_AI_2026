@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `medium`
-> *Why:* Part 2 Fidelity was amended 2026-09-14 to name the exact mechanism (theme keys, one `theme.css` via `st.html`); the copy is drafted in `reports/research-ui-hitl-guidance-2026-09-14.md`.
+> *Why:* Blueprint Fidelity was amended 2026-09-14 to name the exact mechanism (theme keys, one `theme.css` via `st.html`); the copy is drafted in `reports/research-ui-hitl-guidance-2026-09-14.md`.
 
 **Lane**
 - OWNS: `.streamlit/config.toml`, `fair_turn/app/theme.py`, `fair_turn/app/static/theme.css` (new), `fair_turn/app/main.py`, `fair_turn/app/components/intro.py` (new), `fair_turn/app/pages/*.py` (only: one `intro.purpose(...)` call under the title, one `intro.about()` call at the end), `tests/test_theme.py`, `tests/test_app_smoke.py`

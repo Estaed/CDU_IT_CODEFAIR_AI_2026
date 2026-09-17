@@ -1,9 +1,9 @@
 """The extraction contract: one pydantic model that emits the JSON Schema both CLIs are
-constrained to and validates every object they return (PRD section 5, Part 2).
+constrained to and validates every object they return (PRD section 5, Blueprint).
 
 Every categorical field is an enum from ``core.types``; every displayed field carries an
 evidence phrase that ``core.verify_spans`` checks against the report text. There is no
-confidence field and there never will be (Part 2 Key Constraints).
+confidence field and there never will be (Blueprint Key Constraints).
 """
 
 from typing import Any

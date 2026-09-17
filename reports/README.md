@@ -15,7 +15,7 @@ when you can actually think about the answer.
 - One file per question, named after the question, dated.
 - Say which model and when, at the top. A finding ages; a finding without a
   date cannot be judged.
-- A report is input, never a decision. Bringing it into `docs/PRD.md` or Part 2
+- A report is input, never a decision. Bringing it into `docs/PRD.md` or Blueprint
   is a separate, deliberate step.
 - `research` (the skill) answers a question live and hands the decision back;
   it does not write here. This folder is for the longer unattended runs.

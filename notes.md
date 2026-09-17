@@ -199,5 +199,5 @@ Datasets is a judging criterion; every source below goes into the report.
 - Provisional numbers (dataset window/volume, crew capacity, F1 target) are ours and
   marked as such in the PRD.
 - Design (decided 2026-09-12): no design file now; a visual pass may follow after eval and
-  report are done. Precondition for Part 2: one theme definition (colours, font, chart
+  report are done. Precondition for Blueprint: one theme definition (colours, font, chart
   palette), no hardcoded values in any screen, so a later restyle is a one-file change.

@@ -303,7 +303,7 @@ The system reaches for color rarely. Terracotta marks links, primary buttons, th
 - Card hierarchy is carried by 1px hairlines and surface change, never by drop shadow.
 - `letter-spacing: 0.16px` on body is a Carbon precision detail — the small positive tracking is part of the typographic voice.
 - Light theme only. No dark mode.
-- Implementation surface is **Streamlit standard components only** (dataframe, metric, slider, selectbox, warning/info boxes, columns, tabs, Altair charts, pydeck map). No custom components, no animation, no free-form layouts. *Amended 2026-09-14:* `[theme]` keys carry the chrome; one scoped stylesheet (`fair_turn/app/static/theme.css`, via `st.html`) covers only what the keys cannot reach (CLAUDE.md Part 2, Fidelity & UI).
+- Implementation surface is **Streamlit standard components only** (dataframe, metric, slider, selectbox, warning/info boxes, columns, tabs, Altair charts, pydeck map). No custom components, no animation, no free-form layouts. *Amended 2026-09-14:* `[theme]` keys carry the chrome; one scoped stylesheet (`fair_turn/app/static/theme.css`, via `st.html`) covers only what the keys cannot reach (CLAUDE.md Blueprint, Fidelity & UI).
 
 ## Colors
 

@@ -44,7 +44,7 @@ def _accept(value: str) -> Provider | None:
 
 def configured(override: str | None = None) -> Provider | None:
     """Return the accepted provider: a session override if given, else the environment
-    default (Part 2, Task-48: the UI may override the variable for the session only)."""
+    default (Blueprint, Task-48: the UI may override the variable for the session only)."""
     value = (override or "").strip()
     if value:
         return _accept(value)

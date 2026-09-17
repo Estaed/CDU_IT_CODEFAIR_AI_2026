@@ -7,7 +7,7 @@
 **Scope:** Product workflow, interface, online services, live AI, retrieval, and route planning
 
 > This document uses “Phase 2” to mean the next delivery phase after Tasks 00–21. It is
-> not a replacement for `CLAUDE.md` Part 2. After the decisions below are approved,
+> not a replacement for `CLAUDE.md` Blueprint. After the decisions below are approved,
 > `docs/PRD.md` and the binding architecture must be amended deliberately, then new work
 > starts at Task 22.
 

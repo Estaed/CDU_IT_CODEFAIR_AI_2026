@@ -504,7 +504,7 @@ def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:
     assert at.main.metric[2].value == "21"
     assert at.main.metric[3].value == "0%"
     assert at.main.metric[0].proto.help == (
-        "Jobs proposed within today's capacity: crews x jobs per crew per day (Part 2 constants)."
+        "Jobs proposed within today's capacity: crews x jobs per crew per day (Blueprint)."
     )
     assert at.main.metric[1].proto.help == "Change against the efficiency-first list."
     assert at.main.metric[2].proto.help == "Jobs waiting for a person to set a field."

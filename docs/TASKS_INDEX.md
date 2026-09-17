@@ -1,7 +1,7 @@
 # Fair Turn — task index
 
-Generated 2026-09-12 from `docs/PRD.md` and `CLAUDE.md` Part 2; Phase 2 tasks appended
-2026-09-14 from the amended PRD and Part 2. Status lives here and in each task file;
+Generated 2026-09-12 from `docs/PRD.md` and `CLAUDE.md` Blueprint; Phase 2 tasks appended
+2026-09-14 from the amended PRD and Blueprint. Status lives here and in each task file;
 `verify-task` is the only thing that ticks a box.
 
 ## Phases
@@ -9,10 +9,10 @@ Generated 2026-09-12 from `docs/PRD.md` and `CLAUDE.md` Part 2; Phase 2 tasks ap
 | Phase | Tasks | State | Owns it |
 |---|---|---|---|
 | **Phase 1** — six screens from committed artefacts, offline | 00–21 | DONE 2026-09-13 | PRD at `2d8c349` |
-| **Phase 2** — one coordinator workspace, live intake, cited policy passages, visit plan, network allowed | 22–36 | in progress | `docs/PRD.md` (amended 2026-09-14), `design/phase-2-wireframes.md`, Part 2 |
+| **Phase 2** — one coordinator workspace, live intake, cited policy passages, visit plan, network allowed | 22–36 | in progress | `docs/PRD.md` (amended 2026-09-14), `design/phase-2-wireframes.md`, Blueprint |
 | **Pilot** — key custody, Housing Reference Group role, tasking-system integration, merits review, hosted deployment | none | deferred, not cancelled | PRD §11 |
 
-The pilot's seams are already in Part 2: `data/artefacts.py` plus `data/runtime.py` (intake
+The pilot's seams are already in Blueprint: `data/artefacts.py` plus `data/runtime.py` (intake
 would replace the runtime file), `core/audit.py` (the agency system would replace the JSONL),
 `llm/intake.py` (the provider setting), `data/policy.py` (a live index behind the same
 lookup). Phase 2's last task, Task-36, is the only one that pulls or calls an Ollama chat
@@ -82,13 +82,13 @@ Presentation wave 2 (added 2026-09-14 evening, Tarik's requests):
 - [x] Task-50: User guide in English and an in-app "How to use" popover
 
 Presentation wave 3 (2026-09-14 night, from Tarik's live review of the running app; no task
-files were written, each change landed with a green gate and is recorded in the PRD and Part 2
+files were written, each change landed with a green gate and is recorded in the PRD and Blueprint
 amendments dated that night):
 
 - [x] Map on the workspace page, stale map pick fix, "How to use" popover in the main area
 - [x] Selected-job pane report first, short job numbers, readable policy passages and actions
 - [x] Evidence lab in percentages and plain labels
-- [x] Clustered MapLibre map that splits on zoom (Part 2 JavaScript amendment)
+- [x] Clustered MapLibre map that splits on zoom (Blueprint JavaScript amendment)
 - [x] One reason box per job; "Needs a human" tab in the daily view; region filter as a view
 - [x] Crews as one NT-wide pool in the list, simulation and visit plan; distance picks the crew, never the job
 - [x] Crew reach in the visit plan and simulation: a crew serves its region or within a day's drive of its base

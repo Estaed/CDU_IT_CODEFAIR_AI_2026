@@ -1,5 +1,5 @@
 """Ranking formula: each factor rule, the identity, the human queue, and the lambda = 0
-invariance property (PRD section 4, CLAUDE.md Part 2 verification rule 2)."""
+invariance property (PRD section 4, CLAUDE.md Blueprint verification rule 2)."""
 
 from dataclasses import replace
 from datetime import date, timedelta

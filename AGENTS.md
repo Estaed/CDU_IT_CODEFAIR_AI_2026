@@ -10,7 +10,7 @@
 > `docs/competition-notes.md` before doing anything, and the files under `docs/` that it
 > points to: the official brief, the deliverables, the deadlines and the judging criteria
 > are all transcribed there from the organiser's website. They are the constraints this
-> project is graded against — treat them the way Part 2 treats the architecture.
+> project is graded against — treat them the way Blueprint treats the architecture.
 
 ---
 # TarikOS (Second Brain) link — Eko identity
@@ -44,7 +44,7 @@ Both take `--check`; `--check` never repairs.
 
 ---
 
-## Part 2: Technical Architecture
+## Blueprint
 
 Written 2026-09-12 by `create-architecture` from `docs/PRD.md`. **Amended 2026-09-14** for
 Phase 2 from the PRD amendment of the same day (five surfaces, live intake, cited policy

@@ -5,9 +5,9 @@ Builds on `reports/research-ui-hitl-guidance-2026-09-14.md` (HAX, PAIR, NN/g emp
 tutorials, Buçinca cognitive forcing, Skitka/Mosier accountability, Ben Green); not repeated.
 
 **Conflict to raise first.** The brief says the app "can now host one or two small JavaScript
-components". CLAUDE.md Part 2 (Fidelity & UI, Key Constraints) still says "JavaScript, custom
+components". CLAUDE.md Blueprint (Fidelity & UI, Key Constraints) still says "JavaScript, custom
 bidirectional components and npm builds stay forbidden: `AppTest` cannot see them." Any tour or
-hotkey component below needs a Part 2 amendment first. That decision belongs to Tarik.
+hotkey component below needs a Blueprint amendment first. That decision belongs to Tarik.
 
 ---
 
@@ -65,7 +65,7 @@ hotkey component below needs a Part 2 amendment first. That decision belongs to 
   <https://docs.cloud.google.com/document-ai/docs/hitl/concepts>). **Dates contradict.**
 - Inference: the pattern that survives in both is to route on a *missing* field and add a
   *random sample*. Fair Turn already routes on a missing verified phrase. It has no random
-  sample, and it cannot use confidence (Part 2 forbids it).
+  sample, and it cannot use confidence (Blueprint forbids it).
 
 **Inference: what these tools share.**
 - The reviewer sees one item at a time, with the source and the proposed labels overlaid.
@@ -94,7 +94,7 @@ cross.**
   selected-job pane has shown the report with its highlighted phrases (see §3).
 - **Correct:** opens the existing human-set path. The coordinator picks the enum value and must
   give a reason. The field becomes human-set with the "Set by coordinator" badge. The job
-  re-ranks, and if a batch is open, the batch is invalidated (existing Part 2 rule).
+  re-ranks, and if a batch is open, the batch is invalidated (existing Blueprint rule).
 - A reject must capture: which field, the new value (or "cannot tell → request clarification"),
   and a reason. That is Label Studio's "Fix & Accept", and Labelbox's issue-plus-comment.
 - **Not** "reject → discard". A tenant's report must not disappear. Rejected jobs go to the
@@ -204,7 +204,7 @@ add a per-row accept tick.**
 3. **Inline definitions** with `help=` on column headers and controls, for domain terms
    (safety class, NT window, λ). The definition must stay non-essential, so the label itself
    stays plain.
-4. **Optional presenter tour**, only if Part 2 is amended. Keep it to five steps or fewer and
+4. **Optional presenter tour**, only if Blueprint is amended. Keep it to five steps or fewer and
    never auto-open it. It is the lowest-evidence item; drop it first.
 
 ---
@@ -220,7 +220,7 @@ add a per-row accept tick.**
 - **Trap:** Streamlit reserves bare `r` (rerun) and `c` (clear cache) outside text inputs
   (<https://github.com/streamlit/streamlit/issues/4048>).
 - Custom keys need a JS component, for example streamlit-hotkeys
-  (<https://github.com/viktor-shcherb/streamlit-hotkeys>). That is blocked by Part 2 today.
+  (<https://github.com/viktor-shcherb/streamlit-hotkeys>). That is blocked by Blueprint today.
 
 **Inference, proposed map** (only if a component is allowed; the selectbox path stays the
 accessible equivalent):
@@ -264,6 +264,6 @@ Deliberately excluded:
 7. **Onboard with a day stepper, teaching empty states and `help=` definitions. No auto-opened
    tour.** *(Evidence-backed: NN/g tutorial test (Kendrick 2020), NN/g contextual help and
    tooltip guidance.)*
-8. **Treat any JS tour or hotkey component as a Part 2 amendment, decided before building.** If
+8. **Treat any JS tour or hotkey component as a Blueprint amendment, decided before building.** If
    approved: `j`/`k`/`a`/`x`/`d`/`q`/`?`, never `r`/`c`, and no key that signs. *(Key
    conventions from Prodigy and Gmail; the Streamlit reserved keys are verified.)*

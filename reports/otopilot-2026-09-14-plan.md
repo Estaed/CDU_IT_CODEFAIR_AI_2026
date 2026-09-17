@@ -21,7 +21,7 @@ operator is asleep, so no seat change) orchestrates, **Codex bees** (`codex exec
 | Codex bee recipe | `.lanes/fair-turn/codex-bee.ps1`: house rules + brief on stdin (`-`), `--sandbox workspace-write -C <lane>`, explicit `-m` and `-c model_reasoning_effort`, `-c mcp_servers={}`, `-o <last message>`, `BEYIN_INVOKED_BY=bee`. Probe bee (luna/low) run before wave A to confirm the worktree commit works under the sandbox |
 | Claude bee recipe (fallback) | `.lanes/fair-turn/bee.ps1` from the 2026-09-13 runs, `opus` for reasoning lanes, `sonnet` for mechanical ones |
 | Model / tier (Codex) | mid tier `gpt-5.6-terra` for every lane; effort `high` for the reasoning lanes (22, 24, 25, 26, 27, 28, 29, 30, 33, 36), `medium` for the mechanical ones (23, 31, 32, 34, 35). `gpt-6-astra` never; `gpt-5.6-sol` not named by the operator |
-| Handover rule | at a wave boundary only; trigger: Codex pool `NARROW` (5 h ≥ 90 % or 7 d ≥ 92 %) or at a wall, AND both Claude windows clear; the report records the wave and both pools' numbers. Bee briefs are recipe-neutral (task file, Part 2 slice, Lane, BASE_SHA, timebox, report contract) |
+| Handover rule | at a wave boundary only; trigger: Codex pool `NARROW` (5 h ≥ 90 % or 7 d ≥ 92 %) or at a wall, AND both Claude windows clear; the report records the wave and both pools' numbers. Bee briefs are recipe-neutral (task file, Blueprint slice, Lane, BASE_SHA, timebox, report contract) |
 
 ## Waves (otopilot lanes)
 
@@ -61,7 +61,7 @@ records the real delta.
 | Task | What | When |
 |---|---|---|
 | Task-27 | `venv/Scripts/python scripts/build_policy_index.py` with Ollama up and `bge-m3` pulled; fetches the FS17 PDF (network, scripts only); `verify` must hold; artefact, PDF and PROVENANCE row committed | right after the Task-27 lane is integrated, before wave C (Task-29 reads the artefact) |
-| Task-36 | `ollama pull qwen3:8b` (5.2 GB) then `scripts/benchmark_provider.py --provider ollama --model qwen3:8b`; decision line quoted in the report | **not tonight**: the pull and a 170-call local benchmark are a state change on the operator's machine with no one watching, and the decision (a possible Part 2 seam edit, rule 8) is the operator's. The lane ships the code; the run waits for the morning |
+| Task-36 | `ollama pull qwen3:8b` (5.2 GB) then `scripts/benchmark_provider.py --provider ollama --model qwen3:8b`; decision line quoted in the report | **not tonight**: the pull and a 170-call local benchmark are a state change on the operator's machine with no one watching, and the decision (a possible Blueprint seam edit, rule 8) is the operator's. The lane ships the code; the run waits for the morning |
 
 ## Ownership widened by the orchestrator at plan time (written into the task files)
 

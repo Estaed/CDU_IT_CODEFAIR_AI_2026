@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `medium`
-> *Why:* Part 2 names every file and rule; the work is plumbing with unit and layer tests as the criterion.
+> *Why:* Blueprint names every file and rule; the work is plumbing with unit and layer tests as the criterion.
 
 **Lane**
 - OWNS: `fair_turn/app/main.py`, `fair_turn/app/pages/workspace.py`, `fair_turn/app/pages/review_queue.py`, `fair_turn/app/pages/visit_plan.py`, `fair_turn/app/pages/evidence_lab.py` (stubs only), `fair_turn/app/state.py`, `fair_turn/data/runtime.py`, `fair_turn/data/artefacts.py` (`to_jobs` merge only), `.gitignore` (append `data/runtime/`), `tests/test_layers.py`, `tests/test_runtime.py`, `tests/test_app_smoke.py` (page registration and default-page assertions), `tests/conftest.py` (new: autouse fixture isolating `data/runtime/`; added by the orchestrator 2026-09-14)

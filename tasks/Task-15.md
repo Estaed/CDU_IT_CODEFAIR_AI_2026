@@ -3,7 +3,7 @@
 Status: DONE
 
 > **Execution:** agent `codex` · effort `high`
-> *Why:* Altair map pattern is fixed by the Part 2 spike; the reveal rule is a boolean in `state`; assertions on chart presence and hidden state decide.
+> *Why:* Altair map pattern is fixed by the Blueprint spike; the reveal rule is a boolean in `state`; assertions on chart presence and hidden state decide.
 
 **Lane**
 - OWNS: `fair_turn/app/components/map.py`, `fair_turn/app/components/metrics.py`, `tests/test_board_map_metrics.py`, `fair_turn/app/pages/board.py` (append two calls; Task-14 owns the file)

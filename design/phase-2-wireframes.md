@@ -211,7 +211,7 @@ queue with an unsaved choice discards nothing: the choice is applied only by "Ma
 rankable".
 
 **New report intake**, despite the "dialog" language below, is implemented as an in-page
-bordered container toggled from session state, not `st.dialog` (Part 2 spike, 2026-09-14: `AppTest` has no dialog node).
+bordered container toggled from session state, not `st.dialog` (Blueprint spike, 2026-09-14: `AppTest` has no dialog node).
 
 **New report intake** opens a dialog from the workspace header: a text area, community
 (selectbox over pseudonymous ids), reported date (defaults to the dataset day and says so),
@@ -432,7 +432,7 @@ Fixed before the critique, scored in `design/phase-2-critique.md` §A:
   intake moves in; offline-only leaves.
 - **§9:** the prototype runs with internet; the artefact path stays as the no-model fallback.
 - **No PRD change for the basemap:** §3.1 already allows an attributed optional basemap
-  with a no-network fallback. The map-tile ban lives in `CLAUDE.md` Part 2 and is amended
+  with a no-network fallback. The map-tile ban lives in `CLAUDE.md` Blueprint and is amended
   by `create-architecture`, not here.
 
 ## 13. Response to the critique

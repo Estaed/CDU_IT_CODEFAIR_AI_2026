@@ -12,6 +12,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.data import artefacts
+from fair_turn.eval import metrics
 
 ROOT = Path(__file__).resolve().parent.parent
 PAGE = ROOT / "fair_turn" / "app" / "pages" / "evidence_lab.py"
@@ -143,9 +144,12 @@ def test_extraction_limitation_and_tables_are_in_expanders(tmp_path) -> None:
     assert (
         f"Target: {ev['f1_target']:.0%} on fault type and on safety class. Fault type: "
         f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class: "
-        f"{'met' if ev['target_met']['safety_class'] else 'not met'} "
-        "(the model over-predicts immediate)."
+        f"{'met' if ev['target_met']['safety_class'] else 'not met'}."
     ) in captions
+    assert metrics.challenge_sentence(ev["challenge"]) in captions
+    assert "Cross-vendor check: 36 reports written by gpt-6-luna" in (
+        metrics.challenge_sentence(ev["challenge"])
+    )
     expanders = [expander for expander in at.get("expander") if expander.label.endswith("by class")]
     assert [expander.label for expander in expanders] == [
         "Fault type, by class",

@@ -19,6 +19,7 @@ from fair_turn.core import audit, constants, feedback_sim
 from fair_turn.core.capacity_sim import Closure, CrewBase, Site
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 from fair_turn.data import artefacts, geography
+from fair_turn.eval import metrics as eval_metrics
 
 FALLBACK_EXTRACTOR_CAPTION = "Build extractor: Claude Sonnet via claude -p (Blueprint)."
 NO_RECORDS_MESSAGE = (
@@ -199,9 +200,10 @@ def render_extraction_tab() -> None:
     st.caption(
         f"Target: {ev['f1_target']:.0%} on fault type and on safety class. Fault type: "
         f"{'met' if ev['target_met']['fault_type'] else 'not met'}; safety class: "
-        f"{'met' if ev['target_met']['safety_class'] else 'not met'} "
-        "(the model over-predicts immediate)."
+        f"{'met' if ev['target_met']['safety_class'] else 'not met'}."
     )
+    if challenge := ev.get("challenge"):
+        st.caption(eval_metrics.challenge_sentence(challenge))
     st.altair_chart(
         macro_f1_chart(ev, ("fault_type", "safety_class", "health_risk")), width="stretch"
     )

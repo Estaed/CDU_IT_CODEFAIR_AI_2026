@@ -119,6 +119,22 @@ def span_scores(gold_spans: list[dict], pred_spans: list[dict]) -> dict:
     }
 
 
+def challenge_sentence(challenge: dict) -> str:
+    """The cross-vendor check of ``eval.json`` in one line: text by another model family,
+    read by the same extractor."""
+    fields = challenge["fields"]
+    base = challenge["baseline"]
+    return (
+        f"Cross-vendor check: {challenge['n']} reports written by "
+        f"{', '.join(challenge['writer'])} (another model family), read by the same extractor. "
+        f"Safety class {fields['safety_class']['macro_f1']:.0%} against the baseline's "
+        f"{base['safety_class']['macro_f1']:.0%}; fault type "
+        f"{fields['fault_type']['macro_f1']:.0%} against "
+        f"{base['fault_type']['macro_f1']:.0%}. The baseline learns the generator's style; "
+        "the extractor does not depend on it."
+    )
+
+
 def substring_rate(rows: list[dict]) -> dict:
     """Share of extraction rows whose every evidence phrase was a span of the report."""
     count = sum(bool(r["substring_ok"]) for r in rows)

@@ -330,7 +330,7 @@ def line_chart(rows: pd.DataFrame, title: str, y_title: str, runs: list[str]) ->
 
 def window_share_chart(rows: pd.DataFrame, runs: list[str]) -> alt.Chart:
     return (
-        alt.Chart(rows, title="Share of reports completed within their NT window")
+        alt.Chart(rows, title="Share of reports made that were completed within their NT window")
         .mark_bar()
         .encode(
             x=alt.X("run:N", sort=runs, title="Run"),
@@ -366,7 +366,9 @@ def render_feedback_tab() -> None:
         DEFAULT_LAM,
         0.05,
         key="evidence_lab_feedback_lam",
-        help="How much travel cost counts when ordering jobs: 0 ignores it, 1 counts nothing else.",
+        help="How much travel cost is subtracted from need when ordering jobs: 0 ignores travel, "
+        "1 subtracts it at full weight. Need (urgency, safety, household health risk) always "
+        "counts.",
     )
     decay = st.slider(
         "Reporting decay when reports go unserved",

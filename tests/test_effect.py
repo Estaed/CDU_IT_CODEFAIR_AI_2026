@@ -44,15 +44,15 @@ def test_composition_returns_the_exact_zero_change_sentence() -> None:
 
 
 def test_outcomes_formats_deltas_and_missing_values() -> None:
-    current = {"median_wait_town": 4.5, "median_wait_remote": None, "travel_cost": 120.0}
-    baseline = {"median_wait_town": 4.0, "median_wait_remote": 7.0, "travel_cost": 100.0}
+    current = {"median_wait_town": 4.5, "median_wait_remote": None, "travel_km": 120.0}
+    baseline = {"median_wait_town": 4.0, "median_wait_remote": 7.0, "travel_km": 100.0}
 
     assert outcomes(current, baseline) == (
         "Simulated over the 90-day set against efficiency-first: town median wait +0.5 days, "
-        "remote median wait not available, travel cost +20 %."
+        "remote median wait not available, road km +20 %."
     )
-    assert "travel cost not available" in outcomes(
-        {**current, "travel_cost": 100.0}, {**baseline, "travel_cost": 0.0}
+    assert "road km not available" in outcomes(
+        {**current, "travel_km": 100.0}, {**baseline, "travel_km": 0.0}
     )
 
 
@@ -79,8 +79,8 @@ def test_before_signature_never_reveals_outcomes(
 def test_after_signature_adds_outcomes_and_requires_metrics() -> None:
     current = [_scored("job-1", "town-a")]
     baseline = [_scored("job-2", "remote-a")]
-    metrics = {"median_wait_town": 4.5, "median_wait_remote": 6.0, "travel_cost": 120.0}
-    baseline_metrics = {"median_wait_town": 4.0, "median_wait_remote": 7.0, "travel_cost": 100.0}
+    metrics = {"median_wait_town": 4.5, "median_wait_remote": 6.0, "travel_km": 120.0}
+    baseline_metrics = {"median_wait_town": 4.0, "median_wait_remote": 7.0, "travel_km": 100.0}
 
     text = sentence(
         "after_signature", current, baseline, 1, _is_remote, "Balanced", metrics, baseline_metrics

@@ -21,8 +21,8 @@ sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts
 
 from fair_turn.core import capacity_sim, constants, feedback_sim  # noqa: E402
 from fair_turn.core.capacity_sim import Closure, CrewBase, Site  # noqa: E402
-from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass  # noqa: E402
-from fair_turn.data import geography  # noqa: E402
+from fair_turn.core.types import Job  # noqa: E402
+from fair_turn.data import artefacts, geography  # noqa: E402
 
 BUILD = ROOT / "data" / "build"
 OUT = BUILD / "report"
@@ -40,22 +40,11 @@ def _communities(build: Path) -> dict[str, dict[str, str]]:
 
 
 def _jobs(build: Path, communities: dict[str, dict[str, str]]) -> list[Job]:
-    jobs = []
-    for label in _load_json(build / "labels.json"):
-        community = communities[label["community_id"]]
-        jobs.append(
-            Job(
-                job_id=label["job_id"],
-                community_id=label["community_id"],
-                is_remote=community["is_remote"] == "True",
-                reported_on=date.fromisoformat(label["reported_on"]),
-                fault_type=FaultType(label["fault_type"]),
-                safety_class=SafetyClass(label["safety_class"]),
-                health_risk=frozenset(HealthRiskFactor(h) for h in label["health_risk"]),
-                logistics_factor=float(community["logistics_factor"]),
-            )
-        )
-    return jobs
+    """The jobs the app ranks: verified extracted fields, not the gold labels, so every
+    simulation figure in the report is the one the workspace computes. A job whose required
+    field failed verification sits in the human queue and outside the medians, as in the
+    app. (``communities`` is accepted for the old signature; the loader reads its own.)"""
+    return artefacts.to_jobs(artefacts.load_all(build))
 
 
 def _closures(build: Path) -> list[Closure]:
@@ -103,9 +92,88 @@ def price_of_fairness(
                 "median_wait_remote": _fmt(result.median_wait_remote),
                 "median_wait_town": _fmt(result.median_wait_town),
                 "gap": _fmt(result.gap),
+                "unfinished_remote": result.unfinished_remote,
+                "jobs_remote": result.jobs_remote,
+                "unfinished_town": result.unfinished_town,
+                "jobs_town": result.jobs_town,
+                "travel_km": f"{result.travel_km:.0f}",
                 "travel_cost": f"{result.travel_cost:.{DIGITS}f}",
             }
         )
+    return rows
+
+
+PRICE_COLUMNS = [
+    "lam",
+    "median_wait_remote",
+    "median_wait_town",
+    "gap",
+    "unfinished_remote",
+    "jobs_remote",
+    "unfinished_town",
+    "jobs_town",
+    "travel_km",
+    "travel_cost",
+]
+
+# (crews per remote region, town crews, jobs per crew per day): the committed setting first,
+# then one step either way on each axis, so a reader sees how much each conclusion depends on
+# the provisional capacity numbers.
+SENSITIVITY = (
+    (constants.CREWS_PER_REMOTE_REGION, constants.CREWS_TOWN, constants.JOBS_PER_CREW_DAY),
+    (1, 2, 2),
+    (1, 2, 4),
+    (1, 3, 3),
+    (2, 2, 3),
+)
+SENSITIVITY_COLUMNS = [
+    "crews_per_remote_region",
+    "crews_town",
+    "jobs_per_crew_day",
+    "lam",
+    "median_wait_remote",
+    "median_wait_town",
+    "unfinished_remote",
+    "jobs_remote",
+    "unfinished_town",
+    "jobs_town",
+    "travel_km",
+]
+
+
+def capacity_sensitivity(
+    jobs: list[Job], sites: dict[str, Site], communities: dict, closures: list[Closure]
+) -> list[dict]:
+    rows = []
+    for per_remote, town, per_day in SENSITIVITY:
+        crews = geography.crews(communities, per_remote_region=per_remote, town=town)
+        for lam in (1.0, 0.5, 0.0):
+            result = capacity_sim.simulate(
+                jobs,
+                lam,
+                constants.WINDOW_START,
+                constants.WINDOW_DAYS,
+                closures,
+                crews,
+                per_day,
+                constants.TRAVEL_DAY_KM,
+                sites,
+            )
+            rows.append(
+                {
+                    "crews_per_remote_region": per_remote,
+                    "crews_town": town,
+                    "jobs_per_crew_day": per_day,
+                    "lam": f"{lam:.1f}",
+                    "median_wait_remote": _fmt(result.median_wait_remote),
+                    "median_wait_town": _fmt(result.median_wait_town),
+                    "unfinished_remote": result.unfinished_remote,
+                    "jobs_remote": result.jobs_remote,
+                    "unfinished_town": result.unfinished_town,
+                    "jobs_town": result.jobs_town,
+                    "travel_km": f"{result.travel_km:.0f}",
+                }
+            )
     return rows
 
 
@@ -270,8 +338,13 @@ def main(output_dir: Path = OUT) -> int:
     # the event window) by re-running the same core simulations the app pages call.
     _write_csv(
         output_dir / "price_of_fairness.csv",
-        ["lam", "median_wait_remote", "median_wait_town", "gap", "travel_cost"],
+        PRICE_COLUMNS,
         price_of_fairness(jobs, sites, crews, closures),
+    )
+    _write_csv(
+        output_dir / "capacity_sensitivity.csv",
+        SENSITIVITY_COLUMNS,
+        capacity_sensitivity(jobs, sites, communities, closures),
     )
     _write_csv(
         output_dir / "feedback_loop.csv",

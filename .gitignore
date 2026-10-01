@@ -26,3 +26,6 @@ data/audit/audit.jsonl
 
 # Runtime intake and coordinator-set fields: appended locally by the app.
 data/runtime/
+
+# Scratch files from agent sessions
+.tmp/

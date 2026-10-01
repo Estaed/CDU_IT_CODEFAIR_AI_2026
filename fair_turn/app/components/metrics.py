@@ -12,7 +12,7 @@ from statistics import median
 import streamlit as st
 
 from fair_turn.app import state
-from fair_turn.core import capacity_sim, constants, effect
+from fair_turn.core import capacity_sim, constants, decisions, effect
 from fair_turn.core.capacity_sim import Closure, SimResult
 from fair_turn.core.types import Job, ScoredJob
 from fair_turn.data import geography
@@ -22,7 +22,7 @@ LABELS = {
     "median_wait_remote": "Remote median wait",
     "median_wait_town": "Town median wait",
     "gap": "Gap (remote minus town)",
-    "travel_cost": "Total travel cost",
+    "travel_km": "Road km driven",
 }
 NOT_AVAILABLE = "n/a"
 
@@ -72,19 +72,16 @@ def panel_values(
         "median_wait_remote": sim.median_wait_remote,
         "median_wait_town": sim.median_wait_town,
         "gap": sim.gap,
-        "travel_cost": sim.travel_cost,
+        "travel_km": sim.travel_km,
     }
     if region == state.ALL_REGIONS:
         return values
     end = constants.WINDOW_START + timedelta(days=len(sim.queue_length))
     remote: list[int] = []
     town: list[int] = []
-    for job in jobs:
-        community = communities[job.community_id]
-        if community["region"] != region or job.needs_human or job.reported_on >= end:
-            continue
+    for job in _crew_jobs(sim, jobs, communities, region):
         wait = sim.wait_days[job.job_id]
-        (remote if community["is_remote"] == "True" else town).append(
+        (remote if job.is_remote else town).append(
             wait if wait is not None else (end - job.reported_on).days
         )
     values["median_wait_remote"] = float(median(remote)) if remote else None
@@ -92,6 +89,37 @@ def panel_values(
     both = values["median_wait_remote"] is not None and values["median_wait_town"] is not None
     values["gap"] = values["median_wait_remote"] - values["median_wait_town"] if both else None
     return values
+
+
+def _crew_jobs(
+    sim: SimResult, jobs: list[Job], communities: dict[str, dict[str, str]], region: str
+) -> list[Job]:
+    """The jobs behind the crew-wait medians, selected as ``capacity_sim`` selects them:
+    reported within the run, not in the human queue, not the make-safe contractor's."""
+    end = constants.WINDOW_START + timedelta(days=len(sim.queue_length))
+    return [
+        job
+        for job in jobs
+        if (region == state.ALL_REGIONS or communities[job.community_id]["region"] == region)
+        and not job.needs_human
+        and not decisions.is_make_safe(job)
+        and job.reported_on < end
+    ]
+
+
+def open_counts(
+    sim: SimResult, jobs: list[Job], communities: dict[str, dict[str, str]], region: str
+) -> str:
+    """How many of the medians' jobs are still open at the end of the run, remote and town."""
+    counted = _crew_jobs(sim, jobs, communities, region)
+    remote = [j for j in counted if j.is_remote]
+    town = [j for j in counted if not j.is_remote]
+    open_remote = sum(sim.completed_on[j.job_id] is None for j in remote)
+    open_town = sum(sim.completed_on[j.job_id] is None for j in town)
+    return (
+        f"Still open at the end of the run: {open_remote} of {len(remote)} remote jobs, "
+        f"{open_town} of {len(town)} town jobs."
+    )
 
 
 def _days(value: float) -> str:
@@ -103,8 +131,8 @@ def formatted(values: dict[str, float | None]) -> dict[str, str]:
     return {
         key: NOT_AVAILABLE
         if value is None
-        else f"{value:,.0f}"
-        if key == "travel_cost"
+        else f"{value:,.0f} km"
+        if key == "travel_km"
         else _days(value)
         for key, value in values.items()
     }
@@ -119,8 +147,8 @@ def deltas(values: dict[str, float | None], baseline: dict[str, float | None]) -
     return {
         key: None
         if values[key] is None or baseline[key] is None or values[key] == baseline[key]
-        else f"{values[key] - baseline[key]:+,.0f}"
-        if key == "travel_cost"
+        else f"{values[key] - baseline[key]:+,.0f} km"
+        if key == "travel_km"
         else f"{values[key] - baseline[key]:+.1f} days"
         for key in values
     }
@@ -189,7 +217,7 @@ def metrics_panel(today: date, region: str, lam: float) -> None:
     same = same_as_baseline(values, baseline_values)
     travel_help = "Whole NT." if region != state.ALL_REGIONS else None
     for column, key in zip(st.columns(len(LABELS)), LABELS, strict=True):
-        help_text = travel_help if key == "travel_cost" else "Against λ = 1.00."
+        help_text = travel_help if key == "travel_km" else "Against λ = 1.00."
         if same[key]:
             help_text = f"{help_text} {SAME_AS_BASELINE}" if help_text else SAME_AS_BASELINE
         column.metric(
@@ -204,5 +232,9 @@ def metrics_panel(today: date, region: str, lam: float) -> None:
             column.caption(SAME_AS_BASELINE)
     st.caption(
         "Baseline: efficiency-first (travel-cost weight 1.00). Simulated over the 90-day set. "
-        "Days and AUD."
+        "Days and road kilometres. A job still open at the end counts with its days open so "
+        "far, so a median is a lower bound; the counts below say how many."
     )
+    current_open = open_counts(simulation(today, lam), jobs, art.communities, region)
+    baseline_open = open_counts(simulation(today, 1.0), jobs, art.communities, region)
+    st.caption(f"This weighting: {current_open} Efficiency-first: {baseline_open}")

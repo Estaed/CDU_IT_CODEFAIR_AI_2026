@@ -236,7 +236,10 @@ def test_backlog_table_has_display_config_and_bounded_height(tmp_path) -> None:
         "min_value": 0.0,
         "max_value": float(_frame(at, 3)["score_bar"].max()),
     }
-    assert ranking_table.table_height(ranking_table.capacity("All")) == 528
+    # Capacity (21) exceeds the visible-row bound, so the table stops growing at 20 rows.
+    assert ranking_table.table_height(ranking_table.capacity("All")) == ranking_table.table_height(
+        ranking_table.MAX_VISIBLE_TABLE_ROWS
+    )
     assert ranking_table.table_height(21) == ranking_table.table_height(20)
 
 

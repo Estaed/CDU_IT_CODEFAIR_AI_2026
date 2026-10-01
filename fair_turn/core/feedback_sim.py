@@ -45,16 +45,20 @@ class WeeklySeries:
 
 def served_within_window(sim: SimResult, jobs: list[Job]) -> tuple[float | None, float | None]:
     """Share of rankable reports (``needs_human`` false, not make-safe) completed within their
-    own NT window, ``scoring.window_days(job)``, as ``(remote, town)``; ``None`` for an empty
-    locality. A job still open at the horizon counts as not served."""
+    own NT window, ``scoring.window_days(job)`` business days, as ``(remote, town)``; ``None``
+    for an empty locality. Only reports the run admitted count (``sim.completed_on`` holds
+    exactly those): a report the decay model never let in was never made. A job still open at
+    the horizon counts as not served."""
     total = {True: 0, False: 0}
     served = {True: 0, False: 0}
     for job in jobs:
-        if job.needs_human or decisions.is_make_safe(job):
+        if job.needs_human or decisions.is_make_safe(job) or job.job_id not in sim.completed_on:
             continue
         total[job.is_remote] += 1
         completed = sim.completed_on.get(job.job_id)
-        if completed is not None and (completed - job.reported_on).days <= scoring.window_days(job):
+        if completed is not None and scoring.window_used(job, completed) <= scoring.window_days(
+            job
+        ):
             served[job.is_remote] += 1
     return tuple(
         served[locality] / total[locality] if total[locality] else None
@@ -148,7 +152,7 @@ def run(
         week_jobs = [j for j in admitted if week_start <= j.reported_on < week_end]
         waits: dict[bool, list[int]] = {True: [], False: []}
         for j in week_jobs:
-            if j.needs_human:
+            if j.needs_human or decisions.is_make_safe(j):  # crew waits, as capacity_sim
                 continue
             wait = sim.wait_days[j.job_id]
             waits[j.is_remote].append(wait if wait is not None else (end - j.reported_on).days)

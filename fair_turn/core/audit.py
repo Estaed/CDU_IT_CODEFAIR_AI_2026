@@ -398,12 +398,14 @@ def make_safe_sent(records: list[Record]) -> dict[str, MakeSafe]:
 
 
 def override_rate(records: list[Record]) -> list[tuple[date, float]]:
-    """``(day, overrides / ranked_jobs)`` for each sign-off day, sorted by decision day."""
+    """``(day, overrides / signed_jobs)`` for each approved sign-off day, sorted by decision
+    day. The denominator is the signed list (``today_job_ids``) of the day's last approval;
+    a record from before today's lists existed falls back to its ranked list."""
     ranked_jobs: dict[date, int] = {}
     overrides: dict[date, int] = {}
     for record in records:
-        if isinstance(record, SignOff):
-            ranked_jobs[record.day] = len(record.ranked_job_ids)
+        if isinstance(record, SignOff) and record.decision == "approve":
+            ranked_jobs[record.day] = len(record.today_job_ids or record.ranked_job_ids)
         elif isinstance(record, Override):
             overrides[record.day] = overrides.get(record.day, 0) + 1
     return [

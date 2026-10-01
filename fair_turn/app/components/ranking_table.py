@@ -158,11 +158,12 @@ def rank_change(places: int) -> str:
 
 
 def window_text(job: Job, today: date) -> str:
-    """Days used of the NT window, ``3 of 5 days``; the make-safe window in hours."""
-    used = (today - job.reported_on).days
+    """Business days used of the NT window, ``3 of 5 business days``; the make-safe window in
+    hours."""
+    used = round(scoring.window_used(job, today))
     if job.safety_class is SafetyClass.IMMEDIATE:
         return f"{used} days, {constants.MAKE_SAFE_HOURS} h window"
-    return f"{used} of {round(scoring.window_days(job))} days"
+    return f"{used} of {round(scoring.window_days(job))} business days"
 
 
 def rows_for(
@@ -192,7 +193,9 @@ def rows_for(
             "window": window_text(job, today),
             "health risk": ", ".join(sorted(_label(f.value) for f in job.health_risk)),
             "days open": days_open,
-            "days left in window": round(scoring.window_days(job) - days_open, 1),
+            "days left in window": round(
+                scoring.window_days(job) - scoring.window_used(job, today), 1
+            ),
             "score": round(s.score, 1),
             "score_bar": float(s.score),
             **{name: s.factors[name] for name in factor_names},

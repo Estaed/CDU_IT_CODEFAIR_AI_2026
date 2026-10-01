@@ -57,7 +57,11 @@ def _job_label(job_id: str) -> str:
 
 records = audit.read(state.get_audit_path())
 signoffs_today = sorted(
-    (r for r in records if isinstance(r, audit.SignOff) and r.day == today),
+    (
+        r
+        for r in records
+        if isinstance(r, audit.SignOff) and r.day == today and r.decision == "approve"
+    ),
     key=lambda r: r.batch_version,
 )
 
@@ -118,15 +122,17 @@ else:
     signed_col.metric(
         "Road km, this signed list",
         f"{current_plan.road_km:,.0f} km",
-        help="Kilometres the crews will drive today to reach every road job on the list "
-        "you signed.",
+        help="Kilometres the crews will drive today to reach the planned road jobs on the "
+        "list you signed. Signed jobs no free crew reaches today are listed below as not "
+        "planned and add no kilometres.",
         border=True,
     )
     efficiency_col.metric(
         "Road km, efficiency-first list",
         f"{efficiency_plan.road_km:,.0f} km",
-        help='The "efficiency-first list" ranks jobs by travel cost alone, as if who has '
-        "waited longest did not count, same day, same crews, planned the same way.",
+        help='The "efficiency-first list" is the ranking at λ = 1, where travel cost weighs '
+        "most against need, cut to the same number of jobs: same day, same crews, planned "
+        "the same way.",
         border=True,
     )
     cost_col.metric(

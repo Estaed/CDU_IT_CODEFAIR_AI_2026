@@ -35,6 +35,7 @@ class Site:
     lat: float
     lon: float
     road_factor: float  # multiplier on haversine km for the community's road access
+    is_town: bool = False  # a town takes as many crews a day as its open jobs fill
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,12 @@ class SimResult:
     travel_km: float  # sum of assigned trip km (haversine times road factor)
     queue_length: list[int] = field(default_factory=list)  # open rankable jobs, start of day
     visits: list[tuple[date, str, str]] = field(default_factory=list)  # day, crew, community
+    # The populations behind the medians and how many of them were still open at the end
+    # (their wait in the median is the censored time open, a lower bound).
+    jobs_remote: int = 0
+    jobs_town: int = 0
+    unfinished_remote: int = 0
+    unfinished_town: int = 0
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -87,20 +94,21 @@ def reaches(crew: CrewBase, region: str, km_from_base: float, travel_day_km: flo
     return region == crew.region or km_from_base <= travel_day_km
 
 
-def crew_roster(base_for_region: Mapping[str, str]) -> tuple[CrewBase, ...]:
-    """The NT-wide crew pool: ``CREWS_PER_REMOTE_REGION`` crews at each remote region's base
-    and ``CREWS_TOWN`` at the town region's base. ``base_for_region`` is the ``crew_base``
-    column of ``communities.csv`` keyed by region."""
+def crew_roster(
+    base_for_region: Mapping[str, str],
+    per_remote_region: int = constants.CREWS_PER_REMOTE_REGION,
+    town: int = constants.CREWS_TOWN,
+) -> tuple[CrewBase, ...]:
+    """The NT-wide crew pool: ``per_remote_region`` crews at each remote region's base and
+    ``town`` at the town region's base (the constants by default; other counts are for the
+    sensitivity table). ``base_for_region`` is the ``crew_base`` column of
+    ``communities.csv`` keyed by region."""
     missing = [region for region in constants.REGIONS if region not in base_for_region]
     if missing:
         raise ValueError(f"no crew base for {missing}")
     homes: list[tuple[str, str]] = []  # (base, home region) per crew
     for region in constants.REGIONS:
-        count = (
-            constants.CREWS_PER_REMOTE_REGION
-            if region in constants.REMOTE_REGIONS
-            else constants.CREWS_TOWN
-        )
+        count = per_remote_region if region in constants.REMOTE_REGIONS else town
         homes.extend([(base_for_region[region], region)] * count)
     totals = {base: sum(1 for b, _ in homes if b == base) for base, _ in homes}
     seen: dict[str, int] = {}
@@ -178,16 +186,26 @@ def simulate(
             else:
                 free.append(index)
 
-        # Rank order, each community once: the nearest free crew that reaches it goes.
-        considered = {destination for _, destination in working}
+        # Rank order: the nearest free crew that reaches the community goes. A remote
+        # community takes one crew a day (a visit batches its jobs); a town takes another
+        # crew for each further ``jobs_per_crew_day`` open jobs, so a town's many separate
+        # houses are not capped at one crew's day.
+        crews_at: dict[str, int] = {}
+        for _, destination in working:
+            crews_at[destination] = crews_at.get(destination, 0) + 1
+        open_at: dict[str, int] = {}
+        for j in ranked:
+            open_at[j.community_id] = open_at.get(j.community_id, 0) + 1
         for j in ranked:
             if not free:
                 break
             cid = j.community_id
-            if cid in considered or _is_closed(closed, cid, today):
-                continue
-            considered.add(cid)
             site = sites[cid]
+            sent = crews_at.get(cid, 0)
+            limit = math.ceil(open_at[cid] / jobs_per_crew_day) if site.is_town else 1
+            if sent >= limit or _is_closed(closed, cid, today):
+                continue
+            crews_at[cid] = sent + 1
             if cid not in reach:
                 reach[cid] = tuple(
                     reaches(
@@ -237,10 +255,15 @@ def simulate(
     }
     remote: list[int] = []
     town: list[int] = []
+    unfinished = {True: 0, False: 0}
     for j in jobs:
-        if j.needs_human or j.reported_on >= end:
+        # Crew waits only: an Immediate job is the make-safe contractor's, completed by
+        # assumption on its report day, and would pull every median towards zero.
+        if j.needs_human or j.reported_on >= end or decisions.is_make_safe(j):
             continue
         wait = wait_days[j.job_id]
+        if wait is None:
+            unfinished[j.is_remote] += 1
         (remote if j.is_remote else town).append(
             wait if wait is not None else (end - j.reported_on).days
         )
@@ -256,4 +279,8 @@ def simulate(
         travel_km=travel_km,
         queue_length=queue_length,
         visits=visits,
+        jobs_remote=len(remote),
+        jobs_town=len(town),
+        unfinished_remote=unfinished[True],
+        unfinished_town=unfinished[False],
     )

@@ -192,7 +192,8 @@ def test_override_rate_fixture() -> None:
         _override(date(2026, 9, 1), "job-4"),
         _sign_off(date(2026, 9, 2), ranked=("job-5", "job-6")),
     ]
-    assert audit.override_rate(records) == [(date(2026, 9, 1), 0.5), (date(2026, 9, 2), 0.0)]
+    # Two hand moves over a signed list of two jobs (the denominator is the signed list).
+    assert audit.override_rate(records) == [(date(2026, 9, 1), 1.0), (date(2026, 9, 2), 0.0)]
 
 
 def test_override_rate_ignores_a_day_with_no_sign_off() -> None:

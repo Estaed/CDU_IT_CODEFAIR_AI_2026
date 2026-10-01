@@ -18,7 +18,7 @@ is two logged-in CLIs).
 | `CREW_BASES` | Darwin, Katherine, Tennant Creek, Alice Springs, Nhulunbuy | Crew home bases for distance | PRD §6.1, provisional |
 | `CREWS_PER_REMOTE_REGION` | 1 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
 | `CREWS_TOWN` | 2 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
-| `JOBS_PER_CREW_DAY` | 2 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
+| `JOBS_PER_CREW_DAY` | 3 | Capacity model | PRD §6.3, provisional. 2 from 2026-09-13; set to 3 on 2026-10-01 after the town fix (a town now takes several crews a day; before it, Darwin's one site was capped at one crew-day). At 2 the model left 63 % of remote jobs unfinished at λ = 1 and the weighting barely moved them; at 3 it leaves 53 % at λ = 1 and 38 % at λ = 0. The full sweep is `data/build/report/capacity_sensitivity.csv`, reports/audit-2026-10-01.md |
 | `TRAVEL_DAY_KM` | 200 | Distance beyond which a visit costs a travel day | PRD §6.3, provisional |
 | `REMOTE_REGIONS` | CENTRAL AUSTRALIA, BIG RIVERS, BARKLY, TOP END, EAST ARNHEM | Region names, BushTel spelling | `NTRegionName` in `data/raw/bushtel_community_detail_2026-09-12.json` |
 | `TOWN_REGION` | DARWIN, PALMERSTON, LITCHFIELD | The town region, BushTel spelling | Same field |

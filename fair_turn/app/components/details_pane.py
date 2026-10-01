@@ -176,17 +176,17 @@ def _factor_rows(
     human_set: dict[str, str],
 ) -> list[tuple[str, str, str]]:
     """Return the label, numeric value and provenance for the score summary list."""
-    used = (today - job.reported_on).days
     rows = []
     if job.safety_class is None:
         rows.append(
             ("urgency", "—", "from NT window: Based on 1 of 2 fields (safety class missing)")
         )
     else:
+        used = round(scoring.window_used(job, today))
         if job.safety_class is SafetyClass.IMMEDIATE:
             total = f"{constants.MAKE_SAFE_HOURS} h"
         else:
-            total = str(round(scoring.window_days(job)))
+            total = f"{round(scoring.window_days(job))} business days"
         rows.append(
             (
                 "urgency",

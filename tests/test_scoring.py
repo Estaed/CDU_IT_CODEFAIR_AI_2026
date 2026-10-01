@@ -162,3 +162,24 @@ def test_human_queue_never_ranked(jobs: list[Job], lam: float) -> None:
     _, human = scoring.split_human_queue(jobs)
     assert ranked.isdisjoint(j.job_id for j in human)
     assert len(ranked) + len(human) == len(jobs)
+
+
+# --- business days (FS17 states urgent and routine windows in business days) ---------------
+
+
+def test_business_days_skip_the_weekend() -> None:
+    friday = date(2025, 10, 3)
+    assert scoring.business_days_between(friday, friday + timedelta(days=1)) == 0  # Saturday
+    assert scoring.business_days_between(friday, friday + timedelta(days=2)) == 0  # Sunday
+    assert scoring.business_days_between(friday, friday + timedelta(days=3)) == 1  # Monday
+    assert scoring.business_days_between(friday, friday + timedelta(days=14)) == 10
+    assert scoring.business_days_between(friday, friday) == 0
+    assert scoring.business_days_between(friday, friday - timedelta(days=1)) == 0
+
+
+def test_urgency_counts_business_days_not_calendar_days() -> None:
+    friday = date(2025, 10, 3)
+    town_urgent = make_job(is_remote=False, safety_class=SafetyClass.URGENT, reported_on=friday)
+    monday = friday + timedelta(days=3)
+    assert scoring.urgency(town_urgent, monday) == 1 / 2  # one of two business days used
+    assert scoring.urgency(town_urgent, friday + timedelta(days=2)) == 0

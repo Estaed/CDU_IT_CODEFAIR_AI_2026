@@ -190,7 +190,8 @@ def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
     )
     assert (
         "Baseline: efficiency-first (travel-cost weight 1.00). Simulated over the 90-day set. "
-        "Days and AUD."
+        "Days and road kilometres. A job still open at the end counts with its days open so "
+        "far, so a median is a lower bound; the counts below say how many."
     ) in [c.value for c in at.caption]
     assert re.search(r"Status: Signed v1 \d{2}:\d{2} by A\. Coordinator$", _header(at))
 
@@ -236,6 +237,9 @@ def test_empty_fields_are_flagged_inline_and_defer_is_recorded(tmp_path) -> None
     _sign(at, "A. Coordinator", "crews held for a storm", "Defer")
     (record,) = _sign_offs(audit_path)
     assert record.decision == "defer"
+    # A deferral is recorded but signs nothing: outcomes stay locked, the header says so.
+    assert "Deferred v1" in _header(at) and "not signed" in _header(at)
+    assert metrics_hidden(at)
 
 
 def test_failed_audit_write_writes_nothing_and_keeps_the_review_open(tmp_path, monkeypatch) -> None:
@@ -346,6 +350,7 @@ def test_region_panel_is_the_full_pooled_run_restricted_to_that_region(art) -> N
             for j in jobs
             if art.communities[j.community_id]["region"] == region
             and not j.needs_human
+            and not decisions.is_make_safe(j)
             and j.reported_on < end
         ]
         waits = {
@@ -362,7 +367,7 @@ def test_region_panel_is_the_full_pooled_run_restricted_to_that_region(art) -> N
         for remote, key in ((True, "median_wait_remote"), (False, "median_wait_town")):
             expected = float(statistics.median(waits[remote])) if waits[remote] else None
             assert values[key] == expected
-        assert values["travel_cost"] == full.travel_cost
+        assert values["travel_km"] == full.travel_km
     town = metrics.panel_values(full, jobs, art.communities, constants.TOWN_REGION)
     assert town["median_wait_town"] is not None
     assert town["median_wait_remote"] is None and town["gap"] is None
@@ -373,43 +378,43 @@ def test_formatting_and_deltas() -> None:
         "median_wait_remote": 12.5,
         "median_wait_town": None,
         "gap": 3.0,
-        "travel_cost": 1234.4,
+        "travel_km": 1234.4,
     }
-    base = {"median_wait_remote": 10.0, "median_wait_town": 4.0, "gap": 3.5, "travel_cost": 1000.0}
+    base = {"median_wait_remote": 10.0, "median_wait_town": 4.0, "gap": 3.5, "travel_km": 1000.0}
     assert metrics.formatted(values) == {
         "median_wait_remote": "12.5 days",
         "median_wait_town": metrics.NOT_AVAILABLE,
         "gap": "3.0 days",
-        "travel_cost": "1,234",
+        "travel_km": "1,234 km",
     }
     assert metrics.deltas(values, base) == {
         "median_wait_remote": "+2.5 days",
         "median_wait_town": None,
         "gap": "-0.5 days",
-        "travel_cost": "+234",
+        "travel_km": "+234 km",
     }
     assert metrics.same_as_baseline(values, base) == {
         "median_wait_remote": False,
         "median_wait_town": False,
         "gap": False,
-        "travel_cost": False,
+        "travel_km": False,
     }
 
 
 def test_a_zero_delta_shows_no_delta_but_is_marked_same_as_baseline() -> None:
-    equal = {"median_wait_remote": 5.0, "median_wait_town": None, "gap": 0.0, "travel_cost": 0.0}
-    base = {"median_wait_remote": 5.0, "median_wait_town": 3.0, "gap": 0.0, "travel_cost": 0.0}
+    equal = {"median_wait_remote": 5.0, "median_wait_town": None, "gap": 0.0, "travel_km": 0.0}
+    base = {"median_wait_remote": 5.0, "median_wait_town": 3.0, "gap": 0.0, "travel_km": 0.0}
     changes = metrics.deltas(equal, base)
     assert changes["median_wait_remote"] is None
     assert changes["gap"] is None
-    assert changes["travel_cost"] is None
+    assert changes["travel_km"] is None
     assert changes["median_wait_town"] is None  # missing on one side stays no-delta
     same = metrics.same_as_baseline(equal, base)
     assert same == {
         "median_wait_remote": True,
         "median_wait_town": False,  # missing on one side is not "same"
         "gap": True,
-        "travel_cost": True,
+        "travel_km": True,
     }
 
 

@@ -8,7 +8,7 @@ from typing import Literal
 
 from pydantic import ValidationError
 
-from fair_turn.core import verify_spans
+from fair_turn.core import verify_spans, wording
 from fair_turn.core.verify_spans import VerifiedExtraction
 from fair_turn.llm import claude_cli, ollama, prompts, schema
 
@@ -111,6 +111,21 @@ def extract(
 
     verified = verify_spans.verify(text, extraction)
     failed = [field for field in verify_spans.REQUIRED_FIELDS if getattr(verified, field) is None]
+    markers = wording.injection_markers(text)
+    if markers:
+        # The batch rule (scripts/extract.py): a text that tries to steer the model goes to a
+        # person even when every phrase verifies; the loader keeps its required fields empty.
+        return IntakeResult(
+            extraction=extraction,
+            verified=verified,
+            status="needs_review",
+            provider=provider,
+            model=model,
+            prompt_version=prompts.INTAKE_PROMPT_VERSION,
+            latency_s=latency_s,
+            validation=f"instruction-like text found: {', '.join(markers)}",
+            error=None,
+        )
     if failed:
         return IntakeResult(
             extraction=extraction,

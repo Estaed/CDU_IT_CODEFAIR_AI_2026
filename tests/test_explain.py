@@ -5,7 +5,7 @@ factor; every tenant state answers the four questions, in order."""
 import itertools
 import re
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import date, timedelta
 
 import pytest
 
@@ -341,3 +341,18 @@ def test_lambda_changes_logistics_phrase() -> None:
     assert zero != heavy
     assert "not counted" in zero
     assert "weighted heavily" in heavy
+
+
+def test_a_job_inside_its_window_is_never_called_overdue() -> None:
+    friday = date(2025, 10, 3)
+    job = make_job(is_remote=False, safety_class=SafetyClass.URGENT, reported_on=friday)
+    on_saturday = scoring.rank([job], friday + timedelta(days=1), 0.5)[0]
+    assert "inside its 2-business-day window" in explain.why_sentence(on_saturday, 0.5)
+    on_monday = scoring.rank([job], friday + timedelta(days=3), 0.5)[0]
+    text = explain.why_sentence(on_monday, 0.5)
+    assert "has used 1 business day of its 2-business-day window" in text
+    assert "past" not in text
+    on_wednesday = scoring.rank([job], friday + timedelta(days=5), 0.5)[0]
+    assert "is 1 business day past its 2-business-day window" in explain.why_sentence(
+        on_wednesday, 0.5
+    )

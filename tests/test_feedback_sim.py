@@ -78,7 +78,12 @@ def test_decay_zero_is_the_plain_capacity_run() -> None:
     assert len(result.week_start) == 13
     # Weekly medians are drawn from the plain run's waits, censored at the horizon end.
     first_week = [
-        j for j in jobs if j.is_remote and (j.reported_on - constants.WINDOW_START).days < 7
+        j
+        for j in jobs
+        if j.is_remote
+        and not j.needs_human
+        and not decisions.is_make_safe(j)
+        and (j.reported_on - constants.WINDOW_START).days < 7
     ]
     end = date.fromordinal(constants.WINDOW_START.toordinal() + horizon)
     waits = sorted(
@@ -115,7 +120,9 @@ def test_equity_run_serves_no_fewer_remote_reports_at_more_km_and_town_wait() ->
 
     assert served(equity) >= served(efficiency)
     assert equity.sim.travel_km > efficiency.sim.travel_km
-    assert equity.sim.median_wait_town > efficiency.sim.median_wait_town
+    # Town crews clear most town jobs the same day at either setting, so the town price of
+    # equity shows as town jobs left open, not as a longer town median.
+    assert equity.sim.unfinished_town > efficiency.sim.unfinished_town
 
 
 def test_served_within_window_is_a_share_and_excludes_make_safe() -> None:

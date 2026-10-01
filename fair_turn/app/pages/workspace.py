@@ -73,7 +73,8 @@ KEY_NOT_READ = "Tick 'I have read the report' first."
 MAKE_SAFE_CAPTION = (
     "Immediate jobs go to the emergency make-safe contractor, who makes them safe within "
     f"{constants.MAKE_SAFE_HOURS} hours. The weighting does not move them and they take no "
-    "crew place."
+    "crew place. Immediate jobs from earlier days are assumed made safe on their report day "
+    "in the simulated history (PRD 6.3); today's stay here until you record the send."
 )
 NO_MAKE_SAFE = "No Immediate job is waiting."
 
@@ -364,7 +365,8 @@ if shown_jobs and hidden == len(shown_jobs):
 STALE = "The list changed since you opened this review; open it again."
 
 
-def signed_today() -> list[audit.SignOff]:
+def signoffs_today() -> list[audit.SignOff]:
+    """Every sign-off record of the day, approvals and deferrals alike (versions count both)."""
     return [
         r
         for r in audit.read(state.get_audit_path())
@@ -372,11 +374,16 @@ def signed_today() -> list[audit.SignOff]:
     ]
 
 
+def signed_today() -> list[audit.SignOff]:
+    """Only approvals sign the list; a deferral is recorded but leaves the day unsigned."""
+    return [r for r in signoffs_today() if r.decision == "approve"]
+
+
 human_set = runtime.human_set_for(runtime.read(state.get_runtime_path()))
 current_fp = batch.fingerprint_of(
     lam, [s.job.job_id for s in current], state.get_hand_moves(), human_set, standing
 )
-signed_versions = {r.batch_version for r in signed_today()}
+signed_versions = {r.batch_version for r in signoffs_today()}
 
 
 def decision_status(frozen: batch.Batch | None, versions: set[int]) -> batch.Status:
@@ -597,7 +604,7 @@ def open_review(status: batch.Status) -> None:
     preset = label if label in weighting.PRESETS else None
     frozen = batch.freeze(
         today,
-        1 + len(signed_today()),
+        1 + len(signoffs_today()),
         lam,
         preset,
         current,
@@ -636,7 +643,12 @@ def on_submit(signer: str, decision: str, reason: str) -> None:
         st.error(f"Could not write the audit log: {exc}")
         return
     batch.next_status(saving, "submit_ok")
-    state.set_signed_today(True)
+    if decision == "approve":
+        state.set_signed_today(True)
+    else:
+        # Deferred: the record stays in the audit log, the list stays unsigned and the visit
+        # plan stays closed; the coordinator opens a new review when ready.
+        state.set_batch(None)
     st.rerun()  # the page shows the signed state: the banner in To decide, decisions closed
 
 
@@ -690,6 +702,8 @@ effect_message.info(
 
 records = signed_today()
 status = decision_status(state.get_batch(), {r.batch_version for r in records})
+all_records = signoffs_today()
+last_deferral = all_records[-1] if all_records and all_records[-1].decision == "defer" else None
 if status == "review_open":
     status_text = f"Review open (batch v{state.get_batch().version})"
 elif status == "signed":
@@ -700,6 +714,11 @@ elif status == "signed":
 elif status == "changed_since_signature":
     status_text = (
         f"Changed since signature (signed v{records[-1].batch_version} stays authoritative)"
+    )
+elif last_deferral is not None:
+    status_text = (
+        f"Deferred v{last_deferral.batch_version} "
+        f"{last_deferral.recorded_at.astimezone():%H:%M} by {last_deferral.signer}, not signed"
     )
 else:
     status_text = "Draft"

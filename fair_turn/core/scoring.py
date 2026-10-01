@@ -6,7 +6,7 @@ here so explanations (Task-06) can quote them.
 """
 
 from dataclasses import replace
-from datetime import date
+from datetime import date, timedelta
 
 from fair_turn.core import constants
 from fair_turn.core.types import FaultType, Job, SafetyClass, ScoredJob
@@ -32,10 +32,34 @@ def window_days(job: Job) -> float:
     return float(constants.RESPONSE_BUSINESS_DAYS[(job.safety_class.value, job.is_remote)])
 
 
+def business_days_between(start: date, end: date) -> int:
+    """Weekdays after ``start`` up to and including ``end``; 0 when ``end`` is not later.
+
+    A report made on a Friday has used 0 business days on Saturday and Sunday and 1 on
+    Monday. Public holidays are not modelled (no NT holiday table in ``data/raw``).
+    """
+    if end <= start:
+        return 0
+    days = (end - start).days
+    weeks, rest = divmod(days, 7)
+    count = weeks * 5
+    for offset in range(1, rest + 1):
+        if (start + timedelta(days=offset)).weekday() < 5:
+            count += 1
+    return count
+
+
+def window_used(job: Job, today: date) -> float:
+    """Time used of the job's window, in the window's own unit: business days for urgent and
+    routine (FS17 states them in business days), calendar days for immediate (hours)."""
+    if job.safety_class is SafetyClass.IMMEDIATE:
+        return float(max(0, (today - job.reported_on).days))
+    return float(business_days_between(job.reported_on, today))
+
+
 def urgency(job: Job, today: date) -> float:
-    """Days elapsed over the window, floored at 0 and capped at ``URGENCY_CAP``."""
-    elapsed = max(0, (today - job.reported_on).days)
-    return min(URGENCY_CAP, elapsed / window_days(job))
+    """Window used over the window, floored at 0 and capped at ``URGENCY_CAP``."""
+    return min(URGENCY_CAP, window_used(job, today) / window_days(job))
 
 
 def safety(job: Job, today: date) -> float:

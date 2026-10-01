@@ -21,7 +21,7 @@ Needs-a-human queue: 21 non-adversarial reports with an unverified required fiel
 
 - Crews per remote region: 1
 - Crews in the town region: 2
-- Jobs per crew per day: 2
+- Jobs per crew per day: 3
 - Travel-day threshold: 200 km
 
 ## Event window (*provisional*, PRD section 6.2)

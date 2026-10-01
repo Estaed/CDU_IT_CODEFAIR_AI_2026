@@ -12,7 +12,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-from fair_turn.core import verify_spans
+from fair_turn.core import verify_spans, wording
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -82,15 +82,20 @@ def _job(
     community: dict[str, str],
     human_set: dict[str, str] | None = None,
 ) -> Job:
-    """Build a job from verified fields, replacing fault or safety with coordinator values."""
+    """Build a job from verified fields, replacing fault or safety with coordinator values.
+
+    A row whose text tries to steer the model (an injection marker) contributes no required
+    field: the job stays in the human queue until a coordinator sets them, whatever the
+    model returned. A row missing one field keeps its other verified field."""
     kept = row.kept
+    required = {} if row.injection_markers else kept
     values = human_set or {}
     fault = values.get("fault_type")
     safety = values.get("safety_class")
     if fault is None:
-        fault = None if "fault_type" not in kept else kept["fault_type"].value
+        fault = None if "fault_type" not in required else required["fault_type"].value
     if safety is None:
-        safety = None if "safety_class" not in kept else kept["safety_class"].value
+        safety = None if "safety_class" not in required else required["safety_class"].value
     return Job(
         job_id=label["job_id"],
         community_id=label["community_id"],
@@ -124,8 +129,11 @@ def to_jobs(art: Artefacts, human_set: dict | None = None, intake: list | None =
         # a report that needs review is a job in the human queue, never a ranked one.
         verified = verify_spans.verify(report.text, report.extraction or {})
         values = human_set.get(report.job_id, {})
-        fault = values.get("fault_type", verified.fault_type)
-        safety = values.get("safety_class", verified.safety_class)
+        # Same rule as the batch extractor: a text that tries to steer the model is read by a
+        # person, so no model value for a required field is used.
+        steered = bool(wording.injection_markers(report.text))
+        fault = values.get("fault_type", None if steered else verified.fault_type)
+        safety = values.get("safety_class", None if steered else verified.safety_class)
         community = art.communities[report.community_id]
         jobs.append(
             Job(

@@ -194,14 +194,16 @@ def sim_sites(rows: Mapping[str, Mapping[str, str]]) -> dict[str, Site]:
             lat=float(r["lat"]),
             lon=float(r["lon"]),
             road_factor=ROAD_FACTORS[r["road_access"]],
+            is_town=r["is_remote"] != "True",
         )
         for cid, r in rows.items()
     }
 
 
-def crews(rows: Mapping[str, Mapping[str, str]]) -> tuple[CrewBase, ...]:
-    """The NT-wide crew pool, with each region's base read from the ``crew_base`` column."""
-    return crew_roster({r["region"]: r["crew_base"] for r in rows.values()})
+def crews(rows: Mapping[str, Mapping[str, str]], **counts: int) -> tuple[CrewBase, ...]:
+    """The NT-wide crew pool, with each region's base read from the ``crew_base`` column;
+    ``counts`` (``per_remote_region``, ``town``) override the constants for a what-if."""
+    return crew_roster({r["region"]: r["crew_base"] for r in rows.values()}, **counts)
 
 
 if __name__ == "__main__":

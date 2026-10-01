@@ -65,7 +65,11 @@ def _join(items: list[str]) -> str:
 def _window_label(job: Job) -> str:
     if job.safety_class is SafetyClass.IMMEDIATE:
         return f"{constants.MAKE_SAFE_HOURS}-hour"
-    return f"{scoring.window_days(job):g}-day"
+    return f"{scoring.window_days(job):g}-business-day"
+
+
+def _days(n: int, unit: str) -> str:
+    return f"{n} {unit}{'' if n == 1 else 's'}"
 
 
 def _health_risk_labels(job: Job) -> list[str]:
@@ -75,12 +79,20 @@ def _health_risk_labels(job: Job) -> list[str]:
 def _urgency_clause(job: Job, factors: dict[str, float]) -> str:
     window = _window_label(job)
     urgency = factors["urgency"]
-    elapsed = round(urgency * scoring.window_days(job))
+    length = scoring.window_days(job)
+    unit = "day" if job.safety_class is SafetyClass.IMMEDIATE else "business day"
     if urgency <= 0:
         return f"the job is inside its {window} window"
+    if urgency < 1:
+        used = max(1, round(urgency * length))
+        return f"the job has used {_days(used, unit)} of its {window} window"
     if urgency >= scoring.URGENCY_CAP:
-        return f"the job is well past its {window} window, {elapsed} days overdue"
-    return f"the job is {elapsed} days past its {window} window"
+        overdue = round((scoring.URGENCY_CAP - 1) * length)
+        return f"the job is well past its {window} window, at least {_days(overdue, unit)} overdue"
+    overdue = round((urgency - 1) * length)
+    if overdue == 0:
+        return f"the job has reached the end of its {window} window"
+    return f"the job is {_days(overdue, unit)} past its {window} window"
 
 
 def _safety_clause(job: Job, factors: dict[str, float]) -> str:

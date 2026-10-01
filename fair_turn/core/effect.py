@@ -50,8 +50,8 @@ def _wait_clause(label: str, current: float | None, baseline: float | None) -> s
 
 def _travel_clause(current: float | None, baseline: float | None) -> str:
     if current is None or baseline is None or baseline == 0:
-        return "travel cost not available"
-    return f"travel cost {(current - baseline) / baseline * 100:+.0f} %"
+        return "road km not available"
+    return f"road km {(current - baseline) / baseline * 100:+.0f} %"
 
 
 def outcomes(
@@ -68,7 +68,7 @@ def outcomes(
         current_metrics.get("median_wait_remote"),
         baseline_metrics.get("median_wait_remote"),
     )
-    travel = _travel_clause(current_metrics.get("travel_cost"), baseline_metrics.get("travel_cost"))
+    travel = _travel_clause(current_metrics.get("travel_km"), baseline_metrics.get("travel_km"))
     return (
         f"Simulated over the {constants.WINDOW_DAYS}-day set against efficiency-first: "
         f"{town}, {remote}, {travel}."

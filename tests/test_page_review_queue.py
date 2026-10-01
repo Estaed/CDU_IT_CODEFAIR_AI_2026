@@ -12,8 +12,8 @@ from streamlit.testing.v1 import AppTest
 
 from fair_turn.app.components import ranking_table
 from fair_turn.app.intake import _flat_extraction
-from fair_turn.core import audit, constants, wording
-from fair_turn.data import artefacts, runtime
+from fair_turn.core import audit, capacity_sim, constants, decisions, wording
+from fair_turn.data import artefacts, geography, runtime
 
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW_QUEUE = ROOT / "fair_turn" / "app" / "pages" / "review_queue.py"
@@ -44,6 +44,39 @@ def _job_with_dropped_required_field(art: artefacts.Artefacts) -> tuple[str, str
                 if field in row.dropped:
                     return job_id, field, row.dropped[field]
     raise AssertionError("no committed job has a dropped required field")
+
+
+def _open_complete_job(art: artefacts.Artefacts) -> str:
+    """The first job, by id, that is still open on the default day (the same capacity run
+    as ``ranking_table.open_jobs``) and has both required fields."""
+    jobs = artefacts.to_jobs(art)
+    today = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
+    result = capacity_sim.simulate(
+        jobs,
+        1.0,
+        constants.WINDOW_START,
+        (today - constants.WINDOW_START).days + 1,
+        [
+            capacity_sim.Closure(
+                c["community_id"],
+                date.fromisoformat(c["closed_from"]),
+                date.fromisoformat(c["closed_to"]),
+            )
+            for c in art.closures
+        ],
+        geography.crews(art.communities),
+        constants.JOBS_PER_CREW_DAY,
+        constants.TRAVEL_DAY_KM,
+        geography.sim_sites(art.communities),
+    )
+    return min(
+        j.job_id
+        for j in jobs
+        if not j.needs_human
+        and not decisions.is_make_safe(j)
+        and j.reported_on <= today
+        and result.completed_on[j.job_id] is None
+    )
 
 
 def _wrapper_script(tmp_path: Path) -> Path:
@@ -213,7 +246,7 @@ def test_mark_rankable_with_empty_reason_writes_nothing_and_shows_error(art, tmp
 
 
 def test_review_requested_job_without_missing_fields_reports_rank(art, tmp_path) -> None:
-    job_id = "JR-2025-00004"
+    job_id = _open_complete_job(art)
     script = _wrapper_script(tmp_path)
     script.write_text(
         script.read_text(encoding="utf-8").replace(
@@ -424,10 +457,10 @@ def test_request_clarification_drafts_the_message_and_sends_it_as_the_reason(art
     assert any("Clarification requested." in message.value for message in at.success)
 
 
-def test_clarification_draft_falls_back_when_no_required_field_is_missing(tmp_path) -> None:
+def test_clarification_draft_falls_back_when_no_required_field_is_missing(art, tmp_path) -> None:
     """A job sent back for review has no missing required field, so the draft asks the general
     question rather than naming one."""
-    job_id = "JR-2025-00004"
+    job_id = _open_complete_job(art)
     script = _wrapper_script(tmp_path)
     script.write_text(
         script.read_text(encoding="utf-8").replace(

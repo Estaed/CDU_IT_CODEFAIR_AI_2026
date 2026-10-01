@@ -379,7 +379,7 @@ def test_an_immediate_job_is_completed_on_its_report_day_not_before() -> None:
     assert result.wait_days["i"] == 0
 
 
-def test_immediate_jobs_are_not_in_the_queue_but_count_in_the_medians_with_wait_zero() -> None:
+def test_immediate_jobs_are_neither_in_the_queue_nor_in_the_crew_wait_medians() -> None:
     jobs = [
         make_job("t1"),
         make_job("t2"),
@@ -389,8 +389,10 @@ def test_immediate_jobs_are_not_in_the_queue_but_count_in_the_medians_with_wait_
     result = run(jobs, days=3)
     assert result.queue_length == [2, 1, 0]
     assert result.wait_days == {"t1": 0, "t2": 1, "t3": 0, "r1": 0}
-    assert result.median_wait_town == 0.0  # waits 0, 1, 0
-    assert result.median_wait_remote == 0.0
+    # Crew waits 0 and 1; the make-safe contractor's jobs are not crew waits.
+    assert result.median_wait_town == 0.5
+    assert result.median_wait_remote is None
+    assert (result.jobs_town, result.jobs_remote) == (2, 0)
 
 
 def test_medians_split_town_and_remote_and_queue_length_counts_open_jobs() -> None:

@@ -28,7 +28,7 @@ DIPL_APPROVAL_AUD = 500  # documented gate for non-urgent work; unused by v1 cod
 CREW_BASES = ("Darwin", "Katherine", "Tennant Creek", "Alice Springs", "Nhulunbuy")
 CREWS_PER_REMOTE_REGION = 1
 CREWS_TOWN = 2
-JOBS_PER_CREW_DAY = 2
+JOBS_PER_CREW_DAY = 3
 TRAVEL_DAY_KM = 200
 CREW_BASE_COORDS = {
     "Darwin": (-12.461534, 130.842442),

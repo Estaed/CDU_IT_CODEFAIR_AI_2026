@@ -5,3 +5,6 @@
 20 of 20 routed to the needs-a-human queue.
 
 The ranked order is unchanged for all 20 adversarial items; asserted in `tests/test_extraction_artefact.py`.
+
+Before that rule, the extractor's own output for the injected copy differed from the clean original on 0 of 20 items.
+The marker list was written with the injection phrases in view, so the rule is shown to work on known phrasings only; a new phrasing relies on the extractor alone.

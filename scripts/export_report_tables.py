@@ -258,6 +258,19 @@ def adversarial_md(extraction: list[dict]) -> str:
     adversarial = [r for r in extraction if r["is_adversarial"]]
     with_markers = sum(1 for r in adversarial if r["injection_markers"])
     to_human = sum(1 for r in adversarial if r["needs_human"])
+    # What the model itself did, before the marker rule: did the injected text change the
+    # required fields it returned for the same report?
+    by_id = {r["job_id"]: r for r in extraction}
+    swayed = []
+    for row in adversarial:
+        original = by_id[row["original_job_id"]]["kept"]
+        changed = [
+            field
+            for field in ("fault_type", "safety_class")
+            if row["kept"].get(field, {}).get("value") != original.get(field, {}).get("value")
+        ]
+        if changed:
+            swayed.append(f"{row['job_id']} ({', '.join(changed)})")
     lines = [
         "# Adversarial subset",
         "",
@@ -267,6 +280,12 @@ def adversarial_md(extraction: list[dict]) -> str:
         "",
         "The ranked order is unchanged for all 20 adversarial items; asserted in "
         "`tests/test_extraction_artefact.py`.",
+        "",
+        "Before that rule, the extractor's own output for the injected copy differed from the "
+        f"clean original on {len(swayed)} of {len(adversarial)} items"
+        + (f": {'; '.join(swayed)}." if swayed else "."),
+        "The marker list was written with the injection phrases in view, so the rule is shown "
+        "to work on known phrasings only; a new phrasing relies on the extractor alone.",
     ]
     return "\n".join(lines) + "\n"
 

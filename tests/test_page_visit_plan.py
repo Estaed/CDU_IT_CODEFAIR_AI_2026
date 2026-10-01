@@ -244,7 +244,7 @@ def test_efficiency_first_side_compares_only_the_jobs_still_open(tmp_path, art) 
 
     at = _open(tmp_path, audit_path)
     text = _page_text(at)
-    assert "1 signed jobs are no longer open, so both sides compare the 2 jobs still open." in text
+    assert "1 signed jobs are no longer open; the signed side plans the 2 still open." in text
     plan = at.session_state["plan"]
     signed_road_stops = sum(len(cp.stops) for cp in plan.crews)
     assert signed_road_stops == 2

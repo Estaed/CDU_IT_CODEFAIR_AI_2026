@@ -22,7 +22,7 @@ from fair_turn.app.components import (
     ranking_table,
     run_sheet,
 )
-from fair_turn.core import audit, constants, decisions, scoring
+from fair_turn.core import audit, constants, decisions, effect, scoring
 from fair_turn.core.batch import HandMove
 from fair_turn.core.types import SafetyClass
 from fair_turn.data import artefacts, policy, runtime
@@ -68,6 +68,22 @@ def _ranked():
     # Immediate jobs go to the make-safe lane, never into the crew ranking (PRD 3.1, 2026-09-15).
     jobs = [j for j in ranking_table.open_jobs(LAST_DAY) if not decisions.is_make_safe(j)]
     return scoring.rank(jobs, LAST_DAY, 1.0)
+
+
+def _planned(skip=(), keep=(), ranked=None) -> list[str]:
+    """Today's list as the workspace fills it: in rank order, each job takes a free slot of
+    the nearest crew that reaches it, measured from where the crews are this morning."""
+    ranked = _ranked() if ranked is None else ranked
+    ids = [s.job.job_id for s in ranked if s.job.job_id not in skip]
+    jobs_by_id = {j.job_id: j for j in ranking_table.open_jobs(LAST_DAY)}
+    starts = ranking_table.crew_starts(LAST_DAY)
+    return run_sheet.today_ids(ids, jobs_by_id, LAST_DAY, starts, keep)[0]
+
+
+def _waiting(planned: list[str], ranked=None) -> list[str]:
+    """The ranked jobs off today's list, in rank order."""
+    ranked = _ranked() if ranked is None else ranked
+    return [s.job.job_id for s in ranked if s.job.job_id not in planned]
 
 
 def _script(tmp_path: Path, *lines: str) -> Path:
@@ -144,10 +160,10 @@ def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) 
     cap = ranking_table.capacity("All")
     crews = len(constants.REMOTE_REGIONS) * constants.CREWS_PER_REMOTE_REGION
     assert cap == (crews + constants.CREWS_TOWN) * constants.JOBS_PER_CREW_DAY
-    ranked = _ranked()
-    assert len(today) == cap
-    assert today == [s.job.job_id for s in ranked[:cap]]
-    assert list(backlog["job_id"]) == [s.job.job_id for s in ranked[cap:]]
+    planned = _planned()
+    assert 0 < len(today) <= cap
+    assert today == planned
+    assert list(backlog["job_id"]) == _waiting(planned)
     assert list(backlog.columns) == COLUMNS
     queue = {j.job_id for j in ranking_table.open_jobs(LAST_DAY) if j.needs_human}
     assert queue
@@ -159,18 +175,18 @@ def test_todays_list_is_capacity_and_first_render_selects_the_top_job(tmp_path) 
 
 def test_todays_list_is_rows_not_a_table_and_the_backlog_keeps_the_table(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    cap = ranking_table.capacity("All")
+    listed = len(_planned())
     assert at.tabs[0].dataframe.len == 0
     assert at.tabs[3].dataframe.len == 1
     opens = [button for button in at.tabs[0].button if button.label == job_rows.OPEN]
-    assert len(opens) == cap
+    assert len(opens) == listed
     assert [button.proto.type for button in opens].count("primary") == 1
     values = [markdown.value for markdown in at.tabs[0].markdown]
     top = _ranked()[0]
     assert _today_ids(at)[0] == top.job.job_id
     assert f":orange-badge[{job_rows.SELECTED}]" in values
     assert ranking_table.window_text(top.job, LAST_DAY) in [c.value for c in at.tabs[0].caption]
-    assert len([node for node in at.tabs[0] if getattr(node, "type", None) == "progress"]) == cap
+    assert len([node for node in at.tabs[0] if getattr(node, "type", None) == "progress"]) == listed
 
 
 def test_opening_a_row_selects_that_job(tmp_path) -> None:
@@ -198,7 +214,7 @@ def test_backlog_search_narrows_the_frame_only(tmp_path) -> None:
     assert list(narrowed["rank"]) == [
         row["rank"] for _, row in full.iterrows() if row["community id"] == community
     ]
-    assert _today_ids(at) == [s.job.job_id for s in _ranked()[: ranking_table.capacity("All")]]
+    assert _today_ids(at) == _planned()
 
 
 def test_backlog_table_has_display_config_and_bounded_height(tmp_path) -> None:
@@ -251,7 +267,7 @@ def test_compare_renders_two_frames_with_identical_columns(tmp_path) -> None:
     frames = [frame.value for frame in at.tabs[0].dataframe]
     assert len(frames) == 2
     assert list(frames[0].columns) == list(frames[1].columns) == COLUMNS
-    assert len(frames[0]) == len(frames[1]) == ranking_table.capacity("All")
+    assert len(frames[0]) == len(frames[1]) == len(_planned())
 
 
 # --- the map: two sets, two levels ------------------------------------------------------------
@@ -270,11 +286,11 @@ def _in_region(art, region: str, job) -> bool:
 
 def test_map_mode_switches_between_todays_list_and_all_open_jobs(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    cap = ranking_table.capacity("All")
-    today_communities = {s.job.community_id for s in _ranked()[:cap]}
+    planned = set(_planned())
+    today_communities = {s.job.community_id for s in _ranked() if s.job.job_id in planned}
     todays = _map_features(at)
     assert len(todays) == len(today_communities)
-    assert sum(point["open_jobs"] for point in todays) == cap
+    assert sum(point["open_jobs"] for point in todays) == len(planned)
     assert MAP_CAPTION in [c.value for c in at.caption]
     assert not [button for button in at.button if button.key == "workspace_all_regions"]
     at.radio(key="workspace_map_mode").set_value("All open jobs").run(timeout=60)
@@ -308,9 +324,10 @@ def _fake_map(monkeypatch, picked=None, failed=None) -> None:
 
 
 def test_a_map_pick_opens_its_community_job(tmp_path, monkeypatch) -> None:
-    cap = ranking_table.capacity("All")
-    counts = Counter(s.job.community_id for s in _ranked()[:cap])
-    single = next(s.job for s in _ranked()[1:cap] if counts[s.job.community_id] == 1)
+    planned = _planned()
+    by_id = {s.job.job_id: s.job for s in _ranked()}
+    counts = Counter(by_id[job_id].community_id for job_id in planned)
+    single = next(by_id[j] for j in planned[1:] if counts[by_id[j].community_id] == 1)
     _fake_map(monkeypatch, picked=single.community_id)
     at = _run(_script(tmp_path))
     assert at.session_state["selected_job_id"] == single.job_id
@@ -333,16 +350,18 @@ def test_a_failed_map_shows_the_outline(tmp_path, monkeypatch) -> None:
 
 
 def test_region_filter_narrows_rows_and_points_but_not_capacity(tmp_path, art) -> None:
-    cap = ranking_table.capacity("All")
+    ranking_table.capacity("All")
     ranked = _ranked()
     region = art.communities[ranked[0].job.community_id]["region"]
     at = _run(_script(tmp_path, f'state.set_region("{region}")'))
-    in_today = [s.job.job_id for s in ranked[:cap] if _in_region(art, region, s.job)]
+    planned = _planned()
+    by_id = {s.job.job_id: s.job for s in ranked}
+    in_today = [j for j in planned if _in_region(art, region, by_id[j])]
     assert _today_ids(at) == in_today
-    assert at.main.metric[0].value == f"{len(in_today)} of {cap} in {region}"
+    assert at.main.metric[0].value == f"{len(in_today)} of {len(planned)} in {region}"
     backlog = _frame(at, 3)
     assert list(backlog["job_id"]) == [
-        s.job.job_id for s in ranked[cap:] if _in_region(art, region, s.job)
+        j for j in _waiting(planned) if _in_region(art, region, by_id[j])
     ]
     assert {point["region"] for point in _map_features(at)} == {region}
     assert at.tabs[0].label == f"To decide {len(in_today)}"
@@ -452,45 +471,45 @@ def test_effect_sentence_states_composition_only(tmp_path) -> None:
         assert not [word for word in OUTCOME_WORDS if word in sentence.lower()]
 
 
-def test_crew_reach_line_plans_todays_list_like_the_visit_plan(tmp_path) -> None:
+def test_wait_line_says_why_the_jobs_off_todays_list_wait(tmp_path) -> None:
     at = _run(_script(tmp_path))
-    lines = [c.value for c in at.main.caption if c.value.startswith("Crew reach: ")]
-    cap = ranking_table.capacity("All")
-    today_ids = [s.job.job_id for s in _ranked()[:cap]]
+    lines = [c.value for c in at.main.caption if c.value.startswith("Crews: ")]
+    ids = [s.job.job_id for s in _ranked()]
     jobs_by_id = {j.job_id: j for j in ranking_table.open_jobs(LAST_DAY)}
-    assert lines == [run_sheet.reach_line(today_ids, jobs_by_id, LAST_DAY)]
-    assert re.fullmatch(
-        r"Crew reach: (every job on today's list has a crew within reach\."
-        rf"|\d+ of today's {cap} jobs (has|have) no crew within reach with a free slot\.)",
-        lines[0],
-    )
+    starts = ranking_table.crew_starts(LAST_DAY)
+    planned, waiting = run_sheet.today_ids(ids, jobs_by_id, LAST_DAY, starts)
+    assert lines == [run_sheet.wait_line(waiting)]
+    assert len(planned) + len(waiting) == len(ids)
+    assert lines[0].startswith("Crews: today's list is what the crews can take")
 
 
 def test_a_not_today_rejection_shows_in_the_effect_the_reach_line_and_the_tile(
     tmp_path, art
 ) -> None:
-    """The effect sentence, the reach caption and the tile read To decide + Accepted; the
-    efficiency-first side stays the first capacity-many jobs of the λ = 1.0 ranking."""
+    """The effect sentence and the tile read To decide + Accepted; the efficiency-first
+    side is filled by the same crew rule from the λ = 1.0 ranking."""
     cap = ranking_table.capacity("All")
     ranked = _ranked()
-    out, into = ranked[0].job, ranked[cap].job
+    out = ranked[0].job
+    before, after = _planned(), _planned(skip={out.job_id})
     audit.append(
         tmp_path / "audit.jsonl",
         audit.JobDecision(LAST_DAY, out.job_id, "not_today", "coordinator", "tenant away"),
     )
     at = _run(_script(tmp_path))
-    remote_in = int(art.communities[into.community_id]["is_remote"] == "True")
-    remote_out = int(art.communities[out.community_id]["is_remote"] == "True")
-    assert _effect(at) == (
-        f"Effect: Efficiency first moves 1 job into today's list ({remote_in} remote, "
-        f"{1 - remote_in} town) and 1 job to the backlog ({remote_out} remote, "
-        f"{1 - remote_out} town)."
+    by_id = {s.job.job_id: s for s in ranked}
+    remote = lambda cid: art.communities[cid]["is_remote"] == "True"  # noqa: E731
+    expected = effect.sentence(
+        "before_signature",
+        [by_id[j] for j in after],
+        [by_id[j] for j in before],
+        max(len(after), len(before)),
+        remote,
+        "Efficiency first",
     )
-    decided = [s.job.job_id for s in ranked[1 : cap + 1]]
-    jobs_by_id = {j.job_id: j for j in ranking_table.open_jobs(LAST_DAY)}
-    reach = [c.value for c in at.main.caption if c.value.startswith("Crew reach: ")]
-    assert reach == [run_sheet.reach_line(decided, jobs_by_id, LAST_DAY)]
-    assert at.main.metric[0].value == f"{cap} of {cap}"
+    assert _effect(at) == f"Effect: {expected}"
+    assert out.job_id not in _today_ids(at)
+    assert at.main.metric[0].value == f"{len(after)} of {cap}"
 
 
 def test_kpi_row_has_the_day_values_and_help_text(art, tmp_path) -> None:
@@ -503,7 +522,7 @@ def test_kpi_row_has_the_day_values_and_help_text(art, tmp_path) -> None:
         "Override rate today",
     ]
     cap = ranking_table.capacity("All")
-    assert at.main.metric[0].value == f"{cap} of {cap}"
+    assert at.main.metric[0].value == f"{len(_planned())} of {cap}"
     in_review = [
         j
         for j in ranking_table.open_jobs(LAST_DAY)
@@ -615,9 +634,10 @@ def _submit(at: AppTest, job_id: str, action: str, reason: str | None) -> AppTes
 
 
 def test_promote_backlog_job_writes_one_promotion(tmp_path) -> None:
-    ranked = _ranked()
-    cap = ranking_table.capacity("All")
-    promoted, displaced = ranked[cap].job.job_id, ranked[cap - 1].job.job_id
+    _ranked()
+    planned = _planned()
+    len(planned)
+    promoted, displaced = _waiting(planned)[0], planned[-1]
     audit_path = tmp_path / "audit.jsonl"
     at = _run(_script(tmp_path, _select(promoted)))
     assert promoted in list(_frame(at, 3)["job_id"])
@@ -632,7 +652,9 @@ def test_promote_backlog_job_writes_one_promotion(tmp_path) -> None:
     assert (records[0].job_id, records[0].displaced_job_id) == (promoted, displaced)
     assert records[0].reason == "crew already in the community"
     today = _today_ids(at)
-    assert len(today) == cap and today[-1] == promoted and displaced not in today
+    # Slots belong to crews, so the swap may also let another waiting job into the slot
+    # the displaced job frees; the promoted job is on the list and the displaced one is not.
+    assert promoted in today and displaced not in today
 
 
 def test_move_undo_and_send_to_review(tmp_path) -> None:
@@ -838,8 +860,7 @@ def test_keyboard_hint_sits_above_the_tabs(tmp_path) -> None:
 
 def test_j_and_k_walk_to_decide_and_wrap(tmp_path, monkeypatch) -> None:
     queue = _fake_keys(monkeypatch)
-    cap = ranking_table.capacity("All")
-    ids = [s.job.job_id for s in _ranked()[:cap]]
+    ids = _planned()
     at = _run(_script(tmp_path))
     assert at.session_state["selected_job_id"] == ids[0]
     _press(at, queue, "j")
@@ -858,10 +879,9 @@ def test_j_selects_the_first_job_when_the_selection_is_not_in_to_decide(
 ) -> None:
     queue = _fake_keys(monkeypatch)
     ranked = _ranked()
-    cap = ranking_table.capacity("All")
     # Seeded once through session state: a script line would reset the selection every rerun.
     at = AppTest.from_file(str(_script(tmp_path)))
-    at.session_state["selected_job_id"] = ranked[cap].job.job_id
+    at.session_state["selected_job_id"] = _waiting(_planned())[0]
     at.run(timeout=60)
     assert not at.exception
     _press(at, queue, "j")
@@ -870,7 +890,7 @@ def test_j_selects_the_first_job_when_the_selection_is_not_in_to_decide(
 
 def test_a_refuses_without_the_read_tick_then_accepts_once_ticked(tmp_path, monkeypatch) -> None:
     queue = _fake_keys(monkeypatch)
-    cap = ranking_table.capacity("All")
+    cap = len(_planned())
     at = _run(_script(tmp_path))
     job_id = at.session_state["selected_job_id"]
     _press(at, queue, "a")
@@ -885,7 +905,7 @@ def test_a_refuses_without_the_read_tick_then_accepts_once_ticked(tmp_path, monk
 
 def test_a_refuses_a_job_that_is_not_in_to_decide(tmp_path, monkeypatch) -> None:
     queue = _fake_keys(monkeypatch)
-    backlog_id = _ranked()[ranking_table.capacity("All")].job.job_id
+    backlog_id = _waiting(_planned())[0]
     at = _run(_script(tmp_path, _select(backlog_id)))
     at.checkbox(key=f"read_{backlog_id}").check().run(timeout=60)
     _press(at, queue, "a")
@@ -895,10 +915,9 @@ def test_a_refuses_a_job_that_is_not_in_to_decide(tmp_path, monkeypatch) -> None
 
 def test_a_refuses_once_todays_list_is_signed(tmp_path, monkeypatch) -> None:
     queue = _fake_keys(monkeypatch)
-    cap = ranking_table.capacity("All")
-    for s in _ranked()[:cap]:
+    for planned_id in _planned():
         audit.append(
-            tmp_path / "audit.jsonl", audit.JobDecision(LAST_DAY, s.job.job_id, "accepted", "A")
+            tmp_path / "audit.jsonl", audit.JobDecision(LAST_DAY, planned_id, "accepted", "A")
         )
     at = _run(_script(tmp_path))
     at.button(key="workspace_review_and_sign").click().run(timeout=60)
@@ -937,7 +956,7 @@ def _decisions(tmp_path: Path) -> list[audit.JobDecision]:
 
 
 def test_accept_needs_the_read_tick_and_moves_the_job_to_accepted(tmp_path) -> None:
-    cap = ranking_table.capacity("All")
+    cap = len(_planned())
     at = _run(_script(tmp_path))
     job_id = at.session_state["selected_job_id"]
     assert job_id == _ranked()[0].job.job_id
@@ -976,9 +995,11 @@ def test_accept_needs_the_read_tick_and_moves_the_job_to_accepted(tmp_path) -> N
 
 
 def test_reject_not_today_keeps_to_decide_full_and_moves_the_job_to_the_backlog(tmp_path) -> None:
-    cap = ranking_table.capacity("All")
     ranked = _ranked()
-    job_id, next_in = ranked[0].job.job_id, ranked[cap].job.job_id
+    job_id = ranked[0].job.job_id
+    after = _planned(skip={job_id})
+    cap = len(after)
+    next_in = next(j for j in after if j not in _planned())
     at = _run(_script(tmp_path, _select(job_id)))
     at.button(key=f"decide_reject_{job_id}").click().run(timeout=60)
     assert not at.exception
@@ -1085,16 +1106,17 @@ def test_an_open_immediate_job_is_in_make_safe_now_and_in_no_ranked_list(
     tmp_path, monkeypatch
 ) -> None:
     immediate = _make_safe_open(monkeypatch)
-    cap = ranking_table.capacity("All")
     ranked = _ranked()
+    planned = _planned()
+    cap = len(planned)
     assert immediate.job_id not in [s.job.job_id for s in ranked]
     at = _run(_script(tmp_path))
     assert _lane_title(at)
     assert at.button(key=f"{MAKE_SAFE_OPEN}{immediate.job_id}").label == "Open"
     assert NO_MAKE_SAFE not in [c.value for c in at.main.caption]
     assert not _in_ranked_lists(at, immediate.job_id)
-    assert _today_ids(at) == [s.job.job_id for s in ranked[:cap]]
-    assert list(_frame(at, 3)["job_id"]) == [s.job.job_id for s in ranked[cap:]]
+    assert _today_ids(at) == planned
+    assert list(_frame(at, 3)["job_id"]) == _waiting(planned)
     assert _labels(at) == [
         f"To decide {cap}",
         "Accepted 0",
@@ -1105,9 +1127,9 @@ def test_an_open_immediate_job_is_in_make_safe_now_and_in_no_ranked_list(
     at.sidebar.radio[0].set_value("Need first").run(timeout=60)
     assert not at.exception
     assert not _in_ranked_lists(at, immediate.job_id)
-    assert len(_today_ids(at)) == cap
-    assert _labels(at)[0] == f"To decide {cap}"
-    assert _labels(at)[3] == f"Backlog {len(ranked) - cap}"
+    listed = len(_today_ids(at))
+    assert _labels(at)[0] == f"To decide {listed}"
+    assert _labels(at)[3] == f"Backlog {len(ranked) - listed}"
     assert at.button(key=f"{MAKE_SAFE_OPEN}{immediate.job_id}")
 
 
@@ -1122,7 +1144,7 @@ def test_the_make_safe_lane_says_when_no_immediate_job_waits(tmp_path, monkeypat
     assert _lane_title(at)
     assert NO_MAKE_SAFE in [c.value for c in at.main.caption]
     assert not [b for b in at.button if (b.key or "").startswith(MAKE_SAFE_OPEN)]
-    assert len(_today_ids(at)) == ranking_table.capacity("All")
+    assert _today_ids(at) == _planned()
 
 
 def test_make_safe_pane_sends_to_the_contractor_with_a_reason_and_leaves_the_lane(
@@ -1175,10 +1197,9 @@ def test_make_safe_send_stays_open_after_signing_and_a_blank_name_is_coordinator
 ) -> None:
     immediate = _make_safe_open(monkeypatch)
     job_id = immediate.job_id
-    cap = ranking_table.capacity("All")
-    for s in _ranked()[:cap]:
+    for planned_id in _planned():
         audit.append(
-            tmp_path / "audit.jsonl", audit.JobDecision(LAST_DAY, s.job.job_id, "accepted", "A")
+            tmp_path / "audit.jsonl", audit.JobDecision(LAST_DAY, planned_id, "accepted", "A")
         )
     at = _run(_script(tmp_path))
     at.button(key="workspace_review_and_sign").click().run(timeout=60)

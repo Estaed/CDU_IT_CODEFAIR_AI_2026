@@ -73,6 +73,8 @@ class SimResult:
     jobs_town: int = 0
     unfinished_remote: int = 0
     unfinished_town: int = 0
+    # Where each crew is at the end of the run: (lat, lon, community id or None at base).
+    crew_positions: dict[str, tuple[float, float, str | None]] = field(default_factory=dict)
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -283,4 +285,8 @@ def simulate(
         jobs_town=len(town),
         unfinished_remote=unfinished[True],
         unfinished_town=unfinished[False],
+        crew_positions={
+            crew.crew_id: (state.lat, state.lon, state.location)
+            for crew, state in zip(crews, pool, strict=True)
+        },
     )

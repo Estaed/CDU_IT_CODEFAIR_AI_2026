@@ -155,3 +155,15 @@ def test_a_failed_load_shows_the_outline_and_stays_on_it(tmp_path, no_network, p
     assert not at.exception
     assert at.session_state["mount_calls"] == ["workspace_map"]
     assert len(at.get("vega_lite_chart")) == 1
+
+
+def test_crews_sharing_a_place_share_one_labelled_marker() -> None:
+    starts = {
+        "Darwin 1": (-12.46, 130.84),
+        "Darwin 2": (-12.46, 130.84),
+        "Katherine": (-14.4, 132.2),
+    }
+    points = cluster_map.crew_points(starts)
+    assert {p["crew_id"] for p in points} == {"Darwin 1, Darwin 2", "Katherine"}
+    collection = cluster_map.crew_collection(points)
+    assert [f["geometry"]["coordinates"] for f in collection["features"]][-1] == [132.2, -14.4]

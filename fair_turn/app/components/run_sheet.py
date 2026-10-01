@@ -1,7 +1,8 @@
 """Signed or proposed job ids -> visit-plan stops (PRD 3.3), shared by the visit plan page and
 the workspace's crew reach line, so both plan a list the same way."""
 
-from collections.abc import Mapping, Sequence
+from collections import Counter
+from collections.abc import Collection, Mapping, Sequence
 from datetime import date
 
 from fair_turn.app import state
@@ -49,17 +50,36 @@ def stops(
     return result, missing
 
 
-def reach_line(job_ids: Sequence[str], jobs_by_id: Mapping[str, Job], today: date) -> str:
-    """The workspace caption: how many of today's proposed jobs no crew within reach can take,
-    planned exactly as the visit plan would plan the list if it were signed."""
-    planned = visit_plan.plan(
-        0, stops(job_ids, jobs_by_id, today)[0], geography.crews(state.artefacts().communities)
+WAIT_LABELS = {
+    visit_plan.NO_FREE_SLOT: "every crew that reaches them is full",
+    visit_plan.NO_REACH: "no crew reaches them in a day",
+    visit_plan.ROAD_CLOSED: "road closed",
+}
+
+
+def today_ids(
+    ranked_ids: Sequence[str],
+    jobs_by_id: Mapping[str, Job],
+    today: date,
+    starts: Mapping[str, tuple[float, float]],
+    keep: Collection[str] = (),
+) -> tuple[list[str], dict[str, str]]:
+    """``visit_plan.fill_today`` over a ranked id list: the jobs the crews can take today,
+    from where they are this morning, and why each other job waits."""
+    proposal, _ = stops(ranked_ids, jobs_by_id, today)
+    crews = geography.crews(state.artefacts().communities)
+    return visit_plan.fill_today(proposal, crews, starts, keep)
+
+
+def wait_line(waiting: Mapping[str, str]) -> str:
+    """The workspace caption under the effect line: why the jobs off today's list wait."""
+    if not waiting:
+        return "Crews: every open job fits a crew today."
+    counts = Counter(waiting.values())
+    parts = ", ".join(
+        f"{counts[reason]} {label}" for reason, label in WAIT_LABELS.items() if counts[reason]
     )
-    count = planned.out_of_reach
-    if count == 0:
-        return "Crew reach: every job on today's list has a crew within reach."
-    verb = "has" if count == 1 else "have"
     return (
-        f"Crew reach: {count} of today's {len(job_ids)} jobs {verb} no crew within reach "
-        "with a free slot."
+        "Crews: today's list is what the crews can take from where they are this morning. "
+        f"{len(waiting)} more jobs wait: {parts}."
     )

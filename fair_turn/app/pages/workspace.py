@@ -132,7 +132,33 @@ cap = ranking_table.capacity(state.ALL_REGIONS)
 # best-ranked undecided jobs (To decide), and a job rejected as not today joins the backlog.
 latest_decisions = audit.latest_decisions(audit_records, today)
 standing = {job_id: d for job_id, d in latest_decisions.items() if d != "undone"}
-day_split = decisions.split([s.job.job_id for s in current], latest_decisions, cap)
+# The free places are what the crews can do today: each job in rank order takes a free slot of
+# the nearest crew (from where it is this morning) that reaches it; the rest wait, with why.
+ranked_ids = [s.job.job_id for s in current]
+jobs_by_id = {j.job_id: j for j in jobs}
+crew_starts = ranking_table.crew_starts(today)
+# A promotion is the coordinator's swap: the promoted job stays on the list like an accepted
+# one, the job it displaced waits in the backlog for the day.
+promotions = [r for r in audit_records if isinstance(r, audit.Promotion) and r.day == today]
+displaced_today = {r.displaced_job_id for r in promotions}
+planned_today, waiting_reasons = run_sheet.today_ids(
+    [
+        job_id
+        for job_id in ranked_ids
+        if latest_decisions.get(job_id) != decisions.NOT_TODAY and job_id not in displaced_today
+    ],
+    jobs_by_id,
+    today,
+    crew_starts,
+    keep={job_id for job_id, d in latest_decisions.items() if d == decisions.ACCEPTED}
+    | {r.job_id for r in promotions},
+)
+day_split = decisions.split(ranked_ids, latest_decisions, cap, planned=planned_today)
+# The efficiency-first side of every comparison is filled by the same rule.
+baseline_planned = set(
+    run_sheet.today_ids([s.job.job_id for s in baseline], jobs_by_id, today, crew_starts)[0]
+)
+baseline_today = [s for s in baseline if s.job.job_id in baseline_planned]
 on_today = set(day_split.accepted) | set(day_split.to_decide)
 today_list = [s for s in current if s.job.job_id in on_today]
 to_decide = [s for s in today_list if s.job.job_id not in standing]
@@ -205,7 +231,7 @@ if new_report.button("New report"):
     state.set_intake_draft(intake.new_draft())
 st.caption(theme.PROVENANCE_LINE)
 remote_today = sum(is_remote(s.job.community_id) for s in today_list)
-remote_in_baseline = sum(is_remote(s.job.community_id) for s in baseline[:cap])
+remote_in_baseline = sum(is_remote(s.job.community_id) for s in baseline_today)
 today_rate = next(
     (rate for day, rate in audit.override_rate(audit.read(state.get_audit_path())) if day == today),
     0.0,
@@ -240,12 +266,10 @@ effect_message = st.empty()
 effect_message.info(
     "Effect: "
     + metrics.effect_sentence(
-        today, state.ALL_REGIONS, lam, today_list, baseline[:cap], is_remote, label
+        today, state.ALL_REGIONS, lam, today_list, baseline_today, is_remote, label
     )
 )
-st.caption(
-    run_sheet.reach_line([s.job.job_id for s in today_list], {j.job_id: j for j in jobs}, today)
-)
+st.caption(run_sheet.wait_line(waiting_reasons))
 if state.get_intake_draft() is not None:
     intake.render(st.container(border=True))
 
@@ -394,6 +418,32 @@ def decision_status(frozen: batch.Batch | None, versions: set[int]) -> batch.Sta
     return "review_open"
 
 
+# A browser reload loses the session, not the signature: today's last sign-off in the audit
+# log, if an approval, restores the signed state. Whether the list still matches it is the
+# usual fingerprint check, so a different weighting after the reload shows as a change.
+_approvals, _all_signoffs = signed_today(), signoffs_today()
+if (
+    not state.get_signed_today()
+    and state.get_batch() is None
+    and _all_signoffs
+    and _all_signoffs[-1].decision == "approve"
+):
+    _last = _approvals[-1]
+    _same = _last.lam == lam and tuple(_last.ranked_job_ids) == tuple(s.job.job_id for s in current)
+    state.set_batch(
+        batch.Batch(
+            day=today,
+            version=_last.batch_version,
+            lam=_last.lam,
+            preset=None,
+            today_job_ids=tuple(_last.today_job_ids),
+            ranked_job_ids=tuple(_last.ranked_job_ids),
+            hand_moves=(),
+            fingerprint=current_fp if _same else "",
+        )
+    )
+    state.set_signed_today(True)
+
 status = decision_status(state.get_batch(), signed_versions)
 
 
@@ -479,7 +529,9 @@ with centre:
             }
         )
     selected_community = next((j.community_id for j in jobs if j.job_id == selected), None)
-    pick = cluster_map.render(points, selected_community, key="workspace_map")
+    pick = cluster_map.render(
+        points, selected_community, key="workspace_map", crews=cluster_map.crew_points(crew_starts)
+    )
     if pick is not None:
         state.set_map_pick(pick)
     map_choice = workspace_map.choice_for(state.get_map_pick(), by_community)
@@ -513,7 +565,7 @@ with centre:
         human_rows(human_jobs)
     # In the compare view To decide shows the whole of today's list against efficiency-first.
     lists = [
-        (tabs[0], "today", to_decide, today_list, baseline[:cap]),
+        (tabs[0], "today", to_decide, today_list, baseline_today),
         (tabs[1], "accepted", accepted, None, None),
         (tabs[3], "backlog", backlog, backlog, baseline[cap:]),
     ]
@@ -696,7 +748,7 @@ metrics.metrics_panel(today, state.ALL_REGIONS, lam)
 effect_message.info(
     "Effect: "
     + metrics.effect_sentence(
-        today, state.ALL_REGIONS, lam, today_list, baseline[:cap], is_remote, label
+        today, state.ALL_REGIONS, lam, today_list, baseline_today, is_remote, label
     )
 )
 

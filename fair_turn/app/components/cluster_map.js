@@ -87,6 +87,36 @@ function addLayers(map, data) {
       "circle-radius": pointRadius(layout),
     },
   });
+  // Crews where they are this morning, drawn over the jobs and never clustered with them.
+  map.addSource("crews", { type: "geojson", data: data.crews });
+  map.addLayer({
+    id: "crews",
+    type: "circle",
+    source: "crews",
+    paint: {
+      "circle-color": colours.crew,
+      "circle-stroke-color": colours.stroke,
+      "circle-stroke-width": layout.point_stroke,
+      "circle-radius": layout.crew_radius,
+    },
+  });
+  map.addLayer({
+    id: "crew-labels",
+    type: "symbol",
+    source: "crews",
+    layout: {
+      "text-field": ["get", "crew_id"],
+      "text-font": layout.label_fonts,
+      "text-size": layout.label_size,
+      "text-offset": [0, layout.crew_label_offset],
+      "text-anchor": "top",
+    },
+    paint: {
+      "text-color": colours.crew_label,
+      "text-halo-color": colours.stroke,
+      "text-halo-width": 1,
+    },
+  });
 }
 
 function update(entry, data) {
@@ -94,6 +124,7 @@ function update(entry, data) {
   entry.data = data;
   if (!entry.loaded) return; // the load handler applies the latest data
   entry.map.getSource("jobs").setData(data.features);
+  entry.map.getSource("crews").setData(data.crews);
   entry.map.setFilter("selected-ring", ["==", ["get", "community_id"], data.selected]);
   // Only a changed selection moves the camera; a mode switch or a filter leaves it alone.
   if (data.selected && data.selected !== previous) {

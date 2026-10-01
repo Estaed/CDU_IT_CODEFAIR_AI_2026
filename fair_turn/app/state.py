@@ -7,6 +7,7 @@ from pathlib import Path
 import streamlit as st
 
 from fair_turn.core import audit, batch, constants
+from fair_turn.data import artefacts as artefacts_module
 from fair_turn.data import runtime
 from fair_turn.data.artefacts import Artefacts, load_all
 
@@ -81,7 +82,8 @@ def set_selected_job_id(value: str | None) -> None:
 
 
 def get_audit_path() -> Path:
-    return _get("audit_path", artefacts().audit_path)
+    # Read at call time, not from the cached artefacts, so a test can point it elsewhere.
+    return _get("audit_path", artefacts_module.AUDIT_LOG)
 
 
 def set_audit_path(value: Path) -> None:

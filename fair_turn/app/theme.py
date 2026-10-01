@@ -14,6 +14,7 @@ REGION_COLOURS = dict(
     )
 )
 TOWN = "#262626"
+CREW_MARKER = TOWN  # crews on the workspace map: dark, distinct from every region colour
 REMOTE = "#8a3ffc"
 LOCALITY_STROKE = {"town": "solid", "remote": "dashed"}
 FACTOR_COLOURS = {

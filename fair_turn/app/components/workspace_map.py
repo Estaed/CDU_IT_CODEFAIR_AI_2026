@@ -20,7 +20,7 @@ def choice_for(community_id: str | None, by_community: dict[str, list]) -> tuple
     return (community_id, sorted(job.job_id for job in members))
 
 
-def _fallback_map(points: list[dict]):
+def _fallback_map(points: list[dict], crews: list[dict] | None = None):
     communities = {
         point["community_id"]: {
             "region": str(point["region"]),
@@ -30,4 +30,4 @@ def _fallback_map(points: list[dict]):
         for point in points
     }
     open_counts = {point["community_id"]: int(point["open_jobs"]) for point in points}
-    return nt_map(communities, open_counts, state.ALL_REGIONS)
+    return nt_map(communities, open_counts, state.ALL_REGIONS, crews)

@@ -90,6 +90,39 @@ def _open_jobs_cached(today: date, runtime_stamp: tuple[int, int], runtime_path:
     ]
 
 
+@st.cache_data
+def crew_positions(today: date) -> dict[str, tuple[float, float, str | None]]:
+    """Where each crew is this morning: the efficiency-first capacity run up to yesterday,
+    the same stand-in for the contractor's system as ``open_jobs``. ``(lat, lon, community
+    id or None at base)`` per crew id; on the window's first day every crew is at base."""
+    art = state.artefacts()
+    jobs = to_jobs(art)
+    result = capacity_sim.simulate(
+        jobs,
+        lam=1.0,
+        start=constants.WINDOW_START,
+        days=max((today - constants.WINDOW_START).days, 0),
+        closures=[
+            Closure(
+                c["community_id"],
+                date.fromisoformat(c["closed_from"]),
+                date.fromisoformat(c["closed_to"]),
+            )
+            for c in art.closures
+        ],
+        crews=geography.crews(art.communities),
+        jobs_per_crew_day=constants.JOBS_PER_CREW_DAY,
+        travel_day_km=constants.TRAVEL_DAY_KM,
+        sites=geography.sim_sites(art.communities),
+    )
+    return result.crew_positions
+
+
+def crew_starts(today: date) -> dict[str, tuple[float, float]]:
+    """``crew_positions`` as the ``(lat, lon)`` the visit plan measures from."""
+    return {crew_id: (lat, lon) for crew_id, (lat, lon, _) in crew_positions(today).items()}
+
+
 def capacity(region: str) -> int:
     """Today's job-count capacity: crews for the region times jobs per crew per day; the
     sum over every region for ``state.ALL_REGIONS`` (PRD 6.3)."""

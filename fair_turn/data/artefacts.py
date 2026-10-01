@@ -18,6 +18,7 @@ from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
 ROOT = Path(__file__).resolve().parents[2]
 BUILD_DIR = ROOT / "data" / "build"
 AUDIT_DIR = ROOT / "data" / "audit"
+AUDIT_LOG = AUDIT_DIR / "audit.jsonl"  # the local, gitignored log the app appends to
 
 
 class Evidence(BaseModel):

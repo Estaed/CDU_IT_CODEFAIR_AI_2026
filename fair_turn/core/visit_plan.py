@@ -9,7 +9,7 @@ then drives the shortest route over its stops. The coordinator may reorder a cre
 reason.
 """
 
-from collections.abc import Sequence
+from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from itertools import permutations
 from typing import Literal
@@ -42,13 +42,15 @@ class Stop:
 
 @dataclass(frozen=True)
 class CrewPlan:
-    """One crew's stops in driving order, with every leg including the return to base."""
+    """One crew's stops in driving order, from where the crew is this morning, with every leg
+    including the return to base."""
 
     crew: CrewBase
     stops: tuple[Stop, ...]
     legs_km: tuple[float, ...]
     travel_day_legs: tuple[bool, ...]  # leg over the capacity model's travel-day distance
     km: float
+    start: tuple[float, float] | None = None  # (lat, lon) this morning; None is the base
 
 
 @dataclass(frozen=True)
@@ -97,11 +99,26 @@ class Plan:
         return sum(item.reason in (NO_FREE_SLOT, NO_REACH) for item in self.unplanned)
 
 
-def _measure(crew: CrewBase, stops: Sequence[Stop]) -> tuple[tuple[float, ...], float]:
-    """Legs base -> stops -> base; a leg takes the road factor of its community end."""
+Starts = Mapping[str, tuple[float, float]]  # crew id -> (lat, lon) this morning
+
+
+def _start_of(crew: CrewBase, starts: Starts | None) -> tuple[float, float] | None:
+    return None if starts is None else starts.get(crew.crew_id)
+
+
+def _km_to(crew: CrewBase, start: tuple[float, float] | None, stop: Stop) -> float:
+    """Road km from where the crew is now (its base when no position is known) to ``stop``."""
+    lat, lon = start or (crew.lat, crew.lon)
+    return haversine_km(lat, lon, stop.lat, stop.lon) * stop.road_factor
+
+
+def _measure(
+    crew: CrewBase, stops: Sequence[Stop], start: tuple[float, float] | None = None
+) -> tuple[tuple[float, ...], float]:
+    """Legs start -> stops -> base; a leg takes the road factor of its community end."""
     if not stops:
         return (), 0.0
-    points = [(crew.lat, crew.lon), *((stop.lat, stop.lon) for stop in stops)]
+    points = [start or (crew.lat, crew.lon), *((stop.lat, stop.lon) for stop in stops)]
     legs = [
         haversine_km(*points[index], *points[index + 1]) * stops[index].road_factor
         for index in range(len(stops))
@@ -110,25 +127,93 @@ def _measure(crew: CrewBase, stops: Sequence[Stop]) -> tuple[tuple[float, ...], 
     return tuple(legs), sum(legs)
 
 
-def _shortest(crew: CrewBase, stops: Sequence[Stop]) -> tuple[Stop, ...]:
-    """The exact shortest base -> stops -> base order; ties keep the earliest permutation of
+def _shortest(
+    crew: CrewBase, stops: Sequence[Stop], start: tuple[float, float] | None = None
+) -> tuple[Stop, ...]:
+    """The exact shortest start -> stops -> base order; ties keep the earliest permutation of
     the signed order."""
     ordered = sorted(stops, key=lambda stop: stop.signed_rank)
-    best, best_km = tuple(ordered), _measure(crew, ordered)[1]
+    best, best_km = tuple(ordered), _measure(crew, ordered, start)[1]
     for candidate in permutations(ordered):
-        km = _measure(crew, candidate)[1]
+        km = _measure(crew, candidate, start)[1]
         if km < best_km - _KM_EPS:
             best, best_km = candidate, km
     return best
 
 
-def _crew_plan(crew: CrewBase, stops: Sequence[Stop]) -> CrewPlan:
-    legs, km = _measure(crew, stops)
-    return CrewPlan(crew, tuple(stops), legs, tuple(leg > TRAVEL_DAY_KM for leg in legs), km)
+def _crew_plan(
+    crew: CrewBase, stops: Sequence[Stop], start: tuple[float, float] | None = None
+) -> CrewPlan:
+    legs, km = _measure(crew, stops, start)
+    return CrewPlan(crew, tuple(stops), legs, tuple(leg > TRAVEL_DAY_KM for leg in legs), km, start)
 
 
-def plan(batch_version: int, stops: Sequence[Stop], crews: Sequence[CrewBase]) -> Plan:
-    """Place every signed stop: manual, unplanned with a reason, or on a crew's route."""
+def _reaching(crews: Sequence[CrewBase], stop: Stop) -> list[int]:
+    """Crews that may take ``stop``: by road, the crew's home region or within the travel-day
+    distance of its base; by air or barge, a crew of the stop's own region (it flies in)."""
+    if stop.access != "road":
+        return [index for index, crew in enumerate(crews) if crew.region == stop.region]
+    return [
+        index
+        for index, crew in enumerate(crews)
+        if reaches(
+            crew,
+            stop.region,
+            base_road_km(crew, stop.lat, stop.lon, stop.road_factor),
+            TRAVEL_DAY_KM,
+        )
+    ]
+
+
+def fill_today(
+    stops: Sequence[Stop],
+    crews: Sequence[CrewBase],
+    starts: Starts | None = None,
+    keep: Collection[str] = (),
+) -> tuple[list[str], dict[str, str]]:
+    """Today's list from a ranked proposal: what the crews can actually do today.
+
+    In rank order (jobs in ``keep``, already accepted, first), each job takes a free slot of
+    the nearest crew, measured from where the crew is this morning, that may take it. A job
+    no free crew can take, or whose road is closed, waits in the backlog with the reason; an
+    accepted job stays on the list regardless. Distance picks the crew, never the job: a
+    lower-ranked job only gets a slot no crew could use for a higher-ranked one.
+    Returns ``(today's job ids in rank order, {waiting job id: reason})``."""
+    slots = [JOBS_PER_CREW_DAY] * len(crews)
+    ordered = sorted(stops, key=lambda stop: (stop.job_id not in keep, stop.signed_rank))
+    placed: set[str] = set()
+    waiting: dict[str, str] = {}
+    for stop in ordered:
+        kept = stop.job_id in keep
+        if stop.access == "road" and not stop.road_open:
+            if kept:
+                placed.add(stop.job_id)
+            else:
+                waiting[stop.job_id] = ROAD_CLOSED
+            continue
+        candidates = _reaching(crews, stop)
+        free = [index for index in candidates if slots[index] > 0]
+        if free:
+            start = {i: _start_of(crews[i], starts) for i in free}
+            chosen = min(free, key=lambda i: (_km_to(crews[i], start[i], stop), i))
+            slots[chosen] -= 1
+            placed.add(stop.job_id)
+        elif kept:
+            placed.add(stop.job_id)
+        else:
+            waiting[stop.job_id] = NO_FREE_SLOT if candidates else NO_REACH
+    in_rank = sorted(stops, key=lambda stop: stop.signed_rank)
+    return [stop.job_id for stop in in_rank if stop.job_id in placed], waiting
+
+
+def plan(
+    batch_version: int,
+    stops: Sequence[Stop],
+    crews: Sequence[CrewBase],
+    starts: Starts | None = None,
+) -> Plan:
+    """Place every signed stop: manual, unplanned with a reason, or on a crew's route. With
+    ``starts``, the nearest crew and each route are measured from where the crew is now."""
     ordered = sorted(stops, key=lambda stop: stop.signed_rank)
     manual = tuple(
         Manual(stop, MANUAL_NEXT_ACTION, MANUAL_OWNER) for stop in ordered if stop.access != "road"
@@ -149,10 +234,15 @@ def plan(batch_version: int, stops: Sequence[Stop], crews: Sequence[CrewBase]) -
         if not free:
             unplanned.append(Unplanned(stop, NO_FREE_SLOT if reaching else NO_REACH))
             continue
-        assigned[min((km[index], index) for index in free)[1]].append(stop)
+        nearest = min(free, key=lambda i: (_km_to(crews[i], _start_of(crews[i], starts), stop), i))
+        assigned[nearest].append(stop)
 
     crew_plans = tuple(
-        _crew_plan(crew, _shortest(crew, stops_for))
+        _crew_plan(
+            crew,
+            _shortest(crew, stops_for, _start_of(crew, starts)),
+            _start_of(crew, starts),
+        )
         for crew, stops_for in zip(crews, assigned, strict=True)
     )
     return Plan(batch_version, crew_plans, tuple(unplanned), manual, ())
@@ -168,7 +258,7 @@ def edit_order(current: Plan, crew_id: str, new_order: list[str], reason: str) -
     if sorted(new_order) != sorted(stop.job_id for stop in crew_plan.stops):
         raise ValueError("A manual edit must keep the same job membership.")
     by_id = {stop.job_id: stop for stop in crew_plan.stops}
-    changed = _crew_plan(crew_plan.crew, [by_id[job_id] for job_id in new_order])
+    changed = _crew_plan(crew_plan.crew, [by_id[job_id] for job_id in new_order], crew_plan.start)
     crews = tuple(changed if item is crew_plan else item for item in current.crews)
     change = PlanChange(tuple(new_order), reason, changed.km - crew_plan.km)
     return Plan(

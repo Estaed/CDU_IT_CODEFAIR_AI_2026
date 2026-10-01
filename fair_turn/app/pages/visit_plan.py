@@ -55,6 +55,12 @@ def _job_label(job_id: str) -> str:
     return ranking_table.short_id(job_id)
 
 
+def _where_now(crew_id: str, base: str) -> str:
+    """Where a crew is this morning, from the same capacity run as the open jobs."""
+    community = ranking_table.crew_positions(today).get(crew_id, (0.0, 0.0, None))[2]
+    return f"at {ranking_table.community_label(community)}" if community else f"at base, {base}"
+
+
 records = audit.read(state.get_audit_path())
 signoffs_today = sorted(
     (
@@ -90,6 +96,7 @@ else:
     open_today = ranking_table.open_jobs(today)
     jobs_by_id = {j.job_id: j for j in open_today}
     crews = geography.crews(art.communities)
+    starts = ranking_table.crew_starts(today)
     stops, no_longer_open = run_sheet.stops(signoff.today_job_ids, jobs_by_id, today)
 
     def _decisions_for(version: int) -> list[audit.PlanDecision]:
@@ -106,15 +113,21 @@ else:
     if current_plan is None or (
         current_plan.batch_version != signoff.batch_version and not accepted_current
     ):
-        current_plan = visit_plan.plan(signoff.batch_version, stops, crews)
+        current_plan = visit_plan.plan(signoff.batch_version, stops, crews, starts)
         state.set_plan(current_plan)
 
-    n_open = len(stops)
-    efficiency_ids = [s.job.job_id for s in scoring.rank(open_today, today, EFFICIENCY_LAM)][
-        :n_open
-    ]
+    # The efficiency-first list is filled by the same crew rule as today's list.
+    efficiency_ids = run_sheet.today_ids(
+        [s.job.job_id for s in scoring.rank(open_today, today, EFFICIENCY_LAM)],
+        jobs_by_id,
+        today,
+        starts,
+    )[0]
     efficiency_plan = visit_plan.plan(
-        signoff.batch_version, run_sheet.stops(efficiency_ids, jobs_by_id, today)[0], crews
+        signoff.batch_version,
+        run_sheet.stops(efficiency_ids, jobs_by_id, today)[0],
+        crews,
+        starts,
     )
 
     st.markdown(RULE_SENTENCE)
@@ -149,8 +162,8 @@ else:
 
     if no_longer_open:
         st.caption(
-            f"{len(no_longer_open)} signed jobs are no longer open, so both sides compare "
-            f"the {n_open} jobs still open."
+            f"{len(no_longer_open)} signed jobs are no longer open; the signed side plans the "
+            f"{len(stops)} still open."
         )
         st.caption(
             f"No longer open: {len(no_longer_open)} "
@@ -167,6 +180,7 @@ else:
             n_stops = len(crew_plan.stops)
             stops_word = "stop" if n_stops == 1 else "stops"
             st.markdown(f"**Crew {crew.crew_id}** · {n_stops} {stops_word}")
+            st.caption(f"This morning: {_where_now(crew.crew_id, crew.base)}")
             if not crew_plan.stops:
                 st.markdown("No signed road jobs for this crew")
                 continue
@@ -176,7 +190,7 @@ else:
                 flag = " · travel day" if crew_plan.travel_day_legs[index - 1] else ""
                 row_text, row_button = st.columns([6, 1])
                 same_place = (
-                    "same place as the crew base"
+                    "where the crew is this morning"
                     if index == 1
                     else "same place as the previous stop"
                 )

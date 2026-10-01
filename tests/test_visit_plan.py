@@ -22,6 +22,7 @@ from fair_turn.core.visit_plan import (
     Stop,
     _measure,
     edit_order,
+    fill_today,
     plan,
 )
 from fair_turn.data.geography import BASE_FOR_REGION
@@ -263,3 +264,38 @@ def test_planner_reads_capacity_and_travel_day_constants() -> None:
     for coordinates in constants.CREW_BASE_COORDS.values():
         assert str(coordinates[0]) not in source
         assert str(coordinates[1]) not in source
+
+
+# --- today's list from where the crews are (2026-10-01) ---------------------------------------
+
+
+def test_fill_today_takes_ranked_jobs_while_a_reaching_crew_has_a_slot() -> None:
+    crew = base_crew()
+    far = dict(region=constants.REGIONS[1])  # outside the crew's region and 200 km
+    stops = [stop(f"j{i}", i, 0.0, 0.1 * i) for i in range(1, CAP + 2)]
+    stops.append(stop("far", CAP + 2, 0.0, 10.0, **far))
+    today, waiting = fill_today(stops, [crew])
+    assert today == [f"j{i}" for i in range(1, CAP + 1)]
+    assert waiting == {f"j{CAP + 1}": NO_FREE_SLOT, "far": NO_REACH}
+
+
+def test_fill_today_keeps_accepted_jobs_and_closed_roads_wait() -> None:
+    crew = base_crew()
+    stops = [stop(f"j{i}", i, 0.0, 0.1 * i) for i in range(1, CAP + 2)]
+    stops.append(stop("closed", 0, 0.0, 0.05, road_open=False))
+    today, waiting = fill_today(stops, [crew], keep={f"j{CAP + 1}"})
+    assert f"j{CAP + 1}" in today and len(today) == CAP
+    assert waiting["closed"] == ROAD_CLOSED
+
+
+def test_the_nearest_crew_is_measured_from_where_it_is_this_morning() -> None:
+    east, west = base_crew("East", 0.0, 1.0), base_crew("West", 0.0, -1.0)
+    job = stop("j1", 1, 0.0, 0.9)
+    assert plan(1, [job], [east, west]).crews[0].stops == (job,)
+    # East is out at the far west this morning, so West is now the nearer crew.
+    moved = plan(1, [job], [east, west], starts={"East": (0.0, -3.0)})
+    assert moved.crews[1].stops == (job,)
+    assert moved.crews[1].start is None and moved.crews[0].start == (0.0, -3.0)
+    first_leg = haversine_km(0.0, -3.0, 0.0, 0.9)
+    planned_from = plan(1, [job], [east], starts={"East": (0.0, -3.0)}).crews[0]
+    assert planned_from.legs_km[0] == pytest.approx(first_leg)

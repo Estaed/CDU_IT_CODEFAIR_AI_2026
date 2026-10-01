@@ -14,7 +14,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app import state
-from fair_turn.app.components import details_pane, metrics, ranking_table, sign_off_form
+from fair_turn.app.components import details_pane, metrics, ranking_table, run_sheet, sign_off_form
 from fair_turn.app.components import map as nt_map_component
 from fair_turn.core import audit, capacity_sim, constants, decisions, scoring
 from fair_turn.data import artefacts
@@ -68,14 +68,21 @@ def _run(runnable) -> AppTest:
 LAST_DAY = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
 
 
+def _planned_ids() -> list[str]:
+    """Today's efficiency-first list as the workspace fills it from where the crews are."""
+    # Immediate jobs go to the make-safe lane, not today's list (PRD 3.1, 2026-09-15).
+    open_jobs = ranking_table.open_jobs(LAST_DAY)
+    crew = [j for j in open_jobs if not decisions.is_make_safe(j)]
+    ranked = [s.job.job_id for s in scoring.rank(crew, LAST_DAY, 1.0)]
+    jobs_by_id = {j.job_id: j for j in open_jobs}
+    starts = ranking_table.crew_starts(LAST_DAY)
+    return run_sheet.today_ids(ranked, jobs_by_id, LAST_DAY, starts)[0]
+
+
 def _accept_today(audit_path: Path) -> list[str]:
     """Accept the efficiency-first top of today's list in the audit log, so To decide is
     empty and Review and sign opens. Returns the accepted ids in rank order."""
-    cap = ranking_table.capacity(state.ALL_REGIONS)
-    # Immediate jobs go to the make-safe lane, not today's list (PRD 3.1, 2026-09-15).
-    crew = [j for j in ranking_table.open_jobs(LAST_DAY) if not decisions.is_make_safe(j)]
-    ranked = scoring.rank(crew, LAST_DAY, 1.0)
-    ids = [s.job.job_id for s in ranked[:cap]]
+    ids = _planned_ids()
     for job_id in ids:
         audit.append(audit_path, audit.JobDecision(LAST_DAY, job_id, "accepted", "A. Coordinator"))
     return ids
@@ -175,7 +182,7 @@ def test_sign_off_flow_from_draft_to_changed_since_signature(tmp_path) -> None:
     assert record.batch_version == 1
     assert re.fullmatch(r"\d{8}-v1", record.audit_ref)
     assert (record.decision, record.signer, record.lam) == ("approve", "A. Coordinator", 0.5)
-    cap = ranking_table.capacity(state.ALL_REGIONS)
+    cap = len(_planned_ids())
     # The signed list is the accepted jobs, in the rank order of the signed weighting.
     assert len(record.today_job_ids) == cap
     assert set(record.today_job_ids) == set(accepted)
@@ -259,7 +266,7 @@ def test_failed_audit_write_writes_nothing_and_keeps_the_review_open(tmp_path, m
 
 
 def test_review_and_sign_waits_for_every_decision_then_signing_closes_them(tmp_path) -> None:
-    cap = ranking_table.capacity(state.ALL_REGIONS)
+    cap = len(_planned_ids())
     at = _open(tmp_path, accept=False)
     assert at.button(key="workspace_review_and_sign").proto.disabled
     assert f"Decide the {cap} jobs left in To decide first." in [c.value for c in at.caption]
@@ -423,3 +430,14 @@ def test_sign_off_summary_counts_the_decisions() -> None:
         sign_off_form.decision_line(14, 2, 1, 3)
         == "Accepted 14 · not today 2 · sent to a person 1 · fields fixed 3."
     )
+
+
+def test_a_reload_keeps_todays_signature_from_the_audit_log(tmp_path) -> None:
+    at = _review(_open(tmp_path))
+    _sign(at, "A. Coordinator", "Every job was read and decided today.")
+    assert "Status: Signed v1 " in _header(at)
+    # A fresh session (a browser reload) reads the same audit log.
+    reloaded = _run(AppTest.from_file(str(_script(tmp_path))))
+    assert "Status: Signed v1 " in _header(reloaded)
+    assert _header(reloaded).endswith("by A. Coordinator")
+    assert not metrics_hidden(reloaded)

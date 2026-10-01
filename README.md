@@ -140,8 +140,8 @@ definitions now live once in `fair_turn/llm/prompts.py` and the set was regenera
 extractor prompt unchanged (`reports/audit-2026-10-01.md`). Synthetic text written to the
 definitions is cleaner than real tenant text; treat these as upper bounds.
 
-Local models were benchmarked on the earlier text set (`data/build/eval_ollama*.json`,
-`MODELS.md`): `qwen3:8b` reached 0.688 / 0.561 and was not adopted.
+Local models were rerun on the regenerated set (`data/build/eval_ollama*.json`, `MODELS.md`):
+`qwen3:8b` reached 0.579 / 0.646 (fault / safety) and `qwen3.5:9b` 0.402 / 0.549; neither was adopted.
 
 **Simulation** (`data/build/report/`): at efficiency-first (λ = 1) 422 of 807 remote crew
 jobs are still open at day 90 and the remote median wait is 17 days; at equity-first

@@ -245,6 +245,11 @@ def _table_records(item: QueueItem, human_set: dict[str, str]) -> list[dict[str,
     return records
 
 
+def _with_chosen(job: Job, chosen: dict[str, str]) -> Job:
+    """``job`` with the coordinator's values as enums (the form returns plain strings)."""
+    return replace(job, **{field: HUMAN_SETTABLE[field](value) for field, value in chosen.items()})
+
+
 def _job_for_rank(
     art: Artefacts, item: QueueItem, chosen: dict[str, str], today: date
 ) -> tuple[Job, list[Job]]:
@@ -256,9 +261,7 @@ def _job_for_rank(
     open_today = ranking_table.open_jobs(today)
     jobs_by_id = {j.job_id: j for j in open_today}
     if item.job_id in jobs_by_id:
-        job = jobs_by_id[item.job_id]
-        if chosen:
-            job = replace(job, **chosen)
+        job = _with_chosen(jobs_by_id[item.job_id], chosen)
         jobs = [job if j.job_id == item.job_id else j for j in open_today]
         return job, jobs
 
@@ -289,8 +292,7 @@ def _job_for_rank(
 
     build_job = next((j for j in to_jobs(art) if j.job_id == item.job_id), None)
     if build_job is not None:
-        if chosen:
-            build_job = replace(build_job, **chosen)
+        build_job = _with_chosen(build_job, chosen)
         return build_job, [*open_today, build_job]
 
     fault = chosen.get("fault_type")

@@ -1,0 +1,910 @@
+[
+ {
+  "job_id": "CH-001",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "electrical",
+    "evidence": "Power point by the kitchen is sparking"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "sparking and the wall around it feels hot"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "by the kitchen"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-002",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "electrical",
+    "evidence": "The power keeps cutting out"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "no lights in part of the house"
+   },
+   "health_risk:overcrowding": {
+    "value": "overcrowding",
+    "evidence": "There are eight of us staying here"
+   },
+   "crew_or_access_note": {
+    "value": "the wet road can close",
+    "evidence": "the wet road can close"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-003",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "electrical",
+    "evidence": "the light in the back bedroom has stopped working"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "the rest of the power is fine"
+   },
+   "health_risk:overcrowding": {
+    "value": "overcrowding",
+    "evidence": "There are eleven of us in the three-bedroom house"
+   },
+   "health_risk:elderly": {
+    "value": "elderly",
+    "evidence": "my elderly mother"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "the baby"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "back bedroom"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-004",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "plumbing_water",
+    "evidence": "A pipe under the kitchen sink burst"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "water is running across the floor"
+   },
+   "health_risk:elderly": {
+    "value": "elderly",
+    "evidence": "I am an older woman"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "under the kitchen sink"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-005",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "hot_water",
+    "evidence": "We have no hot water since this morning"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "no hot water"
+   },
+   "health_risk:overcrowding": {
+    "value": "overcrowding",
+    "evidence": "There are seven of us across three generations"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-006",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "plumbing_water",
+    "evidence": "the bathroom tap has been dripping"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "the water is still running normally"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "the bathroom tap"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-007",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "sewer_drainage",
+    "evidence": "Sewage is coming up through the bathroom drain"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "Sewage is coming up through the bathroom drain and onto the floor"
+   },
+   "health_risk:extreme_heat_exposure": {
+    "value": "extreme_heat_exposure",
+    "evidence": "The house gets very hot by afternoon"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "our two kids are here"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "bathroom drain"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-008",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "sewer_drainage",
+    "evidence": "The toilet is blocked"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "will not flush"
+   },
+   "crew_or_access_note": {
+    "value": "arrange a time when I can be home",
+    "evidence": "arrange a time when I can be home"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-009",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "sewer_drainage",
+    "evidence": "The outside drain has been slow"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "the toilets and sinks still work"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "needs daily care from me and my partner"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "The outside drain"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-010",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "roof_structure",
+    "evidence": "Part of the roof has come loose in the wind"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "is lifting up"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "We are expecting our first baby next month"
+   },
+   "crew_or_access_note": {
+    "value": "the crew is a long way away",
+    "evidence": "the crew is a long way away"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-011",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "cooling",
+    "evidence": "the air conditioner has stopped cooling the house"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "the room is getting very hot in the afternoon"
+   },
+   "health_risk:elderly": {
+    "value": "elderly",
+    "evidence": "He is an older man"
+   },
+   "health_risk:extreme_heat_exposure": {
+    "value": "extreme_heat_exposure",
+    "evidence": "the room is getting very hot in the afternoon"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-012",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "cooling",
+    "evidence": "the air conditioner makes a rattling noise"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "it still cools the house"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "their child"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-013",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "doors_locks_security",
+    "evidence": "The front door lock has come away"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "we can't secure the house"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "a newborn"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "The front door lock"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-014",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "hot_water",
+    "evidence": "The hot water stopped working yesterday"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "We have no hot water at all now"
+   },
+   "health_risk:elderly": {
+    "value": "elderly",
+    "evidence": "both in our eighties"
+   },
+   "crew_or_access_note": {
+    "value": "supplies and crews have to come by barge or plane",
+    "evidence": "supplies and crews have to come by barge or plane"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-015",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "hot_water",
+    "evidence": "The hot water has been patchy since last week"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "it still comes through"
+   },
+   "health_risk:elderly": {
+    "value": "elderly",
+    "evidence": "My elderly parent lives with me"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-016",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "stove_cooking",
+    "evidence": "The stove has started smoking"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "a flame came out near the knob"
+   },
+   "health_risk:extreme_heat_exposure": {
+    "value": "extreme_heat_exposure",
+    "evidence": "the heat is bad already"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "three kids here"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-017",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "roof_structure",
+    "evidence": "a section of the roof is sagging after recent rain"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "a section of the roof is sagging"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "an adult with kidney disease"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-018",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "roof_structure",
+    "evidence": "a loose roof sheet rattles in the wind"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "No water is coming in at present"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-019",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "electrical",
+    "evidence": "Power point is sparking when used"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "Power point is sparking"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "one adult here is on dialysis three days a week"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-020",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "doors_locks_security",
+    "evidence": "The front door deadlock"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "the house can be locked"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "seven months pregnant"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "a toddler"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "The front door"
+   },
+   "crew_or_access_note": {
+    "value": "The road can close in the wet",
+    "evidence": "The road can close in the wet"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-021",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "doors_locks_security",
+    "evidence": "The screen door latch is loose"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "the main door still locks"
+   },
+   "health_risk:overcrowding": {
+    "value": "overcrowding",
+    "evidence": "seven of us in the house"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "our baby under one"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "The screen door"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-022",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "plumbing_water",
+    "evidence": "A pipe has burst under the sink"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "water is flooding the kitchen"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "My partner has diabetes"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "a two-year-old"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "under the sink"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-023",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "stove_cooking",
+    "evidence": "the stove has stopped working"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "they cannot cook at home"
+   },
+   "health_risk:extreme_heat_exposure": {
+    "value": "extreme_heat_exposure",
+    "evidence": "only has fans in the heat"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-024",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "stove_cooking",
+    "evidence": "check the stove"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "the other one works"
+   },
+   "crew_or_access_note": {
+    "value": "when a crew is next out this way",
+    "evidence": "when a crew is next out this way"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-025",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "sewer_drainage",
+    "evidence": "Sewage is coming up through the bathroom drain"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "Sewage is coming up through the bathroom drain and spreading across the floor"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "My partner is pregnant"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "bathroom drain"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-026",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "pests",
+    "evidence": "ants have been getting into the pantry"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "please arrange pest treatment"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "severe asthma"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "the pantry"
+   },
+   "crew_or_access_note": {
+    "value": "The wet season road can close",
+    "evidence": "The wet season road can close"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-027",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "pests",
+    "evidence": "There are cockroaches in the kitchen cupboards"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "Please treat them when you can"
+   },
+   "health_risk:overcrowding": {
+    "value": "overcrowding",
+    "evidence": "We are nine in the house"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "two little ones under five"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "kitchen cupboards"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-028",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "roof_structure",
+    "evidence": "Part of the roof has come loose in the rain"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "is hanging down over the bedroom"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "over the bedroom"
+   },
+   "crew_or_access_note": {
+    "value": "The road can close in wet season",
+    "evidence": "The road can close in wet season"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-029",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "hot_water",
+    "evidence": "the hot water has stopped working since this morning"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "cannot get warm water for washing"
+   },
+   "health_risk:pregnancy_or_chronic_condition": {
+    "value": "pregnancy_or_chronic_condition",
+    "evidence": "She is pregnant"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-030",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "other",
+    "evidence": "The kitchen cupboard door has come off its hinge"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "it is getting in the way"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "the youngest is four"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "The kitchen cupboard door"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-031",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "doors_locks_security",
+    "evidence": "The front door lock broke last night"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "the door will not lock now"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "three children under ten"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "The front door lock"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-032",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "electrical",
+    "evidence": "The power has gone off in half the house"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "we need the lights and power back"
+   },
+   "crew_or_access_note": {
+    "value": "the sealed road is open for the crew",
+    "evidence": "the sealed road is open for the crew"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-033",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "electrical",
+    "evidence": "The light in my bedroom keeps flickering"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "Nothing smells burnt"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "in my bedroom"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-034",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "stove_cooking",
+    "evidence": "the stove has a strong gas smell"
+   },
+   "safety_class": {
+    "value": "immediate",
+    "evidence": "the burner will not turn off"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "newborn twins"
+   },
+   "crew_or_access_note": {
+    "value": "access is by barge or plane",
+    "evidence": "access is by barge or plane"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-035",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "hot_water",
+    "evidence": "there is no hot water at the taps"
+   },
+   "safety_class": {
+    "value": "urgent",
+    "evidence": "no hot water at the taps"
+   },
+   "health_risk:elderly": {
+    "value": "elderly",
+    "evidence": "elderly husband"
+   },
+   "health_risk:infant_or_young_child": {
+    "value": "infant_or_young_child",
+    "evidence": "three grandchildren under six"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ },
+ {
+  "job_id": "CH-036",
+  "is_adversarial": false,
+  "kept": {
+   "fault_type": {
+    "value": "plumbing_water",
+    "evidence": "The laundry tap drips into the tub"
+   },
+   "safety_class": {
+    "value": "routine",
+    "evidence": "can still use the other taps"
+   },
+   "location_mentioned": {
+    "value": true,
+    "evidence": "The laundry tap"
+   }
+  },
+  "dropped": {},
+  "substring_ok": true,
+  "injection_markers": [],
+  "needs_human": false
+ }
+]

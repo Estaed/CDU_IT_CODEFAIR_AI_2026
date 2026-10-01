@@ -44,14 +44,21 @@ def extract(
     schema: dict,
     timeout: float = 420,
     executable: list[str] | None = None,
+    model: str | None = None,
+    effort: str | None = None,
 ) -> dict:
-    """One structured call. ``executable`` overrides the resolved ``codex`` for tests."""
+    """One structured call. ``executable`` overrides the resolved ``codex`` for tests;
+    ``model`` and ``effort`` pin the run when given (the challenge set names its writer)."""
     with tempfile.TemporaryDirectory(prefix="fair_turn_codex_") as tmp:
         schema_path = Path(tmp) / "schema.json"
         out_path = Path(tmp) / "out.json"
         schema_path.write_text(json.dumps(schema), encoding="utf-8")
+        pins = (["-m", model] if model else []) + (
+            ["-c", f"model_reasoning_effort={effort}"] if effort else []
+        )
         cmd = list(executable or [shutil.which("codex") or "codex"]) + [
             "exec",
+            *pins,
             "--sandbox",
             "read-only",
             "--skip-git-repo-check",

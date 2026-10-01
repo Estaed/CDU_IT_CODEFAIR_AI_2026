@@ -15,7 +15,7 @@ Total labelled reports: 1452 (*provisional* volume, PRD section 6.2).
 Remote share: 0.6047 (*provisional* target ~0.60, PRD section 6.2).
 Holdout set: 150 reports.
 Adversarial set: 20 reports.
-Needs-a-human queue: 21 non-adversarial reports with an unverified required field.
+Needs-a-human queue: 1 non-adversarial reports with an unverified required field.
 
 ## Capacity model (*provisional*, PRD section 6.3)
 

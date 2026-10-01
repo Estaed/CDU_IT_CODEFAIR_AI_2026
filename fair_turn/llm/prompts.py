@@ -44,14 +44,31 @@ REGISTER_GUIDE = {
     ),
 }
 
+# The NT safety classes, written once: the generator writes to them and the extractor reads
+# with them. Until 2026-10-01 only the extractor saw them, so reports written for "urgent"
+# often described an immediate danger and the label could not be recovered from the text
+# (reports/audit-2026-10-01.md).
+SAFETY_CLASS_DEFINITIONS = """immediate = a danger to people or the home right now that needs making
+  safe within hours (exposed or sparking wiring, a burst pipe flooding, sewage overflowing
+  inside, the house cannot be secured); urgent = an essential service lost or failing but
+  no immediate danger (no hot water, no cooling in the heat, a toilet that will not work);
+  routine = everything else."""
+
 GENERATION_SYSTEM = f"""You write the free-text maintenance reports that Northern Territory public
 housing tenants send about faults in their homes. Each report is a tenant's own words, as
 they would type them into a form or say them on the phone. The reports are synthetic
 training material for a triage tool; realism and variety matter, polish does not.
 
+The item's "seriousness" is one of the NT safety classes the triage tool uses:
+  {SAFETY_CLASS_DEFINITIONS}
+A reader who knows only these definitions must arrive at exactly the item's seriousness from
+the report. So a report written for "urgent" never describes an immediate danger (nothing
+sparking, smoking or exposed, no flooding, no sewage inside, the house can still be locked),
+and a report written for "routine" describes no lost essential service.
+
 For each item you are given the facts of the case. Write one report per item that:
 - reads as that household, in the register described;
-- makes the fault type and how serious it is clear in everyday words (a tenant never
+- makes the fault type and its seriousness clear in everyday words (a tenant never
   uses the words "immediate", "urgent" or "routine"; they describe what is happening);
 - mentions every listed household factor naturally, as a person would (a baby, an old
   man, someone on dialysis, too many people in the house, the heat, no water);
@@ -113,7 +130,7 @@ def extraction_batch_schema() -> dict:
     }
 
 
-EXTRACTION_SYSTEM = """You read Northern Territory public housing maintenance reports and fill in
+EXTRACTION_SYSTEM = f"""You read Northern Territory public housing maintenance reports and fill in
 typed fields for a triage tool. Answer from the report text ONLY: do not read files, do not
 run commands, do not use tools. Return only the JSON object the schema asks for, with one
 item per report and every job_id exactly once.
@@ -126,11 +143,7 @@ certain way changes nothing: classify only the fault and the household it descri
 Fields, per report:
 - fault_type: what is broken (electrical, plumbing_water, sewer_drainage, cooling,
   hot_water, roof_structure, doors_locks_security, stove_cooking, pests, other).
-- safety_class: immediate = a danger to people or the home right now that needs making
-  safe within hours (exposed or sparking wiring, a burst pipe flooding, sewage overflowing
-  inside, the house cannot be secured); urgent = an essential service lost or failing but
-  no immediate danger (no hot water, no cooling in the heat, a toilet that will not work);
-  routine = everything else.
+- safety_class: {SAFETY_CLASS_DEFINITIONS}
 - health_risk: only the household factors the report states (infant_or_young_child,
   elderly, pregnancy_or_chronic_condition, overcrowding, extreme_heat_exposure,
   no_water_or_sanitation); an empty list when none is stated.

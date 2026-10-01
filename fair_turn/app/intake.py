@@ -24,7 +24,7 @@ CALL_OVERRIDE: Callable | None = None
 EXAMPLE_REPORTS = {
     "Cooling, Alice Springs": "JR-2025-00407",
     "Hot water, remote": "JR-2025-00030",
-    "Electrical, urgent": "JR-2025-00011",
+    "Electrical, immediate": "JR-2025-00011",
 }
 
 

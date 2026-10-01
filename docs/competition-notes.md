@@ -84,7 +84,25 @@ Group details must be stated properly in the email and every necessary file must
 zip. Note the organisers' wording: "send your **progress**" — this is a work-in-progress
 submission, and the Challenge Day pitch is where the finished thing is shown.
 
-## The submission date on the official page contradicts itself
+## Current dates and panel (official page re-read 1 October 2026)
+
+This supersedes the date sections below, which record what the pages said in September.
+<https://itcodefair.cdu.edu.au/ai-challenge/> now gives one date per step:
+
+| Step | Date |
+|---|---|
+| Registration closing | 18 September 2026, 5 pm |
+| Workshop 1 / Workshop 2 | 22 September / 2 October 2026, 16:30 ACST |
+| **Submission deadline and test run** | **8 October 2026** |
+| Challenge Day | Thursday 15 October 2026, 09:00–17:00 |
+| Award announcement | 5 November 2026 |
+
+Judges: Sarah Strzelecki (Senior Manager AI Advisory, NTG Department of Corporate and
+Digital Development), Brett Riley (Data Warehouse Manager, same department), Dr Cat Kutay
+(CDU), Rushi Vyas (What's On). Two of four are NT Government data and AI staff: the pitch
+must answer "could we pilot this?". Criteria unchanged, still unweighted.
+
+## The submission date on the official page contradicts itself (September record)
 
 The AI Challenge page states two different deadlines:
 

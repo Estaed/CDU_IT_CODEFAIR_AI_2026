@@ -87,16 +87,22 @@ def evaluate(build: Path = BUILD) -> dict:
         gold_sets, [_factors(r) for r in scored], factors
     )
 
+    all_rows = _load(build, "extraction.json")
+    dropped = sum(len(r["dropped"]) for r in all_rows)
     notes = [
         "location_mentioned and crew_or_access_note have no gold label in labels.json, "
         "so they get no precision, recall or F1.",
         f"{sum(r['needs_human'] for r in scored)} of {len(scored)} holdout rows went to the "
-        "human queue; their fields count as empty predictions (false negatives).",
+        "human queue; their fields count as empty predictions (false negatives). The scores "
+        "therefore measure what reaches the ranking, not each field in isolation.",
         "Macro precision, recall and F1 are means over classes, not proportions, so they carry "
         "no Wilson interval; each per-class precision and recall, accuracy, exact-set match "
         "and the substring rate do.",
         "The baseline is scored for fault_type and safety_class only.",
-        "The substring rate is over every extraction row, adversarial items included.",
+        "The substring rate is over every extraction row, adversarial items included, after "
+        f"verification: the {dropped} proposed fields whose phrase was not in the text were "
+        "already dropped (they never display), so the rate shows the display rule holds, not "
+        "that the model never proposed an ungrounded phrase.",
     ]
     # Step 4: span scoring is optional — only if a gold_spans.json artefact exists.
     gold_spans_path = build / "gold_spans.json"
@@ -110,12 +116,39 @@ def evaluate(build: Path = BUILD) -> dict:
             "generator returned text only), and none were invented."
         )
 
+    # Step 5: the cross-vendor challenge set (scripts/build_challenge_set.py), when built:
+    # text written by another model family, read by the same extractor, scored on its own.
+    challenge = None
+    if (build / "challenge.json").exists() and (build / "challenge_extraction.json").exists():
+        items = _load(build, "challenge.json")
+        by_id = {r["job_id"]: r for r in _load(build, "challenge_extraction.json")}
+        empty = {"needs_human": True, "kept": {}}
+        ch_rows = [by_id.get(c["job_id"], empty) for c in items]
+        ch_texts = [c["text"] for c in items]
+        challenge = {"n": len(items), "writer": sorted({c["writer"] for c in items}), "fields": {}}
+        challenge["baseline"] = {}
+        for field, classes in FIELDS.items():
+            gold = [c[field] for c in items]
+            challenge["fields"][field] = metrics.prf(
+                gold, [_predicted(r, field) for r in ch_rows], classes
+            )
+            predicted = baseline.fit_predict(
+                [texts[lb["job_id"]] for lb in train], [lb[field] for lb in train], ch_texts
+            )
+            challenge["baseline"][field] = metrics.prf(gold, predicted, classes)
+        ch_gold_sets = [set(c["health_risk"]) for c in items]
+        ch_factors = [str(f) for f in HealthRiskFactor if any(str(f) in g for g in ch_gold_sets)]
+        challenge["fields"]["health_risk"] = metrics.multilabel_prf(
+            ch_gold_sets, [_factors(r) for r in ch_rows], ch_factors
+        )
+
     return _rounded(
         {
             "n_holdout": len(holdout),
             "extractor": extractor,
             "baseline": reference,
-            "substring_rate": metrics.substring_rate(_load(build, "extraction.json")),
+            "challenge": challenge,
+            "substring_rate": metrics.substring_rate(all_rows),
             "span_scores": span,
             "f1_target": metrics.F1_TARGET,
             "target_met": {f: extractor[f]["macro_f1"] >= metrics.F1_TARGET for f in TARGET_FIELDS},
@@ -151,6 +184,25 @@ def tables(result: dict) -> str:
         share = "exact_set_match" if "exact_set_match" in stats else "accuracy"
         summary = "; ".join(f"{m} {share.replace('_', ' ')} {_cell(s, share)}" for m, s in models)
         lines += ["", summary, ""]
+    challenge = result.get("challenge")
+    if challenge:
+        lines += [
+            f"## Cross-vendor challenge set ({challenge['n']} reports written by "
+            f"{', '.join(challenge['writer'])}, read by the same extractor)",
+            "",
+            "| field | extractor macro-F1 | extractor accuracy [95% CI] | baseline macro-F1 |",
+            "|---|---|---|---|",
+        ]
+        for field, stats in challenge["fields"].items():
+            share = "exact_set_match" if "exact_set_match" in stats else "accuracy"
+            base = challenge["baseline"].get(field)
+            lines.append(
+                f"| {field} | {stats['macro_f1']:.3f} | {_cell(stats, share)} | "
+                f"{base['macro_f1']:.3f} |"
+                if base
+                else f"| {field} | {stats['macro_f1']:.3f} | {_cell(stats, share)} | — |"
+            )
+        lines.append("")
     rate = result["substring_rate"]
     met = ", ".join(f"{f} {'met' if ok else 'not met'}" for f, ok in result["target_met"].items())
     lines.append(f"Substring verification: {_cell(rate, 'rate')} of {rate['n']} extraction rows.")

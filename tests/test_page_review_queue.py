@@ -47,8 +47,31 @@ def _job_with_dropped_required_field(art: artefacts.Artefacts) -> tuple[str, str
 
 
 def _open_complete_job(art: artefacts.Artefacts) -> str:
-    """The first job, by id, that is still open on the default day (the same capacity run
-    as ``ranking_table.open_jobs``) and has both required fields."""
+    """The first job, by id, that is still open on the default day and has both required
+    fields."""
+    return _open_complete_jobs(art)[0]
+
+
+def _request_reviews(tmp_path: Path, art: artefacts.Artefacts, n: int) -> None:
+    """Send ``n`` open jobs back for review in the temporary audit log, so the queue holds
+    enough jobs to page through whatever the committed extraction left unverified."""
+    for job_id in _open_complete_jobs(art)[:n]:
+        audit.append(
+            tmp_path / "audit.jsonl",
+            audit.HumanSet(
+                day=constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS),
+                job_id=job_id,
+                field="review_requested",
+                value="review",
+                actor="coordinator",
+                reason="Check the evidence before dispatch.",
+            ),
+        )
+
+
+def _open_complete_jobs(art: artefacts.Artefacts) -> list[str]:
+    """Jobs, by id, still open on the default day (the same capacity run as
+    ``ranking_table.open_jobs``) with both required fields."""
     jobs = artefacts.to_jobs(art)
     today = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
     result = capacity_sim.simulate(
@@ -69,7 +92,7 @@ def _open_complete_job(art: artefacts.Artefacts) -> str:
         constants.TRAVEL_DAY_KM,
         geography.sim_sites(art.communities),
     )
-    return min(
+    return sorted(
         j.job_id
         for j in jobs
         if not j.needs_human
@@ -315,14 +338,13 @@ def test_empty_state_renders_when_every_missing_field_is_human_set(art, tmp_path
 
 
 def test_previous_and_next_wrap_at_both_ends(art, tmp_path) -> None:
+    _request_reviews(tmp_path, art, 2)
     script = _wrapper_script(tmp_path)
 
     at = AppTest.from_file(str(script)).run(timeout=60)
     assert not at.exception
     header = at.header[0].value
     n = int(header.split(" of ")[1].split(" — ")[0])
-    if n < 2:
-        pytest.skip("fewer than two committed jobs need review; wrap cannot be exercised")
 
     at = next(b for b in at.button if b.label == "Previous").click().run(timeout=60)
     assert f"{n} of {n}" in at.header[0].value
@@ -332,10 +354,9 @@ def test_previous_and_next_wrap_at_both_ends(art, tmp_path) -> None:
 
 
 def test_a_focus_from_the_workspace_moves_the_cursor_once(art, tmp_path) -> None:
+    _request_reviews(tmp_path, art, 3)
     at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
-    n = int(at.header[0].value.split(" of ")[1].split(" — ")[0])
-    if n < 3:
-        pytest.skip("fewer than three committed jobs need review; focus cannot be exercised")
+    assert int(at.header[0].value.split(" of ")[1].split(" — ")[0]) >= 3
     at = _click_next(_click_next(at))
     header_prefix = at.header[0].value.split(" — ")[0]  # "Job #644 · Top End R-02"
     short = header_prefix.split(" ")[1]
@@ -413,11 +434,10 @@ def test_free_text_overrides_the_chip(art, tmp_path) -> None:
     assert [r.reason for r in runtime.read(runtime_path)] == ["Tenant called back"]
 
 
-def test_the_name_is_remembered_on_the_next_job(tmp_path) -> None:
+def test_the_name_is_remembered_on_the_next_job(art, tmp_path) -> None:
+    _request_reviews(tmp_path, art, 2)
     at = AppTest.from_file(str(_wrapper_script(tmp_path))).run(timeout=60)
-    n = int(at.header[0].value.split(" of ")[1].split(" — ")[0])
-    if n < 2:
-        pytest.skip("fewer than two committed jobs need review; the next job cannot be reached")
+    assert int(at.header[0].value.split(" of ")[1].split(" — ")[0]) >= 2
 
     name_input = next(i for i in at.text_input if i.label == "Your name")
     at = name_input.set_value("Ngaire").run(timeout=60)

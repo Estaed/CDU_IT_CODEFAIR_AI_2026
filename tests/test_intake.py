@@ -9,6 +9,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app import intake
+from fair_turn.data import artefacts
 from fair_turn.llm import intake as intake_llm
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -146,7 +147,8 @@ def test_loading_an_example_fills_text_and_community(tmp_path, monkeypatch) -> N
     at.run(timeout=60)
     label = "Cooling, Alice Springs"
     at.button_group[0].select(label).run(timeout=60)
-    assert "aircon" in at.text_area[0].value
+    expected = artefacts.load_all().reports[intake.EXAMPLE_REPORTS[label]]
+    assert at.text_area[0].value == expected
     assert at.selectbox[1].value == "Alice Springs"
     # The text stays editable after the example loads.
     at.text_area[0].input(at.text_area[0].value + " Edited.").run(timeout=60)

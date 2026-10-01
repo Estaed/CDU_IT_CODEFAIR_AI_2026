@@ -15,12 +15,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 
-INCLUDE_DIRS = ("fair_turn", "scripts", "tests", "data/build", "data/geo")
+# ``submission/`` holds the team's report PDF and slides (see submission/README.md).
+INCLUDE_DIRS = ("fair_turn", "scripts", "tests", "data/build", "data/geo", "submission")
 INCLUDE_FILES = (
     "data/raw/PROVENANCE.md",
     "data/raw/nt_fs17_repairs_and_maintenance_2025-10.pdf",
     "data/audit/sample.jsonl",
     "docs/PRD.md",
+    "docs/user-guide.md",
+    "constants.md",
     "README.md",
     "pyproject.toml",
     "requirements.txt",
@@ -106,6 +109,13 @@ def main(argv: list[str] | None = None) -> int:
     zip_path = build_zip(args.out, args.team)
     size = zip_path.stat().st_size
     print(f"{zip_path} ({size} bytes)")
+    # Step 4: the report is a required deliverable the code cannot write; say loudly when it
+    # is missing rather than ship a zip that silently lacks it.
+    if not any((ROOT / "submission").glob("*.pdf")):
+        print(
+            "package_submission: WARNING no report PDF in submission/ - the zip has none",
+            file=sys.stderr,
+        )
     return 0
 
 

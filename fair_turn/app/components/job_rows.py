@@ -65,7 +65,8 @@ def render(rows: list[dict], selected_id: str | None, key: str) -> str | None:
                 st.caption(row["window"])
             with score:
                 st.markdown(f"{row['score']:.1f}")
-                st.progress(min(row["score"] / row["score_max"], 1.0))
+                # A score can be negative (travel outweighs need); the bar shows 0 then.
+                st.progress(min(max(row["score"] / row["score_max"], 0.0), 1.0))
             with action:
                 if st.button(
                     OPEN,

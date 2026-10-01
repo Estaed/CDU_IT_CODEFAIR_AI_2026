@@ -174,8 +174,9 @@ def test_feedback_purpose_and_audit_chart_precede_audit_controls(tmp_path) -> No
     at = _run(tmp_path)
     assert (
         "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting. "
-        "The weighting decides who waits and what that costs in town wait and kilometres; it does "
-        "not change how many remote reports go unserved. That is crew capacity."
+        "Moving towards equity serves more remote reports within their NT window and leaves fewer "
+        "never served; the price is paid in town waits and kilometres. Crew capacity caps how far "
+        "any weighting can go: a second crew per remote region does more than any setting."
     ) in [markdown.value for markdown in at.markdown]
     audit_tab = [tab for tab in at.tabs if tab.label == "Audit log"][0]
     audit_chart = at.get("vega_lite_chart")[-1]

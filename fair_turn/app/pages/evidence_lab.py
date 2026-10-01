@@ -352,12 +352,13 @@ def window_share_chart(rows: pd.DataFrame, runs: list[str]) -> alt.Chart:
 def render_feedback_tab() -> None:
     st.write(
         "Replays the 90-day set twice, once efficiency-first and once at the chosen weighting. "
-        "The weighting decides who waits and what that costs in town wait and kilometres; it does "
-        "not change how many remote reports go unserved. That is crew capacity."
+        "Moving towards equity serves more remote reports within their NT window and leaves fewer "
+        "never served; the price is paid in town waits and kilometres. Crew capacity caps how far "
+        "any weighting can go: a second crew per remote region does more than any setting."
     )
     st.write(
-        "Reporting fades wherever reports go unserved, under both runs: watch the reports-per-week "
-        "lines fall together. The decay rate is a labelled assumption on the slider."
+        "Reporting fades wherever reports go unserved, under both runs. The decay rate is a "
+        "labelled assumption on the slider, not a measured one."
     )
     lam = st.slider(
         "λ (0 = equity first, 1 = efficiency first)",

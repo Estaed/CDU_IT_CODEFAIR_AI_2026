@@ -271,6 +271,13 @@ For judges and governance, outside the coordinator's flow. Three tabs:
   NT window, town/remote, for both runs; the decay slider shows reporting fading wherever
   reports go unserved, under both runs. The removed claim must not reappear in the page
   text or the report.
+  *Amended 2026-10-01 (after the town-crew fix and the regenerated set, section 6.3):* the
+  weighting now moves remote service. Replay at decay 0.3, λ = 1 against λ = 0.5: remote
+  reports served within their NT window 41 % → 49 %, remote reports never served 166 → 130;
+  town within window 94 % → 82 %; 84k → 97k km. Purpose, restated again: the weighting
+  decides who waits and the page shows the price; capacity caps it (a second crew per
+  remote region does more than any setting, `capacity_sensitivity.csv`). The "demand dried
+  up" contrast is still not produced (remote reports 754 vs 756) and still must not be claimed.
 - **Audit log.** Every signed day: weighting, reason, revisions, per-job overrides with
   reasons, signer, plan acceptances, intake and human-set events with actor and
   provider detail. Two clocks as two columns, never merged: the **decision day**
@@ -418,13 +425,29 @@ The wait-time metrics need a toy dispatch model, not a router:
   `reports/otopilot-2026-09-13-report.md`.)
   *2026-09-15:* the tightened values swing the other way: remote is saturated at every λ,
   see 3.5. Left as is for this phase; a visit that clears more than two jobs is in BACKLOG.
+  *Amended 2026-10-01:* a crew completes up to **3** jobs per day, and a **town** takes as
+  many crews a day as its open jobs fill (a remote community still takes one crew a day).
+  Before this, each town was one site capped at one crew-day, so the second town crew never
+  worked in Darwin and 93 Darwin jobs stayed open at every λ. With both changes the model
+  is strained but not frozen: at λ = 1 about half the remote jobs are still open at day 90,
+  and the weighting moves that number. The sweep over neighbouring capacities is
+  `data/build/report/capacity_sensitivity.csv` (reports/audit-2026-10-01.md).
 - A crew visiting a remote community serves all its pending jobs up to capacity in one
   visit (batching). A community over 200 km from base costs the crew a travel day.
 - A closed road blocks the visit until the road reopens.
 - *Added 2026-09-15:* Immediate jobs are completed on the day they are reported by the
   emergency make-safe contractor (section 3.1): they spend no crew slot, no travel and are
   not held by a closed road, and they count in the medians with a wait of 0.
+  *Amended 2026-10-01:* they no longer count in the medians: the medians are **crew**
+  waits, and a contractor's same-day completion pulled them towards zero. In the app, the
+  Immediate jobs of earlier days are assumed made safe in the simulated history; today's
+  stay in "Make safe now" until the coordinator records the send.
 - Wait = completion day − report day. Median wait is computed per town/remote.
+  *Added 2026-10-01:* a job still open at the end counts with its days open so far (a lower
+  bound), and every median is shown with how many of its jobs are still open.
+- *Added 2026-10-01:* FS17 states urgent and routine windows in **business days**; the
+  score and every "within window" figure count business days (weekends skipped, public
+  holidays not modelled).
 - No service durations exist, so nothing downstream shows work or travel hours.
 
 Everything above is a labelled assumption exposed in the report; none of it is claimed as
@@ -436,6 +459,13 @@ NT practice. The September workshop interview may revise the numbers (open quest
 items (injected instructions, fake priority claims, fake system tags). Twenty graded
 items are hand-read to check the grader itself. The same set scores every intake
 provider.
+
+*Added 2026-10-01:* the generator now receives the same NT safety-class definitions the
+extractor reads (before, it did not, and 386 of 652 "urgent" texts described an immediate
+danger), and the whole set was regenerated. A **cross-vendor challenge set** of 36 reports,
+written by an OpenAI model from the same prompt and read by the unchanged extractor, is
+scored separately (`scripts/build_challenge_set.py`): it tests whether the extractor only
+reads its own model family's prose.
 
 ## 7. Quality bars and how each is verified
 

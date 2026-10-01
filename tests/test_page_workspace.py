@@ -493,7 +493,7 @@ def test_a_not_today_rejection_shows_in_the_effect_the_reach_line_and_the_tile(
     assert at.main.metric[0].value == f"{cap} of {cap}"
 
 
-def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:
+def test_kpi_row_has_the_day_values_and_help_text(art, tmp_path) -> None:
     at = _run(_script(tmp_path))
     labels = [metric.label for metric in at.main.metric]
     assert labels == [
@@ -504,7 +504,12 @@ def test_kpi_row_has_the_day_values_and_help_text(tmp_path) -> None:
     ]
     cap = ranking_table.capacity("All")
     assert at.main.metric[0].value == f"{cap} of {cap}"
-    assert at.main.metric[2].value == "21"
+    in_review = [
+        j
+        for j in ranking_table.open_jobs(LAST_DAY)
+        if art.extraction.get(j.job_id) is not None and art.extraction[j.job_id].needs_human
+    ]
+    assert at.main.metric[2].value == str(len(in_review))
     assert at.main.metric[3].value == "0%"
     assert at.main.metric[0].proto.help == (
         "Jobs proposed within today's capacity: crews x jobs per crew per day (Blueprint)."
@@ -528,9 +533,13 @@ def test_selected_id_in_state_shows_in_pane_header(tmp_path) -> None:
 
 def test_human_set_field_shows_the_coordinator_badge(art, tmp_path) -> None:
     job_id = _open_needs_human(
-        art, lambda kept: "fault_type" not in kept and "safety_class" in kept
+        art, lambda kept: "fault_type" not in kept or "safety_class" not in kept
     )
-    set_field = f'state.set_human_set("{job_id}", "fault_type", "plumbing_water", reason="called")'
+    kept = art.extraction[job_id].kept
+    field, value = (
+        ("fault_type", "plumbing_water") if "fault_type" not in kept else ("safety_class", "urgent")
+    )
+    set_field = f'state.set_human_set("{job_id}", "{field}", "{value}", reason="called")'
     at = _run(_script(tmp_path, set_field, _select(job_id)))
     assert any(details_pane.SET_BY_COORDINATOR in value for value in _markdown(at))
     unset = _run(_script(tmp_path, _select(_ranked()[0].job.job_id)))

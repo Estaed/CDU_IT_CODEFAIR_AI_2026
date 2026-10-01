@@ -120,15 +120,33 @@ Full tables: `data/build/eval.json` (machine-readable), `data/build/eval_tables.
 (rendered), `data/build/report/` (the tables and figures the project report quotes).
 
 Extractor (Claude Sonnet) macro-F1 against the *provisional* 0.85 target, on the 150-item
-holdout set; every shown field is a literal substring of its report (1,472 of 1,472):
+holdout set (texts written by Claude Opus); every shown field is a literal substring of its
+report:
 
-- `fault_type`: **0.919** — target met.
-- `safety_class`: **0.564** — target not met, reported as such (Immediate is over-called:
-  recall 0.93, precision 0.27).
-- `health_risk`: **0.909** (not a required field).
+| field | extractor | TF-IDF baseline |
+|---|---|---|
+| `fault_type` | **0.979** | 0.916 |
+| `safety_class` | **0.969** | 0.861 (finds 50 % of Immediate jobs; the extractor 100 %) |
+| `health_risk` | **0.983** | — |
 
-Local models were benchmarked on the same set (`data/build/eval_ollama*.json`, `MODELS.md`):
-`qwen3:8b` reached 0.688 / 0.561 and was not adopted.
+**Cross-vendor challenge set** (`scripts/build_challenge_set.py`): 36 reports written by an
+OpenAI model from the same prompt, read by the same extractor. Safety class 0.944 against
+the baseline's 0.667, fault type 0.904 against 0.764. The bag-of-words baseline learns the
+generator's style; the extractor does not depend on it.
+
+Before 2026-10-01 safety class scored 0.564: the generator never saw the class definitions
+the extractor reads, so 386 of 652 "urgent" texts described an immediate danger. The
+definitions now live once in `fair_turn/llm/prompts.py` and the set was regenerated with the
+extractor prompt unchanged (`reports/audit-2026-10-01.md`). Synthetic text written to the
+definitions is cleaner than real tenant text; treat these as upper bounds.
+
+Local models were benchmarked on the earlier text set (`data/build/eval_ollama*.json`,
+`MODELS.md`): `qwen3:8b` reached 0.688 / 0.561 and was not adopted.
+
+**Simulation** (`data/build/report/`): at efficiency-first (λ = 1) 422 of 807 remote crew
+jobs are still open at day 90 and the remote median wait is 17 days; at equity-first
+(λ = 0) 308 and 11 days, paid for by 28 → 120 open town jobs and 60k → 92k road km. A
+second crew per remote region leaves 201 open even at λ = 1 (`capacity_sensitivity.csv`).
 
 ## Rebuilding the artefacts
 
@@ -140,12 +158,13 @@ venv/Scripts/python scripts/fetch_raw_sources.py   # frozen, already run; needs 
 venv/Scripts/python scripts/build_labels.py
 venv/Scripts/python scripts/generate_text.py       # needs a logged-in `claude` CLI (Opus)
 venv/Scripts/python scripts/extract.py             # needs a logged-in `claude` CLI (Sonnet)
+venv/Scripts/python scripts/build_challenge_set.py     # needs logged-in `codex` and `claude` CLIs
 venv/Scripts/python scripts/run_eval.py
 venv/Scripts/python scripts/export_report_tables.py
 venv/Scripts/python scripts/seed_audit.py            # the committed audit sample
 ```
 
-`generate_text.py` and `extract.py` are the only steps that call a model, through a
+`generate_text.py`, `extract.py` and `build_challenge_set.py` are the only steps that call a model, through a
 subscription CLI already logged in on the machine that runs them; no API key is used or
 accepted anywhere in this repository. The app and the test suite never call a model or
 open a network connection.

@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Applicant file A-0142 · Priority application review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F2F0EA; --card:#FFFFFF; --ink:#15181C; --ink2:#394049; --muted:#626973;
+  --line:#D9D4C8; --line2:#E9E5DC; --wash:#F8F7F3;
+  --navy:#1B3350; --navy2:#264A72; --navy-tint:#EEF3F8; --navy-line:#A9BACD;
+  --ochre:#9E4A12; --ochre-tint:#FBF1E7;
+  --red:#9B1C1C; --red-bg:#FBECEB; --red-line:#E4B3AF;
+  --green:#1B5E36; --green-bg:#E8F2EB; --green-line:#B3D4BE;
+  --amber:#734B00; --amber-bg:#FCF3DE; --amber-line:#CFA650;
+  --slate:#465261; --slate-bg:#EEF0F3; --slate-line:#9AA4B0;
+  --ai:#3A4A69; --ai-bg:#F1F4F9; --ai-line:#AEB9CC;
+  --mark:#FFE27A; --mark-line:#C99A00;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:14px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+:focus-visible{outline:2px solid var(--navy2);outline-offset:2px}
+svg.i{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mono{font-family:var(--mono)}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* app bar */
+.appbar{background:#13202F;color:#C9D2DD;font-size:12.5px;height:34px;display:flex;align-items:center}
+.appbar .wrap{display:flex;justify-content:space-between;width:100%;max-width:1480px;margin:0 auto;padding:0 28px}
+.appbar b{color:#fff;font-weight:600}
+
+/* sticky case header */
+.case{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line)}
+.case-row{display:flex;align-items:center;gap:24px;padding:14px 28px 12px;max-width:1480px;margin:0 auto}
+.case-id{flex:1;min-width:0}
+h1{font-size:22px;line-height:1.2;margin:3px 0 5px;font-weight:600;letter-spacing:-.005em}
+.case-meta{display:flex;gap:12px;color:var(--ink2);font-size:13px;align-items:center;flex-wrap:wrap}
+.case-meta span{display:inline-flex;gap:6px;align-items:center}
+.case-meta .sep{width:1px;height:14px;background:var(--line)}
+
+.reading{display:flex;flex-direction:column;gap:7px;padding:2px 22px;border-left:1px solid var(--line2);border-right:1px solid var(--line2)}
+.reading-top{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.count{font:600 17px var(--mono);color:var(--ink)}
+.count.all{color:var(--navy)}
+.pips{display:flex;gap:6px}
+.pip{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px 0 8px;border-radius:13px;border:1.5px dashed var(--ochre);background:var(--ochre-tint);color:var(--ochre);font-size:12.5px;font-weight:600}
+.pip:hover{background:#F7E4D2}
+.pip.done{border:1.5px solid var(--navy);background:var(--navy);color:#fff}
+
+.signbox{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:170px}
+.btn-primary{background:var(--navy);color:#fff;border:0;border-radius:6px;height:40px;padding:0 18px;font-weight:600;font-size:14.5px;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{background:var(--navy2)}
+.signhint{font-size:12px;color:var(--muted)}
+.signed-badge{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:6px;border:1.5px solid var(--navy);color:var(--navy);font-weight:600;background:var(--navy-tint)}
+
+/* gate */
+.gate{max-width:1480px;margin:0 auto 10px;padding:0 28px}
+.gate-box{position:relative;border:1px solid var(--amber-line);border-left:5px solid var(--ochre);background:#FFF9EF;border-radius:6px;padding:10px 40px 10px 14px;display:flex;gap:16px;align-items:flex-start}
+.gate-box.ok{border-color:var(--navy-line);border-left-color:var(--navy);background:var(--navy-tint)}
+.gate-title{font-weight:600;display:flex;gap:7px;align-items:center;white-space:nowrap;padding-top:4px}
+.gate-sub{font-size:12.5px;color:var(--ink2);margin-top:2px;font-weight:400;white-space:normal}
+.gate-list{list-style:none;margin:0;padding:0;display:flex;gap:8px;flex-wrap:wrap}
+.gate-list button{display:inline-flex;align-items:center;gap:6px;border:1px solid #D9C2A5;background:#fff;border-radius:5px;padding:5px 10px;font-size:13px;text-align:left}
+.gate-list button:hover{border-color:var(--ochre)}
+.gate-list b{color:var(--ochre)}
+.gate-list .g-cl{color:var(--muted);font-size:12px}
+.gate-x{position:absolute;right:8px;top:8px;border:0;background:none;width:24px;height:24px;border-radius:4px;color:var(--muted);display:grid;place-items:center}
+.gate-x:hover{background:rgba(0,0,0,.06)}
+
+/* tabs */
+.tabs{display:flex;gap:2px;padding:0 28px;max-width:1480px;margin:0 auto}
+.tab{border:0;background:none;padding:9px 14px 10px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;display:flex;gap:8px;align-items:center;margin-bottom:-1px}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--navy)}
+.tab .badge{font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:10px;background:var(--slate-bg);color:var(--slate);display:inline-flex;gap:4px;align-items:center}
+.tab .badge.bad{background:var(--red-bg);color:var(--red)}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 452px;gap:20px;padding:16px 28px 24px;max-width:1480px;margin:0 auto;align-items:start}
+#pane{position:sticky;top:calc(var(--hdr,150px) + 16px);max-height:calc(100vh - var(--hdr,150px) - 32px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px}
+
+/* triage strip */
+.triage{display:grid;grid-template-columns:auto auto auto 1fr;background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:14px;font-size:13px}
+.tcell{padding:8px 13px 9px;border-right:1px solid var(--line2);white-space:nowrap}
+.tcell .tv{margin-top:2px;color:var(--ink2)}
+.tcell b{font-weight:700;color:var(--ink)}
+.tcell b.red{color:var(--red)} .tcell b.amber{color:var(--amber)}
+.tcell.keyc{border-right:0;display:flex;justify-content:flex-end;align-items:center}
+.triage .dot{color:#B9B2A4;margin:0 3px}
+.legend-note{font-size:12.5px;color:var(--muted);margin:-6px 0 14px 2px;display:flex;gap:18px;flex-wrap:wrap}
+.legend-note span{display:inline-flex;gap:6px;align-items:center}
+.serif-sample{font-family:var(--serif);font-size:14px;color:var(--ink)}
+details.key summary{cursor:pointer;color:var(--navy2);font-weight:600;list-style:none;display:inline-flex;gap:5px;align-items:center}
+details.key summary::-webkit-details-marker{display:none}
+.keybox{position:absolute;right:0;top:calc(100% + 6px);z-index:15;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(20,30,45,.14);padding:12px 16px 14px;width:650px;display:grid;grid-template-columns:232px 170px 1fr;gap:16px;font-size:12.5px;white-space:normal}
+.keybox .chip small{font-weight:400;opacity:.85}
+.keybox h5{margin:0 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.keybox ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;align-items:flex-start}
+.keyw{position:relative}
+
+/* groups */
+.group{background:#fff;border:1px solid var(--line);border-radius:8px;margin-bottom:14px;overflow:hidden}
+.g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:11px 18px 10px;border-bottom:1px solid var(--line2)}
+.g-head h2{font-size:16px;margin:0;font-weight:600}
+.g-ref{font-size:12.5px;color:var(--ink2);display:flex;gap:6px;align-items:center;margin-top:1px}
+.g-sum{font-size:12px;color:var(--muted);text-align:right;padding-top:3px;white-space:nowrap}
+.item{padding:14px 18px 12px;border-bottom:1px solid var(--line2);cursor:pointer;scroll-margin-top:calc(var(--hdr,150px) + 20px)}
+.item:hover{background:#FBFAF7}
+.item.is-sel{background:#F4F7FB;box-shadow:inset 4px 0 0 var(--navy)}
+body.signed .item{cursor:default}
+.q{margin:0;font:400 16.5px/1.5 var(--serif);color:var(--ink);padding-left:13px;border-left:3px solid #CEC6B6}
+.q .ellip{color:var(--muted);font-size:14px}
+.cite{margin:6px 0 0 16px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cite b{color:var(--ink2);font-weight:600}
+.claimline{margin-top:10px;display:flex;gap:8px;align-items:baseline}
+.ai-tag{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ai);border:1px solid var(--ai-line);background:var(--ai-bg);border-radius:3px;padding:0 5px;line-height:17px;white-space:nowrap;position:relative;top:-1px}
+.claim{font-size:14.5px;color:#273142}
+.statusline{margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.list-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.snote{font-size:12.5px;color:var(--ink2)}
+.snote q{font-family:var(--serif);font-size:13.5px;quotes:"\201C" "\201D"}
+.spacer{flex:1}
+.contra{margin-top:7px;display:flex;gap:7px;align-items:baseline;font-size:12.5px;color:var(--ink2);padding:6px 10px;border-radius:5px;background:var(--red-bg);border:1px solid #F0D3D0}
+.contra .i{color:var(--red);position:relative;top:2px}
+.contra b{color:var(--ink)}
+.contra q{font-family:var(--serif);font-size:14px;color:var(--ink);quotes:"\201C" "\201D"}
+.lnk{border:0;background:none;padding:4px 6px;border-radius:4px;color:var(--navy2);font-weight:600;font-size:13px;display:inline-flex;gap:5px;align-items:center}
+.lnk:hover{background:var(--navy-tint)}
+.lnk.quiet{color:var(--ink2);font-weight:500}
+
+/* chips: claim check = solid tint; coverage = dashed outline */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:2px 8px 2px 7px;border-radius:4px;border:1px solid;line-height:18px;white-space:nowrap}
+.chip.claim.ok{background:var(--green-bg);color:var(--green);border-color:var(--green-line)}
+.chip.claim.bad{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
+.chip.claim.warn{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
+.chip.cover{background:#fff;border-style:dashed;border-width:1.5px}
+.chip.cover.warn{color:var(--amber);border-color:var(--amber-line)}
+.chip.cover.neutral{color:var(--slate);border-color:var(--slate-line)}
+.chip.rec{background:var(--slate-bg);color:var(--slate);border-color:#C9CFD6}
+.chip.you{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* source + required tags */
+.src{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;border-radius:3px;padding:0 6px;line-height:17px;white-space:nowrap}
+.src svg.i{width:12px;height:12px}
+.src.policy{color:#173F5F;background:#E6EEF6;border:1px solid #B7CADC}
+.src.file{color:#4E4636;border:1px solid #CFC6B2;background:repeating-linear-gradient(135deg,#F7F3EA 0 4px,#ECE6D8 4px 8px)}
+.req{font-size:11px;font-weight:700;color:var(--ochre);border:1px dashed var(--ochre);border-radius:3px;padding:0 5px;line-height:16px;display:inline-flex;gap:4px;align-items:center;white-space:nowrap}
+.req svg.i{width:11px;height:11px}
+.req.done{border-style:solid;color:var(--navy);border-color:var(--navy-line);background:var(--navy-tint)}
+
+/* dispute */
+.dispute-edit{margin-top:10px;padding:10px 12px;border:1px solid var(--navy-line);background:var(--navy-tint);border-radius:6px;cursor:default}
+.dispute-edit label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.dispute-edit .row{display:flex;gap:8px;align-items:center}
+.dispute-edit input{flex:1;height:32px;border:1px solid #9FB0C4;border-radius:5px;padding:0 10px;font:inherit;font-size:13.5px;background:#fff}
+.dispute-edit .err{color:var(--red);font-size:12px;margin-top:4px}
+.btn-sm{height:32px;padding:0 12px;border-radius:5px;border:1px solid var(--navy);background:var(--navy);color:#fff;font-weight:600;font-size:13px}
+.btn-ghost{height:32px;padding:0 12px;border-radius:5px;border:1px solid var(--line);background:#fff;font-size:13px}
+.dispute-saved{margin-top:9px;display:flex;gap:8px;align-items:flex-start;font-size:13px;padding:7px 10px;border-radius:5px;background:var(--navy-tint);border:1px solid var(--navy-line);cursor:default}
+.dispute-saved .i{margin-top:2px;color:var(--navy)}
+.dispute-saved .txt{flex:1}
+.dispute-saved .who{font-weight:600;color:var(--navy)}
+
+/* officer outcome */
+.g-outcome{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:9px 18px;background:var(--wash);border-top:1px solid var(--line2);flex-wrap:wrap}
+.g-items > .item:last-child{border-bottom:0}
+.oc-label{font-size:13px;color:var(--ink2);display:flex;gap:8px;align-items:center}
+.you-tag{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--navy);border-radius:3px;padding:0 6px;line-height:17px}
+.oc-state{color:var(--muted);font-style:italic}
+.oc-state.set{font-style:normal;color:var(--navy);font-weight:600}
+.seg{display:inline-flex;border:1px solid #B5C0CD;border-radius:6px;overflow:hidden;background:#fff}
+.seg button{border:0;border-right:1px solid #D5DCE4;background:#fff;padding:5px 11px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:6px;color:var(--ink2);height:30px}
+.seg button:last-child{border-right:0}
+.seg button:hover:not(:disabled){background:var(--navy-tint)}
+.seg button[aria-checked=true]{background:var(--navy);color:#fff}
+.seg button small{font-size:12px;font-weight:400;opacity:.85}
+.seg button:disabled{opacity:.55}
+.seg button[aria-checked=true]:disabled{opacity:1}
+
+/* pane */
+.pane-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0}
+.icon-btn{border:0;background:none;width:28px;height:28px;border-radius:5px;display:grid;place-items:center;color:var(--muted)}
+.icon-btn:hover{background:var(--line2);color:var(--ink)}
+.pane-ctx{padding:4px 16px 12px;border-bottom:1px solid var(--line2)}
+.ctx-clause{font-size:12.5px;color:var(--ink2);font-weight:600}
+.ctx-claim{margin-top:5px;display:flex;gap:7px;align-items:baseline;font-size:13.5px;color:#273142}
+.plist{list-style:none;margin:0;padding:10px 12px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line2);background:var(--wash)}
+.plist-h{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:0 4px 2px}
+.pbtn{width:100%;display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:#fff;border-radius:6px;padding:7px 10px}
+.pbtn:hover{border-color:var(--navy-line)}
+.pbtn.is-cur{border-color:var(--navy);box-shadow:inset 3px 0 0 var(--navy)}
+.pnum{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;border:1.5px solid var(--slate-line);color:var(--slate)}
+.pbtn.opened .pnum{background:var(--navy);border-color:var(--navy);color:#fff}
+.pmain{font-size:13px;line-height:1.35}
+.pmain b{font-weight:600}
+.pwhy{display:block;font-size:12px;color:var(--muted)}
+.pstate{font-size:12px;display:flex;flex-direction:column;align-items:flex-end;gap:3px;white-space:nowrap}
+.pstate .open{color:var(--navy2);font-weight:600;display:inline-flex;gap:4px;align-items:center}
+.pstate .when{color:var(--ink2);font-family:var(--mono);font-size:11.5px}
+
+.viewer{padding:16px 18px 18px}
+.v-doc{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.v-title{font-weight:600;font-size:15px}
+.v-loc{font-size:12.5px;color:var(--ink2);margin-top:1px}
+.v-why{font-size:12.5px;color:var(--muted);margin-top:8px}
+.v-page{margin-top:12px;background:#FFFEFB;border:1px solid var(--line);border-radius:4px;padding:16px 18px;box-shadow:0 1px 0 #ECE8DF, 0 3px 0 -1px #fff, 0 3px 0 0 #E3DED3;font:400 17px/1.62 var(--serif);color:var(--ink)}
+.v-page.policy{border-top:3px solid #6E8BA8}
+.v-page mark{background:var(--mark);color:inherit;box-shadow:inset 0 -2px 0 var(--mark-line);padding:1px 0;border-radius:1px}
+.v-key{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:6px;align-items:center}
+.v-key .sw{display:inline-block;width:18px;height:10px;background:var(--mark);box-shadow:inset 0 -2px 0 var(--mark-line);border-radius:1px}
+.v-log{margin-top:14px;display:flex;gap:7px;align-items:center;font-size:12.5px;color:var(--ink2);padding:7px 10px;border-radius:5px;background:var(--wash);border:1px solid var(--line2)}
+.v-log .mono{font-size:12.5px;color:var(--ink)}
+.v-next{margin-top:12px;width:100%;justify-content:center;height:36px;border:1px solid var(--navy);color:var(--navy);background:#fff;border-radius:6px;font-weight:600;display:flex;align-items:center;gap:8px}
+.v-next:hover{background:var(--navy-tint)}
+.v-next .req{margin-left:2px}
+
+/* empty state */
+.empty{padding:22px 22px 20px}
+.empty-art{height:118px;border:1.5px dashed var(--line);border-radius:8px;display:grid;place-items:center;background:repeating-linear-gradient(0deg,transparent 0 21px,#F1EEE7 21px 22px);color:#B5AE9F}
+.empty-art .sheet{width:74px;height:92px;background:#fff;border:1px solid var(--line);border-radius:3px;position:relative;box-shadow:4px 4px 0 -1px #fff,4px 4px 0 0 var(--line)}
+.empty-art .sheet i{position:absolute;left:10px;right:10px;height:4px;border-radius:2px;background:#E7E2D8}
+.empty h3{font-size:16px;margin:16px 0 4px}
+.empty p{margin:0;color:var(--ink2);font-size:13.5px}
+.empty-req{margin-top:18px;border-top:1px solid var(--line2);padding-top:14px}
+.empty-req ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.empty-req li button{width:100%;display:flex;gap:9px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:6px;background:#fff;padding:7px 10px;font-size:13px}
+.empty-req li button:hover{border-color:var(--navy-line)}
+.empty-req li .c{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+.empty-req .st{color:var(--ochre)} .empty-req .st.done{color:var(--navy)}
+
+/* record */
+.record{padding:16px 18px 18px}
+.rec-head{display:flex;justify-content:space-between;align-items:center}
+.rec-head h3{margin:0;font-size:16px;display:flex;gap:8px;align-items:center}
+.rec-stamp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);border:1.5px solid var(--navy);border-radius:4px;padding:1px 7px}
+.rec-dl{display:grid;grid-template-columns:86px 1fr;gap:8px 12px;margin:14px 0 0;font-size:13.5px}
+.rec-dl dt{color:var(--muted);font-size:12.5px;padding-top:1px}
+.rec-dl dd{margin:0}
+.rec-dec{font-weight:700;font-size:15px;display:inline-flex;gap:7px;align-items:center;color:var(--navy)}
+.rec-reason{background:var(--wash);border:1px solid var(--line2);border-radius:5px;padding:7px 10px;white-space:pre-wrap}
+.rec h4{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:18px 0 6px;display:flex;justify-content:space-between}
+.rec-t{width:100%;border-collapse:collapse;font-size:12.5px}
+.rec-t th{text-align:left;font-weight:600;color:var(--muted);font-size:11.5px;padding:4px 6px;border-bottom:1px solid var(--line)}
+.rec-t td{padding:6px 6px;border-bottom:1px solid var(--line2);vertical-align:top}
+.rec-t td.num{font-family:var(--mono);white-space:nowrap}
+.rec-t .sub{color:var(--muted);font-size:11.5px}
+.rec-disp{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.rec-disp li{border:1px solid var(--line2);border-radius:5px;padding:7px 10px}
+.rec-disp .c{color:var(--muted);font-size:12px}
+.rec-note{margin-top:16px;font-size:12px;color:var(--muted);display:flex;gap:7px;align-items:flex-start;border-top:1px solid var(--line2);padding-top:10px}
+
+/* audit tab */
+.audit-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px 20px 18px;margin-bottom:14px}
+.audit-card h2{margin:2px 0 0;font-size:17px;font-weight:600}
+.prov{font-size:13px;color:var(--ink2);margin:8px 0 0;display:flex;gap:7px;align-items:flex-start}
+.prov .i{margin-top:3px}
+.ai-doc{margin-top:14px;border:1px solid var(--ai-line);border-radius:6px;background:var(--ai-bg)}
+.ai-doc-h{display:flex;gap:8px;align-items:center;padding:7px 12px;border-bottom:1px solid #D5DCE8;font-size:12px;color:var(--ai)}
+.ai-para{padding:12px 14px 14px;font-size:15.5px;line-height:1.95;color:#273142}
+.s{padding:1px 0}
+.s.bad{text-decoration:underline wavy var(--red);text-decoration-thickness:1.3px;text-underline-offset:5px}
+.s.ok{text-decoration:underline solid var(--green);text-decoration-thickness:1.5px;text-underline-offset:5px}
+.s.rec{text-decoration:underline dotted var(--slate);text-decoration-thickness:2px;text-underline-offset:5px}
+.smark{display:inline-flex;gap:2px;align-items:center;font:700 10.5px/1 var(--sans);padding:2px 4px 2px 3px;border-radius:3px;margin-right:3px;position:relative;top:-2px;border:1px solid}
+.smark svg.i{width:11px;height:11px;stroke-width:2}
+.smark.bad{color:var(--red);background:var(--red-bg);border-color:var(--red-line)}
+.smark.ok{color:var(--green);background:var(--green-bg);border-color:var(--green-line)}
+.smark.rec{color:var(--slate);background:var(--slate-bg);border-color:#C9CFD6}
+.tally{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--ink2);align-items:center}
+.sent-list{list-style:none;margin:0 0 14px;padding:0;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.sent{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:13px 18px 12px 14px;border-bottom:1px solid var(--line2)}
+.sent:last-child{border-bottom:0}
+.sent-n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12.5px;border:1.5px solid var(--slate-line);color:var(--slate);margin-top:1px}
+.sent-ai{font-size:14.5px;color:#273142;display:flex;gap:8px;align-items:baseline}
+.evid{margin-top:9px;padding:8px 10px 9px;border-radius:6px;background:var(--wash);border:1px solid var(--line2)}
+.evid .rel{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.evid .q{font-size:15.5px;margin-top:4px}
+.evid .row{display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.evid .row b{color:var(--ink2)}
+.evid .why{font-size:12.5px;color:var(--ink2);margin-top:5px}
+.sec-h{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:4px 0 8px 2px}
+.omit{background:#fff;border:1.5px dashed var(--amber-line);border-radius:8px;padding:13px 18px 12px}
+
+footer.foot{max-width:1480px;margin:0 auto;padding:6px 28px 26px;color:var(--muted);font-size:12.5px;display:flex;gap:8px;align-items:center}
+
+/* dialog */
+dialog{border:0;border-radius:10px;padding:0;width:580px;max-width:calc(100vw - 40px);box-shadow:0 24px 60px rgba(15,25,40,.3);color:var(--ink)}
+dialog::backdrop{background:rgba(16,26,40,.48)}
+.dlg-h{padding:18px 22px 12px;border-bottom:1px solid var(--line2)}
+.dlg-h h2{margin:2px 0 4px;font-size:18px}
+.dlg-h p{margin:0;font-size:13px;color:var(--ink2)}
+.dlg-b{padding:14px 22px 6px}
+fieldset{border:0;margin:0;padding:0}
+legend,.flabel{font-weight:600;font-size:13.5px;margin-bottom:7px;padding:0;display:flex;gap:8px;align-items:center}
+.flabel .rq{font-size:11px;font-weight:700;color:var(--ochre);text-transform:uppercase;letter-spacing:.06em}
+.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.opt{border:1.5px solid var(--line);border-radius:7px;padding:9px 10px;display:flex;gap:8px;align-items:flex-start;cursor:pointer;font-size:13.5px;font-weight:600;line-height:1.3}
+.opt input{margin:2px 0 0;accent-color:var(--navy)}
+.opt:has(input:checked){border-color:var(--navy);background:var(--navy-tint)}
+textarea{width:100%;border:1px solid #A9B4C1;border-radius:6px;padding:9px 11px;font:inherit;font-size:14px;resize:vertical;min-height:84px}
+.ferr{color:var(--red);font-size:12.5px;min-height:18px;margin-top:3px;display:flex;gap:5px;align-items:center}
+.dlg-ctx{background:var(--wash);border:1px solid var(--line2);border-radius:6px;padding:9px 12px;font-size:12.5px;color:var(--ink2);margin:4px 0 8px}
+.dlg-ctx ul{margin:4px 0 0;padding-left:18px}
+.dlg-f{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 16px;border-top:1px solid var(--line2)}
+.dlg-f .note{font-size:12px;color:var(--muted)}
+.dlg-f .btns{display:flex;gap:8px}
+.btn-sec{height:40px;padding:0 14px;border-radius:6px;border:1px solid var(--line);background:#fff;font-weight:500}
+</style>
+</head>
+<body>
+<div class="appbar"><div class="wrap"><span><b>Priority housing</b> &nbsp;·&nbsp; Application review</span><span>Delegated officer · Darwin</span></div></div>
+
+<header class="case" id="case">
+  <div class="case-row">
+    <div class="case-id">
+      <div class="eyebrow">Priority social housing application</div>
+      <h1>Applicant file A-0142</h1>
+      <div class="case-meta" id="caseMeta"></div>
+    </div>
+    <div class="reading" id="reading"></div>
+    <div class="signbox" id="signbox"></div>
+  </div>
+  <div id="gate"></div>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+</header>
+
+<main class="layout">
+  <section id="left" aria-live="off"></section>
+  <aside id="pane" aria-label="Source pane"></aside>
+</main>
+
+<footer class="foot" id="foot"></footer>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dlg-h">
+    <div class="eyebrow">Sign-off</div>
+    <h2 id="dlgTitle">Sign decision for applicant file A-0142</h2>
+    <p>All 4 required passages have been opened. This tool makes no recommendation: the decision and the reason are yours, and both go into the record.</p>
+  </div>
+  <div class="dlg-b">
+    <fieldset>
+      <legend>Decision</legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="dec" value="approve"><span>Approve priority</span></label>
+        <label class="opt"><input type="radio" name="dec" value="decline"><span>Decline</span></label>
+        <label class="opt"><input type="radio" name="dec" value="request"><span>Request more information</span></label>
+      </div>
+      <div class="ferr" id="decErr"></div>
+    </fieldset>
+    <label class="flabel" for="reason">Reason <span class="rq">Required</span></label>
+    <textarea id="reason" placeholder="Why this decision, in your words. Name the passages you relied on."></textarea>
+    <div class="ferr" id="reasonErr"></div>
+    <div class="dlg-ctx" id="dlgCtx"></div>
+  </div>
+  <div class="dlg-f">
+    <span class="note">Signed time is recorded in Darwin time (ACST).</span>
+    <div class="btns">
+      <button type="button" class="btn-sec" id="dlgCancel">Back to the file</button>
+      <button type="button" class="btn-primary" id="dlgSign">Sign decision</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- icons ---------- */
+const PATHS = {
+  check:'<path d="M3 8.5l3.2 3.2L13 4.8"/>',
+  swap:'<path d="M2.5 5.5h10M10 3l2.5 2.5L10 8M13.5 10.5h-10M6 8l-2.5 2.5L6 13"/>',
+  neq:'<path d="M3 6.2h10M3 9.8h10M10.5 3l-5 10"/>',
+  qnf:'<circle cx="7" cy="7" r="4.4"/><path d="M10.3 10.3L14 14M5.5 5.5l3 3M8.5 5.5l-3 3"/>',
+  qmark:'<circle cx="8" cy="8" r="6.2"/><path d="M6.1 6.3a2 2 0 1 1 2.9 1.8c-.6.3-1 .7-1 1.3v.4"/><circle cx="8" cy="11.7" r=".5" fill="currentColor"/>',
+  empty:'<circle cx="8" cy="8" r="5.2"/><path d="M3 13L13 3"/>',
+  x:'<path d="M4 4l8 8M12 4l-8 8"/>',
+  mail:'<rect x="2" y="3.5" width="12" height="9" rx="1.2"/><path d="M2.5 4.5L8 9l5.5-4.5"/>',
+  flag:'<path d="M3.5 14.5V2M3.5 2.5H12l-2 3.2 2 3.2H3.5"/>',
+  landmark:'<path d="M1.8 6L8 2.4 14.2 6M3.2 6.6v5.4M6.4 6.6v5.4M9.6 6.6v5.4M12.8 6.6v5.4M1.8 13.6h12.4"/>',
+  flask:'<path d="M6 1.8h4M6.7 2v4.2L3 12.8a1.1 1.1 0 0 0 1 1.7h8a1.1 1.1 0 0 0 1-1.7L9.3 6.2V2M4.6 10h6.8"/>',
+  doc:'<path d="M4 1.8h5.2L12.5 5v9.2H4zM9 1.8V5h3.5"/>',
+  clock:'<circle cx="8" cy="8" r="6.2"/><path d="M8 4.6V8l2.3 1.5"/>',
+  lock:'<rect x="3.2" y="7" width="9.6" height="7.2" rx="1.2"/><path d="M5.3 7V5a2.7 2.7 0 0 1 5.4 0v2"/>',
+  info:'<circle cx="8" cy="8" r="6.2"/><path d="M8 7.3v4"/><circle cx="8" cy="5" r=".5" fill="currentColor"/>',
+  arrow:'<path d="M3 8h10M9 4l4 4-4 4"/>',
+  ring:'<circle cx="8" cy="8" r="5"/>',
+  eye:'<path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z"/><circle cx="8" cy="8" r="2"/>',
+  person:'<circle cx="8" cy="5.4" r="2.7"/><path d="M3 14c.6-2.6 2.6-4 5-4s4.4 1.4 5 4"/>',
+  pen:'<path d="M10.5 2.5l3 3L6 13H3v-3z"/>'
+};
+const ic = n => `<svg class="i" viewBox="0 0 16 16" aria-hidden="true">${PATHS[n]}</svg>`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- content (quotes verbatim) ---------- */
+const P = {
+  s34:{short:'§3.4', name:'Eligibility for Social Housing, Debts', title:'Eligibility for Social Housing', loc:'Clause 3.4 · Debts', kind:'policy',
+    text:'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing). The CEO (Housing) will seek to recover outstanding debts in line with the Debt Management policy.',
+    hl:['The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).']},
+  s3:{short:'§3', name:'Eligibility for Social Housing, urban applicants', title:'Eligibility for Social Housing', loc:'Clause 3 · urban applicants', kind:'policy',
+    text:'If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.',
+    hl:['If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.']},
+  pr31:{short:'§3.1', name:'Priority Housing', title:'Priority Housing', loc:'Clause 3.1', kind:'policy',
+    text:'Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.', hl:[]},
+  p8:{short:'p. 8', name:'Rent ledger, statement 15 Jan 2026', title:'Rent ledger (former public tenancy)', loc:'Page 8 of 62 · statement 15 Jan 2026', kind:'file',
+    text:'Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight.', hl:['Arrears balance $2,400.00.']},
+  p23:{short:'p. 23', name:'Rent ledger, statement 4 Mar 2026', title:'Rent ledger (former public tenancy)', loc:'Page 23 of 62 · statement 4 Mar 2026', kind:'file',
+    text:'Lump-sum payment received from a support agency on behalf of the former tenant. Arrears cleared in full. Balance $0.00.', hl:['Arrears cleared in full. Balance $0.00.']},
+  p30:{short:'p. 30', name:'Previous tenancy record', title:'Previous tenancy record', loc:'Page 30 of 62', kind:'file',
+    text:'Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023. A rent debt remained outstanding at exit. No breach of the tenancy agreement recorded.',
+    hl:['Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023.','No breach of the tenancy agreement recorded.']},
+  p51:{short:'p. 51', name:'Letter from a support agency', title:'Letter from a support agency', loc:'Page 51 of 62', kind:'file',
+    text:'Ms K. and her two children are fleeing family violence and cannot safely return to their current address. Police attended the property on 2 February 2026.',
+    hl:['Ms K. and her two children are fleeing family violence and cannot safely return to their current address.']}
+};
+const REQ = ['s34','p8','p23','p51'];
+const REQ_ITEM = {s34:'d2', p8:'d1', p23:'d1', p51:'u1'};
+
+const CLAIM = {
+  supported:{t:'Supported', i:'check', c:'ok'},
+  contradicted:{t:'Contradicted by another passage', i:'swap', c:'bad'},
+  disagrees:{t:'Checker disagrees', i:'neq', c:'warn'},
+  notfound:{t:'Quote not found', i:'qnf', c:'bad'}
+};
+const COVER = {
+  missed:{t:'Possibly missed', i:'qmark', c:'warn'},
+  none:{t:'No evidence in file', i:'empty', c:'neutral'}
+};
+const OUTCOME = {
+  met:{t:'Met', i:'check'},
+  notmet:{t:'Not met', i:'x'},
+  undecided:{t:'Cannot decide yet', sub:'(request information)', i:'mail'}
+};
+const DECISION = {approve:'Approve priority', decline:'Decline', request:'Request more information'};
+
+const GROUPS = [
+  {id:'debts', name:'Debts', ref:'Eligibility for Social Housing §3.4', items:[
+    {id:'d1', kind:'claim', quote:['Arrears balance $2,400.00.'], qpid:'p8', claim:'Rent arrears of $2,400 are outstanding', st:'contradicted',
+     note:'The later statement on <b>p. 23</b> (4 Mar 2026) reads <q>Arrears cleared in full. Balance $0.00.</q>',
+     passages:[{pid:'p8', why:'Cited by the AI claim'}, {pid:'p23', why:'Later statement that contradicts the claim'}]},
+    {id:'d2', kind:'claim', quote:['The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).'], qpid:'s34',
+     claim:'Debt to the CEO (Housing) does not stop social housing', st:'supported',
+     passages:[{pid:'s34', why:'Cited by the AI claim'}]}
+  ]},
+  {id:'urgent', name:'Urgent need documented', ref:'Priority Housing §3.1', items:[
+    {id:'u1', kind:'cover', quote:['Ms K. and her two children are fleeing family violence and cannot safely return to their current address.'], qpid:'p51',
+     claim:'Scored highly relevant to urgent need, but the summary under audit never used it.', st:'missed',
+     passages:[{pid:'p51', why:'Scored highly relevant; not used by the summary'}, {pid:'pr31', why:'The clause wording this evidence is for'}]}
+  ]},
+  {id:'tenancy', name:'Previous tenancy', ref:'Eligibility for Social Housing §3.5', items:[
+    {id:'t1', kind:'claim', quote:['Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023.','No breach of the tenancy agreement recorded.'], qpid:'p30',
+     claim:'Previous tenancy ended by agreement in June 2023 with no breach', st:'supported',
+     passages:[{pid:'p30', why:'Cited by the AI claim'}]}
+  ]},
+  {id:'income', name:'Income evidence', ref:'Eligibility for Social Housing §3, urban income criteria', items:[
+    {id:'i1', kind:'cover', quote:['If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.'], qpid:'s3',
+     claim:'No income statement anywhere in the 62 pages. The next step is to request one from the applicant.', st:'none',
+     passages:[{pid:'s3', why:'What the clause requires'}]}
+  ]}
+];
+const ITEMS = {}; const GROUP_OF = {};
+GROUPS.forEach(g => g.items.forEach(it => { ITEMS[it.id] = it; GROUP_OF[it.id] = g; }));
+
+const SENT = [
+  {n:1, t:'Ms K. applied for priority housing for herself and two children.', st:'supported', rel:'Supported by',
+   ev:{pid:'p51', item:'u1', q:'Ms K. and her two children are fleeing family violence and cannot safely return to their current address.'}},
+  {n:2, t:'The rent ledger shows arrears of $2,400.', st:'contradicted', rel:'Contradicted by',
+   ev:{pid:'p23', item:'d1', q:'Arrears cleared in full. Balance $0.00.'}, why:'p. 8 shows $2,400.00 on 15 Jan 2026; the later statement on p. 23 shows it cleared.'},
+  {n:3, t:'Because of the outstanding debt, the applicant does not meet the criteria for priority housing.', st:'contradicted', rel:'Contradicted by',
+   ev:{pid:'s34', item:'d2', q:'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).'}},
+  {n:4, t:'A previous tenancy ended in 2023.', st:'supported', rel:'Supported by',
+   ev:{pid:'p30', item:'t1', q:'Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023.'}},
+  {n:5, t:'Recommendation: decline.', st:'rec'}
+];
+
+/* ---------- state ---------- */
+const S = { tab:'evidence', sel:null, cur:null, opens:{}, outcomes:{}, disputes:{}, editing:null, editErr:false, gate:false, signed:null };
+let viewStart = null;
+
+const fmtT = d => { try { return new Intl.DateTimeFormat('en-AU',{hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23',timeZone:'Australia/Darwin'}).format(d); } catch(e){ return d.toTimeString().slice(0,8); } };
+const fmtD = d => { try { return new Intl.DateTimeFormat('en-AU',{day:'numeric',month:'short',year:'numeric',timeZone:'Australia/Darwin'}).format(d); } catch(e){ return d.toDateString(); } };
+
+function pauseView(){ if (S.cur && viewStart != null) S.opens[S.cur].ms += Date.now() - viewStart; viewStart = null; }
+function resumeView(){ if (S.cur && !S.signed && !document.hidden && !dlg.open) viewStart = Date.now(); }
+function secs(pid){ const o = S.opens[pid]; if (!o) return 0; let ms = o.ms; if (S.cur === pid && viewStart != null) ms += Date.now() - viewStart; return Math.floor(ms/1000); }
+function openPassage(pid){
+  pauseView();
+  S.cur = pid;
+  if (!S.opens[pid]) S.opens[pid] = {first:new Date(), ms:0, count:0};
+  S.opens[pid].count++;
+  resumeView();
+}
+function openItem(id, pid){
+  if (S.signed) return;
+  const it = ITEMS[id];
+  S.sel = id;
+  const target = pid || (it.passages.find(p => !S.opens[p.pid]) || it.passages[0]).pid;
+  openPassage(target);
+  render();
+}
+const reqDone = () => REQ.filter(p => S.opens[p]).length;
+const missing = () => REQ.filter(p => !S.opens[p]);
+
+/* ---------- small renderers ---------- */
+const srcTag = pid => P[pid].kind === 'policy'
+  ? `<span class="src policy">${ic('landmark')}Real NT policy</span>`
+  : `<span class="src file">${ic('flask')}Synthetic file</span>`;
+const reqTag = pid => !REQ.includes(pid) ? '' : (S.opens[pid]
+  ? `<span class="req done">${ic('check')}Required · opened</span>`
+  : `<span class="req">${ic('ring')}Required reading</span>`);
+const chip = (kind, st) => { const d = (kind === 'claim' ? CLAIM : COVER)[st]; return `<span class="chip ${kind} ${d.c}">${ic(d.i)}${d.t}</span>`; };
+const listLabel = kind => `<span class="list-label">${kind === 'claim' ? 'Claim check' : 'Coverage'}</span>`;
+function highlight(pid){
+  let html = esc(P[pid].text);
+  P[pid].hl.forEach(h => { const e = esc(h); html = html.split(e).join(`<mark>${e}</mark>`); });
+  return html;
+}
+function citeLine(pid){
+  const p = P[pid];
+  const where = p.kind === 'policy' ? `<b>${p.short}</b> ${esc(p.name)}` : `<b>${p.short}</b> ${esc(p.name)}`;
+  return `${where} ${srcTag(pid)} ${reqTag(pid)}`;
+}
+
+/* ---------- header ---------- */
+function renderHeader(){
+  document.getElementById('caseMeta').innerHTML =
+    `<span>${ic('flask')}Synthetic file · 62 pages</span><span class="sep"></span>
+     <span>${ic('landmark')}Checked against 5 NT public housing policies</span><span class="sep"></span>
+     <span>${ic('person')}Outcomes set by you only</span>`;
+  const n = reqDone();
+  document.getElementById('reading').innerHTML =
+    `<div class="reading-top"><span class="eyebrow">Required reading</span><span class="count ${n===4?'all':''}" aria-live="polite">${n}/4</span></div>
+     <div class="pips">${REQ.map(pid => `<button class="pip ${S.opens[pid]?'done':''}" data-act="open-req" data-arg="${pid}" ${S.signed?'disabled':''}
+        title="${esc(P[pid].name)}${S.opens[pid]?' · opened '+fmtT(S.opens[pid].first):' · not opened'}">${ic(S.opens[pid]?'check':'ring')}${P[pid].short}</button>`).join('')}</div>`;
+  const sb = document.getElementById('signbox');
+  if (S.signed){
+    sb.innerHTML = `<span class="signed-badge">${ic('lock')}Signed ${fmtT(S.signed.at)}</span><span class="signhint">${esc(DECISION[S.signed.dec])}</span>`;
+  } else {
+    const m = missing().length;
+    sb.innerHTML = `<button class="btn-primary" data-act="sign">${ic('pen')}Sign decision</button>
+      <span class="signhint">${m ? `${m} required passage${m>1?'s':''} not opened` : 'Ready to sign'}</span>`;
+  }
+  renderGate();
+  const bad = SENT.filter(s => s.st === 'contradicted').length;
+  document.getElementById('tabs').innerHTML =
+    `<button class="tab" role="tab" aria-selected="${S.tab==='evidence'}" data-act="tab" data-arg="evidence">Evidence by policy clause <span class="badge">4 clauses</span></button>
+     <button class="tab" role="tab" aria-selected="${S.tab==='audit'}" data-act="tab" data-arg="audit">Summary under audit <span class="badge bad">${ic('swap')}${bad} contradicted</span></button>`;
+}
+function renderGate(){
+  const el = document.getElementById('gate');
+  if (!S.gate || S.signed){ el.innerHTML = ''; return; }
+  const m = missing();
+  if (!m.length){
+    el.innerHTML = `<div class="gate"><div class="gate-box ok" role="status"><div class="gate-title">${ic('check')}All 4 required passages opened. You can sign now.</div>
+      <button class="gate-x" data-act="gate-close" aria-label="Dismiss">${ic('x')}</button></div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="gate"><div class="gate-box" role="alert">
+     <div class="gate-title">${ic('info')}<div>Not signed yet: ${m.length} of 4 required passages unopened<div class="gate-sub">Open each one below. The button stays available; it will open the sign-off once these are done.</div></div></div>
+     <ul class="gate-list">${m.map(pid => `<li><button data-act="open-req" data-arg="${pid}"><b>${P[pid].short}</b> ${esc(P[pid].name)} <span class="g-cl">· ${esc(GROUP_OF[REQ_ITEM[pid]].name)}</span>${ic('arrow')}</button></li>`).join('')}</ul>
+     <button class="gate-x" data-act="gate-close" aria-label="Dismiss">${ic('x')}</button></div></div>`;
+}
+
+/* ---------- evidence tab ---------- */
+function renderEvidence(){
+  const claims = GROUPS.flatMap(g => g.items).filter(i => i.kind === 'claim');
+  const covers = GROUPS.flatMap(g => g.items).filter(i => i.kind === 'cover');
+  const cnt = (arr, st) => arr.filter(i => i.st === st).length;
+  const set = Object.keys(S.outcomes).length;
+  const keyList = (obj, kind) => Object.keys(obj).map(k => `<li>${chip(kind, k)}</li>`).join('');
+  return `
+  <div class="triage">
+    <div class="tcell"><span class="list-label">Claim check · AI claims</span><div class="tv"><b class="red">${cnt(claims,'contradicted')}</b> contradicted<span class="dot">·</span><b>${cnt(claims,'supported')}</b> supported</div></div>
+    <div class="tcell"><span class="list-label">Coverage · clauses</span><div class="tv"><b class="amber">${cnt(covers,'missed')}</b> possibly missed<span class="dot">·</span><b>${cnt(covers,'none')}</b> no evidence in file</div></div>
+    <div class="tcell"><span class="list-label">Outcome · set by you</span><div class="tv"><b>${set}</b> of 4 clauses</div></div>
+    <div class="tcell keyc keyw"><details class="key"><summary>${ic('info')}Status key</summary>
+      <div class="keybox">
+        <div><h5>Claim check · on an AI claim</h5><ul>${keyList(CLAIM,'claim')}</ul></div>
+        <div><h5>Coverage · of a clause</h5><ul>${keyList(COVER,'cover')}</ul></div>
+        <div><h5>Outcome · set by you</h5><ul>${Object.keys(OUTCOME).map(k => `<li><span class="chip you">${ic(OUTCOME[k].i)}${OUTCOME[k].t}</span>${OUTCOME[k].sub?`<div style="color:var(--muted);margin-top:2px">${OUTCOME[k].sub}</div>`:''}</li>`).join('')}</ul><div style="color:var(--muted);margin-top:8px">Never pre-filled by the tool.</div></div>
+      </div></details></div>
+  </div>
+  <div class="legend-note">
+    <span><span class="serif-sample">Serif text</span> is quoted word for word from the file or a policy.</span>
+    <span><span class="ai-tag">AI claim</span> marks text written by the AI. Check it against the quote.</span>
+  </div>
+  ${GROUPS.map(groupHTML).join('')}`;
+}
+function groupHTML(g){
+  const req = [...new Set(g.items.flatMap(i => i.passages.map(p => p.pid)).filter(p => REQ.includes(p)))];
+  const reqOpen = req.filter(p => S.opens[p]).length;
+  const oc = S.outcomes[g.id];
+  return `<article class="group" id="g-${g.id}">
+    <header class="g-head">
+      <div><h2>${esc(g.name)}</h2><div class="g-ref">${ic('landmark')}${esc(g.ref)}</div></div>
+      <div class="g-sum">${req.length ? `${reqOpen} of ${req.length} required passage${req.length>1?'s':''} opened` : 'No required reading'}</div>
+    </header>
+    <div class="g-items">${g.items.map(itemHTML).join('')}</div>
+    <footer class="g-outcome">
+      <div class="oc-label"><span class="you-tag">You</span>Outcome for this clause:
+        <span class="oc-state ${oc?'set':''}">${oc ? esc(OUTCOME[oc].t) : 'not set'}</span></div>
+      <div class="seg" role="radiogroup" aria-label="Your outcome for ${esc(g.name)}">
+        ${Object.keys(OUTCOME).map(k => `<button role="radio" aria-checked="${oc===k}" data-act="oc" data-arg="${g.id}:${k}" ${S.signed?'disabled':''}>${ic(OUTCOME[k].i)}${OUTCOME[k].t}${OUTCOME[k].sub?` <small>${OUTCOME[k].sub}</small>`:''}</button>`).join('')}
+      </div>
+    </footer>
+  </article>`;
+}
+function itemHTML(it){
+  const sel = S.sel === it.id;
+  const q = it.quote.map(esc).join(' <span class="ellip">[…]</span> ');
+  const n = it.passages.length;
+  const d = S.disputes[it.id];
+  let disputeBlock = '';
+  if (S.editing === it.id){
+    disputeBlock = `<div class="dispute-edit" data-noopen>
+      <label for="dr-${it.id}">Why do you dispute this claim? It goes into the decision record.</label>
+      <div class="row"><input id="dr-${it.id}" maxlength="240" value="${d?esc(d.reason):''}" placeholder="Short reason">
+      <button class="btn-sm" data-act="dsave" data-arg="${it.id}">Save dispute</button>
+      <button class="btn-ghost" data-act="dcancel" data-arg="${it.id}">Cancel</button></div>
+      ${S.editErr ? `<div class="err">Write a reason first.</div>` : ''}</div>`;
+  } else if (d){
+    disputeBlock = `<div class="dispute-saved" data-noopen>${ic('flag')}<div class="txt"><span class="who">Disputed by you at ${fmtT(d.at)}:</span> ${esc(d.reason)}</div>
+      ${S.signed ? '' : `<button class="lnk quiet" data-act="dedit" data-arg="${it.id}">Edit</button><button class="lnk quiet" data-act="dremove" data-arg="${it.id}">Withdraw</button>`}</div>`;
+  }
+  return `<div class="item ${sel?'is-sel':''}" id="it-${it.id}" data-item="${it.id}">
+    <blockquote class="q">“${q}”</blockquote>
+    <div class="cite">${citeLine(it.qpid)}</div>
+    <div class="claimline"><span class="ai-tag">${it.kind==='claim'?'AI claim':'AI note'}</span><span class="claim">${esc(it.claim)}</span></div>
+    <div class="statusline">${listLabel(it.kind)}${chip(it.kind, it.st)}
+      <span class="spacer"></span>
+      ${it.kind==='claim' && !d && !S.signed && S.editing!==it.id ? `<button class="lnk quiet" data-act="dispute" data-arg="${it.id}">${ic('flag')}Dispute</button>` : ''}
+      ${S.signed ? '' : `<button class="lnk" data-act="open-item" data-arg="${it.id}">${sel?'In source pane':'Open '+(n===1?'passage':n+' passages')}${sel?'':ic('arrow')}</button>`}
+    </div>
+    ${it.note?`<div class="contra">${ic('swap')}<span>${it.note}</span></div>`:''}
+    ${disputeBlock}
+  </div>`;
+}
+
+/* ---------- audit tab ---------- */
+function renderAudit(){
+  const cls = s => s.st==='contradicted'?'bad':s.st==='supported'?'ok':'rec';
+  const mk = s => `<span class="smark ${cls(s)}">${ic(s.st==='contradicted'?'swap':s.st==='supported'?'check':'person')}${s.n}</span>`;
+  const para = SENT.map(s => `<span class="s ${cls(s)}">${mk(s)}${esc(s.t)}</span>`).join(' ');
+  const rows = SENT.map(s => {
+    if (s.st === 'rec') return `<li class="sent"><div class="sent-n">${s.n}</div><div>
+        <div class="sent-ai"><span class="ai-tag">AI summary</span><span>${esc(s.t)}</span></div>
+        <div class="statusline"><span class="list-label">Recommendation</span><span class="chip rec">${ic('person')}Set aside: the officer decides</span>
+        <span class="snote">This tool makes no recommendation. Your outcome per clause and your signed decision are the only ones recorded.</span></div></div></li>`;
+    const p = P[s.ev.pid];
+    return `<li class="sent"><div class="sent-n">${s.n}</div><div>
+      <div class="sent-ai"><span class="ai-tag">AI summary</span><span>${esc(s.t)}</span></div>
+      <div class="statusline">${listLabel('claim')}${chip('claim', s.st)}</div>
+      <div class="evid"><div class="rel">${s.rel}</div>
+        <blockquote class="q">“${esc(s.ev.q)}”</blockquote>
+        <div class="row"><b>${p.short}</b> ${esc(p.name)} ${srcTag(s.ev.pid)} ${reqTag(s.ev.pid)}<span class="spacer"></span>
+          <button class="lnk" data-act="open-ref" data-arg="${s.ev.item}:${s.ev.pid}" ${S.signed?'disabled':''}>Open ${p.short}${ic('arrow')}</button></div>
+        ${s.why?`<div class="why">${esc(s.why)}</div>`:''}
+      </div></div></li>`;
+  }).join('');
+  return `
+  <div class="audit-card">
+    <div class="eyebrow">Summary under audit</div>
+    <h2>Each sentence checked against the 62-page file and the policies</h2>
+    <p class="prov">${ic('info')}<span>Produced elsewhere by a general-purpose AI from a one-line prompt, “summarise this file”. This tool did not write it. Use it to see what a quick summary gets wrong; decide from the evidence.</span></p>
+    <div class="ai-doc">
+      <div class="ai-doc-h"><span class="ai-tag">AI summary</span>As received, unedited</div>
+      <div class="ai-para">${para}</div>
+    </div>
+    <div class="tally">
+      <span>${listLabel('claim')} <b style="color:var(--red)">2</b> contradicted · <b>2</b> supported</span>
+      <span>${listLabel('cover')} <b style="color:var(--amber)">1</b> possibly missed</span>
+      <span><span class="list-label">Recommendation</span> set aside; you decide</span>
+    </div>
+  </div>
+  <div class="sec-h">Sentence by sentence</div>
+  <ol class="sent-list">${rows}</ol>
+  <div class="sec-h">Not mentioned in the summary</div>
+  <div class="omit">
+    <div class="statusline" style="margin-top:0">${listLabel('cover')}${chip('cover','missed')}<span class="snote">Urgent need documented · Priority Housing §3.1</span></div>
+    <blockquote class="q" style="margin-top:10px">“${esc(P.p51.hl[0])}”</blockquote>
+    <div class="cite"><b>p. 51</b> Letter from a support agency ${srcTag('p51')} ${reqTag('p51')}<span class="spacer"></span>
+      <button class="lnk" data-act="open-ref" data-arg="u1:p51" ${S.signed?'disabled':''}>Open p. 51${ic('arrow')}</button></div>
+    <div class="claimline"><span class="ai-tag">AI note</span><span class="claim">Scored highly relevant to urgent need. The summary never mentions the family violence letter.</span></div>
+  </div>`;
+}
+
+/* ---------- source pane ---------- */
+function renderPane(){
+  if (S.signed) return recordHTML();
+  if (!S.sel) return emptyHTML();
+  const it = ITEMS[S.sel], g = GROUP_OF[S.sel];
+  const list = it.passages.map((ps, i) => {
+    const p = P[ps.pid], o = S.opens[ps.pid], cur = S.cur === ps.pid;
+    return `<li><button class="pbtn ${cur?'is-cur':''} ${o?'opened':''}" data-act="open-pass" data-arg="${ps.pid}" aria-current="${cur}">
+      <span class="pnum">${o?ic('check'):i+1}</span>
+      <span class="pmain"><b>${p.short}</b> ${esc(p.name)}<span class="pwhy">${REQ.includes(ps.pid)?`<span class="req ${o?'done':''}">Required</span> `:''}${esc(ps.why)}</span></span>
+      <span class="pstate">${cur ? '<span class="open">In view</span>' : (o ? '<span class="open">Reopen</span>' : `<span class="open">Open${ic('arrow')}</span>`)}
+        ${o ? `<span class="when">opened ${fmtT(o.first)}</span>` : '<span class="when" style="color:var(--muted)">not opened</span>'}</span>
+    </button></li>`;
+  }).join('');
+  let viewer = '';
+  if (S.cur){
+    const p = P[S.cur], o = S.opens[S.cur];
+    const ps = it.passages.find(x => x.pid === S.cur);
+    const next = it.passages.find(x => !S.opens[x.pid]);
+    viewer = `<div class="viewer">
+      <div class="v-doc"><div><div class="v-title">${esc(p.title)}</div><div class="v-loc">${esc(p.loc)}</div></div>${srcTag(S.cur)}</div>
+      ${ps ? `<div class="v-why">${esc(ps.why)}</div>` : ''}
+      <div class="v-page ${p.kind}">${highlight(S.cur)}</div>
+      <div class="v-key">${p.hl.length ? '<span class="sw"></span>Highlighted: the exact words quoted in the evidence row' : `${ic('info')}Clause wording only; nothing is quoted from it in the row`}</div>
+      <div class="v-log">${ic('clock')}opened <span class="mono">${fmtT(o.first)}</span> · in view <span class="mono" id="inview">${secs(S.cur)}s</span></div>
+      ${next ? `<button class="v-next" data-act="open-pass" data-arg="${next.pid}">Open next passage: ${P[next.pid].short}${REQ.includes(next.pid)?' <span class="req">Required</span>':''}${ic('arrow')}</button>` : ''}
+    </div>`;
+  }
+  return `<div class="pane-head"><span class="eyebrow">Source · passage ${it.passages.findIndex(x=>x.pid===S.cur)+1} of ${it.passages.length}</span>
+      <button class="icon-btn" data-act="close-pane" aria-label="Close source pane">${ic('x')}</button></div>
+    <div class="pane-ctx"><div class="ctx-clause">${esc(g.name)} · ${esc(g.ref)}</div>
+      <div class="ctx-claim"><span class="ai-tag">${it.kind==='claim'?'AI claim':'AI note'}</span><span>${esc(it.claim)}</span></div></div>
+    <ol class="plist"><li class="plist-h">Passages for this item · each opens on its own</li>${list}</ol>
+    ${viewer}`;
+}
+function emptyHTML(){
+  return `<div class="empty">
+    <div class="empty-art"><div class="sheet"><i style="top:14px"></i><i style="top:24px;right:22px"></i><i style="top:34px"></i><i style="top:44px;background:#F6E7A6"></i><i style="top:54px;right:28px"></i><i style="top:64px"></i></div></div>
+    <h3>No passage open</h3>
+    <p>Pick an evidence item on the left. Its source passages open here one at a time, with the quoted words highlighted. Each opening is timed and goes into the decision record.</p>
+    <div class="empty-req">
+      <div class="eyebrow">Required before signing · ${reqDone()} of 4 opened</div>
+      <ul>${REQ.map(pid => `<li><button data-act="open-req" data-arg="${pid}">
+          <span class="st ${S.opens[pid]?'done':''}">${ic(S.opens[pid]?'check':'ring')}</span><b>${P[pid].short}</b> ${esc(P[pid].name)}
+          <span class="c">${esc(GROUP_OF[REQ_ITEM[pid]].name)}</span></button></li>`).join('')}</ul>
+    </div>
+  </div>`;
+}
+function recordHTML(){
+  const s = S.signed;
+  const opened = Object.keys(S.opens).sort((a,b) => S.opens[a].first - S.opens[b].first);
+  const disp = Object.keys(S.disputes);
+  return `<div class="record rec">
+    <div class="rec-head"><h3>${ic('lock')}Decision record</h3><span class="rec-stamp">Signed</span></div>
+    <dl class="rec-dl">
+      <dt>File</dt><dd>Applicant file A-0142 · synthetic, 62 pages</dd>
+      <dt>Decision</dt><dd><span class="rec-dec">${ic('pen')}${esc(DECISION[s.dec])}</span></dd>
+      <dt>Reason</dt><dd><div class="rec-reason">${esc(s.reason)}</div></dd>
+      <dt>Signed</dt><dd><span class="mono">${fmtD(s.at)}, ${fmtT(s.at)}</span> ACST · delegated officer</dd>
+    </dl>
+    <h4><span>Clause outcomes · set by you</span></h4>
+    <table class="rec-t"><tbody>${GROUPS.map(g => `<tr><td>${esc(g.name)}<div class="sub">${esc(g.ref)}</div></td>
+      <td style="text-align:right">${S.outcomes[g.id] ? `<span class="chip you">${ic(OUTCOME[S.outcomes[g.id]].i)}${OUTCOME[S.outcomes[g.id]].t}</span>` : '<span class="sub">Not set</span>'}</td></tr>`).join('')}</tbody></table>
+    <h4><span>Passages opened · ${opened.length}</span><span>Required ${reqDone()}/4</span></h4>
+    <table class="rec-t"><thead><tr><th>Passage</th><th>Opened</th><th>In view</th></tr></thead><tbody>
+      ${opened.map(pid => `<tr><td><b>${P[pid].short}</b> ${esc(P[pid].name)}<div class="sub">${P[pid].kind==='policy'?'Real NT policy':'Synthetic file'}${REQ.includes(pid)?' · required':''}${S.opens[pid].count>1?` · opened ${S.opens[pid].count}×`:''}</div></td>
+        <td class="num">${fmtT(S.opens[pid].first)}</td><td class="num">${secs(pid)}s</td></tr>`).join('')}
+    </tbody></table>
+    <h4><span>Disputes · ${disp.length}</span></h4>
+    ${disp.length ? `<ul class="rec-disp">${disp.map(id => `<li><div class="c">${ic('flag')} ${esc(GROUP_OF[id].name)} · AI claim “${esc(ITEMS[id].claim)}” · ${fmtT(S.disputes[id].at)}</div>${esc(S.disputes[id].reason)}</li>`).join('')}</ul>` : '<div class="sub" style="font-size:12.5px;color:var(--muted)">No AI claims disputed.</div>'}
+    <div class="rec-note">${ic('info')}<span>Opening a passage is recorded; it does not prove it was read.</span></div>
+  </div>`;
+}
+
+/* ---------- render ---------- */
+const leftEl = document.getElementById('left'), paneEl = document.getElementById('pane');
+let lastPaneKey = '';
+function render(){
+  const k = document.activeElement && document.activeElement.dataset ? (document.activeElement.dataset.act||'') + '|' + (document.activeElement.dataset.arg||'') : '';
+  const keyOpen = document.querySelector('details.key[open]') != null;
+  renderHeader();
+  leftEl.innerHTML = S.tab === 'evidence' ? renderEvidence() : renderAudit();
+  if (keyOpen){ const d = document.querySelector('details.key'); if (d) d.open = true; }
+  paneEl.innerHTML = renderPane();
+  const paneKey = (S.signed?'rec':'') + S.sel + S.cur;
+  if (paneKey !== lastPaneKey){ paneEl.scrollTop = 0; lastPaneKey = paneKey; }
+  document.body.classList.toggle('signed', !!S.signed);
+  if (S.editing){ const inp = document.getElementById('dr-' + S.editing); if (inp){ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } }
+  else if (k && k !== '|'){ const [a, g] = k.split('|'); const el = document.querySelector(`[data-act="${a}"][data-arg="${g}"]`); if (el) el.focus({preventScroll:true}); }
+  setHdr();
+}
+function setHdr(){ document.documentElement.style.setProperty('--hdr', document.getElementById('case').offsetHeight + 'px'); }
+
+/* ---------- events ---------- */
+const dlg = document.getElementById('dlg');
+function trySign(){
+  if (S.signed) return;
+  if (missing().length){
+    S.gate = true; render();
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+  const set = GROUPS.filter(g => S.outcomes[g.id]);
+  const unset = GROUPS.filter(g => !S.outcomes[g.id]);
+  document.getElementById('dlgCtx').innerHTML =
+    `<b>Goes into the record with your decision</b><ul>
+      <li>Clause outcomes: ${set.length ? set.map(g => `${esc(g.name)}: ${OUTCOME[S.outcomes[g.id]].t}`).join('; ') : 'none set'}${unset.length ? ` <span style="color:var(--muted)">(${unset.length} not set)</span>` : ''}</li>
+      <li>${Object.keys(S.opens).length} passages opened, all 4 required among them</li>
+      <li>${Object.keys(S.disputes).length} disputed AI claim${Object.keys(S.disputes).length===1?'':'s'}</li></ul>`;
+  document.getElementById('decErr').innerHTML = ''; document.getElementById('reasonErr').innerHTML = '';
+  pauseView();
+  dlg.showModal();
+}
+document.getElementById('dlgCancel').addEventListener('click', () => { dlg.close(); });
+dlg.addEventListener('close', () => { if (!S.signed) resumeView(); });
+dlg.addEventListener('change', e => { if (e.target.name === 'dec') document.getElementById('decErr').innerHTML = ''; });
+document.getElementById('reason').addEventListener('input', () => { document.getElementById('reasonErr').innerHTML = ''; });
+document.getElementById('dlgSign').addEventListener('click', () => {
+  const dec = (dlg.querySelector('input[name=dec]:checked') || {}).value;
+  const reason = document.getElementById('reason').value.trim();
+  document.getElementById('decErr').innerHTML = dec ? '' : `${ic('info')}Choose a decision.`;
+  document.getElementById('reasonErr').innerHTML = reason ? '' : `${ic('info')}Write a reason. It is required and goes into the record.`;
+  if (!dec || !reason){ (dec ? document.getElementById('reason') : dlg.querySelector('input[name=dec]')).focus(); return; }
+  pauseView();
+  S.signed = {dec, reason, at:new Date()};
+  S.cur = null; S.sel = null; S.gate = false; S.editing = null;
+  dlg.close();
+  render();
+  window.scrollTo({top:0});
+});
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (b && !b.disabled){
+    const a = b.dataset.act, arg = b.dataset.arg;
+    switch (a){
+      case 'open-item': openItem(arg); return;
+      case 'open-pass': openPassage(arg); render(); return;
+      case 'open-req': {
+        const item = REQ_ITEM[arg];
+        openItem(item, arg);
+        if (S.tab === 'evidence'){ const el = document.getElementById('it-' + item); if (el) el.scrollIntoView({block:'nearest', behavior:'smooth'}); }
+        return; }
+      case 'open-ref': { const [item, pid] = arg.split(':'); openItem(item, pid); return; }
+      case 'close-pane': pauseView(); S.sel = null; S.cur = null; render(); return;
+      case 'oc': { const [g, v] = arg.split(':'); S.outcomes[g] === v ? delete S.outcomes[g] : (S.outcomes[g] = v); render(); return; }
+      case 'dispute': case 'dedit': S.editing = arg; S.editErr = false; render(); return;
+      case 'dcancel': S.editing = null; S.editErr = false; render(); return;
+      case 'dsave': saveDispute(arg); return;
+      case 'dremove': delete S.disputes[arg]; render(); return;
+      case 'tab': S.tab = arg; S.editing = null; render(); return;
+      case 'sign': trySign(); return;
+      case 'gate-close': S.gate = false; render(); return;
+    }
+    return;
+  }
+  const row = e.target.closest('.item');
+  if (row && !e.target.closest('[data-noopen], a, input, button, details') && !S.signed){
+    if (S.sel !== row.dataset.item) openItem(row.dataset.item);
+  }
+  const kd = document.querySelector('details.key[open]');
+  if (kd && !e.target.closest('details.key')) kd.open = false;
+});
+function saveDispute(id){
+  const inp = document.getElementById('dr-' + id);
+  const v = inp ? inp.value.trim() : '';
+  if (!v){ S.editErr = true; render(); return; }
+  S.disputes[id] = {reason:v, at:new Date()};
+  S.editing = null; S.editErr = false; render();
+}
+document.addEventListener('keydown', e => {
+  if (e.target.id && e.target.id.startsWith('dr-')){
+    const id = e.target.id.slice(3);
+    if (e.key === 'Enter'){ e.preventDefault(); saveDispute(id); }
+    if (e.key === 'Escape'){ e.preventDefault(); S.editing = null; render(); }
+  }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseView(); else resumeView(); });
+setInterval(() => { const el = document.getElementById('inview'); if (el && S.cur) el.textContent = secs(S.cur) + 's'; }, 500);
+window.addEventListener('resize', setHdr);
+
+document.getElementById('foot').innerHTML = `${ic('info')}<span>Synthetic case file. Policy text from NT public housing policies. Opening a passage is recorded; it does not prove it was read.</span>`;
+render();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(setHdr);
+})();
+</script>
+</body>
+</html>

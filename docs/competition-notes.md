@@ -1,7 +1,6 @@
-# Fair Turn — AI Challenge 2026, CDU IT Code Fair
+# AI Challenge 2026, CDU IT Code Fair
 
-Entry for brief 1, housing maintenance triage. Project name **Fair Turn**; Python package
-`fair_turn`. Scope and decisions: `notes.md`; research: `reports/`.
+Restarted from zero on 2026-10-03; no brief chosen yet. Scope and decisions go in `notes.md`.
 
 **Theme: "How might we…" — trusted AI for decision support.**
 Official page: <https://itcodefair.cdu.edu.au/ai-challenge/>

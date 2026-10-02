@@ -201,3 +201,36 @@ Datasets is a judging criterion; every source below goes into the report.
 - Design (decided 2026-09-12): no design file now; a visual pass may follow after eval and
   report are done. Precondition for Blueprint: one theme definition (colours, font, chart
   palette), no hardcoded values in any screen, so a later restyle is a one-file change.
+
+## 2026-10-03 — restart (start the new session here)
+
+Tarik did not like the product on screen ("ekrandaki ... daha da kotu olmus") and is
+starting over in a new session, talking it through. Deadline: submission 8 Oct, Challenge
+Day 15 Oct. Safe fallback: git tag `fallback-2026-10-03` (main `12b144d`, gate green,
+submittable as is). Do not delete it.
+
+**What is solid and can be reused whatever the new product is:**
+- `data/build/`: 1,452 synthetic tenant reports on real NT geography (101 communities,
+  pseudonymous), labels, closures; 36 cross-vendor and 20 manipulation reports.
+- The reading: Claude Sonnet extraction, every fact tied to a literal phrase of the report;
+  macro-F1 fault 0.979, urgency 0.969, health risk 0.983 vs baseline 0.916 / 0.861;
+  `eval.json`, `fair_turn/core/verify_spans.py`, `fair_turn/llm/`.
+- NT policy windows (FS17), the decision log with two clocks, wording checks, tests.
+- Sourced real-world facts: `docs/PRODUCT.md` "Who uses it, and is the situation real?".
+
+**What went wrong, so it is not repeated:**
+- The product was redesigned three times in two days by the assistant while Tarik only saw
+  the results. He was never in the design loop.
+- Every audit added a feature; the plan page grew to a chart, a map, three tables and five
+  expanders. It reads as a planner's spreadsheet, not a story.
+- The first version's lever (per-job travel penalty, regional crews) barely moved anything;
+  the trip model fixed the logic but not the experience.
+
+**How the new session runs (agreed order, no code before step 3):**
+1. Tarik reads `docs/task-briefs.md` (brief 1, and the other five if he wants to
+   reconsider) and the judging criteria in `docs/competition-notes.md`, then writes in his
+   own words, here in notes.md: who the user is, the one moment a judge should remember,
+   and what the user does in under a minute.
+2. Together: one story (the 3-minute demo) and a sketch of one or two screens, on paper or
+   in text. Tarik approves it.
+3. Only then build, reusing the engine above; every screen checked by Tarik before the next.

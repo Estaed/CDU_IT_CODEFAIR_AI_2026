@@ -205,6 +205,23 @@ These are gaps no surveyed product covers ([survey](reports/2026-10-03-landscape
   - Laya (local, but its English `noul` can follow the option labels).
 - **Settle it with a 1-hour spike:** about 50 labelled passage–claim pairs scored by MiniCheck,
   Bespoke-MiniCheck, Laya and Jev, comparing balanced accuracy. The winner goes in Stack.
+- **Why Jev is not the main model (Eko, 2026-10-03, for Blueprint's rejected options):**
+  - It answers typed questions (yes/no, choice, score) and writes no text, so it cannot produce the
+    summary or the claims the brief asks for.
+  - Its 32K context is smaller than the file plus policies (an estimate: roughly 60–70k tokens), so it
+    judges one passage or pair at a time.
+  - It cannot reason across distant pages.
+  - Its scores are uncalibrated and unvalidated as a primary decision-maker.
+  - Its sweet spot is a fixed-option decision, repeated many times, where speed matters. That is the
+    vault's own note from Sept 2026, and it is exactly the checking and scanning half of this app.
+  - **Split:** Jev decides *where to look*; Claude says *what it says*.
+- **Jev-led alternative (recorded, not chosen):** the AI writes nothing. Jev ranks the original
+  passages per clause and the officer reads only those.
+  - **For:** nothing generated to over-trust; cheaper and faster.
+  - **Against:** the brief asks for a summariser; the officer reads more raw text; Claude's
+    cross-page reasoning is lost.
+  - **What we take from it:** on the evidence map the verbatim quote comes first and the AI's
+    sentence second.
 
 ### Pitch material for the teammate
 In the survey's §5:

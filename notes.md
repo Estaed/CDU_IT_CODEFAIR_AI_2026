@@ -29,11 +29,21 @@ Source: <https://itcodefair.cdu.edu.au/ai-challenge-task-details/>, read 2026-10
 ## Goal
 *(draft, Eko)* A caseworker gets through long policy and case documents faster, and the app makes them
 read the passages that matter before they act. **The AI points, the human reads.** Every claim in the
-summary opens its exact source passage. The human signs off, and the record shows what they actually read.
+summary opens its exact source passage. The human signs off, and the record shows which passages they
+opened and for how long. It does not prove they read them; we say so rather than overclaim.
 
 ## The scenario (rewritten 2026-10-03 against the real NT policies)
-Jordan is a priority-housing officer in Darwin, NT. Priority housing exists only in urban areas,
-not in remote communities or town camps (Priority policy §3). Jordan's queue holds 15 applicant files.
+Jordan is a **delegated officer** assessing priority-housing applications in Darwin, NT. The policy
+says "Delegated officers make decisions as the Chief Executive Officer (Housing)" (Priority §4).
+Priority housing covers only urban applicants (Priority §2–3). The real decision flow is:
+1. eligibility (Eligibility policy; urban applicants must also meet the income and asset criteria);
+2. one of four urgent-need categories (DFV is one);
+3. documentation that supports the claim, with an interview if more information is needed;
+4. a written determination.
+
+Jordan's queue has 15 files; v1 demos one of them.
+**Open after the pre-Blueprint review:** the scenario below still ends in "accept", which skips the
+income criteria. See [review](reports/2026-10-03-pre-blueprint-review.md) #3.
 - **Policy, real:** five NT public-housing policies, 40 pages in total. Clauses below are real; the
   wording was checked in the PDF on 2026-10-03.
 - **Case file, synthetic:** about 60 pages; people, pages and amounts are invented.
@@ -78,19 +88,24 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
    - **For a real pilot:** the writer is any approved model, for example NT-endorsed Copilot or a
      local one. Our value is the checking layer.
 3. **Code checks.** Deterministic code verifies that each quote exists word for word in the cited
-   passage, and that the numbers, dates and negations in the sentence match the quote. This reuses
-   the archive's `verify_spans.py`.
-4. **Fact-checker (a Jev-style role).** Gives a typed verdict on each claim: "Does this passage
-   support this claim? yes/no".
-   - **v1:** a separate, narrow Claude call.
-   - **After v1:** Bespoke-MiniCheck-7B, local on Ollama. It is a different model family and fits the
-     8 GB GPU.
-   - Jev competes in the 50-pair test at that point.
-   - Also checks across passages: other passages on the same fact (p.8 against p.23) become a
-     contradiction flag.
+   passage, and that every number and date in the claim appears in one of its cited quotes.
+   - The archive's `verify_spans.py` (78 lines) covers only the whitespace-normalised substring match;
+     the number and date check is new code.
+   - Negation counting is dropped. It is brittle: "will not be withheld" vs "not eligible".
+4. **Fact-checker: Jev in v1** (Tarık's decision). A different model family from the writer; Claude
+   is the fallback.
+   - **Second key:** a typed verdict on each claim: supports / contradicts / not enough information.
+   - **Contradiction pairs, core v1:** the top 3–5 passages per decisive clause are compared pairwise
+     (agree / contradict / unrelated). Without this, "arrears $2,400 [p.8]" passes against its own
+     passage.
+   - The contract allows 1..n citations per fact.
+   - **After v1:** Bespoke-MiniCheck-7B, local on Ollama, as a third vote.
 5. **Critical passages come from the policy.** For each decisive clause, the writer lists the file
-   facts that bear on it (Fox 2026: list the source facts first). Facts the summary did not use
-   become the omission map. Criticality is set by the policy, not guessed by the AI.
+   facts that bear on it (Fox 2026: list the source facts first). Criticality is set by the policy,
+   not guessed by the AI.
+   - **Omission map source:** the Jev relevance scan. Passages that score high and are cited nowhere
+     become "possibly missed". Facts a summary under audit leaves out are found by comparing it with
+     the writer's per-clause facts.
 6. **Screen, gate and receipt.** Summary and passages side by side. Sign-off is locked until the
    flagged and unused-critical passages are opened. A log records what was opened and when, the
    decision and the reason.
@@ -115,7 +130,7 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
   - A fully synthetic set (rules and file both invented) is the weaker option under the "datasets"
     criterion.
 - **Licence caveat.** NT policy PDFs are under NTG copyright, not CC BY. Whether bundling them counts
-  as fair dealing is TBD; ask the organisers or DHLGCD.
+  as fair dealing is TBD. Decided (see Decisions): we do not bundle them and do not ask.
 - **Download caveat.** The PDFs sit behind a Cloudflare challenge: a plain `curl` got a "Just a
   moment" page on 2026-10-03, so a fetch script in the README may fail.
 
@@ -124,13 +139,23 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
 - **Input:** split the synthetic case file and the 5 NT policies into numbered passages. The decisive
   clause checklist is written once and approved.
 - **Claude reads:** a goal, not steps, so it looks for evidence for and against, contradictions and
-  what is missing. The output contract is a verbatim quote plus passage id per fact, and "not found"
-  is allowed. Claude also writes a short summary for the second tab.
-- **Code checks:** the quote is present, and numbers, dates and negations match.
-- **Jev:** a second key on every claim (supports / contradicts / not enough information), plus an
-  exhaustive relevance scan of every passage × every clause, which produces the "possibly missed" flags.
-- **Required reading:** red items, contradictions, missed items and Claude–Jev disagreements. Most
-  decisive first.
+  what is missing. The output contract is a verbatim quote plus passage id per fact (1..n citations),
+  and "not found" is allowed. Claude also writes a short summary for the second tab.
+- **Code checks:** the quote is present, and every number and date in the claim appears in a cited
+  quote.
+- **Jev:**
+  - a second key on every claim (supports / contradicts / not enough information);
+  - contradiction pairs per decisive clause (moved into core by the review);
+  - a relevance scan of every passage against **the approved decisive clauses only**, batched about
+    20 passages per call. High-scoring passages that are cited nowhere become "possibly missed",
+    deduplicated by fact, with the threshold set on one gold file before the evaluation.
+- **Required reading:** quote-not-found, checker-disagrees, contradictions, and possibly-missed items
+  above the threshold. Capped at **8 or fewer**, the rest shown as "suggested"; most decisive first.
+- **Reproducibility:**
+  - The replay cache of every model response is the README default; live runs need your own keys.
+  - Each policy PDF is pinned by version and SHA-256, and a mismatch fails loudly.
+  - The cache holds offsets and hashes, never policy text.
+  - Variance across two Jev runs is reported.
 - **Officer screen:**
   - the evidence map with a status word and colour on each claim;
   - a source pane with the highlighted quote;
@@ -147,9 +172,10 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
   precomputed.
 
 **If time allows, in this order:**
-1. Jev contradiction pairs. Without them the stale-ledger trap depends on Claude alone noticing it.
-2. The file heat strip.
-3. Two-way hover links.
+1. The file heat strip.
+2. Two-way hover links.
+
+(Jev contradiction pairs moved into core v1 after the pre-Blueprint review.)
 
 **After v1:** the list below.
 
@@ -208,7 +234,8 @@ These are gaps no surveyed product covers ([survey](reports/2026-10-03-landscape
 - **Why Jev is not the main model (Eko, 2026-10-03, for Blueprint's rejected options):**
   - It answers typed questions (yes/no, choice, score) and writes no text, so it cannot produce the
     summary or the claims the brief asks for.
-  - Its 32K context is smaller than the file plus policies (an estimate: roughly 60–70k tokens), so it
+  - Its 32K context is smaller than the file plus policies (an estimate: roughly 60–70k tokens as
+    plain text; 90k–180k through Claude's PDF input, which counts layout), so it
     judges one passage or pair at a time.
   - It cannot reason across distant pages.
   - Its scores are uncalibrated and unvalidated as a primary decision-maker.
@@ -307,11 +334,21 @@ In the survey's §5:
   - Traceable Text (N=20): hallucination questions were answered correctly 70% of the time with
     claim-to-source links vs 12.5% without, in 1.8 vs 2.9 min.
   - References appended at the end of an EHR summary gave no gain.
-- **Two kinds of status:**
-  - The app marks its *own claims*: supported / sources disagree / not supported / not in summary /
-    not in file.
-  - The officer sets the *clause outcome* (met / not met). Decided 2026-10-03: the AI does not
-    pre-fill it, because in the oncology RCT humans followed the AI where it was badly wrong (ECOG).
+- **Three separate status lists** (fixed after the pre-Blueprint review; they used to collide):
+  - **Claim checks** on a claim: quote not found / checker disagrees / contradicted by another
+    passage / supported.
+  - **Coverage** for a clause: possibly missed / no evidence in file.
+  - **Clause outcome, set by the officer only:** met / not met / cannot decide yet (= request
+    information). Decided 2026-10-03: the AI does not pre-fill it, because in the oncology RCT humans
+    followed the AI where it was badly wrong (ECOG).
+- **Mock v0 known issues:**
+  - The Priority §3.1 excerpt is not verbatim. The real sentence: "Applicants must prove their urgent
+    need for priority housing and are required to provide documentation that supports their claim
+    for priority."
+  - It says "Read" instead of "Opened".
+  - The checker is labelled MiniCheck instead of Jev.
+  - It opens all sources at once.
+  - Its "why" lines are AI explanations.
 
 ## Screens
 **Mock v0:** [design/mock-v0.html](design/mock-v0.html), a single file for discussion, not approved.
@@ -334,7 +371,7 @@ In the survey's §5:
 | Two-way hover links (claim ↔ passage) | v1 if time allows | Cheap in HTML; this is how Traceable Text measured its gain |
 
 ## After v1
-- 2026-10-03: Search across many documents (RAG). v1 is one case file plus one policy.
+- 2026-10-03: Search across many documents (RAG). v1 is one case file plus the five-policy bundle.
 - 2026-10-03: OCR for scanned PDFs. Claude cannot cite scans; say in the pitch that real files contain them.
 - 2026-10-03: Multi-file upload. v1 ships the demo case; passage ids still carry a document id.
 - 2026-10-03: Prompt-injection defence and the hidden-text demo. Tarık dropped the demo because new
@@ -358,6 +395,8 @@ In the survey's §5:
   research, checkers, Jev and Laya, AU/NT context, gaps.
 - [Data survey, 2026-10-03](reports/2026-10-03-data-survey-brief6.md): NT policies and their licence,
   case material, corpora, ground-truth methods, and combinations A, B and C.
+- [Pre-Blueprint review, 2026-10-03](reports/2026-10-03-pre-blueprint-review.md): independent logic
+  review (3 blockers, 10 majors), quality assessment, real policy flow, Jev load test.
 - [UI and logic survey, 2026-10-03](reports/2026-10-03-ui-patterns-and-logic-brief6.md): what comparable
   tools show, how they work underneath, the shared pipeline and v1 gaps. Citation pass done.
 - Reusable: span verification `fair_turn/core/verify_spans.py` on branch `archive/v2-weekly-plan`.

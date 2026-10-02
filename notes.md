@@ -183,15 +183,52 @@ In the survey's §5:
   goes in.
 - Should we ask the organisers whether bundling the NT policy PDFs counts as fair dealing, or ship
   links instead?
+- Should the officer set each clause outcome while the AI only marks its own claims? Eko suggests yes.
+- Should a hidden-text injection page go into the demo file in v1, or wait until after v1?
+
+## Framing (draft, Eko, 2026-10-03; see the [UI and logic survey](reports/2026-10-03-ui-patterns-and-logic-brief6.md))
+- **The main output is an evidence map by policy clause, not a bullet summary.**
+  - Tools built for decisions structure their output per criterion, with a quote in each cell:
+    Harvey, Elicit, TrialGPT and Microsoft's Legal Agent.
+  - Free text with citation chips is the general Q&A pattern: NotebookLM, Acrobat, Perplexity.
+  - The bullet summary stays as a secondary tab whose bullets link into the map.
+- **Links must sit on the claim.**
+  - Traceable Text (N=20): hallucination questions were answered correctly 70% of the time with
+    claim-to-source links vs 12.5% without, in 1.8 vs 2.9 min.
+  - References appended at the end of an EHR summary gave no gain.
+- **Two kinds of status:**
+  - The app marks its *own claims*: supported / sources disagree / not supported / not in summary /
+    not in file.
+  - The officer sets the *clause outcome* (met / not met). Eko suggests the AI does not pre-fill it:
+    in the oncology RCT, humans followed the AI where it was badly wrong (ECOG).
 
 ## Screens
-<only for a product with screens; Eko fills it by asking, before any mockup: who uses it and
-where (phone in the field, desk); the v1 main flow step by step; the v1 screen list, one job per
-screen; real data examples (field names, typical numbers, long names); each screen's empty, error
-and loading state>
+**Mock v0:** [design/mock-v0.html](design/mock-v0.html), a single file for discussion, not approved.
+- **Evidence by policy clause:** claims with status pills, and "must read" tags on flagged items.
+- **Source pane:** highlighted quote, with real-policy or synthetic-file labels.
+- **Plain AI summary tab:** for contrast.
+- **Required-reading counter:** `0/4`.
+- **Sign decision:** blocked with a banner until the required passages are opened, then a dialog
+  asking for a decision and a reason, then a decision record listing the passages opened and when.
+
+**Gaps against comparable tools (survey item 5):**
+
+| Gap | v1? | Why |
+|---|---|---|
+| Dispute a claim, with a reason | v1 | Elicit and Harvey ship it, the NT framework asks for "question and challenge", and the receipt records it |
+| Explicit "not in file" state | v1 | Already in the mock; TrialGPT uses "not enough information" |
+| Contradiction check across passages | v1 | A claim checked only against its own cited passage passes the stale January ledger |
+| Exportable decision record | v1 | A printable HTML or JSON receipt; a formatted PDF can wait |
+| Colour never the only signal | v1 | WCAG 1.4.1; the pills carry a word and an icon |
+| Two-way hover links (claim ↔ passage) | v1 if time allows | Cheap in HTML; this is how Traceable Text measured its gain |
 
 ## After v1
 - 2026-10-03: Search across many documents (RAG). v1 is one case file plus one policy.
+- 2026-10-03: OCR for scanned PDFs. Claude cannot cite scans; say in the pitch that real files contain them.
+- 2026-10-03: Multi-file upload. v1 ships the demo case; passage ids still carry a document id.
+- 2026-10-03: Full prompt-injection defence. A cheap option: plant one hidden-text page in the synthetic
+  file and flag it in the demo. Precedent: a Connecticut court filing in 3-point white font (Aug 2026).
+  Whether it goes into v1 is Tarık's call.
 - 2026-10-03: Planted-trap vigilance check on the reviewer (survey G5). The ethics of testing staff
   this way has not been checked.
 - 2026-10-03: Chat with the document. It is not what the brief asks for.
@@ -201,6 +238,8 @@ and loading state>
   research, checkers, Jev and Laya, AU/NT context, gaps.
 - [Data survey, 2026-10-03](reports/2026-10-03-data-survey-brief6.md): NT policies and their licence,
   case material, corpora, ground-truth methods, and combinations A, B and C.
+- [UI and logic survey, 2026-10-03](reports/2026-10-03-ui-patterns-and-logic-brief6.md): what comparable
+  tools show, how they work underneath, the shared pipeline and v1 gaps. Citation pass done.
 - Reusable: span verification `fair_turn/core/verify_spans.py` on branch `archive/v2-weekly-plan`.
 - Workshops: the Workshop 2 recording is in Otter (shared to Tarık's student mail by Dewa Pratama and
   Nikhitha Karne, 2026-10-02). The Workshop 1 transcript held only the first and last minutes.

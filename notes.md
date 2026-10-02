@@ -179,6 +179,23 @@ In the survey's §5:
 - ASIC trial: AI summaries scored 47% against 81% for humans.
 - NT AI Policy (2026-06-05) and NT AI Assurance Framework wording.
 
+### Hard questions judges will ask (Eko's honest review, 2026-10-03)
+- **"Case text goes to Claude and Jev in the cloud. The NT AI Policy forbids that for real data."**
+  The demo uses synthetic files. A pilot needs sovereign or local models, and both model slots are
+  swappable.
+- **"Opened is not read."** True. The receipt is an audit trail, not proof of understanding. Say so;
+  do not overclaim.
+- **"Does forcing people to read save time or cost it?"** Answer with the team timing test (Riskiest
+  assumption). Without it there is no answer.
+- **"You planted the traps your system finds."** Answer with the mutation set, a held-out file
+  written by a teammate, and an external number for the checker.
+- **"What about everything that is not flagged?"** Residual risk. The exhaustive Jev scan reduces it
+  but does not remove it.
+- **"Isn't the reading receipt staff surveillance?"** Frame it as the officer's protection ("I read
+  it") and keep it to the officer and the appeal record.
+- **"What if the applicant cannot provide documents?"** This matters for remote and Aboriginal
+  applicants. "Not in file" must lead to a request for information, never to an automatic "not met".
+
 ### Decisions (Tarık, 2026-10-03)
 - **User:** the NT priority-housing officer.
 - **Data:** combination A. Five real NT policies (40 pp) plus a synthetic case file built from a facts

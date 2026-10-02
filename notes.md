@@ -166,8 +166,32 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
   - the sign-off lock;
   - the decision record, exported as HTML or JSON.
 - **Measurement:**
-  - 3–5 trap files and a set of mutated summaries, comparing the plain summary with our app;
-  - the team timing test.
+  - The summary under audit (K1), run through the checks.
+  - Short trap files and a set of mutated summaries, scored per error type.
+  - The held-out file written by a teammate (K4).
+  - Jev vs Claude-as-checker on SummEdits pairs (K3).
+  - The redesigned team timing test (K5).
+  - n is printed beside every number.
+- **Dataset and technical upgrades (proposal, Eko, 2026-10-03, awaiting Tarık):**
+  - **Grounded synthetic file.** Every document type in the file is one the real Identification and
+    Documentation policy asks priority applicants for. The wait-time CSV (CC BY) appears on the case
+    header as context, so the "datasets" claim is real.
+  - **A released mini-benchmark.**
+    - Publish the facts table, gold labels and mutation set as CSV, with a one-page datasheet
+      covering: how it was generated, the trap taxonomy, licence, intended use and limits.
+    - The synthetic set becomes a contribution rather than a weakness.
+  - **Checker evaluation at scale.** Jev is fast and cheap, so run several hundred SummEdits pairs
+    rather than 50. Report balanced accuracy and a calibration table, and set the "unsure" band from
+    it. "Flags where unsure" then rests on a measured threshold.
+  - **Ablation table.** Each layer's output is logged anyway, so the table is almost free to build.
+    It shows what each layer adds:
+    1. Claude alone;
+    2. plus code checks;
+    3. plus Jev second key;
+    4. plus contradiction pairs;
+    5. plus scan.
+  - **Position test (if time allows).** Move the decisive passage to the start, middle and end of the
+    generated file, and check whether the catch rate drops in the middle ("lost in the middle").
 - **Submission:** a README with the official policy links and a manual download step; demo results
   precomputed.
 
@@ -294,6 +318,28 @@ In the survey's §5:
     download step, because the site blocks scripts.
   - The app shows only the short clause quotes it relies on, with attribution.
   - The organisers are not asked.
+- **Pre-Blueprint review fixes, all accepted** (Tarık, 2026-10-03; see the
+  [review](reports/2026-10-03-pre-blueprint-review.md)):
+  - **K1:** a *summary under audit*. Claude with a one-line "summarise this file" prompt, the way
+    officers use Copilot, frozen with its model id and prompt. We show the errors it really makes and
+    fake none.
+  - **K2:** the correct demo outcome is "cannot decide yet, request income evidence". The reason to
+    reject collapses; DFV is documented; income evidence is missing.
+  - **K3:** Jev stays the v1 checker, with Claude as fallback. It is measured against Claude-as-checker
+    on SummEdits pairs at the start of the build.
+  - **K4:** a teammate writes one held-out file before the first pipeline run.
+  - **K5:** the timing test is redesigned:
+    - two different files in counterbalanced order;
+    - baseline = full file plus plain summary;
+    - measure correct decision and minutes;
+    - one trap left unflagged;
+    - n stated.
+  - **K6:**
+    - one full 60-page demo file plus 10–15-page evaluation files;
+    - numbers frozen for the teammate by 7 Oct;
+    - dispute is a text field on the record.
+  - **K7:** Tarık tells the team about the pivot to brief 6 today and asks whether the registration
+    form named a brief.
 
 ## Proposal: goal for the writer, contract for the checkers (draft, Eko, 2026-10-03, awaiting Tarık)
 - **Claude gets a goal, not steps.** The prompt says only:

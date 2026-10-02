@@ -168,11 +168,11 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
 - **Measurement:**
   - The summary under audit (K1), run through the checks.
   - Short trap files and a set of mutated summaries, scored per error type.
-  - The held-out file written by a teammate (K4).
+  - The held-out file written by a separate agent from another model family (K4).
   - Jev vs Claude-as-checker on SummEdits pairs (K3).
-  - The redesigned team timing test (K5).
+  - (K5 timing test dropped; the gate's time cost is stated as untested.)
   - n is printed beside every number.
-- **Dataset and technical upgrades (proposal, Eko, 2026-10-03, awaiting Tarık):**
+- **Dataset and technical upgrades (accepted by Tarık, 2026-10-03):**
   - **Grounded synthetic file.** Every document type in the file is one the real Identification and
     Documentation policy asks priority applicants for. The wait-time CSV (CC BY) appears on the case
     header as context, so the "datasets" claim is real.
@@ -340,6 +340,20 @@ In the survey's §5:
     - dispute is a text field on the record.
   - **K7:** Tarık tells the team about the pivot to brief 6 today and asks whether the registration
     form named a brief.
+- **Later the same day (Tarık):** "takım arkadaşlarını dert etme". Nothing in v1 depends on teammates.
+  - **K4 changes:** the held-out file is written before the first pipeline run by a separate agent
+    from a different model family that never sees the pipeline or its outputs.
+  - **K5 dropped:** no team timing test. The time cost of the gate is stated as untested in v1 and
+    becomes the first measure of the proposed pilot.
+  - **K7 dropped.**
+- **Dataset and technical upgrades accepted** (Tarık, 2026-10-03): grounded synthetic file, released
+  mini-benchmark, checker evaluation at scale, ablation table. The position test runs if time allows.
+- **Design A/B (Tarık's question):**
+  - Build the review screen twice:
+    - **A** with the `tasarim` skill (Tarik Base);
+    - **B** by an agent told not to load the skill or read DESIGN.md.
+  - Tarık compares them by eye and picks one.
+  - The app keeps all styling in one theme file, so switching is a one-file change.
 
 ## Proposal: goal for the writer, contract for the checkers (draft, Eko, 2026-10-03, awaiting Tarık)
 - **Claude gets a goal, not steps.** The prompt says only:

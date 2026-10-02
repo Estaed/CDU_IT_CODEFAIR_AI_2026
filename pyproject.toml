@@ -12,7 +12,6 @@ dependencies = [
     "textstat",
     "pydantic",
     "openpyxl",
-    "pypdf>=6.18.1",
 ]
 
 [dependency-groups]

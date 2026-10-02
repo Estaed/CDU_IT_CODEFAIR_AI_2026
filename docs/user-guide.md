@@ -1,143 +1,102 @@
 # Fair Turn — User Guide
 
-Ten minutes, for a new coordinator, a teammate, or a judge. This page is the walkthrough;
-`docs/PRD.md` section 3 has the full rule behind each surface, and `design/` has the exact
-layout. A short version of sections 1 and 3 is one click away in the app, in the
-"How to use" popover under the page title, on every page.
-
-If a screen ever disagrees with this guide, the screen and `docs/PRD.md` are right; this
-guide is the fast path in, not the source of the rules.
+Five minutes, for a new coordinator, a teammate, or a judge. `docs/PRODUCT.md` has the
+model behind each number.
 
 ## 1. What Fair Turn is
 
-Fair Turn reads today's free-text repair reports and turns them into a suggested order.
-A coordinator sets the weighting, checks each job, and signs the list that crews use.
-Every step, from the reading to the sign-off, is written to a log that can be checked
-later, with who did it and when.
+Fair Turn helps a housing maintenance coordinator in the Northern Territory decide where
+the repair crews go this week.
 
-Fair Turn never sends a job to a crew. It never approves a repair, and it never decides
-who counts as a tenant. A person always makes the call, and a person always signs it. The
-model only reads and suggests; nothing it produces reaches the screen unless a source
-phrase in the report backs it up, or a person typed it in by hand.
+A crew in its own town fixes three repairs a day. A trip to a remote community first
+spends days on the road. So the plan with the most repairs keeps crews in town, and remote
+households wait longest. That is the "efficiency" the brief warns about.
 
-## 2. Who uses which page
+Fair Turn shows that trade-off as numbers, lets the coordinator choose it, and writes the
+choice down. The AI only reads the tenants' reports. A plain formula proposes the plan. A
+person decides and signs.
 
-Fair Turn has five pages, reached from the sidebar.
+## 2. The four pages
 
-- **Workspace.** The coordinator's main page. Today's ranked list, the map, the
-  selected-job pane, the weighting control, and the sign-off form, all in one place.
-- **Review queue.** The coordinator's second stop. One job at a time, for jobs where a
-  needed field has no matching words in the report.
-- **Visit plan.** The coordinator's run sheet, once today's list is signed. Each crew
-  gets its stops in the shortest order, and the page shows the road kilometres of the day.
-- **Tenant answer.** For a tenant, or the housing officer helping them. Look up one job
-  by its registration number and read a plain-language answer.
-- **Evidence lab.** For judges and governance, outside the coordinator's daily flow. How
-  well the system reads reports, a 90-day simulation, and the full audit log.
+- **This week's plan.** The coordinator's page: the setting, the trips, who is left
+  waiting, and the signature.
+- **Reports.** What the AI read from each report, next to the tenant's own words. Reports
+  the AI could not read wait here for a person. New reports are added here.
+- **Ask about a repair.** A tenant, or the housing officer helping them, types a repair
+  number and gets a plain answer.
+- **Evidence.** For judges: thirteen weeks planned under each setting, how well the AI
+  reads, and the decision log.
 
-## 3. A coordinator's morning, step by step
+## 3. A coordinator's Monday, step by step
 
-This step list follows how other dispatch tools already work. The same four day steps sit
-in a strip at the top of the Workspace. Each tile says if it is done, and the next one
-says what to do.
+1. Open This week's plan. Read the blue box. It says how many repairs wait, and how many
+   are past the NT time limit.
 
-1. **Read the numbers at the top of the Workspace.** They say how many jobs are open,
-   how many need a person's help, and how the list has moved since the last change.
-2. **Jobs that need a person.** These are jobs with a field the system could not read.
-   The Needs a human tab, next to today's list, names what is missing in each one.
-   Press Review to open it. Fill each one in by hand, with a reason.
-3. **Decide today's jobs.** Open a job from the To decide tab, the map, or the Select
-   job box. Read it to the bottom: the report, why it sits here, and the fields. Then
-   tick "I have read the report and the reasons above" and press Accept for today. The
-   job moves to the Accepted tab. If it should not go today, press Reject and pick one:
-   not today (it goes to the backlog and the next job takes its place), needs a person
-   (it goes to the review queue), or a field is wrong (fix it, and the job is ranked
-   again). Each reject needs a reason. Undo my decision takes it back until you sign.
-   There is no button that passes every job at once: each decision is one job. Keys
-   help here: J and K open the next and previous job in To decide, A accepts the open
-   job once its box is ticked, and X opens Reject.
-4. **Use the map when it helps.** Circles group nearby communities. Click one and it
-   splits into one dot per community. A dot with several jobs lets you choose; it never
-   picks one job. The region filter only narrows what you see.
-5. **Move a job, or send it to the review queue, with a reason.** Every hand move is
-   written down and shown to anyone who looks at that job later.
-6. **Choose the weighting and sign.** Pick a setting in the sidebar: Efficiency first,
-   Balanced, or Need first. The effect line under the numbers says how many remote and
-   town jobs move in or out. Review and sign, under the list, opens only when To decide
-   is empty. The summary counts what you accepted and rejected. Signing freezes the
-   accepted jobs as a numbered batch, and the signer and the reason go to the log.
-7. **Read the outcomes.** Wait times and travel cost appear only after the first
-   signature, so they cannot steer the order before it is set.
-8. **Open the visit plan.** It turns the signed list into crew run sheets. Distance
-   picks which crew goes, never which job is done.
+2. If a yellow box says a report needs a person, open Reports. Read the report. Set what
+   is missing. Say why you are sure. Save it. The repair joins the plan.
 
-Source: `reports/research-ui-dispatch-products-2026-09-14.md`, "Usage logic a coordinator
-would recognise".
+3. Choose what decides where crews go. Most repairs fixes the most this week. Most
+   overdue first sends crews to the homes that have waited longest past the time limit.
+   Balanced is in between.
 
-## 4. How to test intake
+4. Read the four numbers and the line under them. They show what your choice costs: fewer
+   repairs this week, or more overdue homes reached.
 
-1. Open **New report** from the Workspace header.
-2. Set the extractor in the intake box. If none is set, the box says why and offers the
-   review queue as the way to add a report by hand instead.
-3. Load an example report, or type one in. Reports are plain text: what broke, where,
-   and who lives there.
-4. Press **Extract** and watch the status line while the model reads the text.
-5. See where the report lands: the ranked queue with a proposed rank, or the review
-   queue if a required field has no matching words in the report. A failed or slow read
-   is saved as "not extracted", with the reason, and can be tried again.
-6. Sending the same report twice does not make two jobs. The box remembers the draft
-   until it is saved, so a second press of Extract does not double-write the log.
-7. To test without a model, open **DEV OPTION** in the Workspace sidebar. Pick a kind of
-   report (Immediate, Urgent, Routine, or Needs a person) and press Add report. A made-up
-   report from the test set is added, and a green line above the tabs says where it went:
-   its rank and its tab. The line stays until your next action.
+5. Look at the map and the two lists. Green places get a crew. Red places wait, with
+   repairs past the time limit. Each place says why it waits.
 
-## 5. The keyboard path
+6. You know things the plan does not. Add a trip, or take one out. Give a reason each
+   time.
 
-Every action on the Workspace has a real, focusable control, so a mouse is never
-required to reach a decision.
+7. Sign the plan with your name and a reason. Your reason is what a tenant is told.
 
-- The **Select job** box in the sidebar is the keyboard way into the selected-job pane.
-  Tab to it, then use the arrow keys or type to search by job id.
-- On the Workspace, J opens the next job in To decide and K the one before; both wrap
-  at the ends. A accepts the open job, but only after you tick "I have read the report",
-  and never once the list is signed. X opens the Reject form. Keys do nothing while you
-  type in a box, and no key signs the list.
-- Move, promote, and send-to-review are buttons with a reason field next to them; Tab
-  reaches each one in turn.
-- Sign-off is a form. Tab through weighting, reason, and signer, then press Enter or
-  click Submit. A form only saves when submitted, never on a single keystroke.
+8. Open the run sheet. It shows each crew, Monday to Friday.
 
-## 6. Glossary
+If you change the plan after you sign, sign again. The old version stays in the log.
 
-- **Source phrase.** The exact words in a report that support one field's value. A field
-  with no source phrase is left empty, never guessed, and the job goes to the review
-  queue.
-- **Household health risk.** Our own factor, not an NT class: a household condition such
-  as a young child, an elderly person, pregnancy, or no working water, that raises how
-  soon a repair should happen.
-- **Efficiency first, Balanced, Need first.** The three named weighting settings
-  (λ = 1.0, 0.5, and 0.0). A slider value that does not match one is labelled "Custom".
-- **Window.** The NT policy time a job's safety class allows before it should be fixed.
-  Remote communities get a longer window than town, by policy (FS17).
-- **Human-set field.** A fact a coordinator typed in by hand because the report did not
-  say it clearly enough to read on its own. It carries a gray "Set by coordinator" tag
-  and still counts in the ranking, the same as a field read from the report.
-- **Batch version.** The number stamped on a signed list. Signing again after a change
-  makes a new, higher version; the old one stays in the log and is never deleted.
-- **Override rate.** How often a coordinator moves a job by hand, counted by day. Shown
-  on the Workspace header and, over time, in the Evidence lab.
-- **Decide before reveal.** Wait-time and travel numbers stay hidden until the first
-  sign-off, so they cannot steer the order before a coordinator chooses it.
+## 4. Adding a report
 
-## 7. Where the numbers come from
+Open Reports, then Add a new report. Paste the tenant's words and pick the community.
 
-- **How well the system reads reports:** Evidence lab, Extraction quality tab, scored
-  against a labelled test set, with the provider and model named.
-- **Wait times and travel cost:** Evidence lab, Feedback loop tab, from a 90-day
-  simulation, not from real events; the report data in this demo is made up.
-- **Every signed decision and its reason:** Evidence lab, Audit log tab, backed by the
-  files under `data/build/` and `data/audit/`, which a judge can open directly.
-- **The geography:** real (BushTel and ABS); this caption is fixed on every page.
-- **The policy numbers:** window days, the make-safe hours, the crew counts, all in
-  `constants.md` at the repo root, with a source row for each one.
+To read it with a model, choose claude or ollama in "Who reads the report" (or set
+`FAIR_TURN_PROVIDER` before starting the app; see the README). Press Read the report,
+check what was found, then Save. A fact with no matching words in the report stays empty
+and a person sets it.
+
+With no model on the machine, the two buttons at the bottom add a report from the test set
+with its committed reading: one the AI read in full, and one it could not.
+
+## 5. Answering a tenant
+
+Open Ask about a repair and type the number from the tenant's receipt, or press an
+example. The answer says if a crew is coming this week. If not, it says why: the NT time
+limit, how far past it the repair is, how long the trip is, the setting the coordinator
+chose, and whether another setting would have sent a crew. It names who signed the plan
+and their reason.
+
+## 6. Where the numbers come from
+
+- **The geography is real**: community locations, regions and road access from BushTel and
+  ABS, under pseudonymous ids.
+- **The reports and events are synthetic**: 1,452 tenant reports written by one model and
+  read by another, over October to December 2025.
+- **The time limits are NT policy**: fact sheet FS17, October 2025.
+- **Crew numbers are our assumption**: 10 crews at 5 bases, 3 repairs a crew-day, 400 km of
+  road a day. NT does not publish them. They live in `fair_turn/core/constants.py`.
+- **The backlog on the planning day** is what 12 weeks of Most repairs planning left
+  behind, simulated.
+
+## 7. Glossary
+
+- **Trip.** A crew going from its base to one community and back. It costs driving days
+  plus work days.
+- **Setting.** One number from 0 (Most repairs) to 1 (Most overdue first). It sets what a
+  trip is worth.
+- **Priority.** What a trip is worth per crew-day under the setting. Higher goes first.
+- **Below the cut.** The base's crew-days ran out before this trip's priority.
+- **NT time limit.** FS17: urgent repairs in 2 business days in town and 5 remote; routine
+  in 10 and 25; emergencies made safe in 4 hours.
+- **Overdue.** Past its NT time limit on the planning day.
+- **Source phrase.** The tenant's own words that back a fact the AI read. No phrase, no fact.
+- **Decision log.** Every signed plan, change and reason, with two clocks: the planning day
+  and the real time.

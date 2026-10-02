@@ -21,7 +21,7 @@ INCLUDE_FILES = (
     "data/raw/PROVENANCE.md",
     "data/raw/nt_fs17_repairs_and_maintenance_2025-10.pdf",
     "data/audit/sample.jsonl",
-    "docs/PRD.md",
+    "docs/PRODUCT.md",
     "docs/user-guide.md",
     "constants.md",
     "README.md",

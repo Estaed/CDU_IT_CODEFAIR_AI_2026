@@ -1,267 +1,113 @@
-"""Write data/audit/sample.jsonl: three signed days, one revision, two overrides and one
-make-safe record, so the audit log has history for the demo with no runtime interaction.
-Sign-offs rank only crew jobs: Immediate jobs go to the make-safe contractor, as in the app.
+"""Write the committed sample decision log, ``data/audit/sample.jsonl``.
 
-Run from the repo root with the project interpreter; deterministic and idempotent. Wall-clock
-timestamps are seed-derived rather than real, so a rerun is byte-identical:
+A short, believable morning on the planning day: a person sets a fact the AI could not
+read, a new report is read, the coordinator signs the Most repairs proposal, then changes
+the setting, adds a trip with a reason and signs again. Fixed wall-clock times, so the file
+is the same on every run. The Evidence page shows it until a real plan is signed locally.
+
     venv/Scripts/python scripts/seed_audit.py
 """
 
-import csv
-import json
-import random
 import sys
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
-from fair_turn.core import audit, capacity_sim, constants, decisions, scoring  # noqa: E402
-from fair_turn.core.capacity_sim import Closure, CrewBase, Site  # noqa: E402
-from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass  # noqa: E402
-from fair_turn.data import geography  # noqa: E402
+from fair_turn.core import audit, constants, weekly, weeks  # noqa: E402
+from fair_turn.data import artefacts, geography  # noqa: E402
 
-BUILD = ROOT / "data" / "build"
-AUDIT = ROOT / "data" / "audit"
+OUT = ROOT / "data" / "audit" / "sample.jsonl"
+DARWIN = timezone(timedelta(hours=9, minutes=30))
 SIGNER = "R. Coordinator"
-DARWIN = ZoneInfo("Australia/Darwin")
 
 
-def _load_json(path: Path):
-    return json.loads(path.read_text("utf-8"))
-
-
-def _communities() -> dict[str, dict[str, str]]:
-    with (BUILD / "communities.csv").open(newline="", encoding="utf-8") as f:
-        return {r["community_id"]: r for r in csv.DictReader(f)}
-
-
-def _jobs(communities: dict[str, dict[str, str]]) -> list[Job]:
-    jobs = []
-    for label in _load_json(BUILD / "labels.json"):
-        community = communities[label["community_id"]]
-        jobs.append(
-            Job(
-                job_id=label["job_id"],
-                community_id=label["community_id"],
-                is_remote=community["is_remote"] == "True",
-                reported_on=date.fromisoformat(label["reported_on"]),
-                fault_type=FaultType(label["fault_type"]),
-                safety_class=SafetyClass(label["safety_class"]),
-                health_risk=frozenset(HealthRiskFactor(h) for h in label["health_risk"]),
-                logistics_factor=float(community["logistics_factor"]),
-            )
-        )
-    return jobs
-
-
-def _closures() -> list[Closure]:
-    return [
-        Closure(
-            c["community_id"],
-            date.fromisoformat(c["closed_from"]),
-            date.fromisoformat(c["closed_to"]),
-        )
-        for c in _load_json(BUILD / "closures.json")
-    ]
-
-
-def _open_jobs(
-    jobs: list[Job],
-    sites: dict[str, Site],
-    crews: tuple[CrewBase, ...],
-    closures: list[Closure],
-    today: date,
-):
-    result = capacity_sim.simulate(
-        jobs,
-        lam=1.0,
-        start=constants.WINDOW_START,
-        days=(today - constants.WINDOW_START).days + 1,
-        closures=closures,
-        crews=crews,
-        jobs_per_crew_day=constants.JOBS_PER_CREW_DAY,
-        travel_day_km=constants.TRAVEL_DAY_KM,
-        sites=sites,
+def _signed(plan, jobs, version, reason, changes=(), added=()) -> audit.PlanSigned:
+    summary = weekly.summarise(plan, jobs)
+    return audit.PlanSigned(
+        day=constants.PLAN_DAY,
+        version=version,
+        setting=plan.setting,
+        setting_name=weekly.setting_name(plan.setting),
+        signer=SIGNER,
+        reason=reason,
+        trips=weekly.trip_lines(plan),
+        changes=tuple(changes),
+        repairs=summary.repairs,
+        overdue_left=summary.overdue_left,
+        added=tuple(added),
+        recorded_at=datetime(2025, 12, 29, 9, 40, tzinfo=DARWIN)
+        + timedelta(minutes=25 * (version - 1)),
     )
-    return [j for j in jobs if j.reported_on <= today and result.completed_on[j.job_id] is None]
 
 
-def _crew_jobs(jobs: list[Job]) -> list[Job]:
-    """The jobs a crew ranking holds: Immediate jobs go to the make-safe contractor."""
-    return [j for j in jobs if not decisions.is_make_safe(j)]
-
-
-def _human_queue_job_id() -> str:
-    """A committed non-adversarial extraction that still needs coordinator review."""
-    for row in _load_json(BUILD / "extraction.json"):
-        if row.get("needs_human") and not row.get("is_adversarial"):
-            return row["job_id"]
-    raise RuntimeError("the committed extraction artefact has no human-queue job")
-
-
-def _recorded_at(day: date, rng: random.Random) -> datetime:
-    """A reproducible local wall-clock timestamp after 09:00 Darwin time."""
-    start = datetime(day.year, day.month, day.day, 9, tzinfo=DARWIN)
-    return start + timedelta(minutes=rng.randint(1, 420))
-
-
-def main() -> int:
-    # Step 1: load the community/job/closure rows the capacity simulation needs.
-    communities = _communities()
-    sites = geography.sim_sites(communities)
-    crews = geography.crews(communities)
-    jobs = _jobs(communities)
-    closures = _closures()
-
-    # Step 2: pick three fixed sign-off days near the end of the event window, each with its
-    # own lambda and reason, so the seeded log has a believable history for the demo.
-    days = [constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS - n) for n in (3, 2, 1)]
-    lams = (1.0, 0.7, 0.5)
-    reasons = (
-        "weekly sign-off, no changes since last week",
-        "logistics weighted higher after a fuel-price rise",
-        "logistics weighted lower to clear the remote backlog",
+def main() -> None:
+    art = artefacts.load_all()
+    jobs = artefacts.to_jobs(art)
+    places = geography.places(art.communities)
+    first = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
+    history = weeks.simulate(
+        jobs, places, 0.0, first, (constants.PLAN_DAY - first).days // 7, art.closures
     )
-    rng = random.Random(constants.SEED)
-
-    path = AUDIT / "sample.jsonl"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if path.exists():
-        path.unlink()
-
-    # Step 3: rank the open crew jobs for each day and append a signed-off entry per day.
-    for day, lam, reason in zip(days, lams, reasons, strict=True):
-        ranked = scoring.rank(_crew_jobs(_open_jobs(jobs, sites, crews, closures, day)), day, lam)
-        ranked_ids = tuple(s.job.job_id for s in ranked)
-        today_ids = ranked_ids[:10]
-        recorded_at = _recorded_at(day, rng)
-        audit.append(
-            path,
-            audit.SignOff(
-                day=day,
-                lam=lam,
-                reason=reason,
-                signer=SIGNER,
-                signed_at=recorded_at,
-                ranked_job_ids=ranked_ids,
-                recorded_at=recorded_at,
-                today_job_ids=today_ids,
-            ),
-        )
-
-    # Step 4: on the middle day, append one lambda revision and two rank overrides, so the
-    # log shows both kinds of after-the-fact change an auditor would look for.
-    middle_day = days[1]
-    revision_at = _recorded_at(middle_day, rng)
-    audit.append(
-        path,
-        audit.Revision(
-            day=middle_day,
-            old_lam=lams[0],
-            new_lam=lams[1],
-            reason="logistics weighted higher after a fuel-price rise",
-            at=revision_at,
-            recorded_at=revision_at,
+    open_jobs = history.open_on(jobs, constants.PLAN_DAY)
+    closed = weeks.closed_on(art.closures, constants.PLAN_DAY)
+    person = next(j for j in open_jobs if j.needs_human)
+    missing = "fault_type" if person.fault_type is None else "safety_class"
+    value = "roof_structure" if missing == "fault_type" else "urgent"
+    records: list[audit.Record] = [
+        audit.FieldSet(
+            constants.PLAN_DAY,
+            person.job_id,
+            missing,
+            value,
+            SIGNER,
+            "Tenant confirmed by phone",
+            recorded_at=datetime(2025, 12, 29, 9, 5, tzinfo=DARWIN),
         ),
-    )
-
-    ranked_middle = scoring.rank(
-        _crew_jobs(_open_jobs(jobs, sites, crews, closures, middle_day)), middle_day, lams[1]
-    )
-    overrides = (
-        (ranked_middle[2], 1, "crew already on site"),
-        (ranked_middle[4], 2, "tenant escalated to the coordinator directly"),
-    )
-    for scored, to_rank, reason in overrides:
-        recorded_at = _recorded_at(middle_day, rng)
-        audit.append(
-            path,
-            audit.Override(
-                day=middle_day,
-                job_id=scored.job.job_id,
-                from_rank=scored.rank,
-                to_rank=to_rank,
-                reason=reason,
-                at=recorded_at,
-                recorded_at=recorded_at,
-            ),
-        )
-
-    # Step 5: add one event of each Phase 2 kind. The first event names a job still in the
-    # human queue, so the audit sample also shows the required human intervention trail.
-    human_job_id = _human_queue_job_id()
-    audit.append(
-        path,
-        audit.HumanSet(
-            day=middle_day,
-            job_id=human_job_id,
-            field="fault_type",
-            value="plumbing_water",
-            actor=SIGNER,
-            reason="confirmed from the tenant report",
-            recorded_at=_recorded_at(middle_day, rng),
-        ),
-    )
-    audit.append(
-        path,
         audit.Intake(
-            day=days[2],
-            job_id=human_job_id,
-            provider="claude",
-            model="sonnet",
-            prompt_version="v1",
-            latency_s=2.4,
-            validation="missing fault type evidence",
-            status="needs_review",
-            recorded_at=_recorded_at(days[2], rng),
+            constants.PLAN_DAY,
+            "JR-2025-01453",
+            "claude",
+            "sonnet",
+            "intake-v1",
+            11.4,
+            "verified",
+            "extracted",
+            recorded_at=datetime(2025, 12, 29, 9, 20, tzinfo=DARWIN),
         ),
-    )
-    audit.append(
-        path,
-        audit.Promotion(
-            day=days[2],
-            job_id=ranked_middle[0].job.job_id,
-            displaced_job_id=ranked_middle[-1].job.job_id,
-            reason="coordinator confirmed immediate access",
-            recorded_at=_recorded_at(days[2], rng),
+    ]
+    first_plan = weekly.plan(open_jobs, places, constants.PLAN_DAY, 0.0, closed=closed)
+    records.append(_signed(first_plan, open_jobs, 1, "Proposal as it stands, to get crews moving"))
+    balanced = weekly.plan(open_jobs, places, constants.PLAN_DAY, 0.5, closed=closed)
+    waiting = max(
+        (
+            w
+            for w in balanced.waiting
+            if w.reason == weekly.OUTRANKED and not places[w.community_id].is_town
         ),
+        key=lambda w: len(w.job_ids),
     )
-    audit.append(
-        path,
-        audit.PlanDecision(
-            day=days[2],
-            batch_version=1,
-            action="accept",
-            detail="signed order retained for crew allocation",
-            reason="coordinator accepted the proposed visit plan",
-            recorded_at=_recorded_at(days[2], rng),
-        ),
+    reason = "Longest wait in the region; the community asked twice"
+    second = weekly.plan(
+        open_jobs, places, constants.PLAN_DAY, 0.5, closed=closed, add=[waiting.community_id]
     )
-
-    # Last, so every earlier seeded draw is unchanged: one Immediate job reported on the last
-    # day, sent to the make-safe contractor.
-    make_safe_ids = sorted(
-        j.job_id for j in jobs if decisions.is_make_safe(j) and j.reported_on == days[2]
+    records.append(
+        _signed(
+            second,
+            open_jobs,
+            2,
+            "Remote households are weeks past the NT time limit; Balanced costs few repairs",
+            changes=[f"added {waiting.community_id}: {reason}"],
+            added=[waiting.community_id],
+        )
     )
-    if not make_safe_ids:
-        raise RuntimeError(f"no Immediate job with every required field reported on {days[2]}")
-    audit.append(
-        path,
-        audit.MakeSafe(
-            day=days[2],
-            job_id=make_safe_ids[0],
-            actor=SIGNER,
-            reason="make-safe contractor booked by phone",
-            recorded_at=_recorded_at(days[2], rng),
-        ),
-    )
-
-    print(f"wrote {path}", file=sys.stderr)
-    return 0
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_bytes(b"")
+    for record in records:
+        audit.append(OUT, record)
+    print(f"wrote {len(records)} records to {OUT.relative_to(ROOT)}", file=sys.stderr)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

@@ -17,12 +17,14 @@ Holdout set: 150 reports.
 Adversarial set: 20 reports.
 Needs-a-human queue: 1 non-adversarial reports with an unverified required field.
 
-## Capacity model (*provisional*, PRD section 6.3)
+## Crew model (*provisional*, constants.md)
 
-- Crews per remote region: 1
-- Crews in the town region: 2
-- Jobs per crew per day: 3
-- Travel-day threshold: 200 km
+- Crews per base: Darwin 3, Katherine 2, Tennant Creek 1, Alice Springs 2, Nhulunbuy 2
+- Crew-days per week: 5
+- Repairs per crew-day: 3
+- Road km driven per day: 400
+- Repairs per remote trip, at most: 9
+- Planning day: 2025-12-29
 
 ## Event window (*provisional*, PRD section 6.2)
 

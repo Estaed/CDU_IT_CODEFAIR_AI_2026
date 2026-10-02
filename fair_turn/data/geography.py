@@ -18,8 +18,8 @@ from pathlib import Path
 import openpyxl
 import pandas as pd
 
-from fair_turn.core.capacity_sim import CrewBase, Site, crew_roster
 from fair_turn.core.constants import CREW_BASES, REGIONS, REMOTE_REGIONS, TOWN_REGION
+from fair_turn.core.weekly import Place
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 RAW_DIR = ROOT / "data" / "raw"
@@ -185,25 +185,20 @@ def load_communities(path: Path = BUILD_CSV) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
-def sim_sites(rows: Mapping[str, Mapping[str, str]]) -> dict[str, Site]:
-    """A capacity-model ``Site`` per community row of ``communities.csv`` (string values)."""
+def places(rows: Mapping[str, Mapping[str, str]]) -> dict[str, Place]:
+    """A planner ``Place`` per community row of ``communities.csv`` (string values); the
+    one-way road distance is ``logistics_factor`` (haversine km times the road factor)."""
     return {
-        cid: Site(
-            region=r["region"],
-            km_to_base=float(r["km_to_base"]),
+        cid: Place(
+            community_id=cid,
+            base=r["crew_base"],
+            is_town=r["is_remote"] != "True",
+            road_km=float(r["logistics_factor"]),
             lat=float(r["lat"]),
             lon=float(r["lon"]),
-            road_factor=ROAD_FACTORS[r["road_access"]],
-            is_town=r["is_remote"] != "True",
         )
         for cid, r in rows.items()
     }
-
-
-def crews(rows: Mapping[str, Mapping[str, str]], **counts: int) -> tuple[CrewBase, ...]:
-    """The NT-wide crew pool, with each region's base read from the ``crew_base`` column;
-    ``counts`` (``per_remote_region``, ``town``) override the constants for a what-if."""
-    return crew_roster({r["region"]: r["crew_base"] for r in rows.values()}, **counts)
 
 
 if __name__ == "__main__":

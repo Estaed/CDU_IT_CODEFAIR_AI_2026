@@ -2,32 +2,29 @@
 
 Run from the repo root with the project interpreter:
     venv/Scripts/python scripts/export_report_tables.py
-Writes seven files to data/build/report/ (or the directory passed to ``main``). No CLI, no
+Writes eight files to data/build/report/ (or the directory passed to ``main``). No CLI, no
 network: numbers come from data/build/eval.json, labels.json, communities.csv,
-closures.json and extraction.json, or from fair_turn.core.capacity_sim / feedback_sim run
-over the label rows the same way tests/test_feedback_sim.py builds them. Idempotent: rows
-are ordered deterministically and floats are formatted to a fixed number of decimals, so a
-rerun is byte-identical.
+closures.json and extraction.json, or from the weekly planner (fair_turn.core.weekly and
+weeks) run over the same jobs the app plans. Idempotent: rows are ordered deterministically
+and floats are formatted to a fixed number of decimals, so a rerun is byte-identical.
 """
 
 import csv
 import json
 import sys
-from datetime import date
+from datetime import timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))  # the package is not installed into venv; scripts run from source
 
-from fair_turn.core import capacity_sim, constants, feedback_sim  # noqa: E402
-from fair_turn.core.capacity_sim import Closure, CrewBase, Site  # noqa: E402
+from fair_turn.core import constants, weekly, weeks  # noqa: E402
 from fair_turn.core.types import Job  # noqa: E402
 from fair_turn.data import artefacts, geography  # noqa: E402
 
 BUILD = ROOT / "data" / "build"
 OUT = BUILD / "report"
 DIGITS = 4
-FEEDBACK_DECAY = 0.3
 
 
 def _load_json(path: Path):
@@ -47,17 +44,6 @@ def _jobs(build: Path, communities: dict[str, dict[str, str]]) -> list[Job]:
     return artefacts.to_jobs(artefacts.load_all(build))
 
 
-def _closures(build: Path) -> list[Closure]:
-    return [
-        Closure(
-            c["community_id"],
-            date.fromisoformat(c["closed_from"]),
-            date.fromisoformat(c["closed_to"]),
-        )
-        for c in _load_json(build / "closures.json")
-    ]
-
-
 def _fmt(value: float | None) -> str:
     return "" if value is None else f"{value:.{DIGITS}f}"
 
@@ -69,130 +55,101 @@ def _write_csv(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
-def price_of_fairness(
-    jobs: list[Job], sites: dict[str, Site], crews: tuple[CrewBase, ...], closures: list[Closure]
-) -> list[dict]:
+SETTING_STEPS = 11  # 0.0, 0.1, ... 1.0
+FIRST_MONDAY = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
+SEASON_WEEKS = (constants.PLAN_DAY - FIRST_MONDAY).days // 7 + 1
+HISTORY_WEEKS = SEASON_WEEKS - 1
+WEEK_COLUMNS = [
+    "setting",
+    "name",
+    "repairs",
+    "repairs_remote",
+    "overdue_left",
+    "overdue_left_remote",
+    "driving_days",
+    "remote_trips",
+]
+BAND_KEYS = {name: name.replace(" ", "_").replace("-", "_to_") for name, _ in weeks.BANDS}
+SEASON_COLUMNS = [
+    "setting",
+    "name",
+    "repairs",
+    "driving_days",
+    "on_time_town",
+    "on_time_remote",
+    *(f"{key}_{m}" for key in BAND_KEYS.values() for m in ("median_wait", "still_open")),
+]
+CREW_COLUMNS = ["extra_crew_at", "setting", "name", "repairs", "on_time_remote", "far_still_open"]
+
+
+def _settings() -> list[float]:
+    return [step / (SETTING_STEPS - 1) for step in range(SETTING_STEPS)]
+
+
+def this_week(jobs: list[Job], places, closures) -> list[dict]:
+    """The planning-day trade-off line the plan page draws: one plan per setting."""
+    history = weeks.simulate(jobs, places, 0.0, FIRST_MONDAY, HISTORY_WEEKS, closures)
+    open_jobs = history.open_on(jobs, constants.PLAN_DAY)
+    closed = weeks.closed_on(closures, constants.PLAN_DAY)
     rows = []
-    for step in range(11):
-        lam = round(1.0 - step * 0.1, 1)
-        result = capacity_sim.simulate(
-            jobs,
-            lam,
-            constants.WINDOW_START,
-            constants.WINDOW_DAYS,
-            closures,
-            crews,
-            constants.JOBS_PER_CREW_DAY,
-            constants.TRAVEL_DAY_KM,
-            sites,
-        )
+    for setting in _settings():
+        plan = weekly.plan(open_jobs, places, constants.PLAN_DAY, setting, closed=closed)
+        s = weekly.summarise(plan, open_jobs)
         rows.append(
             {
-                "lam": f"{lam:.1f}",
-                "median_wait_remote": _fmt(result.median_wait_remote),
-                "median_wait_town": _fmt(result.median_wait_town),
-                "gap": _fmt(result.gap),
-                "unfinished_remote": result.unfinished_remote,
-                "jobs_remote": result.jobs_remote,
-                "unfinished_town": result.unfinished_town,
-                "jobs_town": result.jobs_town,
-                "travel_km": f"{result.travel_km:.0f}",
-                "travel_cost": f"{result.travel_cost:.{DIGITS}f}",
+                "setting": f"{setting:.1f}",
+                "name": weekly.setting_name(setting),
+                "repairs": s.repairs,
+                "repairs_remote": s.repairs_remote,
+                "overdue_left": s.overdue_left,
+                "overdue_left_remote": s.overdue_left_remote,
+                "driving_days": f"{s.driving_days:g}",
+                "remote_trips": s.remote_trips,
             }
         )
     return rows
 
 
-PRICE_COLUMNS = [
-    "lam",
-    "median_wait_remote",
-    "median_wait_town",
-    "gap",
-    "unfinished_remote",
-    "jobs_remote",
-    "unfinished_town",
-    "jobs_town",
-    "travel_km",
-    "travel_cost",
-]
-
-# (crews per remote region, town crews, jobs per crew per day): the committed setting first,
-# then one step either way on each axis, so a reader sees how much each conclusion depends on
-# the provisional capacity numbers.
-SENSITIVITY = (
-    (constants.CREWS_PER_REMOTE_REGION, constants.CREWS_TOWN, constants.JOBS_PER_CREW_DAY),
-    (1, 2, 2),
-    (1, 2, 4),
-    (1, 3, 3),
-    (2, 2, 3),
-)
-SENSITIVITY_COLUMNS = [
-    "crews_per_remote_region",
-    "crews_town",
-    "jobs_per_crew_day",
-    "lam",
-    "median_wait_remote",
-    "median_wait_town",
-    "unfinished_remote",
-    "jobs_remote",
-    "unfinished_town",
-    "jobs_town",
-    "travel_km",
-]
-
-
-def capacity_sensitivity(
-    jobs: list[Job], sites: dict[str, Site], communities: dict, closures: list[Closure]
-) -> list[dict]:
+def season(jobs: list[Job], places, closures) -> list[dict]:
+    """Every Monday of the window planned under each setting: who waits, by distance."""
     rows = []
-    for per_remote, town, per_day in SENSITIVITY:
-        crews = geography.crews(communities, per_remote_region=per_remote, town=town)
-        for lam in (1.0, 0.5, 0.0):
-            result = capacity_sim.simulate(
-                jobs,
-                lam,
-                constants.WINDOW_START,
-                constants.WINDOW_DAYS,
-                closures,
-                crews,
-                per_day,
-                constants.TRAVEL_DAY_KM,
-                sites,
-            )
-            rows.append(
-                {
-                    "crews_per_remote_region": per_remote,
-                    "crews_town": town,
-                    "jobs_per_crew_day": per_day,
-                    "lam": f"{lam:.1f}",
-                    "median_wait_remote": _fmt(result.median_wait_remote),
-                    "median_wait_town": _fmt(result.median_wait_town),
-                    "unfinished_remote": result.unfinished_remote,
-                    "jobs_remote": result.jobs_remote,
-                    "unfinished_town": result.unfinished_town,
-                    "jobs_town": result.jobs_town,
-                    "travel_km": f"{result.travel_km:.0f}",
-                }
-            )
+    for setting in _settings():
+        run = weeks.simulate(jobs, places, setting, FIRST_MONDAY, SEASON_WEEKS, closures)
+        r = weeks.measure(run, jobs, places, setting)
+        row = {
+            "setting": f"{setting:.1f}",
+            "name": weekly.setting_name(setting),
+            "repairs": r.repairs,
+            "driving_days": f"{r.driving_days:g}",
+            "on_time_town": _fmt(r.on_time_town),
+            "on_time_remote": _fmt(r.on_time_remote),
+        }
+        for band in r.bands:
+            key = BAND_KEYS[band.band]
+            row[f"{key}_median_wait"] = f"{band.median_wait:g}"
+            row[f"{key}_still_open"] = band.still_open
+        rows.append(row)
     return rows
 
 
-def feedback_loop(
-    jobs: list[Job], sites: dict[str, Site], crews: tuple[CrewBase, ...], closures: list[Closure]
-) -> list[dict]:
+def one_more_crew(jobs: list[Job], places, closures) -> list[dict]:
+    """One extra crew at each base in turn, at Most repairs and Balanced."""
     rows = []
-    for run_name, lam in (("lam_1.0", 1.0), ("lam_0.5", 0.5)):
-        series = feedback_sim.run(jobs, sites, crews, lam, FEEDBACK_DECAY, constants.SEED, closures)
-        for i, week_start in enumerate(series.week_start):
+    for base in constants.CREW_BASES:
+        crews = dict(constants.CREWS_AT_BASE)
+        crews[base] += 1
+        for name in ("Most repairs", "Balanced"):
+            setting = constants.SETTINGS[name]
+            run = weeks.simulate(jobs, places, setting, FIRST_MONDAY, SEASON_WEEKS, closures, crews)
+            r = weeks.measure(run, jobs, places, setting)
             rows.append(
                 {
-                    "run": run_name,
-                    "week_start": week_start.isoformat(),
-                    "reports_town": series.reports_town[i],
-                    "reports_remote": series.reports_remote[i],
-                    "median_wait_town": _fmt(series.median_wait_town[i]),
-                    "median_wait_remote": _fmt(series.median_wait_remote[i]),
-                    "gap": _fmt(series.gap[i]),
+                    "extra_crew_at": base,
+                    "setting": f"{setting:.1f}",
+                    "name": name,
+                    "repairs": r.repairs,
+                    "on_time_remote": _fmt(r.on_time_remote),
+                    "far_still_open": r.bands[-1].still_open,
                 }
             )
     return rows
@@ -316,12 +273,14 @@ def dataset_summary_md(
         f"Needs-a-human queue: {human_queue} non-adversarial reports with an unverified "
         "required field.",
         "",
-        "## Capacity model (*provisional*, PRD section 6.3)",
+        "## Crew model (*provisional*, constants.md)",
         "",
-        f"- Crews per remote region: {constants.CREWS_PER_REMOTE_REGION}",
-        f"- Crews in the town region: {constants.CREWS_TOWN}",
-        f"- Jobs per crew per day: {constants.JOBS_PER_CREW_DAY}",
-        f"- Travel-day threshold: {constants.TRAVEL_DAY_KM} km",
+        "- Crews per base: " + ", ".join(f"{b} {n}" for b, n in constants.CREWS_AT_BASE.items()),
+        f"- Crew-days per week: {constants.CREW_DAYS_PER_WEEK}",
+        f"- Repairs per crew-day: {constants.JOBS_PER_CREW_DAY}",
+        f"- Road km driven per day: {constants.DRIVE_KM_PER_DAY}",
+        f"- Repairs per remote trip, at most: {constants.MAX_JOBS_PER_TRIP}",
+        f"- Planning day: {constants.PLAN_DAY.isoformat()}",
         "",
         "## Event window (*provisional*, PRD section 6.2)",
         "",
@@ -338,10 +297,9 @@ def main(output_dir: Path = OUT) -> int:
     labels = _load_json(BUILD / "labels.json")
     communities = _communities(BUILD)
     extraction = _load_json(BUILD / "extraction.json")
-    sites = geography.sim_sites(communities)
-    crews = geography.crews(communities)
+    places = geography.places(communities)
     jobs = _jobs(BUILD, communities)
-    closures = _closures(BUILD)
+    closures = _load_json(BUILD / "closures.json")
 
     # Step 2: write the five markdown tables (evaluation numbers, dataset summary).
     (output_dir / "extraction_vs_baseline.md").write_text(
@@ -353,31 +311,14 @@ def main(output_dir: Path = OUT) -> int:
     (output_dir / "dataset_summary.md").write_text(
         dataset_summary_md(labels, communities, extraction), "utf-8", newline=""
     )
-    # Step 3: write the two simulation CSVs (capacity_sim across lambda, feedback_sim over
-    # the event window) by re-running the same core simulations the app pages call.
-    _write_csv(
-        output_dir / "price_of_fairness.csv",
-        PRICE_COLUMNS,
-        price_of_fairness(jobs, sites, crews, closures),
+    # Step 3: the three plan tables, by re-running the same core planner the app calls.
+    tables = (
+        ("this_week_by_setting.csv", WEEK_COLUMNS, this_week),
+        ("season_by_setting.csv", SEASON_COLUMNS, season),
+        ("one_more_crew.csv", CREW_COLUMNS, one_more_crew),
     )
-    _write_csv(
-        output_dir / "capacity_sensitivity.csv",
-        SENSITIVITY_COLUMNS,
-        capacity_sensitivity(jobs, sites, communities, closures),
-    )
-    _write_csv(
-        output_dir / "feedback_loop.csv",
-        [
-            "run",
-            "week_start",
-            "reports_town",
-            "reports_remote",
-            "median_wait_town",
-            "median_wait_remote",
-            "gap",
-        ],
-        feedback_loop(jobs, sites, crews, closures),
-    )
+    for name, columns, build in tables:
+        _write_csv(output_dir / name, columns, build(jobs, places, closures))
     return 0
 
 

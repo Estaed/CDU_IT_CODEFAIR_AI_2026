@@ -15,7 +15,7 @@ OUTLINE = ROOT / "data" / "geo" / "nt_outline.geojson"
 
 
 def _scanned_text() -> dict[str, str]:
-    files = [CSV, ROOT / "docs" / "PRD.md"] + sorted((ROOT / "fair_turn" / "app").rglob("*.py"))
+    files = [CSV, ROOT / "docs" / "PRODUCT.md"] + sorted((ROOT / "fair_turn" / "app").rglob("*.py"))
     return {str(f.relative_to(ROOT)): f.read_text("utf-8").upper() for f in files}
 
 

@@ -1,0 +1,12 @@
+setting,name,repairs,repairs_remote,overdue_left,overdue_left_remote,driving_days,remote_trips
+0.0,Most repairs,91,42,148,148,12.5,12
+0.1,Custom (0.10),91,42,138,138,14,10
+0.2,Custom (0.20),91,43,137,137,14.5,11
+0.3,Custom (0.30),88,40,134,134,16,10
+0.4,Custom (0.40),79,49,126,126,20,12
+0.5,Balanced,79,49,126,126,20,12
+0.6,Custom (0.60),75,49,122,122,22.5,12
+0.7,Custom (0.70),75,49,122,122,22.5,12
+0.8,Custom (0.80),72,50,119,119,25,12
+0.9,Custom (0.90),56,47,116,116,30.5,11
+1.0,Most overdue first,54,45,117,117,31,11

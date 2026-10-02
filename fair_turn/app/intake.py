@@ -1,113 +1,59 @@
-"""New-report action embedded in the workspace flow (PRD sections 3.1, 3.2 and 5)."""
+"""Adding a new report: the one app module allowed to call a model (Blueprint).
+
+The model call happens only when the person presses Extract, with a timeout; its result is
+schema-validated and every phrase checked against the text before anything is shown or
+saved. With no provider set, a person can still add a test-set report with no model call.
+"""
 
 import uuid
 from collections.abc import Callable
 from datetime import datetime
-from typing import Literal
 
 import numpy as np
 import streamlit as st
 
 from fair_turn.app import state
-from fair_turn.app.components.ranking_table import open_jobs
-from fair_turn.core import audit, constants, scoring, verify_spans
-from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
+from fair_turn.core import audit, constants, verify_spans
 from fair_turn.data import runtime
 from fair_turn.llm import intake as intake_llm
 
-CALL_OVERRIDE: Callable | None = None
+CALL_OVERRIDE: Callable | None = None  # tests put a fake model here
 
-# Example ids for the intake demo (Task-48), picked by hand from the 2026-09-14 synthetic
-# labels: one job whose label is a fault_type=cooling report in a town community (Alice
-# Springs, is_remote=False), one fault_type=hot_water report in a remote community, and
-# one fault_type=electrical report with safety_class immediate.
+# Example reports for the demo, picked from the synthetic labels: a town cooling fault, a
+# remote hot-water fault and a remote electrical emergency.
 EXAMPLE_REPORTS = {
-    "Cooling, Alice Springs": "JR-2025-00407",
+    "Cooling, town": "JR-2025-00407",
     "Hot water, remote": "JR-2025-00030",
-    "Electrical, immediate": "JR-2025-00011",
+    "Electrical, emergency": "JR-2025-00011",
 }
+REPLAY_PROVIDER = "test-set replay"
+REPLAY_MODEL = "no model call: the committed reading of a test-set report"
 
 
-def new_draft() -> dict:
-    """Return the one stateful draft that makes a retry idempotent."""
-    return {
-        "draft_token": uuid.uuid4().hex,
-        "text": "",
-        "community_id": None,
-        "reported_on": None,
-        "result": None,
-        "loaded_example": None,
-    }
+def _draft() -> dict:
+    """The one stateful draft that makes a second press save nothing twice."""
+    key = "intake_draft"
+    if key not in st.session_state:
+        st.session_state[key] = {"token": uuid.uuid4().hex, "result": None, "example": None}
+    return st.session_state[key]
 
 
-def _community_for(art, job_id: str) -> str:
-    return next(label["community_id"] for label in art.labels if label["job_id"] == job_id)
+def _reset_draft() -> None:
+    st.session_state.pop("intake_draft", None)
 
 
-def _capacity_all() -> int:
-    return (
-        constants.CREWS_PER_REMOTE_REGION * len(constants.REMOTE_REGIONS) + constants.CREWS_TOWN
-    ) * constants.JOBS_PER_CREW_DAY
-
-
-def _preview_job(draft: dict, verified, community: dict[str, str]) -> Job:
-    return Job(
-        job_id="new-report-preview",
-        community_id=draft["community_id"],
-        is_remote=community["is_remote"] == "True",
-        reported_on=draft["reported_on"],
-        fault_type=FaultType(verified.fault_type) if verified.fault_type else None,
-        safety_class=SafetyClass(verified.safety_class) if verified.safety_class else None,
-        health_risk=frozenset(HealthRiskFactor(value) for value in verified.health_risk),
-        logistics_factor=float(community["logistics_factor"]),
-    )
-
-
-def _field_rows(result: intake_llm.IntakeResult) -> list[dict[str, str]]:
-    verified = result.verified
-    raw = result.extraction or {}
-    rows = []
-    for field in ("fault_type", "safety_class"):
-        value = getattr(verified, field) if verified else None
-        phrase = (verified.kept if verified else {}).get(field, "")
-        dropped = field in (verified.dropped if verified else {})
-        rows.append(
-            {
-                "field": field.replace("_", " "),
-                "value": value or "",
-                "phrase": phrase,
-                "status": "Needs review" if dropped else "Verified" if value else "Not extracted",
-            }
-        )
-    health = ", ".join(verified.health_risk) if verified else ""
-    rows.append(
-        {
-            "field": "health risk",
-            "value": health,
-            "phrase": "; ".join(
-                phrase
-                for name, phrase in (verified.kept.items() if verified else [])
-                if name.startswith("health_risk:")
-            ),
-            "status": "Verified" if health else "Not extracted" if not raw else "Verified",
-        }
-    )
-    return rows
-
-
-def _save(draft: dict, result: intake_llm.IntakeResult) -> tuple[bool, str]:
-    art = state.artefacts()
-    existing = runtime.read(state.get_runtime_path())
-    ids = {label["job_id"] for label in art.labels}
-    ids.update(record.job_id for record in existing if isinstance(record, runtime.IntakeReport))
+def _save(text: str, community_id: str, result: intake_llm.IntakeResult, token: str) -> str:
+    records = state.runtime_records()
+    ids = {label["job_id"] for label in state.artefacts().labels}
+    ids.update(r.job_id for r in records if isinstance(r, runtime.IntakeReport))
     job_id = runtime.next_job_id(ids)
     wrote = runtime.append(
         state.get_runtime_path(),
         runtime.IntakeReport(
             job_id=job_id,
-            community_id=draft["community_id"],
-            reported_on=draft["reported_on"],
-            text=draft["text"],
+            community_id=community_id,
+            reported_on=state.today(),
+            text=text,
             extraction=result.extraction,
             status=result.status,
             provider=result.provider,
@@ -115,36 +61,37 @@ def _save(draft: dict, result: intake_llm.IntakeResult) -> tuple[bool, str]:
             prompt_version=result.prompt_version,
             latency_s=result.latency_s,
             validation={"result": result.validation, "error": result.error},
-            draft_token=draft["draft_token"],
+            draft_token=token,
             at=datetime.now().astimezone(),
         ),
     )
-    if wrote:
-        audit.append(
-            state.get_audit_path(),
-            audit.Intake(
-                day=state.get_today(),
-                job_id=job_id,
-                provider=result.provider,
-                model=result.model,
-                prompt_version=result.prompt_version,
-                latency_s=result.latency_s,
-                validation=result.validation,
-                status=result.status,
-            ),
+    if not wrote:
+        return next(
+            r.job_id
+            for r in state.runtime_records()
+            if isinstance(r, runtime.IntakeReport) and r.draft_token == token
         )
-    return wrote, job_id
+    audit.append(
+        state.get_audit_path(),
+        audit.Intake(
+            day=state.today(),
+            job_id=job_id,
+            provider=result.provider,
+            model=result.model,
+            prompt_version=result.prompt_version,
+            latency_s=result.latency_s,
+            validation=result.validation,
+            status=result.status,
+        ),
+    )
+    return job_id
 
 
-DEV_PROVIDER = "dev-replay"
-DEV_MODEL = "synthetic replay (no model call)"
-
-
-def _flat_extraction(row) -> dict:
-    """The schema-shaped dict of one committed extraction row, from its kept fields only."""
+def _flat(row) -> dict:
+    """The schema-shaped dict of one committed reading, from its kept fields only."""
     kept = row.kept
     factors = sorted(name for name in kept if name.startswith("health_risk:"))
-    extraction = {
+    flat = {
         "health_risk": [kept[name].value for name in factors],
         "health_risk_evidence": [kept[name].evidence for name in factors],
         "location_mentioned": "location_mentioned" in kept,
@@ -155,183 +102,115 @@ def _flat_extraction(row) -> dict:
         if "crew_or_access_note" in kept
         else "",
     }
-    for field in verify_spans.REQUIRED_FIELDS:
-        if field in kept:
-            extraction[field] = kept[field].value
-            extraction[f"{field}_evidence"] = kept[field].evidence
-    return extraction
+    for name in verify_spans.REQUIRED_FIELDS:
+        if name in kept:
+            flat[name] = kept[name].value
+            flat[f"{name}_evidence"] = kept[name].evidence
+    return flat
 
 
-ReportKind = Literal["immediate", "urgent", "routine", "needs_person"]
-
-
-def simulate_incoming(kind: ReportKind) -> str:
-    """Replay one committed synthetic report as a new intake, through ``_save``; no model call.
-
-    Candidates are the labelled reports in one fixed seeded order; the next unused one whose
-    re-verified extraction has that safety class and every required field is written, or, for
-    ``kind="needs_person"``, the next one missing a required field. Returns the new job id."""
+def replay(needs_person: bool = False) -> str:
+    """Add one unused test-set report through the same save path, with no model call: its
+    committed reading, re-checked against the text. Returns the new job id."""
     art = state.artefacts()
     ids = sorted(label["job_id"] for label in art.labels)
     order = [ids[i] for i in np.random.default_rng(constants.SEED).permutation(len(ids))]
     used = {
-        record.text
-        for record in runtime.read(state.get_runtime_path())
-        if isinstance(record, runtime.IntakeReport) and record.provider == DEV_PROVIDER
+        r.text
+        for r in state.runtime_records()
+        if isinstance(r, runtime.IntakeReport) and r.provider == REPLAY_PROVIDER
     }
     community_of = {label["job_id"]: label["community_id"] for label in art.labels}
     for source_id in order:
         text = art.reports[source_id]
         if text in used:
             continue
-        extraction = _flat_extraction(art.extraction[source_id])
-        verified = verify_spans.verify(text, extraction)
-        if kind == "needs_person":
-            if not verified.needs_human:
-                continue
-        elif verified.needs_human or verified.safety_class != kind:
+        flat = _flat(art.extraction[source_id])
+        verified = verify_spans.verify(text, flat)
+        if verified.needs_human != needs_person:
             continue
         failed = [f for f in verify_spans.REQUIRED_FIELDS if getattr(verified, f) is None]
         result = intake_llm.IntakeResult(
-            extraction=extraction,
+            extraction=flat,
             verified=verified,
             status="needs_review" if failed else "extracted",
-            provider=DEV_PROVIDER,
-            model=DEV_MODEL,
-            prompt_version=DEV_PROVIDER,
+            provider=REPLAY_PROVIDER,
+            model=REPLAY_MODEL,
+            prompt_version=REPLAY_PROVIDER,
             latency_s=0.0,
-            validation=f"{', '.join(failed)} evidence not found in the report"
-            if failed
-            else "verified",
+            validation="verified" if not failed else f"{', '.join(failed)} not found",
             error=None,
         )
-        draft = {
-            **new_draft(),
-            "text": text,
-            "community_id": community_of[source_id],
-            "reported_on": state.get_today(),
-        }
-        return _save(draft, result)[1]
-    raise ValueError("no unused synthetic report left to replay")
+        return _save(text, community_of[source_id], result, uuid.uuid4().hex)
+    raise ValueError("no unused test-set report left to replay")
 
 
-def render(container) -> None:
-    """Render and persist the current intake draft without any page-level model call."""
-    draft = state.get_intake_draft()
-    if draft is None:
-        return
+def render() -> str | None:
+    """The new-report form. Returns the id of a report saved on this run, if any."""
     art = state.artefacts()
-    community_ids = sorted(art.communities)
-    with container:
-        st.subheader("New report")
-
-        env_default = "none"
-        try:
-            env_default = intake_llm.configured() or "none"
-        except ValueError:
-            env_default = "none"
-        options = ["none", "claude", "ollama"]
-        provider_override = st.selectbox(
-            "Extractor",
-            options,
-            index=options.index(st.session_state.get("intake_provider", env_default)),
-            help=(
-                "claude = Claude Sonnet through the logged-in claude CLI; ollama = the "
-                "local model named in FAIR_TURN_OLLAMA_MODEL; none = intake disabled. "
-                "The environment variable FAIR_TURN_PROVIDER sets the default."
-            ),
+    draft = _draft()
+    options = ["none", "claude", "ollama"]
+    try:
+        default = intake_llm.configured() or "none"
+    except ValueError:
+        default = "none"
+    chosen = st.selectbox(
+        "Who reads the report",
+        options,
+        index=options.index(default),
+        help="claude = Claude Sonnet through the logged-in claude CLI; ollama = a local "
+        "model. FAIR_TURN_PROVIDER sets the default. none = no model on this machine.",
+    )
+    example = st.pills("Start from an example", list(EXAMPLE_REPORTS), selection_mode="single")
+    if example and example != draft["example"]:
+        source = EXAMPLE_REPORTS[example]
+        draft.update(example=example, result=None)
+        st.session_state["intake_text"] = art.reports[source]
+        st.session_state["intake_community"] = next(
+            lb["community_id"] for lb in art.labels if lb["job_id"] == source
         )
-        st.session_state["intake_provider"] = provider_override
+    text = st.text_area("Report, in the tenant's words", key="intake_text", height=140)
+    communities = sorted(art.communities)
+    community = st.selectbox("Community", communities, key="intake_community")
 
-        example = st.pills("Load an example", list(EXAMPLE_REPORTS), selection_mode="single")
-        if example is not None and example != draft["loaded_example"]:
-            job_id = EXAMPLE_REPORTS[example]
-            draft["text"] = art.reports[job_id]
-            draft["community_id"] = _community_for(art, job_id)
-            draft["reported_on"] = state.get_today()
-            draft["result"] = None
-            draft["loaded_example"] = example
-
-        draft["text"] = st.text_area("Report text", value=draft["text"])
-        selected = draft["community_id"] or community_ids[0]
-        draft["community_id"] = st.selectbox(
-            "Community", community_ids, index=community_ids.index(selected)
+    provider = None
+    if CALL_OVERRIDE is not None:
+        provider = chosen if chosen != "none" else "claude"
+    elif chosen != "none":
+        provider = intake_llm.configured(override=chosen)
+    if provider is None:
+        st.info(
+            "No model is set on this machine, so a report cannot be read here. Choose claude "
+            "or ollama above, or add a test-set report with its committed reading below."
         )
-        draft["reported_on"] = st.date_input(
-            "Reported on",
-            value=draft["reported_on"] or state.get_today(),
-            help="dataset day",
-        )
-        st.caption("dataset day")
-
-        error = ""
-        if not draft["text"].strip():
-            error = "Enter the report text."
-        elif len(draft["text"]) > 4_000:
-            error = "Report is over 4,000 characters."
-        if error:
-            st.markdown(f":red[{error}]")
-
-        provider: str | None = None
-        model = ""
-        provider_reason = None
-        if CALL_OVERRIDE is not None:
-            # A test call takes the selected provider's name, defaulting to claude so the
-            # Extract button is not blocked on the environment being unset in a test.
-            provider = provider_override if provider_override != "none" else "claude"
-            model = intake_llm.MODEL_FOR.get(provider, provider)
+    too_long = len(text) > 4_000
+    if too_long:
+        st.error("The report is over 4,000 characters.")
+    pressed = st.button(
+        "Read the report",
+        type="primary",
+        disabled=provider is None or not text.strip() or too_long,
+    )
+    if pressed:
+        with st.status(f"Reading with {provider}…") as status:
+            draft["result"] = intake_llm.extract(text, provider, call=CALL_OVERRIDE)
+            status.update(label=f"Read in {draft['result'].latency_s:.1f} s", state="complete")
+    saved = None
+    result = draft["result"]
+    if result is not None:
+        if result.status == "not_extracted":
+            st.error(f"The model could not read it: {result.error}. It is saved for a person.")
+        elif result.status == "needs_review":
+            st.warning("Some facts had no matching words in the report. A person sets them.")
         else:
-            provider = intake_llm.configured(override=provider_override)
-            model = intake_llm.MODEL_FOR.get(provider, "") if provider else ""
-            if provider is None:
-                provider_reason = (
-                    "Live intake is off: choose an extractor above (claude or ollama), or set "
-                    "FAIR_TURN_PROVIDER before starting."
-                )
-
-        if provider_reason:
-            st.info(provider_reason)
-        extract_clicked = st.button(
-            "Extract", disabled=bool(error) or provider is None or draft["result"] is not None
-        )
-        if extract_clicked:
-            with st.status(f"Extracting with {provider} ({model})…") as status:
-                result = intake_llm.extract(draft["text"], provider, call=CALL_OVERRIDE)
-                draft["result"] = result
-                status.update(
-                    label=f"Extraction finished in {result.latency_s:.1f} s", state="complete"
-                )
-
-        result = draft["result"]
-        if result is None:
-            return
-        st.table(_field_rows(result))
-        if result.status == "not_extracted" and result.error:
-            st.error(result.error)
-
-        if result.status == "extracted":
-            verified = result.verified
-            community = art.communities[draft["community_id"]]
-            preview = _preview_job(draft, verified, community)
-            scored = scoring.rank(
-                open_jobs(state.get_today()) + [preview], state.get_today(), state.get_lam()
-            )
-            proposed_rank = next(item.rank for item in scored if item.job.job_id == preview.job_id)
-            placement = (
-                "inside today's capacity" if proposed_rank <= _capacity_all() else "in the backlog"
-            )
-            st.caption(f"Proposed rank {proposed_rank}; {placement}.")
-            action = "Add to ranked queue"
-        else:
-            action = "Send to review queue"
-        if st.button(action):
-            wrote, job_id = _save(draft, result)
-            state.set_intake_draft(None)
-            if wrote:
-                st.success(
-                    f"{job_id} added to the ranked queue."
-                    if result.status == "extracted"
-                    else f"{job_id} added to the review queue."
-                )
-            else:
-                st.success("This report was already saved.")
+            st.success("Every required fact was found in the tenant's words.")
+        if st.button("Save the report"):
+            saved = _save(text, community, result, draft["token"])
+            _reset_draft()
+    st.divider()
+    left, right = st.columns(2)
+    if left.button("Add a test-set report (no model)"):
+        saved = replay()
+    if right.button("Add one the AI could not read"):
+        saved = replay(needs_person=True)
+    return saved

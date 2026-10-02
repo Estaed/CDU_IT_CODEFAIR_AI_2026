@@ -9,7 +9,7 @@ DEFINITION = "DEFICIT_TERMS = ("
 
 
 def _scanned() -> list[Path]:
-    files = sorted((ROOT / "fair_turn").rglob("*.py")) + [ROOT / "docs" / "PRD.md"]
+    files = sorted((ROOT / "fair_turn").rglob("*.py")) + [ROOT / "docs" / "PRODUCT.md"]
     build = ROOT / "data" / "build"
     if build.exists():
         files += sorted(build.rglob("*.json")) + sorted(build.rglob("*.csv"))

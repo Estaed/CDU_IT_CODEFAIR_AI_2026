@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from fair_turn.core import constants, scoring
+from fair_turn.core import constants, weekly
 from fair_turn.data import artefacts, runtime
 
 
@@ -42,7 +42,7 @@ def test_next_job_id_uses_highest_valid_existing_id() -> None:
     assert runtime.next_job_id(["JR-2025-01452", "not-a-job", "JR-2025-00007"]) == "JR-2025-01453"
 
 
-def test_human_set_field_moves_job_from_review_queue_into_ranking() -> None:
+def test_human_set_field_moves_job_from_review_queue_into_the_plan() -> None:
     row = artefacts.ExtractionRow(
         job_id="JR-2025-00001",
         is_adversarial=False,
@@ -53,7 +53,7 @@ def test_human_set_field_moves_job_from_review_queue_into_ranking() -> None:
         injection_markers=[],
     )
     art = artefacts.Artefacts(
-        communities={"C-01": {"is_remote": "False", "logistics_factor": "10"}},
+        communities={"C-01": {"is_remote": "False", "logistics_factor": "0"}},
         labels=[{"job_id": "JR-2025-00001", "community_id": "C-01", "reported_on": "2025-10-01"}],
         reports={"JR-2025-00001": "The wiring sparks."},
         extraction={"JR-2025-00001": row},
@@ -61,12 +61,13 @@ def test_human_set_field_moves_job_from_review_queue_into_ranking() -> None:
         climate=[],
         audit_path=None,
     )
-    today = constants.WINDOW_START
+    today = constants.PLAN_DAY
+    places = {"C-01": weekly.Place("C-01", "Darwin", True, 0.0, 0.0, 0.0)}
 
-    _, queue = scoring.split_human_queue(artefacts.to_jobs(art))
-    assert [job.job_id for job in queue] == ["JR-2025-00001"]
+    (job,) = artefacts.to_jobs(art)
+    assert job.needs_human and not weekly.in_plan(job, today)
 
     jobs = artefacts.to_jobs(art, human_set={"JR-2025-00001": {"fault_type": "electrical"}})
-    _, queue = scoring.split_human_queue(jobs)
-    assert not queue
-    assert [scored.job.job_id for scored in scoring.rank(jobs, today, 1.0)] == ["JR-2025-00001"]
+    assert not jobs[0].needs_human
+    plan = weekly.plan(jobs, places, today, 0.0)
+    assert plan.planned_job_ids() == {"JR-2025-00001"}

@@ -4,35 +4,24 @@ from pathlib import Path
 
 import streamlit as st
 
-from fair_turn.core.constants import REMOTE_REGIONS, TOWN_REGION
-
-REGION_COLOURS = dict(
-    zip(
-        (*REMOTE_REGIONS, TOWN_REGION),
-        ("#8a6400", "#007d79", "#9f1853", "#198038", "#2d5bbf", "#4d5358"),
-        strict=True,
-    )
-)
+PLANNED = "#198038"  # a crew goes there this week
+WAITING_LATE = "#da1e28"  # no crew this week, and repairs past the NT time limit
+WAITING = "#8d8d8d"  # no crew this week, nothing overdue yet
+BASE = "#161616"  # a crew base
 TOWN = "#262626"
-CREW_MARKER = TOWN  # crews on the workspace map: dark, distinct from every region colour
 REMOTE = "#8a3ffc"
-LOCALITY_STROKE = {"town": "solid", "remote": "dashed"}
-FACTOR_COLOURS = {
-    "urgency": "#da1e28",
-    "safety": "#b35c00",
-    "health_risk": "#6929c4",
-    "logistics": "#0072c3",
+SETTING_COLOURS = {
+    "Most repairs": "#0072c3",
+    "Balanced": "#8a6400",
+    "Most overdue first": "#b4462a",
 }
-HUMAN_QUEUE = "#684e00"
-HUMAN_QUEUE_BACKGROUND = "#fcf4d6"
+HIGHLIGHT = "#b4462a"
 GRIDLINE = "#e0e0e0"
+OUTLINE_FILL = "#f4f4f4"
 AXIS_LABEL = "#525252"
-STROKE_WIDTH = 2
-PROVENANCE_LINE = "Geography real (BushTel/ABS); events synthetic"
-LEGEND_LINE = (
-    "Colour key — class: Immediate red, Urgent orange, Routine grey · "
-    "badges: Needs a human yellow, Set by coordinator grey · "
-    "map: circles group communities and split as you zoom, dot colour = region."
+STROKE_WIDTH = 1.5
+PROVENANCE_LINE = (
+    "Geography real (BushTel, ABS); reports and events synthetic; crew numbers are our assumption."
 )
 
 
@@ -42,6 +31,8 @@ def inject_css() -> None:
     st.html(f"<style>{css}</style>")
 
 
-def legend() -> None:
-    """Render the one-line colour key; main.py puts it in the sidebar for every page."""
-    st.caption(LEGEND_LINE)
+def chart(c):
+    """Shared axis styling for every Altair chart."""
+    return c.configure_axis(
+        gridColor=GRIDLINE, labelColor=AXIS_LABEL, titleColor=AXIS_LABEL
+    ).configure_view(stroke=None)

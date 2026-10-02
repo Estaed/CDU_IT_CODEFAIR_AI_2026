@@ -6,7 +6,7 @@ is two logged-in CLIs).
 
 | Name | Value | What it is for | Source |
 |---|---|---|---|
-| `CREW_BASE_COORDS` | Darwin, Katherine, Tennant Creek, Alice Springs and Nhulunbuy latitude/longitude pairs | Crew-base locations: where each crew of the NT-wide pool starts in the capacity model and the visit plan (pooled crews, 2026-09-14) | BushTel town records, `data/raw/bushtel_community_detail_2026-09-12.json` (`Point.Latitude`, `Point.Longitude`) |
+| `CREW_BASE_COORDS` | Darwin, Katherine, Tennant Creek, Alice Springs and Nhulunbuy latitude/longitude pairs | Crew-base locations: where every crew starts and returns in the weekly plan | BushTel town records, `data/raw/bushtel_community_detail_2026-09-12.json` (`Point.Latitude`, `Point.Longitude`) |
 | `TEAM_NUMBER` | AIC014 | Submission file name, report cover, slide footer | CDU registration; confirmed by Tarik 2026-09-12. The sibling Data Innovation Challenge entry is DIC005, never this one. |
 | `SEED` | 20260912 | Only randomness source for synthesis and simulation | Project decision, the date Blueprint was written |
 | `WINDOW_START` | 2025-10-01 | First day of the synthetic event window | PRD §6.2 |
@@ -15,11 +15,14 @@ is two logged-in CLIs).
 | `MAKE_SAFE_HOURS` | 4 | Immediate class make-safe window, town and remote | FS17, 10/2025 |
 | `RESPONSE_BUSINESS_DAYS` | urgent 2 / 5, routine 10 / 25 (town / remote) | NT response windows by class and locality | FS17, 10/2025 |
 | `DIPL_APPROVAL_AUD` | 500 | Approval gate for non-urgent work; documented, unused in v1 | FS17, 10/2025; PRD §8 |
-| `CREW_BASES` | Darwin, Katherine, Tennant Creek, Alice Springs, Nhulunbuy | Crew home bases for distance | PRD §6.1, provisional |
-| `CREWS_PER_REMOTE_REGION` | 1 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
-| `CREWS_TOWN` | 2 | Capacity model | PRD §6.3, provisional; tightened 2026-09-13 (operator decision) after the otopilot sweep showed the earlier value left remote median wait at 2 days at every λ, see reports/otopilot-2026-09-13-report.md |
-| `JOBS_PER_CREW_DAY` | 3 | Capacity model | PRD §6.3, provisional. 2 from 2026-09-13; set to 3 on 2026-10-01 after the town fix (a town now takes several crews a day; before it, Darwin's one site was capped at one crew-day). At 2 the model left 63 % of remote jobs unfinished at λ = 1 and the weighting barely moved them; at 3 it leaves 53 % at λ = 1 and 38 % at λ = 0. The full sweep is `data/build/report/capacity_sensitivity.csv`, reports/audit-2026-10-01.md |
-| `TRAVEL_DAY_KM` | 200 | Distance beyond which a visit costs a travel day | PRD §6.3, provisional |
+| `CREW_BASES` | Darwin, Katherine, Tennant Creek, Alice Springs, Nhulunbuy | Crew home bases for distance | Provisional; the five NT regional centres |
+| `CREWS_AT_BASE` | Darwin 3, Katherine 2, Tennant Creek 1, Alice Springs 2, Nhulunbuy 2 | Crews per base in the weekly plan | Provisional, our assumption (2026-10-02 rebuild, `docs/PRODUCT.md`); NT does not publish crew numbers. Sized so the crews roughly match the synthetic report volume (about 100 crew jobs a week) and remote trips compete with town work. Sensitivity: `data/build/report/one_more_crew.csv` |
+| `CREW_DAYS_PER_WEEK` | 5 | Working days per crew per week | Provisional; a Monday-to-Friday week, public holidays not modelled |
+| `JOBS_PER_CREW_DAY` | 3 | Repairs a crew fixes in one working day at one place | Provisional, our assumption; unchanged from the first version |
+| `DRIVE_KM_PER_DAY` | 400 | Road km a crew covers in a day of driving; a trip's driving days are its round trip at this rate, in half days | Provisional, our assumption; road km are haversine times the road factor below |
+| `MAX_JOBS_PER_TRIP` | 9 | Repairs one trip carries: three working days at one community | Provisional, our assumption |
+| `PLAN_DAY` | 2025-12-29 | The planning Monday the app shows: the Monday after the last synthetic report | Project decision, 2026-10-02 |
+| `SETTINGS` | Most repairs 0.0, Balanced 0.5, Most overdue first 1.0 | The three named settings of what decides where crews go | Project decision, 2026-10-02; the formula is in `fair_turn/core/weekly.py` and `docs/PRODUCT.md` |
 | `REMOTE_REGIONS` | CENTRAL AUSTRALIA, BIG RIVERS, BARKLY, TOP END, EAST ARNHEM | Region names, BushTel spelling | `NTRegionName` in `data/raw/bushtel_community_detail_2026-09-12.json` |
 | `TOWN_REGION` | DARWIN, PALMERSTON, LITCHFIELD | The town region, BushTel spelling | Same field |
 | `HEAT_SEASON_MONTHS` | Oct–Mar | Extreme-heat exposure factor | NT Health heat-health advice (reports/2026-09-12-research-data-and-stack.md) |

@@ -36,13 +36,12 @@ def test_zip_contains_include_roots_and_excludes_forbidden_segments(tmp_path, mo
         assert not name.endswith(".pyc"), name
 
 
-def test_zip_includes_policy_artefact_and_fs17_pdf(monkeypatch):
+def test_zip_includes_the_fs17_pdf(monkeypatch):
     monkeypatch.setattr(ps, "dirty_paths", lambda root=ps.ROOT: "")
     monkeypatch.setattr(ps, "gate_exit_code", lambda root=ps.ROOT: 0)
 
     names = {p.relative_to(ps.ROOT).as_posix() for p in ps._iter_include_paths(ps.ROOT)}
 
-    assert "data/build/policy_passages.json" in names
     fs17 = "data/raw/nt_fs17_repairs_and_maintenance_2025-10.pdf"
     if (ps.ROOT / fs17).is_file():
         assert fs17 in names

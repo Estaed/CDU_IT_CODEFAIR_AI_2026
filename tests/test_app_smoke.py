@@ -1,5 +1,5 @@
-"""The app shell runs headless with the network disabled, every page renders, the loader is
-the only reader of the build and audit folders, and no page touches session state."""
+"""The app runs headless with the network disabled, every page renders, the coordinator's
+three steps work end to end, and the loader is the only reader of the build folders."""
 
 import json
 import re
@@ -10,20 +10,19 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app import theme
-from fair_turn.app.components import intro
-from fair_turn.core import wording
+from fair_turn.core import audit, wording
 from fair_turn.core.types import Job
-from fair_turn.data import artefacts
+from fair_turn.data import artefacts, runtime
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "fair_turn" / "app"
 DATA = ROOT / "fair_turn" / "data"
-PAGES = ["workspace", "review_queue", "visit_plan", "tenant", "evidence_lab"]
-PAGE_FILES = sorted(p.stem for p in (APP / "pages").glob("*.py"))
+PAGES = ["plan", "reports", "tenant", "evidence"]
 # Matches "data/build" and ROOT / "data" / "build" alike.
 ARTEFACT_PATH = re.compile(r"""data["'/\\ ]+(build|audit)""")
 # Build-time writers, not app readers: they produce data/build/ from data/raw/.
 BUILD_WRITERS = {"synth.py", "geography.py"}
+TEXT_KINDS = ("title", "subheader", "markdown", "caption", "info", "warning", "success", "error")
 
 
 def _refuse(*args, **kwargs):
@@ -33,6 +32,26 @@ def _refuse(*args, **kwargs):
 @pytest.fixture
 def no_network(monkeypatch):
     monkeypatch.setattr(socket, "socket", _refuse)
+    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+
+
+@pytest.fixture
+def app(no_network, tmp_path):
+    """The app on its default page, with its own empty audit log and runtime store."""
+    at = AppTest.from_file(str(APP / "main.py"), default_timeout=120)
+    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
+    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
+    at.run()
+    assert not at.exception
+    return at
+
+
+def _text(at) -> list[str]:
+    return [e.value for kind in TEXT_KINDS for e in getattr(at.main, kind)]
+
+
+def _metric(at, label: str) -> int:
+    return int(next(m for m in at.metric if m.label == label).value)
 
 
 def test_socket_fixture_blocks_the_network(no_network) -> None:
@@ -40,76 +59,119 @@ def test_socket_fixture_blocks_the_network(no_network) -> None:
         socket.socket()
 
 
-def test_main_runs_offline(no_network) -> None:
-    at = AppTest.from_file(str(APP / "main.py")).run(timeout=60)
-    assert not at.exception
-    assert at.title[0].value == "Workspace"  # the default page ran
-    assert theme.PROVENANCE_LINE not in [c.value for c in at.sidebar.caption]
-
-
-def test_intro_copy_passes_the_wording_check() -> None:
-    assert all(not wording.check(text) for text in intro.COPY.values())
-
-
-@pytest.mark.parametrize("page", PAGE_FILES)
-def test_page_runs_offline(page, no_network) -> None:
-    at = AppTest.from_file(str(APP / "pages" / f"{page}.py")).run(timeout=60)
-    assert not at.exception
-    assert theme.PROVENANCE_LINE in [c.value for c in at.caption]
-
-
-@pytest.mark.parametrize("page", PAGE_FILES)
-def test_page_has_purpose_about_footer_and_one_stylesheet(page, tmp_path, no_network) -> None:
-    script = tmp_path / f"{page}_with_theme.py"
-    script.write_text(
-        "from fair_turn.app import theme\n"
-        "theme.inject_css()\n" + (APP / "pages" / f"{page}.py").read_text("utf-8"),
-        encoding="utf-8",
-        newline="",
-    )
-    at = AppTest.from_file(str(script)).run(timeout=60)
-    assert not at.exception
-    assert len(at.get("html")) == 1
-    assert "<style>" in at.get("html")[0].body
-    assert intro.COPY[page] in _all_text(at)
-    assert any(expander.label == "About this AI" for expander in at.get("expander"))
-
-
-def test_navigation_registers_exactly_the_five_pages() -> None:
+def test_navigation_registers_exactly_the_four_pages() -> None:
     main = (APP / "main.py").read_text("utf-8")
-    # \s*: Task-46 wraps the first st.Page over several lines to stay under 100 columns.
     assert re.findall(r'st\.Page\(\s*"pages/(\w+)\.py"', main) == PAGES
-    assert set(p.stem for p in (APP / "pages").glob("*.py")) >= set(PAGES)
+    assert sorted(p.stem for p in (APP / "pages").glob("*.py")) == sorted(PAGES)
 
 
-# --- Task-46: logo, grouped icon navigation and the sidebar legend --------------------------
+@pytest.mark.parametrize("page", PAGES)
+def test_every_page_runs_offline_with_no_provider(app, page) -> None:
+    if page != "plan":
+        app.switch_page(f"pages/{page}.py").run()
+    assert not app.exception
+    captions = [c.value for c in app.caption]
+    assert any(theme.PROVENANCE_LINE in c for c in captions)  # stated on the page itself
 
 
-def test_navigation_groups_the_pages_and_gives_each_a_material_icon() -> None:
-    main = (APP / "main.py").read_text("utf-8")
-    assert re.findall(r'"(Today\'s work|Evidence)":', main) == ["Today's work", "Evidence"]
-    assert re.findall(r'icon=":material/(\w+):"', main) == [
-        "dashboard",
-        "rule",
-        "route",
-        "question_answer",
-        "analytics",
-    ]
+def test_default_page_is_the_plan_and_names_the_backlog(app) -> None:
+    assert app.title[0].value == "This week's crew plan"
+    backlog = next(i.value for i in app.info if "repairs are waiting for a crew" in i.value)
+    assert "past the NT time limit" in backlog and "remote communities" in backlog
+    assert len(app.get("vega_lite_chart")) >= 2  # the trade-off line and the map
 
 
-def test_main_renders_the_logo_and_the_legend_offline(no_network) -> None:
-    # st.logo reads and validates both files at call time, so a green run proves they loaded.
-    at = AppTest.from_file(str(APP / "main.py")).run(timeout=60)
-    assert not at.exception
-    assert theme.LEGEND_LINE in [c.value for c in at.sidebar.caption]
-    for name in ("logo.svg", "logo-mark.svg"):
-        assert f'"{name}"' in (APP / "main.py").read_text("utf-8")
-        assert (APP / "static" / name).exists()
+def test_choosing_a_setting_moves_repairs_and_overdue(app) -> None:
+    repairs = _metric(app, "Repairs this week")
+    overdue = _metric(app, "Overdue repairs still waiting")
+    app.get("button_group")[0].set_value("Most overdue first").run()
+    assert not app.exception
+    assert _metric(app, "Repairs this week") < repairs
+    assert _metric(app, "Overdue repairs still waiting") < overdue
+    assert any(t.startswith("**Compared with Most repairs:") for t in _text(app))
+
+
+def test_signing_needs_a_name_and_a_reason(app, tmp_path) -> None:
+    app.button(key="FormSubmitter:sign-Sign this week's plan").click().run()
+    assert any("Give your name and a reason" in e.value for e in app.error)
+    assert not (tmp_path / "audit.jsonl").exists()
+
+
+def test_a_change_and_a_signature_reach_the_log(app, tmp_path) -> None:
+    add = next(s for s in app.selectbox if s.label == "Add a trip to")
+    community = add.options[0]
+    add.select(community)
+    next(t for t in app.text_input if t.key == "add_reason").input("Funeral next week")
+    next(b for b in app.button if b.label == "Add trip").click().run()
+    assert not app.exception
+    next(t for t in app.text_input if t.label == "Your name").input("A. Coordinator")
+    next(t for t in app.text_area if t.label == "Why this plan").input("Remote waits are long")
+    next(b for b in app.button if b.label == "Sign this week's plan").click().run()
+    assert not app.exception
+    assert any("Signed by **A. Coordinator**" in s.value for s in app.success)
+    (signed,) = audit.read(tmp_path / "audit.jsonl")
+    assert isinstance(signed, audit.PlanSigned)
+    assert signed.version == 1 and signed.signer == "A. Coordinator"
+    assert signed.added and signed.changes[0].endswith("Funeral next week")
+    assert signed.recorded_at.tzinfo is not None and signed.day.isoformat() == "2025-12-29"
+
+
+def test_tenant_page_answers_the_default_example(app) -> None:
+    app.switch_page("pages/tenant.py").run()
+    assert not app.exception
+    headline = app.subheader[0].value
+    assert headline in {"Not this week."} or headline.startswith("Yes.")
+    answer = " ".join(m.value for m in app.markdown)
+    assert "Who decided?" in answer
+    assert not wording.check(" ".join(_text(app)).replace("*", ""))
+
+
+def test_tenant_page_refuses_an_unknown_number(app) -> None:
+    app.switch_page("pages/tenant.py").run()
+    app.text_input[0].set_value("JR-2025-99999").run()
+    assert any("No repair has the number" in e.value for e in app.error)
+
+
+def test_a_person_sets_the_missing_fact_and_the_job_leaves_the_queue(app, tmp_path) -> None:
+    app.switch_page("pages/reports.py").run()
+    assert not app.exception
+    waiting = next(t for t in app.tabs if t.label.startswith("Needs a person"))
+    count = int(waiting.label.split("(")[1].rstrip(")"))
+    assert count >= 1
+    for box in app.selectbox:
+        if box.key and box.key.startswith("value_"):
+            box.select_index(0)
+    next(t for t in app.text_input if t.key and t.key.startswith("who_")).input("A. Officer")
+    next(b for b in app.button if b.label == "Save and add to the plan").click().run()
+    assert not app.exception
+    after = next(t for t in app.tabs if t.label.startswith("Needs a person"))
+    assert after.label == f"Needs a person ({count - 1})"
+    assert any(
+        isinstance(r, runtime.HumanSetField) for r in runtime.read(tmp_path / "runtime.jsonl")
+    )
+    assert any(isinstance(r, audit.FieldSet) for r in audit.read(tmp_path / "audit.jsonl"))
+
+
+def test_new_report_is_offered_without_a_model_and_saves_a_replay(app, tmp_path) -> None:
+    app.switch_page("pages/reports.py").run()
+    assert any("No model is set on this machine" in i.value for i in app.info)
+    next(b for b in app.button if b.label == "Add a test-set report (no model)").click().run()
+    assert not app.exception
+    assert any(s.value.startswith("Saved as JR-2025-") for s in app.success)
+    (intake,) = audit.read(tmp_path / "audit.jsonl")
+    assert isinstance(intake, audit.Intake) and intake.provider == "test-set replay"
+
+
+def test_evidence_shows_the_season_and_the_reading_quality(app) -> None:
+    app.switch_page("pages/evidence.py").run()
+    assert not app.exception
+    assert len(app.get("vega_lite_chart")) >= 2
+    labels = [m.label for m in app.metric]
+    assert "Manipulation attempts that changed nothing" in labels
 
 
 def test_no_page_reads_session_state() -> None:
-    pages = (APP / "pages").rglob("*.py")
-    hits = [p.name for p in pages if "session_state" in p.read_text("utf-8")]
+    hits = [p.name for p in (APP / "pages").rglob("*.py") if "session_state" in p.read_text()]
     assert not hits, hits
 
 
@@ -155,97 +217,7 @@ def test_to_jobs_joins_label_extraction_and_community(art) -> None:
         if not row.needs_human:
             assert job.fault_type == row.kept["fault_type"].value
             assert job.safety_class == row.kept["safety_class"].value
-        assert {str(f) for f in job.health_risk} == {
-            k.split(":", 1)[1] for k in row.kept if k.startswith("health_risk:")
-        }
         assert job.is_remote is (community["is_remote"] == "True")
-        assert job.logistics_factor == float(community["logistics_factor"])
-    assert any(j.is_remote for j in jobs) and any(not j.is_remote for j in jobs)
-    assert any(j.health_risk for j in jobs)
-    job = jobs[0]
-    assert artefacts.report_text(art, job.job_id) == art.reports[job.job_id]
-
-
-# --- Task-35: offline five-surface proof with no provider configured ------------------------
-
-TEXT_KINDS = ("title", "subheader", "markdown", "caption", "info", "warning", "success", "error")
-
-
-def _all_text(at) -> list[str]:
-    return [e.value for kind in TEXT_KINDS for e in getattr(at.main, kind)]
-
-
-def test_no_prd_3_6_citation_remains() -> None:
-    hits = [
-        str(f.relative_to(ROOT))
-        for f in (ROOT / "fair_turn").rglob("*.py")
-        if "PRD 3.6" in f.read_text("utf-8")
-    ]
-    assert not hits, hits
-
-
-@pytest.mark.parametrize("page", PAGE_FILES)
-def test_page_runs_offline_with_no_provider(page, no_network, monkeypatch) -> None:
-    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
-    at = AppTest.from_file(str(APP / "pages" / f"{page}.py")).run(timeout=60)
-    assert not at.exception
-    assert theme.PROVENANCE_LINE in [c.value for c in at.caption]
-
-
-def test_workspace_intake_disabled_without_provider(tmp_path, no_network, monkeypatch) -> None:
-    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
-    script = tmp_path / "workspace_with_open_intake.py"
-    script.write_text(
-        "from fair_turn.app import intake, state\n"
-        "state.set_intake_draft(intake.new_draft())\n"
-        + (APP / "pages" / "workspace.py").read_text("utf-8"),
-        encoding="utf-8",
-        newline="",
-    )
-    at = AppTest.from_file(str(script)).run(timeout=60)
-    assert not at.exception
-    assert any("FAIR_TURN_PROVIDER" in i.value for i in at.info)
-
-
-def test_visit_plan_shows_unsigned_message(no_network, tmp_path) -> None:
-    # The local audit log may hold a real sign-off for the dataset day; an empty one is the
-    # unsigned state this test is about.
-    script = tmp_path / "visit_plan_unsigned.py"
-    script.write_text(
-        "from pathlib import Path\n"
-        "from fair_turn.app import state\n"
-        f"state.set_audit_path(Path({str(tmp_path / 'audit.jsonl')!r}))\n"
-        + (APP / "pages" / "visit_plan.py").read_text("utf-8"),
-        encoding="utf-8",
-        newline="",
-    )
-    at = AppTest.from_file(str(script)).run(timeout=60)
-    assert not at.exception
-    assert (
-        'Nothing to plan yet. On the workspace page, press "Review and sign" to sign '
-        "today's list. The run sheet appears here as soon as it is signed."
-        in [i.value for i in at.info]
-    )
-
-
-def test_workspace_hides_median_wait_before_signature(no_network) -> None:
-    at = AppTest.from_file(str(APP / "pages" / "workspace.py")).run(timeout=60)
-    assert not at.exception
-    assert not any("median wait" in text for text in _all_text(at))
-
-
-def test_evidence_lab_has_a_vega_lite_chart(no_network) -> None:
-    at = AppTest.from_file(str(APP / "pages" / "evidence_lab.py")).run(timeout=60)
-    assert not at.exception
-    assert len(at.get("vega_lite_chart")) >= 1
-
-
-def test_workspace_shows_override_rate_caption_linking_to_evidence_lab(no_network) -> None:
-    at = AppTest.from_file(str(APP / "pages" / "workspace.py")).run(timeout=60)
-    assert not at.exception
-    tile = next(m for m in at.metric if m.label == "Override rate today")
-    assert tile.value == "0%"
-    assert "Evidence lab" in tile.help and "Audit log" in tile.help
 
 
 def test_bad_extraction_row_raises(tmp_path) -> None:

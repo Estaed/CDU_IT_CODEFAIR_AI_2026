@@ -21,8 +21,9 @@ FILES = (
     "span_scores.md",
     "substring_rate.md",
     "adversarial.md",
-    "price_of_fairness.csv",
-    "feedback_loop.csv",
+    "this_week_by_setting.csv",
+    "season_by_setting.csv",
+    "one_more_crew.csv",
     "dataset_summary.md",
 )
 
@@ -34,7 +35,7 @@ def exported(tmp_path_factory) -> Path:
     return out
 
 
-def test_seven_files_written(exported: Path) -> None:
+def test_eight_files_written(exported: Path) -> None:
     for name in FILES:
         assert (exported / name).is_file(), name
 
@@ -52,13 +53,26 @@ def test_committed_files_match_a_fresh_run(exported: Path) -> None:
         assert (committed / name).read_bytes() == (exported / name).read_bytes(), name
 
 
-def test_price_of_fairness_gap_shrinks_toward_equity(exported: Path) -> None:
-    with (exported / "price_of_fairness.csv").open(newline="", encoding="utf-8") as f:
-        rows = {r["lam"]: r for r in csv.DictReader(f)}
+def _rows(path: Path) -> dict[str, dict[str, str]]:
+    with path.open(newline="", encoding="utf-8") as f:
+        return {r["setting"]: r for r in csv.DictReader(f)}
+
+
+def test_this_week_trades_repairs_for_overdue_households(exported: Path) -> None:
+    rows = _rows(exported / "this_week_by_setting.csv")
     assert set(rows) == {f"{i / 10:.1f}" for i in range(11)}
-    gap_full_efficiency = float(rows["1.0"]["gap"])
-    gap_full_equity = float(rows["0.0"]["gap"])
-    assert gap_full_equity <= gap_full_efficiency
+    most, need = rows["0.0"], rows["1.0"]
+    assert most["name"] == "Most repairs" and need["name"] == "Most overdue first"
+    assert int(most["repairs"]) == max(int(r["repairs"]) for r in rows.values())
+    assert int(need["repairs"]) < int(most["repairs"])
+    assert int(need["overdue_left"]) < int(most["overdue_left"])
+
+
+def test_season_most_repairs_leaves_the_farthest_waiting(exported: Path) -> None:
+    rows = _rows(exported / "season_by_setting.csv")
+    most, balanced = rows["0.0"], rows["0.5"]
+    assert int(most["over_300_km_still_open"]) > int(balanced["over_300_km_still_open"])
+    assert int(most["town_still_open"]) <= int(rows["1.0"]["town_still_open"])
 
 
 def test_extraction_vs_baseline_matches_eval_json(exported: Path) -> None:

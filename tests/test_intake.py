@@ -79,169 +79,110 @@ def _script(tmp_path) -> str:
         "from fair_turn.app import intake, state\n\n"
         "state.set_audit_path(st.session_state['audit_path'])\n"
         "state.set_runtime_path(st.session_state['runtime_path'])\n"
-        "if state.get_intake_draft() is None:\n"
-        "    state.set_intake_draft(intake.new_draft())\n"
-        "intake.render(st.container(border=True))\n",
+        "saved = intake.render()\n"
+        "if saved:\n"
+        "    st.text(f'saved={saved}')\n",
         encoding="utf-8",
         newline="",
     )
     return str(path)
 
 
-def test_provider_unset_disables_extract(tmp_path, monkeypatch) -> None:
-    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+def _app(tmp_path) -> AppTest:
     at = AppTest.from_file(_script(tmp_path))
     at.session_state["audit_path"] = tmp_path / "audit.jsonl"
     at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    at.run(timeout=60)
-    assert at.button[0].disabled
-    assert "FAIR_TURN_PROVIDER" in at.info[0].value
+    return at.run(timeout=60)
 
 
-def test_fake_submission_is_idempotent(tmp_path, monkeypatch) -> None:
+def _button(at: AppTest, label: str):
+    return next(b for b in at.button if b.label == label)
+
+
+def _lines(path: Path) -> int:
+    return len(path.read_text("utf-8").splitlines()) if path.exists() else 0
+
+
+def test_provider_unset_disables_reading(tmp_path, monkeypatch) -> None:
+    monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
+    at = _app(tmp_path)
+    assert _button(at, "Read the report").disabled
+    assert any("No model is set on this machine" in i.value for i in at.info)
+
+
+def test_a_second_save_of_the_same_draft_writes_nothing(tmp_path, monkeypatch) -> None:
     monkeypatch.setattr(
         socket, "socket", lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError())
     )
     monkeypatch.setattr(intake, "CALL_OVERRIDE", valid_call)
-    at = AppTest.from_file(_script(tmp_path))
-    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
-    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    at.run(timeout=60)
+    at = _app(tmp_path)
     at.text_area[0].input(SAMPLE_TEXT).run(timeout=60)
-    at.button[0].click().run(timeout=60)
-    at.button[1].click().run(timeout=60)
-    runtime_path = tmp_path / "runtime.jsonl"
-    audit_path = tmp_path / "audit.jsonl"
-    assert len(runtime_path.read_text("utf-8").splitlines()) == 1
-    assert len(audit_path.read_text("utf-8").splitlines()) == 1
-
-    row = json.loads(runtime_path.read_text("utf-8"))
-    at.session_state["intake_draft"] = {
-        **intake.new_draft(),
-        "draft_token": row["draft_token"],
-        "text": SAMPLE_TEXT,
-        "result": intake_llm.extract(SAMPLE_TEXT, "claude", call=valid_call),
-    }
+    _button(at, "Read the report").click().run(timeout=60)
+    token = at.session_state["intake_draft"]["token"]
+    result = at.session_state["intake_draft"]["result"]
+    _button(at, "Save the report").click().run(timeout=60)
+    assert _lines(tmp_path / "runtime.jsonl") == 1
+    assert _lines(tmp_path / "audit.jsonl") == 1
+    # The same draft pressed again (a double click, a resubmitted form) saves nothing new.
+    at.session_state["intake_draft"] = {"token": token, "result": result, "example": None}
     at.run(timeout=60)
-    at.button[1].click().run(timeout=60)
-    assert len(runtime_path.read_text("utf-8").splitlines()) == 1
-    assert len(audit_path.read_text("utf-8").splitlines()) == 1
+    _button(at, "Save the report").click().run(timeout=60)
+    assert _lines(tmp_path / "runtime.jsonl") == 1
+    assert _lines(tmp_path / "audit.jsonl") == 1
 
 
 def test_provider_selectbox_and_example_pills_render(tmp_path, monkeypatch) -> None:
     monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
-    at = AppTest.from_file(_script(tmp_path))
-    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
-    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    at.run(timeout=60)
-    assert at.selectbox[0].label == "Extractor"
+    at = _app(tmp_path)
+    assert at.selectbox[0].label == "Who reads the report"
     assert at.selectbox[0].options == ["none", "claude", "ollama"]
     assert at.button_group[0].options == list(intake.EXAMPLE_REPORTS)
 
 
 def test_loading_an_example_fills_text_and_community(tmp_path, monkeypatch) -> None:
     monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
-    at = AppTest.from_file(_script(tmp_path))
-    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
-    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    at.run(timeout=60)
-    label = "Cooling, Alice Springs"
+    at = _app(tmp_path)
+    label = "Cooling, town"
     at.button_group[0].select(label).run(timeout=60)
-    expected = artefacts.load_all().reports[intake.EXAMPLE_REPORTS[label]]
-    assert at.text_area[0].value == expected
-    assert at.selectbox[1].value == "Alice Springs"
-    # The text stays editable after the example loads.
-    at.text_area[0].input(at.text_area[0].value + " Edited.").run(timeout=60)
-    assert at.text_area[0].value.endswith("Edited.")
+    art = artefacts.load_all()
+    source = intake.EXAMPLE_REPORTS[label]
+    assert at.text_area[0].value == art.reports[source]
+    community = next(lb["community_id"] for lb in art.labels if lb["job_id"] == source)
+    assert at.selectbox[1].value == community
 
 
-def test_switching_provider_to_none_disables_extract(tmp_path, monkeypatch) -> None:
+def test_switching_provider_to_none_disables_reading(tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("FAIR_TURN_PROVIDER", "claude")
-    at = AppTest.from_file(_script(tmp_path))
-    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
-    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    at.run(timeout=60)
+    at = _app(tmp_path)
     at.text_area[0].input(SAMPLE_TEXT).run(timeout=60)
-    assert not at.button[0].disabled
+    assert not _button(at, "Read the report").disabled
     at.selectbox[0].select("none").run(timeout=60)
-    assert at.button[0].disabled
-    assert "FAIR_TURN_PROVIDER" in at.info[0].value
+    assert _button(at, "Read the report").disabled
 
 
 def test_runtime_record_carries_the_chosen_provider(tmp_path, monkeypatch) -> None:
-    monkeypatch.setattr(
-        socket, "socket", lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError())
-    )
     monkeypatch.setattr(intake, "CALL_OVERRIDE", valid_call)
-    at = AppTest.from_file(_script(tmp_path))
-    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
-    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    at.run(timeout=60)
+    at = _app(tmp_path)
     at.selectbox[0].select("ollama").run(timeout=60)
     at.text_area[0].input(SAMPLE_TEXT).run(timeout=60)
-    at.button[0].click().run(timeout=60)
-    at.button[1].click().run(timeout=60)
+    _button(at, "Read the report").click().run(timeout=60)
+    _button(at, "Save the report").click().run(timeout=60)
     row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
     assert row["provider"] == "ollama"
+    assert row["reported_on"] == "2025-12-29"
 
 
-def _replay_script(tmp_path, expr: str) -> str:
-    path = tmp_path / "replay_app.py"
-    path.write_text(
-        "import streamlit as st\n\n"
-        "from fair_turn.app import intake, state\n\n"
-        "state.set_audit_path(st.session_state['audit_path'])\n"
-        "state.set_runtime_path(st.session_state['runtime_path'])\n"
-        f"job_id = {expr}\n"
-        "st.text(f'job_id={job_id}')\n",
-        encoding="utf-8",
-        newline="",
-    )
-    return str(path)
-
-
-def _run_replay(tmp_path, expr: str) -> AppTest:
-    at = AppTest.from_file(_replay_script(tmp_path, expr))
-    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
-    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    return at.run(timeout=60)
-
-
-def _saved_job_id(at: AppTest) -> str:
-    return next(t.value for t in at.text if t.value.startswith("job_id=")).removeprefix("job_id=")
-
-
-@pytest.mark.parametrize("kind", ["immediate", "urgent", "routine"])
-def test_simulate_incoming_replays_the_requested_safety_class(tmp_path, kind) -> None:
-    at = _run_replay(tmp_path, f"intake.simulate_incoming({kind!r})")
-    assert not at.exception
-    job_id = _saved_job_id(at)
-    row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
-    assert row["job_id"] == job_id
-    assert row["extraction"]["safety_class"] == kind
-    assert row["status"] == "extracted"
-
-
-def test_simulate_incoming_needs_person_replays_a_report_missing_a_required_field(
-    tmp_path,
-) -> None:
-    at = _run_replay(tmp_path, "intake.simulate_incoming('needs_person')")
+@pytest.mark.parametrize("needs_person", [False, True])
+def test_replay_adds_a_test_set_report_without_a_model(tmp_path, needs_person) -> None:
+    at = _app(tmp_path)
+    label = "Add one the AI could not read" if needs_person else "Add a test-set report (no model)"
+    _button(at, label).click().run(timeout=60)
     assert not at.exception
     row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
-    assert row["status"] == "needs_review"
-    extraction = row["extraction"]
-    assert extraction.get("fault_type") is None or extraction.get("safety_class") is None
-
-
-def test_whitespace_error_keeps_text(tmp_path, monkeypatch) -> None:
-    monkeypatch.setattr(intake, "CALL_OVERRIDE", valid_call)
-    at = AppTest.from_file(_script(tmp_path))
-    at.session_state["audit_path"] = tmp_path / "audit.jsonl"
-    at.session_state["runtime_path"] = tmp_path / "runtime.jsonl"
-    at.run(timeout=60)
-    at.text_area[0].input("   ").run(timeout=60)
-    assert "Enter the report text." in at.markdown[-1].value
-    assert at.text_area[0].value == "   "
+    assert row["provider"] == intake.REPLAY_PROVIDER
+    assert row["status"] == ("needs_review" if needs_person else "extracted")
+    saved = next(t.value for t in at.text if t.value.startswith("saved="))
+    assert saved == f"saved={row['job_id']}"
 
 
 def test_instruction_like_text_goes_to_review_even_when_every_phrase_verifies() -> None:

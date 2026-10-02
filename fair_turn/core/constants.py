@@ -24,12 +24,24 @@ RESPONSE_BUSINESS_DAYS = {
 }
 DIPL_APPROVAL_AUD = 500  # documented gate for non-urgent work; unused by v1 code (PRD 8)
 
-# Capacity model, PRD section 6.3, all provisional.
+# Weekly crew model (docs/PRODUCT.md, "The model"), all provisional: no NT source publishes
+# crew numbers or productivity, so these are our assumptions and the report says so.
 CREW_BASES = ("Darwin", "Katherine", "Tennant Creek", "Alice Springs", "Nhulunbuy")
-CREWS_PER_REMOTE_REGION = 1
-CREWS_TOWN = 2
+CREWS_AT_BASE = {
+    "Darwin": 3,
+    "Katherine": 2,
+    "Tennant Creek": 1,
+    "Alice Springs": 2,
+    "Nhulunbuy": 2,
+}
+CREW_DAYS_PER_WEEK = 5
 JOBS_PER_CREW_DAY = 3
-TRAVEL_DAY_KM = 200
+DRIVE_KM_PER_DAY = 400  # road km a crew covers in one day of driving
+MAX_JOBS_PER_TRIP = 9  # three working days at one community
+# The planning week the app shows: the Monday after the last synthetic report.
+PLAN_DAY = date(2025, 12, 29)
+# The three named settings of "what decides where crews go" (0 = most repairs).
+SETTINGS = {"Most repairs": 0.0, "Balanced": 0.5, "Most overdue first": 1.0}
 CREW_BASE_COORDS = {
     "Darwin": (-12.461534, 130.842442),
     "Katherine": (-14.46676, 132.266768),

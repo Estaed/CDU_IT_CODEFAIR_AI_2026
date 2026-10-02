@@ -1,358 +1,288 @@
-"""Explanation templates: the rank sentence and the tenant answer (PRD sections 3.1, 3.4,
-7; wireframes §7). Every text here must pass the wording lint and cover every non-zero
-factor; every tenant state answers the four questions, in order."""
+"""Tenant answers and coordinator lines: one headline per state, the reasons a remote job
+waits, the counterfactual setting, and plain wording (no deficit terms, grade 7 or lower)
+across every state."""
 
-import itertools
-import re
-from dataclasses import dataclass
 from datetime import date, timedelta
 
 import pytest
 
-from fair_turn.core import constants, explain, scoring, wording
+from fair_turn.core import constants, explain, weekly, wording
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
-from fair_turn.data import artefacts, policy
 
-TODAY = constants.WINDOW_START + timedelta(days=30)
-COORDINATOR_REASON = "Crews are busy this week. We use this setting to keep remote jobs moving."
-VISIT_REASON = "the crew can reach both homes on one road before the river rises"
-PROMISED_TIME = re.compile(r"will arrive|at \d")
+TODAY = date(2025, 6, 2)  # a Monday
+OLD = TODAY - timedelta(weeks=20)
+BASE = "Katherine"
+SIGNER = "R. Coordinator"
+REASON = "Crews start Monday as planned."
 
 
-def make_job(job_id: str = "j1", **overrides) -> Job:
-    base = dict(
-        job_id=job_id,
-        community_id="c1",
-        is_remote=True,
-        reported_on=TODAY - timedelta(days=5),
-        fault_type=FaultType.PLUMBING_WATER,
-        safety_class=SafetyClass.ROUTINE,
+def _place(cid: str, km: float, is_town: bool = False) -> weekly.Place:
+    return weekly.Place(cid, BASE, is_town, km, -14.0, 132.0)
+
+
+PLACES = {
+    "K-TOWN": _place("K-TOWN", 0.0, is_town=True),
+    "R-NEAR": _place("R-NEAR", 100.0),
+    "R-FAR": _place("R-FAR", 450.0),  # 2.5 driving days there and back
+}
+
+
+def job(
+    jid: str,
+    cid: str,
+    reported: date = TODAY,
+    cls: SafetyClass | None = SafetyClass.ROUTINE,
+    fault: FaultType | None = FaultType.PLUMBING_WATER,
+    health: frozenset[HealthRiskFactor] = frozenset(),
+) -> Job:
+    return Job(jid, cid, not PLACES[cid].is_town, reported, fault, cls, health)
+
+
+def town_jobs(n: int) -> list[Job]:
+    return [job(f"T{i:02d}", "K-TOWN") for i in range(n)]
+
+
+def facts(
+    target: Job,
+    jobs: list[Job],
+    setting_name: str = "Most repairs",
+    signed: bool = True,
+    **plan_kw,
+) -> explain.TenantFacts:
+    """What the tenant page gathers for one job, the same way the app does."""
+
+    def week(value: float) -> weekly.WeekPlan:
+        return weekly.plan(jobs, PLACES, TODAY, value, {BASE: 1}, **plan_kw)
+
+    plan = week(constants.SETTINGS[setting_name])
+    trip = next((t for t in plan.trips if target.job_id in t.job_ids), None)
+    start = None
+    if trip is not None:
+        start = next(s.start for c in plan.crews for s in c.stops if s.trip == trip)
+    place = PLACES[target.community_id]
+    return explain.TenantFacts(
+        job=target,
+        today=TODAY,
+        base=BASE,
+        is_town=place.is_town,
+        setting_name=setting_name,
+        signed_by=SIGNER if signed else None,
+        signed_reason=REASON if signed else None,
+        trip=trip,
+        start_day=start,
+        waiting=None if trip else plan.waiting_at(target.community_id),
+        travel_days=weekly.travel_days(place),
+        in_plan_under=tuple(
+            name
+            for name, value in constants.SETTINGS.items()
+            if target.job_id in week(value).planned_job_ids()
+        ),
     )
-    base.update(overrides)
-    return Job(**base)
 
 
-def scored_for(job: Job, lam: float = 0.5) -> scoring.ScoredJob:
-    return scoring.rank([job], TODAY, lam)[0]
-
-
-def answer_for(job: Job, lam: float = 0.5) -> str:
-    scored = scored_for(job, lam)
-    return explain.tenant_answer(
-        scored,
-        1,
-        scoring.window_days(job),
-        COORDINATOR_REASON,
-        lam,
-    ).text
-
-
-@dataclass(frozen=True)
-class FakePassage:
-    title: str
-    section: str
-    effective_date: str
-
-
-PASSAGE = FakePassage("Housing fact sheet", "Repairs", "2025-10")
-
-
-def state_kwargs(state: str, **extra) -> dict:
-    """A plausible input set for each tenant state."""
-    job = make_job(health_risk=frozenset({HealthRiskFactor.ELDERLY}))
-    if state == "unknown":
-        kwargs = {}
-    elif state == "review":
-        kwargs = dict(
-            scored=scoring.score_job(make_job(fault_type=None), TODAY, 0.5),
-            missing_fields=("fault_type",),
-            policy=PASSAGE,
-        )
-    elif state == "manual":
-        kwargs = dict(scored=scored_for(job), policy=PASSAGE)
-    elif state == "unsigned":
-        kwargs = dict(scored=scored_for(job), rank_at_lambda0=2, lam=0.5, policy=PASSAGE)
-    else:
-        kwargs = dict(
-            scored=scored_for(job),
-            rank_at_lambda0=2,
-            lam=0.5,
-            signed_rank=4,
-            coordinator_reason=COORDINATOR_REASON,
-            policy=PASSAGE,
-            decision_version=2,
-        )
-    kwargs.update(extra)
-    return dict(state=state, **kwargs)
-
-
-def tenant(state: str, **extra) -> explain.TenantAnswer:
-    return explain.tenant_answer(**state_kwargs(state, **extra))
-
-
-# --- Phase 1 form, kept for one release ------------------------------------------------------
-
-# Ten fixtures: one per FaultType, cycling every SafetyClass and remoteness, varying
-# health-risk factor counts (PRD-required coverage: all enums, both remoteness values).
-SAFETY_CYCLE = list(SafetyClass)
-FIXTURES = [
-    make_job(
-        f"f{i}",
-        fault_type=fault,
-        safety_class=SAFETY_CYCLE[i % len(SAFETY_CYCLE)],
-        is_remote=(i % 2 == 0),
-        health_risk=frozenset(list(HealthRiskFactor)[: i % (len(HealthRiskFactor) + 1)]),
+def simple(target: Job, **kw) -> explain.TenantFacts:
+    return explain.TenantFacts(
+        job=target,
+        today=TODAY,
+        base=BASE,
+        is_town=not target.is_remote,
+        setting_name="Balanced",
+        signed_by=SIGNER,
+        signed_reason=REASON,
+        **kw,
     )
-    for i, fault in enumerate(FaultType)
-]
 
 
-def test_ten_fixtures_pass_wording_check() -> None:
-    assert len(FIXTURES) == 10
-    for job in FIXTURES:
-        assert wording.check(answer_for(job)) == []
+OVERDUE_FAR = job("F0", "R-FAR", OLD)  # planned only under "Most overdue first"
+FRESH_FAR = job("F1", "R-FAR")  # planned under no setting
+BUSY_TOWN = town_jobs(15)
 
 
-def test_all_factor_labels_present_in_tenant_answer() -> None:
-    for job in FIXTURES:
-        answer = answer_for(job)
-        for name in scoring.FACTOR_NAMES:
-            assert explain.FACTOR_LABELS[name] in answer
+def all_answers() -> dict[str, explain.TenantAnswer]:
+    """One answer per state the tenant page can show."""
+    heat = frozenset(HealthRiskFactor)
+    family = job("F2", "R-FAR", OLD, fault=FaultType.COOLING, health=heat)
+    full = [job(f"N{i}", "R-NEAR", OLD) for i in range(9)] + [job("N9", "R-NEAR")]
+    states = {
+        "done": simple(job("D0", "K-TOWN", OLD), done_on=TODAY - timedelta(10)),
+        "after_today": simple(job("A0", "K-TOWN", TODAY + timedelta(2))),
+        "needs_person": simple(
+            job("H0", "K-TOWN", fault=None, cls=None),
+            missing_fields=("fault_type", "safety_class"),
+        ),
+        "needs_person_one": simple(job("H1", "R-FAR", cls=None), missing_fields=("safety_class",)),
+        "emergency": simple(job("E0", "R-FAR", cls=SafetyClass.IMMEDIATE)),
+        "crew_town": facts(BUSY_TOWN[0], BUSY_TOWN),
+        "crew_remote": facts(OVERDUE_FAR, [*BUSY_TOWN, OVERDUE_FAR], "Most overdue first"),
+        "crew_remote_health": facts(family, [*BUSY_TOWN, family], "Most overdue first"),
+        "outranked_counterfactual": facts(OVERDUE_FAR, [*BUSY_TOWN, OVERDUE_FAR]),
+        "outranked_none": facts(FRESH_FAR, [*BUSY_TOWN, FRESH_FAR], "Balanced"),
+        "outranked_town": facts(job("T99", "K-TOWN"), [*BUSY_TOWN, job("T99", "K-TOWN")]),
+        "closed": facts(OVERDUE_FAR, [OVERDUE_FAR], closed={"R-FAR"}),
+        "dropped": facts(OVERDUE_FAR, [OVERDUE_FAR], drop={"R-FAR"}),
+        "trip_full": facts(full[-1], full, "Most overdue first"),
+        "unsigned": facts(OVERDUE_FAR, [*BUSY_TOWN, OVERDUE_FAR], signed=False),
+    }
+    return {name: explain.tenant_answer(f) for name, f in states.items()}
+
+
+ANSWERS = all_answers()
+
+
+def test_headline_done_before() -> None:
+    assert ANSWERS["done"].headline == "This repair was done on 23 May 2025."
+
+
+def test_headline_reported_after_today() -> None:
+    answer = ANSWERS["after_today"]
+    assert answer.headline == "Your report came in after this week's plan was made."
+    assert "It joins the plan made next Monday." in answer.text
+
+
+def test_needs_a_person_names_the_missing_fields() -> None:
+    answer = ANSWERS["needs_person"]
+    assert answer.headline == "A person is reading your report."
+    assert "We could not read what is broken and how urgent it is" in answer.text
+    one = ANSWERS["needs_person_one"].text
+    assert "We could not read how urgent it is from your report." in one
+    assert "what is broken" not in one
+
+
+def test_headline_emergency() -> None:
+    answer = ANSWERS["emergency"]
+    assert answer.headline == "This is an emergency. It goes to the emergency make-safe team."
+    assert f"within {constants.MAKE_SAFE_HOURS} hours" in answer.text
+    assert "not part of the weekly crew plan" in answer.text
+
+
+def test_headline_crew_coming_town_and_remote() -> None:
+    assert (
+        ANSWERS["crew_town"].headline
+        == "Yes. A crew is planned in Katherine this week, from Monday."
+    )
+    assert ANSWERS["crew_remote"].headline == (
+        "Yes. A crew is planned from Katherine to your community this week, from Monday."
+    )
+    assert "The crew will contact you before they come." in ANSWERS["crew_remote"].text
+
+
+def test_start_day_names_the_weekday() -> None:
+    f = facts(BUSY_TOWN[0], BUSY_TOWN)
+    later = explain.tenant_answer(simple(BUSY_TOWN[0], trip=f.trip, start_day=3.5))
+    assert later.headline.endswith("this week, from Thursday.")
+
+
+def test_headline_not_this_week() -> None:
+    for name in ("outranked_counterfactual", "outranked_none", "closed", "dropped", "trip_full"):
+        assert ANSWERS[name].headline == "Not this week.", name
+
+
+def test_outranked_remote_answer_names_driving_days_and_setting() -> None:
+    text = ANSWERS["outranked_counterfactual"].text
+    assert "A trip to your community takes 2.5 days of driving, there and back" in text
+    assert "to fix 1 repair." in text
+    assert 'This week the setting was "Most repairs"' in text
+    assert explain.SETTING_MEANING["Most repairs"] in text
+    assert "The plan is made again every Monday." in text
+
+
+def test_counterfactual_names_the_setting_that_would_plan_it() -> None:
+    text = ANSWERS["outranked_counterfactual"].text
+    assert 'Under "Most overdue first", a crew would come to you this week.' in text
+    assert "None of the three settings" not in text
+
+
+def test_no_setting_would_plan_it() -> None:
+    text = ANSWERS["outranked_none"].text
+    assert "None of the three settings would plan your repair this week." in text
+    assert "a crew would come to you" not in text
+
+
+def test_town_answer_says_town_days_ran_out() -> None:
+    assert "The Katherine crews have more repairs in town than days this week" in (
+        ANSWERS["outranked_town"].text
+    )
+
+
+def test_waiting_reasons_in_the_answer() -> None:
+    assert "The road to your community is closed this week" in ANSWERS["closed"].text
+    assert "The coordinator took your community's trip out" in ANSWERS["dropped"].text
+    assert f"one trip carries {constants.MAX_JOBS_PER_TRIP} repairs" in ANSWERS["trip_full"].text
+
+
+def test_health_risk_is_read_back() -> None:
+    text = ANSWERS["crew_remote_health"].text
+    assert "Your report is about cooling. We read it as routine." in text
+    for words in explain.HEALTH_WORDS.values():
+        assert f"We also read that {words}." in text
+
+
+def test_who_decided_signed_and_unsigned() -> None:
+    signed = ANSWERS["outranked_counterfactual"].text
+    assert f"A person signed this week's plan: {SIGNER}. Their reason: {REASON}" in signed
+    assert "This week's plan is not signed yet. It can still change." in ANSWERS["unsigned"].text
+
+
+@pytest.mark.parametrize("name", sorted(ANSWERS))
+def test_every_tenant_answer_passes_the_wording_check(name) -> None:
+    assert wording.check(ANSWERS[name].text) == []
+
+
+def test_window_sentence_per_class() -> None:
+    assert explain.window_sentence(job("A", "K-TOWN", cls=SafetyClass.URGENT)) == (
+        "NT policy says urgent repairs in a town home are done within 2 business days."
+    )
+    assert explain.window_sentence(job("B", "R-FAR")) == (
+        "NT policy says routine repairs in a remote home are done within 25 business days."
+    )
+    assert explain.window_sentence(job("C", "R-FAR", cls=SafetyClass.IMMEDIATE)) == (
+        "NT policy says an emergency is made safe within 4 hours."
+    )
 
 
 @pytest.mark.parametrize(
-    "subset",
+    ("days_after", "sentence"),
     [
-        frozenset(s)
-        for r in range(len(HealthRiskFactor) + 1)
-        for s in itertools.combinations(HealthRiskFactor, r)
+        (0, "The time limit started when you reported it."),
+        (1, "It is 1 business day into that time limit."),
+        (2, "It is 2 business days into that time limit."),
+        (3, "It is 1 business day past that time limit."),
+        (4, "It is 2 business days past that time limit."),
     ],
 )
-def test_every_health_risk_combination_is_labelled(subset: frozenset) -> None:
-    job = make_job(health_risk=subset)
-    answer = answer_for(job)
-    for factor in subset:
-        assert explain.LABELS[factor.value] in answer
+def test_wait_sentence(days_after, sentence) -> None:
+    urgent = job("U", "K-TOWN", cls=SafetyClass.URGENT)  # 2 business days, reported Monday
+    assert explain.wait_sentence(urgent, TODAY + timedelta(days_after)) == sentence
 
 
-def test_tenant_answer_mentions_rank_and_reason() -> None:
-    job = make_job()
-    scored = scored_for(job, lam=0.5)
-    answer = explain.tenant_answer(scored, 3, scoring.window_days(job), COORDINATOR_REASON, 0.5)
-    assert f"number {scored.rank} on today's draft list" in answer.text
-    assert "would be number 3" in answer.text
-    assert COORDINATOR_REASON in answer.text
-
-
-def test_tenant_answer_requires_ranked_job() -> None:
-    unranked = scoring.score_job(make_job(fault_type=None), TODAY, 0.5)
-    with pytest.raises(ValueError):
-        explain.tenant_answer(unranked, 1, 5.0, COORDINATOR_REASON, 0.5)
-
-
-# --- the four blocks, per state --------------------------------------------------------------
-
-
-@pytest.mark.parametrize("state", explain.TENANT_STATES)
-def test_every_state_has_four_blocks_in_question_order(state: str) -> None:
-    answer = tenant(state)
-    assert tuple(b.question for b in answer.blocks) == explain.QUESTIONS
-    assert all(b.paragraphs and all(p.strip() for p in b.paragraphs) for b in answer.blocks)
-
-
-@pytest.mark.parametrize("state", explain.TENANT_STATES)
-@pytest.mark.parametrize("with_visit", [False, True])
-def test_every_state_passes_wording_check(state: str, with_visit: bool) -> None:
-    extra = {"visit_order": (2, VISIT_REASON)} if with_visit else {}
-    text = tenant(state, **extra).text
-    assert len(text.split()) >= wording.MIN_WORDS_FOR_READING_LEVEL
-    assert wording.check(text) == []
-
-
-@pytest.mark.parametrize("state", explain.TENANT_STATES)
-def test_no_promised_time_in_any_state(state: str) -> None:
-    for extra in ({}, {"visit_order": (2, VISIT_REASON)}):
-        assert not PROMISED_TIME.search(tenant(state, **extra).text)
-
-
-@pytest.mark.parametrize("state", explain.TENANT_STATES)
-def test_counterfactual_is_a_formula_comparison_never_a_route(state: str) -> None:
-    text = tenant(state, visit_order=(2, VISIT_REASON)).text
-    for sentence in re.split(r"(?<=\.)\s+", text):
-        assert "route" not in sentence.lower()
-        assert "itinerary" not in sentence.lower()
-    if state in ("ranked", "superseded", "backlog", "unsigned"):
-        assert "If distance did not count, your repair would be number 2." in text
-
-
-def test_state_copy_is_distinct() -> None:
-    assert "A person is checking your report before it is ranked." in tenant("review").text
-    assert "We could not read what is broken from the report." in tenant("review").text
-    assert "not on today's list" in tenant("backlog").text
-    assert "has not signed it" in tenant("unsigned").text
-    assert "freight" in tenant("manual").text
-    assert "This answer uses the signed list version 2." in tenant("superseded").text
-    unknown = tenant("unknown").text
-    assert "We could not find that job number." in unknown
-    assert explain.JOB_ID_EXAMPLE == "JR-2025-00001"
-    assert explain.JOB_ID_EXAMPLE in unknown
-    texts = {state: tenant(state).text for state in explain.TENANT_STATES}
-    assert len(set(texts.values())) == len(texts)
-
-
-def test_review_names_each_missing_field_and_no_rank() -> None:
-    both = tenant("review", missing_fields=("fault_type", "safety_class")).text
-    assert "We could not read what is broken from the report." in both
-    assert "We could not read how urgent it is." in both
-    assert "is number" not in both
-    assert "would be number" not in both
-    assert "We do not have a visit date yet." in both
-
-
-def test_ranked_signed_versus_draft_rank() -> None:
-    assert "number 4 on the signed list" in tenant("ranked").text
-    draft = tenant("ranked", signed_rank=None)
-    assert "on today's draft list" in draft.text
-    assert "signed list" not in draft.text
-
-
-def test_visit_order_sentence_only_when_set_and_names_the_reason() -> None:
-    plain = tenant("ranked")
-    assert "The crew will visit it" not in plain.text
-    assert "We do not have a visit date yet." in plain.text
-
-    moved = tenant("ranked", visit_order=(2, VISIT_REASON + "."))
-    where = moved.blocks[1].paragraphs
-    sentence = f"The crew will visit it second on the day, because {VISIT_REASON}."
-    assert sentence in where
-    assert where.index(sentence) == 1  # right after the signed rank
-    assert "We do not have a visit date yet." not in moved.text
-
-    blank = tenant("ranked", visit_order=(3, "  "))
-    assert f"third on the day, because {explain.DEFAULT_VISIT_REASON}." in blank.text
-
-
-@pytest.mark.parametrize(
-    ("safety", "remote", "phrase"),
-    [
-        (SafetyClass.IMMEDIATE, True, "For an immediate repair like yours"),
-        (SafetyClass.URGENT, False, "For an urgent repair like yours"),
-        (SafetyClass.ROUTINE, True, "For a routine repair like yours"),
-    ],
-)
-def test_window_uses_article_and_business_days(safety, remote, phrase) -> None:
-    job = make_job(safety_class=safety, is_remote=remote)
-    answer = explain.tenant_answer(state="manual", scored=scored_for(job))
-    next_block = answer.blocks[2].paragraphs
-    assert phrase in next_block[0]
-    assert "That is a policy target, not a promised visit time." in next_block[0]
-    if safety is SafetyClass.IMMEDIATE:
-        assert f"make it safe within {constants.MAKE_SAFE_HOURS} hours" in next_block[0]
-    else:
-        days = constants.RESPONSE_BUSINESS_DAYS[(safety.value, remote)]
-        assert f"{days} business days from the report date" in next_block[0]
-
-
-def test_policy_source_line_from_passage_or_default() -> None:
-    cited = tenant("ranked").blocks[2].paragraphs
-    assert "Policy source: Housing fact sheet, Repairs, effective 2025-10." in cited
-    fallback = tenant("ranked", policy=None).blocks[2].paragraphs
-    assert f"Policy source: {explain.DEFAULT_POLICY_SOURCE}." in fallback
-
-
-def test_contact_block_names_the_officer_and_invents_no_details() -> None:
-    for state in explain.TENANT_STATES:
-        ask = " ".join(tenant(state).blocks[3].paragraphs)
-        assert "Community Housing Officer" in ask
-        assert not re.search(r"\d|@|phone|street|email", ask, re.I)
-    assert COORDINATOR_REASON in tenant("ranked").blocks[3].paragraphs[1]
-    unsigned = tenant("unsigned").blocks[3].paragraphs
-    assert "The coordinator has not signed today's setting yet." in unsigned
-
-
-def test_bad_inputs_are_refused() -> None:
-    with pytest.raises(ValueError):
-        explain.tenant_answer(state="ranked")
-    with pytest.raises(ValueError):
-        explain.tenant_answer(**state_kwargs("superseded", decision_version=None))
-    with pytest.raises(ValueError):
-        explain.tenant_answer(**{**state_kwargs("ranked"), "state": "closed"})
-
-
-# --- reading level over committed jobs -------------------------------------------------------
-
-
-def _committed_sample() -> list[scoring.ScoredJob]:
-    art = artefacts.load_all()
-    jobs = sorted((j for j in artefacts.to_jobs(art) if not j.needs_human), key=lambda j: j.job_id)
-    day = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
-    return scoring.rank(jobs[:50], day, 1.0)
-
-
-def test_reading_grade_over_fifty_committed_jobs_in_ranked_state() -> None:
-    sample = _committed_sample()
-    assert len(sample) == 50
-    index = policy.load()
-    for position, scored in enumerate(sample, start=1):
-        job = scored.job
-        passages = policy.lookup(index, job.safety_class.value, job.is_remote, job.fault_type)
-        answer = explain.tenant_answer(
-            state="ranked",
-            scored=scored,
-            rank_at_lambda0=position,
-            lam=1.0,
-            signed_rank=position,
-            coordinator_reason=COORDINATOR_REASON,
-            policy=passages[0] if passages else None,
-        )
-        assert wording.check(answer.text) == [], job.job_id
-        for name in scoring.FACTOR_NAMES:
-            assert explain.FACTOR_LABELS[name] in answer.text
-        for factor in job.health_risk:
-            assert explain.LABELS[factor.value] in answer.text
-
-
-# --- the coordinator's rank sentence (unchanged) ---------------------------------------------
-
-
-def test_why_sentence_mentions_two_largest_factors() -> None:
-    job = make_job(
-        health_risk=frozenset({HealthRiskFactor.INFANT_OR_YOUNG_CHILD}),
-        reported_on=TODAY - timedelta(days=20),
+def test_wait_sentence_counts_business_days_only() -> None:
+    friday = job("U", "K-TOWN", TODAY + timedelta(4))
+    assert explain.wait_sentence(friday, TODAY + timedelta(6)) == (
+        "The time limit started when you reported it."
     )
-    scored = scored_for(job, lam=0.5)
-    sentence = explain.why_sentence(scored, lam=0.5)
-    top_two = sorted(explain.NEED_FACTORS, key=lambda n: scored.factors[n], reverse=True)[:2]
-    for name in top_two:
-        clause = explain._CLAUSE_BUILDERS[name](job, scored.factors)
-        assert clause in sentence
-
-
-def test_why_sentence_requires_ranked_job() -> None:
-    unranked = scoring.score_job(make_job(fault_type=None), TODAY, 0.5)
-    with pytest.raises(ValueError):
-        explain.why_sentence(unranked, 0.5)
-
-
-def test_lambda_changes_logistics_phrase() -> None:
-    job = make_job(logistics_factor=50)
-    zero = explain.why_sentence(scored_for(job, lam=0.0), lam=0.0)
-    heavy = explain.why_sentence(scored_for(job, lam=1.5), lam=1.5)
-    assert zero != heavy
-    assert "not counted" in zero
-    assert "weighted heavily" in heavy
-
-
-def test_a_job_inside_its_window_is_never_called_overdue() -> None:
-    friday = date(2025, 10, 3)
-    job = make_job(is_remote=False, safety_class=SafetyClass.URGENT, reported_on=friday)
-    on_saturday = scoring.rank([job], friday + timedelta(days=1), 0.5)[0]
-    assert "inside its 2-business-day window" in explain.why_sentence(on_saturday, 0.5)
-    on_monday = scoring.rank([job], friday + timedelta(days=3), 0.5)[0]
-    text = explain.why_sentence(on_monday, 0.5)
-    assert "has used 1 business day of its 2-business-day window" in text
-    assert "past" not in text
-    on_wednesday = scoring.rank([job], friday + timedelta(days=5), 0.5)[0]
-    assert "is 1 business day past its 2-business-day window" in explain.why_sentence(
-        on_wednesday, 0.5
+    assert explain.wait_sentence(friday, TODAY + timedelta(7)) == (
+        "It is 1 business day into that time limit."
     )
+
+
+def test_trip_line_remote_and_town() -> None:
+    jobs = [*BUSY_TOWN, OVERDUE_FAR]
+    by_id = {j.job_id: j for j in jobs}
+    plan = weekly.plan(jobs, PLACES, TODAY, 1.0, {BASE: 1})
+    far = plan.trip_to("R-FAR")
+    assert explain.trip_line(far, by_id, TODAY) == (
+        "1 repair, 1 past the NT time limit · 2.5 days driving + 0.5 days work"
+    )
+    town = plan.trip_to("K-TOWN")
+    assert explain.trip_line(town, by_id, TODAY) == "3 repairs · 1 day in town"
+
+
+def test_waiting_line() -> None:
+    jobs = [*BUSY_TOWN, OVERDUE_FAR]
+    plan = weekly.plan(jobs, PLACES, TODAY, 0.0, {BASE: 1})
+    assert explain.waiting_line(plan.waiting_at("R-FAR"), plan) == "Below the cut: 0.3 against 3.0"
+    closed = weekly.plan(jobs, PLACES, TODAY, 0.0, {BASE: 1}, closed={"R-FAR"})
+    assert explain.waiting_line(closed.waiting_at("R-FAR"), closed) == "Road closed"
+    full = [job(f"N{i}", "R-NEAR", OLD) for i in range(10)]
+    plan = weekly.plan(full, PLACES, TODAY, 1.0, {BASE: 1})
+    assert explain.waiting_line(plan.waiting_at("R-NEAR"), plan) == "Trip full (9 max)"

@@ -26,10 +26,11 @@ def test_no_hex_outside_theme() -> None:
     assert not hits, hits
 
 
-def test_palette_covers_regions_and_factors() -> None:
-    assert set(theme.REGION_COLOURS) == set(constants.REGIONS)
-    assert set(theme.FACTOR_COLOURS) == {"urgency", "safety", "health_risk", "logistics"}
-    assert len(set(theme.REGION_COLOURS.values())) == len(theme.REGION_COLOURS)
+def test_palette_names_every_setting_and_uses_design_tokens() -> None:
+    assert set(theme.SETTING_COLOURS) == set(constants.SETTINGS)
+    assert len(set(theme.SETTING_COLOURS.values())) == len(theme.SETTING_COLOURS)
+    used = set(HEX.findall((APP / "theme.py").read_text("utf-8")))
+    assert used <= _allowed_hexes()
 
 
 def test_config_and_stylesheet_colours_are_design_tokens() -> None:

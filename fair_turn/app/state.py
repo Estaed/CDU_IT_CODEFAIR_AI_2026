@@ -1,17 +1,27 @@
-"""Typed accessors for session state. No page reads ``st.session_state`` directly: the keys
-and their defaults are defined here once."""
+"""Session state and the shared, cached world every page reads.
 
-from datetime import date, datetime, timedelta
+No page reads ``st.session_state`` directly: the keys and their defaults are defined here
+once. The world (jobs, places, the simulated weeks before the planning day) is built from
+the committed artefacts once per process; runtime records (new reports, fields a person
+set) are laid over it on every read.
+"""
+
+from datetime import date, timedelta
 from pathlib import Path
 
 import streamlit as st
 
-from fair_turn.core import audit, batch, constants
+from fair_turn.core import audit, constants, weekly, weeks
+from fair_turn.core.types import Job
 from fair_turn.data import artefacts as artefacts_module
-from fair_turn.data import runtime
+from fair_turn.data import geography, runtime
 from fair_turn.data.artefacts import Artefacts, load_all
 
-ALL_REGIONS = "All"
+# The backlog the coordinator meets on the planning day: what weeks of "Most repairs"
+# planning left behind, simulated from the first Monday of the synthetic window.
+HISTORY_SETTING = constants.SETTINGS["Most repairs"]
+FIRST_MONDAY = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
+HISTORY_WEEKS = (constants.PLAN_DAY - FIRST_MONDAY).days // 7
 
 
 @st.cache_resource
@@ -20,65 +30,31 @@ def artefacts() -> Artefacts:
     return load_all()
 
 
-def _get(key: str, default):
-    if key not in st.session_state:
-        st.session_state[key] = default
-    return st.session_state[key]
+@st.cache_resource
+def places() -> dict[str, weekly.Place]:
+    return geography.places(artefacts().communities)
 
 
-def get_today() -> date:
-    return _get("today", constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS))
+@st.cache_resource
+def history() -> weeks.Season:
+    """The weeks before the planning day, planned for the most repairs."""
+    art = artefacts()
+    return weeks.simulate(
+        artefacts_module.to_jobs(art),
+        places(),
+        HISTORY_SETTING,
+        FIRST_MONDAY,
+        HISTORY_WEEKS,
+        art.closures,
+    )
 
 
-def set_today(value: date) -> None:
-    st.session_state["today"] = value
+def today() -> date:
+    return constants.PLAN_DAY
 
 
-def get_region() -> str:
-    return _get("region", ALL_REGIONS)
-
-
-def set_region(value: str) -> None:
-    if value != ALL_REGIONS and value not in constants.REGIONS:
-        raise ValueError(f"unknown region: {value}")
-    st.session_state["region"] = value
-
-
-def get_lam() -> float:
-    return _get("lam", 1.0)  # PRD 3.1: starts at efficiency first
-
-
-def set_lam(value: float) -> None:
-    """A board lambda change after today's sign-off is a revision, not a silent edit."""
-    value = float(value)
-    if get_signed_today() and value != get_lam():
-        audit.append(
-            get_audit_path(),
-            audit.Revision(
-                day=get_today(),
-                old_lam=get_lam(),
-                new_lam=value,
-                reason="lambda changed on the board after sign-off",
-                at=datetime.now(),
-            ),
-        )
-    st.session_state["lam"] = value
-
-
-def get_signed_today() -> bool:
-    return _get("signed_today", False)
-
-
-def set_signed_today(value: bool) -> None:
-    st.session_state["signed_today"] = value
-
-
-def get_selected_job_id() -> str | None:
-    return _get("selected_job_id", None)
-
-
-def set_selected_job_id(value: str | None) -> None:
-    st.session_state["selected_job_id"] = value
+def closed() -> set[str]:
+    return weeks.closed_on(artefacts().closures, today())
 
 
 def get_audit_path() -> Path:
@@ -98,139 +74,154 @@ def set_runtime_path(value: Path) -> None:
     st.session_state["runtime_path"] = Path(value)
 
 
-def get_human_set(job_id: str) -> dict[str, str]:
-    return runtime.human_set_for(runtime.read(get_runtime_path())).get(job_id, {})
+def runtime_records() -> list:
+    return runtime.read(get_runtime_path())
 
 
-def set_human_set(
-    job_id: str, field: str, value: str, actor: str = "coordinator", reason: str = ""
-) -> None:
-    runtime.append(
-        get_runtime_path(),
-        runtime.HumanSetField(job_id, field, value, actor, reason, datetime.now()),
+def all_jobs() -> list[Job]:
+    """Every job: the committed reports and the ones added in this app, with any field a
+    person set laid over what the model read."""
+    records = runtime_records()
+    intake = [r for r in records if isinstance(r, runtime.IntakeReport)]
+    return artefacts_module.to_jobs(artefacts(), runtime.human_set_for(records), intake)
+
+
+def done_before(job_id: str) -> date | None:
+    """The day a committed job was finished before the planning week, if it was."""
+    done = history().completed_on.get(job_id)
+    return done if done is not None and done < today() else None
+
+
+def open_jobs() -> list[Job]:
+    """Jobs still open on the planning day, the ones a person must read included."""
+    return [j for j in all_jobs() if j.reported_on <= today() and done_before(j.job_id) is None]
+
+
+def human_set(job_id: str) -> dict[str, str]:
+    return runtime.human_set_for(runtime_records()).get(job_id, {})
+
+
+def _get(key: str, default):
+    if key not in st.session_state:
+        st.session_state[key] = default
+    return st.session_state[key]
+
+
+# --- the coordinator's choices this week -------------------------------------------------
+
+
+def get_setting() -> float:
+    _restore_signature()
+    setting = _get("setting", HISTORY_SETTING)
+    # The two setting controls own their keys; they start from the chosen setting.
+    name = weekly.setting_name(setting)
+    _get("setting_pick", name if name in constants.SETTINGS else None)
+    _get("setting_slider", setting)
+    return setting
+
+
+def set_setting(value: float) -> None:
+    st.session_state["setting"] = float(value)
+
+
+def get_changes() -> dict[str, tuple[str, str]]:
+    """Community id -> ("add" or "drop", reason), in the order the coordinator made them."""
+    _restore_signature()
+    return _get("changes", {})
+
+
+def set_change(community_id: str, action: str, reason: str) -> None:
+    if action not in {"add", "drop"}:
+        raise ValueError("a change is add or drop")
+    if not reason.strip():
+        raise ValueError("a change needs a reason")
+    changes = dict(get_changes())
+    changes[community_id] = (action, reason.strip())
+    st.session_state["changes"] = changes
+
+
+def undo_change(community_id: str) -> None:
+    changes = dict(get_changes())
+    changes.pop(community_id, None)
+    st.session_state["changes"] = changes
+
+
+def get_signer() -> str:
+    return _get("signer", "")
+
+
+def set_signer(value: str) -> None:
+    st.session_state["signer"] = value
+
+
+def on_pick() -> None:
+    """The named-setting control changed: the slider follows it."""
+    name = st.session_state.get("setting_pick")
+    if name in constants.SETTINGS:
+        set_setting(constants.SETTINGS[name])
+        st.session_state["setting_slider"] = constants.SETTINGS[name]
+
+
+def on_slide() -> None:
+    """The fine-tune slider changed: the named control shows the preset it matches, if any."""
+    value = float(st.session_state.get("setting_slider", get_setting()))
+    set_setting(value)
+    name = weekly.setting_name(value)
+    st.session_state["setting_pick"] = name if name in constants.SETTINGS else None
+
+
+def week_plan(
+    jobs: list[Job], setting: float | None = None, with_changes: bool = True
+) -> weekly.WeekPlan:
+    """This week's plan for the open ``jobs`` under ``setting`` (the chosen one by default),
+    with the coordinator's changes unless ``with_changes`` is False."""
+    setting = get_setting() if setting is None else setting
+    changes = get_changes() if with_changes else {}
+    return weekly.plan(
+        jobs,
+        places(),
+        today(),
+        setting,
+        closed=closed(),
+        add=[cid for cid, (action, _) in changes.items() if action == "add"],
+        drop=[cid for cid, (action, _) in changes.items() if action == "drop"],
     )
 
 
-def get_preset() -> str:
-    return _get("preset", "Efficiency first")
+def signature() -> audit.PlanSigned | None:
+    return audit.latest_signature(audit.read(get_audit_path()), today())
 
 
-def set_preset(value: str) -> None:
-    st.session_state["preset"] = value
+def signed_state() -> tuple[float, tuple[str, ...], tuple[str, ...]] | None:
+    """What the latest signature covered: the setting and the added and dropped ids."""
+    signed = signature()
+    if signed is None:
+        return None
+    return signed.setting, signed.added, signed.dropped
 
 
-def get_compare() -> bool:
-    return _get("compare", False)
+def current_state() -> tuple[float, tuple[str, ...], tuple[str, ...]]:
+    changes = get_changes()
+    return (
+        get_setting(),
+        tuple(sorted(c for c, (a, _) in changes.items() if a == "add")),
+        tuple(sorted(c for c, (a, _) in changes.items() if a == "drop")),
+    )
 
 
-def set_compare(value: bool) -> None:
-    st.session_state["compare"] = bool(value)
-
-
-def get_batch():
-    return _get("batch", None)
-
-
-def set_batch(value) -> None:
-    st.session_state["batch"] = value
-
-
-def get_plan():
-    return _get("plan", None)
-
-
-def set_plan(value) -> None:
-    st.session_state["plan"] = value
-
-
-def get_intake_draft():
-    return _get("intake_draft", None)
-
-
-def set_intake_draft(value) -> None:
-    st.session_state["intake_draft"] = value
-
-
-def get_actor() -> str:
-    """The reviewer's name, typed once per session and pre-filled on every later job."""
-    return _get("actor", "coordinator")
-
-
-def set_actor(value: str) -> None:
-    st.session_state["actor"] = str(value)
-
-
-def get_reject_job() -> str | None:
-    """The job whose "Reject" form is open in the selected-job pane, if any."""
-    return _get("reject_job", None)
-
-
-def set_reject_job(job_id: str | None) -> None:
-    st.session_state["reject_job"] = job_id
-
-
-def get_review_cursor() -> int:
-    return _get("review_cursor", 0)
-
-
-def set_review_cursor(value: int) -> None:
-    st.session_state["review_cursor"] = int(value)
-
-
-def get_review_focus() -> str | None:
-    """A job the workspace asked the review queue to open first; cleared once applied."""
-    return _get("review_focus", None)
-
-
-def set_review_focus(job_id: str) -> None:
-    st.session_state["review_focus"] = str(job_id)
-
-
-def clear_review_focus() -> None:
-    st.session_state["review_focus"] = None
-
-
-def get_map_pick() -> str | None:
-    """The community last clicked on the workspace map, until one of its jobs is open."""
-    return _get("map_pick", None)
-
-
-def set_map_pick(community_id: str | None) -> None:
-    st.session_state["map_pick"] = community_id
-
-
-def get_added_report() -> tuple[str, str, int] | None:
-    """``(job_id, kind, audit length)`` of the report a dev replay just added; the page shows
-    where it landed until the next action (the audit log grows or the selection moves)."""
-    return _get("added_report", None)
-
-
-def set_added_report(value: tuple[str, str, int] | None) -> None:
-    st.session_state["added_report"] = value
-
-
-def get_read(job_id: str) -> bool:
-    """Whether the pane's "I have read the report" box is ticked for ``job_id``. Read only:
-    the checkbox widget owns the key, so this never writes it."""
-    return bool(st.session_state.get(f"read_{job_id}", False))
-
-
-def get_map_failed() -> str | None:
-    """Why the clustered map could not load; set once, the outline stays for the session."""
-    return _get("map_failed", None)
-
-
-def set_map_failed(reason: str | None) -> None:
-    st.session_state["map_failed"] = reason
-
-
-def get_hand_moves() -> tuple[batch.HandMove, ...]:
-    return _get("hand_moves", ())
-
-
-def set_hand_moves(moves) -> None:
-    st.session_state["hand_moves"] = tuple(moves)
-
-
-def clear_hand_moves() -> None:
-    st.session_state["hand_moves"] = ()
+def _restore_signature() -> None:
+    """After a reload, start from what was last signed for this week, once per session."""
+    if st.session_state.get("restored"):
+        return
+    st.session_state["restored"] = True
+    signed = signature()
+    if signed is None:
+        return
+    st.session_state["setting"] = signed.setting
+    reasons = dict(line.split(": ", 1) for line in signed.changes if ": " in line)
+    changes = {}
+    for cid in signed.added:
+        changes[cid] = ("add", reasons.get(f"added {cid}", "restored from the log"))
+    for cid in signed.dropped:
+        changes[cid] = ("drop", reasons.get(f"took out {cid}", "restored from the log"))
+    st.session_state["changes"] = changes

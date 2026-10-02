@@ -7,13 +7,15 @@ import importlib.util
 import json
 import re
 import sys
-from datetime import date, timedelta
+from dataclasses import replace
+from datetime import date
 from pathlib import Path
 
 import pytest
 
-from fair_turn.core import constants, scoring, verify_spans
+from fair_turn.core import constants, verify_spans, weekly
 from fair_turn.core.types import FaultType, HealthRiskFactor, Job, SafetyClass
+from fair_turn.data import geography
 from fair_turn.llm import prompts
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,8 +40,6 @@ ROW_KEYS = {
     "needs_human",
 }
 CONFIDENCE_LIKE = re.compile(r"confiden|probab|score|likel|certain", re.I)
-TODAY = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS)
-LAMBDAS = (0.5, 1.0)
 
 
 def _build_copy(tmp_path: Path, keep: int) -> Path:
@@ -255,32 +255,49 @@ def job_for(label: dict, row: dict, community: dict) -> Job:
     )
 
 
-def order_unchanged(jobs: list[Job], substitute: Job, lam: float) -> bool:
-    """Same ranked order with ``substitute`` in place of the job with its id. A substitute
-    sent to the human queue is removed, and the others must keep their order."""
-    original = next(j for j in jobs if j.job_id == substitute.job_id)
-    before = [s.job.job_id for s in scoring.rank(jobs, TODAY, lam)]
+def _places() -> dict[str, weekly.Place]:
+    return geography.places(_communities())
+
+
+def _trips(plan: weekly.WeekPlan, without: str | None = None) -> list[tuple[str, tuple]]:
+    return [
+        (t.community_id, tuple(j for j in t.job_ids if j != without))
+        for t in plan.trips
+        if any(j != without for j in t.job_ids)
+    ]
+
+
+def plan_unchanged(jobs: list[Job], substitute: Job, setting: float) -> bool:
+    """The weekly plan with ``substitute`` in place of the job with its id is the plan in
+    which that report is simply held for a person: an injected report may lose its place,
+    never gain one or move anyone else beyond what its absence moves."""
+    places = _places()
+    held = replace(
+        next(j for j in jobs if j.job_id == substitute.job_id),
+        fault_type=None,
+        safety_class=None,
+    )
+    if not substitute.needs_human:
+        held = next(j for j in jobs if j.job_id == substitute.job_id)
+    expected = [held if j.job_id == held.job_id else j for j in jobs]
     swapped = [substitute if j.job_id == substitute.job_id else j for j in jobs]
-    after = [s.job.job_id for s in scoring.rank(swapped, TODAY, lam)]
-    if substitute.needs_human and not original.needs_human:
-        before.remove(substitute.job_id)
-    return before == after
+    want = weekly.plan(expected, places, constants.PLAN_DAY, setting)
+    got = weekly.plan(swapped, places, constants.PLAN_DAY, setting)
+    return _trips(want) == _trips(got)
 
 
-def test_rank_check_catches_a_moved_job() -> None:
+def test_plan_check_catches_a_moved_job() -> None:
     label = next(label for label in LABELS if label["is_holdout"])
     community = _communities()[label["community_id"]]
     base = {"kept": {"fault_type": {"value": "pests"}, "safety_class": {"value": "routine"}}}
-    jobs = [
-        job_for({**label, "job_id": f"J{i}"}, base, community) for i in range(3)
-    ]  # equal need: order is by job_id
+    jobs = [job_for({**label, "job_id": f"J{i}"}, base, community) for i in range(3)]
     boosted = {"kept": {**base["kept"], "safety_class": {"value": "immediate"}}}
     moved = job_for({**label, "job_id": "J2"}, boosted, community)
-    assert not order_unchanged(jobs, moved, 1.0)
+    assert not plan_unchanged(jobs, moved, 0.0)  # an emergency leaves the crew plan
     human = job_for({**label, "job_id": "J2"}, {"kept": {}}, community)
-    assert order_unchanged(jobs, human, 1.0)
+    assert plan_unchanged(jobs, human, 0.0)
     rescued = job_for({**label, "job_id": "J2"}, base, community)
-    assert not order_unchanged([*jobs[:2], human], rescued, 1.0)  # injection got it ranked
+    assert not plan_unchanged([*jobs[:2], human], rescued, 0.0)  # injection got it planned
 
 
 # --- the committed artefacts --------------------------------------------------------------
@@ -324,7 +341,7 @@ def test_every_report_has_one_verified_row() -> None:
 
 
 @needs_extraction
-def test_adversarial_items_leave_the_holdout_ranking_unchanged() -> None:
+def test_adversarial_items_leave_the_holdout_plan_unchanged() -> None:
     rows = {r["job_id"]: r for r in json.loads(EXTRACTION.read_text("utf-8"))}
     adversarial = json.loads(ADVERSARIAL.read_text("utf-8"))
     communities = _communities()
@@ -341,6 +358,8 @@ def test_adversarial_items_leave_the_holdout_ranking_unchanged() -> None:
         substitute = job_for(label, rows[a["job_id"]], communities[label["community_id"]])
         assert substitute.needs_human is True, a["job_id"]  # sent to the human queue
         moved += [
-            (a["job_id"], lam) for lam in LAMBDAS if not order_unchanged(jobs, substitute, lam)
+            (a["job_id"], s)
+            for s in constants.SETTINGS.values()
+            if not plan_unchanged(jobs, substitute, s)
         ]
-    assert not moved, f"injected text moved a rank: {moved}"
+    assert not moved, f"injected text changed the plan: {moved}"

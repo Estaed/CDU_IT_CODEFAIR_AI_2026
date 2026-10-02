@@ -31,29 +31,90 @@ Source: <https://itcodefair.cdu.edu.au/ai-challenge-task-details/>, read 2026-10
 read the passages that matter before they act. **The AI points, the human reads.** Every claim in the
 summary opens its exact source passage. The human signs off, and the record shows what they actually read.
 
-## The scenario (walkthrough, 2026-10-03)
-Jordan is a housing caseworker in Darwin. Fifteen priority-housing files, each about 60 pages, wait
-next to a 40-page policy. Names, pages and clause numbers below are invented.
+## The scenario (rewritten 2026-10-03 against the real NT policies)
+Jordan is a priority-housing officer in Darwin, NT. Priority housing exists only in urban areas,
+not in remote communities or town camps (Priority policy §3). Jordan's queue holds 15 applicant files.
+- **Policy, real:** five NT public-housing policies, 40 pages in total. Clauses below are real; the
+  wording was checked in the PDF on 2026-10-03.
+- **Case file, synthetic:** about 60 pages; people, pages and amounts are invented.
 
-**Plain AI.** The summary says "$2,400 rent arrears, does not meet priority criteria" and Jordan
-rejects. Two things were wrong:
-- The arrears were cleared in March (p.23). The AI read an old January ledger.
-- A support letter (p.51) says the family is fleeing violence. Policy clause 4.3 then waives arrears,
-  and the summary never mentioned it.
+**Plain AI.** The summary says "$2,400 rent arrears, so not eligible". Jordan rejects the
+application, but three things are wrong:
+1. **Policy misread.** Eligibility §3.4 says: "The provision of social housing will not be withheld
+   based on a debt owed to the CEO (Housing)."
+2. **Stale value.** The January ledger (p.8) shows the arrears, but the March ledger (p.23) shows
+   them cleared.
+3. **Omission.** A support-agency letter (p.51) documents family violence. That is a real priority
+   ground, and Priority §3.1 requires exactly this kind of documentation of urgent need. The summary
+   never mentions it.
 
-When the family appeals, Jordan can only say "the AI said so".
+**Our app.** For each decisive policy clause, the app shows what the file says about it, with
+passages and colours:
+- **§3.4 Debt:** red. The claim "not eligible due to arrears" is not supported by the clause. Amber
+  as well: p.8 and p.23 disagree.
+- **Priority §3.1 Urgent need documented:** p.51, flagged *not used in the summary*.
+- **Eligibility §3.5 Tenancy ended for breach in the last 2 years:** green. The prior-tenancy
+  record (p.30) says it ended by agreement.
 
-**Our app.** Summary on the left, document on the right. Each claim carries a source tag that
-highlights the passage. Claims are shown in three states:
-- green when supported;
-- amber for a contradiction (Jan $2,400 at p.8 against "cleared" at p.23) or an exception that may
-  apply (clause 4.3, p.51);
-- grey "not found in the file" when the file is silent, with no guessing.
+Sign-off stays locked until Jordan opens the red and amber items and the unused critical passage.
+The receipt records what was read.
 
-Jordan opens the two amber items and the decision flips. Sign-off stays locked until the flagged
-passages are opened, and the record shows what was read.
+**The moment judges should remember:** the real §3.4 of their own policy opens on screen, and the
+decision flips from reject to accept.
 
-**The moment judges should remember:** an amber flag opens p.23, and the decision flips from reject to accept.
+**More files for the evaluation set.** Each file turns on a different decisive fact:
+- arrears (§3.4);
+- the 2-year exclusion (§3.5);
+- missing documentation (Priority §3.1);
+- an extreme situation where discretion applies (Priority §3.1).
+
+## System (draft, Eko, 2026-10-03)
+Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the editor signs.
+1. **Split.** The documents are cut into numbered passages (page, paragraph, policy §) in plain
+   Python.
+2. **Writer.** A large LLM summarises. Every sentence must carry a passage id and a verbatim quote.
+   - **Recommendation: Claude (cloud).** Long context and quality matter here. Only public policy
+     and synthetic files go in, so this is consistent with the NT AI Policy.
+   - **For a real pilot:** the writer is any approved model, for example NT-endorsed Copilot or a
+     local one. Our value is the checking layer.
+3. **Code checks.** Deterministic code verifies that each quote exists word for word in the cited
+   passage, and that the numbers, dates and negations in the sentence match the quote. This reuses
+   the archive's `verify_spans.py`.
+4. **Fact-checker (a Jev-style role).** A small model gives a typed verdict on each claim: "Does
+   this passage support this claim? yes/no + score".
+   - It must come from a different model family from the writer.
+   - **Recommendation: Bespoke-MiniCheck-7B, local on Ollama.** It fits the 8 GB GPU.
+   - Jev competes in the 1-hour, 50-pair test.
+5. **Critical passages come from the policy.** For each decisive clause, the writer lists the file
+   facts that bear on it (Fox 2026: list the source facts first). Facts the summary did not use
+   become the omission map. Criticality is set by the policy, not guessed by the AI.
+6. **Screen, gate and receipt.** Summary and passages side by side. Sign-off is locked until the
+   flagged and unused-critical passages are opened. A log records what was opened and when, the
+   decision and the reason.
+7. **Evaluation.** Gold facts are written before any model runs. A mutation set of broken summaries
+   covers number and date swaps, negation, stale values, omissions and policy misreadings. Scores
+   are reported per error type.
+
+## Data (2026-10-03, see the [data survey](reports/2026-10-03-data-survey-brief6.md))
+- **Combination A is suggested.**
+  - Real: the NT policy bundle (Priority 7 pp, Eligibility 8, Identification and documentation 9,
+    DFV 11, Discretionary decision making 5).
+  - Synthetic: a 60-page case file built from a facts table written first.
+  - Real, CC BY: the NT wait-time CSV (data.nt.gov.au, latest Dec 2020; say that it is old).
+- **B** adds a fact pattern taken from public NT cases (the Ombudsman 2024/25 report; *CEO (Housing)
+  v Young* [2022] NTCA 1, cited, not ingested).
+- **C** is the Commonwealth Social Security Guide (CC BY). It has the cleanest licence but loses the
+  NT story.
+- **Why the case file must be synthetic:**
+  - Real case files cannot be obtained, and the NT AI Policy forbids personal data in third-party AI.
+  - NTCAT and ART decisions are only on AustLII, whose usage policy forbids feeding its material to
+    AI systems.
+  - A fully synthetic set (rules and file both invented) is the weaker option under the "datasets"
+    criterion.
+- **Licence caveat.** NT policy PDFs are under NTG copyright, not CC BY. Whether bundling them counts
+  as fair dealing is TBD; ask the organisers or DHLGCD.
+- **Download caveat.** The PDFs sit behind a Cloudflare challenge: a plain `curl` got a "Just a
+  moment" page on 2026-10-03, so a fetch script in the README may fail.
 
 ## Riskiest assumption
 *(draft, Eko)* The reading gate saves more time than it costs. In a UK social-work pilot the time
@@ -108,14 +169,6 @@ These are gaps no surveyed product covers ([survey](reports/2026-10-03-landscape
 - **Settle it with a 1-hour spike:** about 50 labelled passage–claim pairs scored by MiniCheck,
   Bespoke-MiniCheck, Laya and Jev, comparing balanced accuracy. The winner goes in Stack.
 
-### Data
-- **Policy:** a real, public NT Government document (which one is TBD).
-- **Case files:** synthetic, with no real person's data, and traps planted on purpose:
-  - an outdated figure;
-  - a hidden exception;
-  - two passages that contradict;
-  - an OVIC-style distortion.
-
 ### Pitch material for the teammate
 In the survey's §5:
 - OVIC 2024: a ChatGPT court report called a sexually misused doll an "age-appropriate toy" even
@@ -124,9 +177,12 @@ In the survey's §5:
 - NT AI Policy (2026-06-05) and NT AI Assurance Framework wording.
 
 ### Open questions (Tarık's to answer)
-- Which caseworker and which documents? The scenario uses housing.
-- Should v1 cover both a policy and a case file, or only one?
-- Should the summariser run in the cloud (Claude Citations) or locally?
+- Is the NT priority-housing officer the user? The real NT policies now back this scenario.
+- Which data combination: A, B or C? Eko suggests A.
+- Writer in the cloud (Claude) or local? Eko suggests Claude, because only public and synthetic text
+  goes in.
+- Should we ask the organisers whether bundling the NT policy PDFs counts as fair dealing, or ship
+  links instead?
 
 ## Screens
 <only for a product with screens; Eko fills it by asking, before any mockup: who uses it and
@@ -143,6 +199,8 @@ and loading state>
 ## Sources
 - [Landscape survey, 2026-10-03](reports/2026-10-03-landscape-verified-summaries.md): products,
   research, checkers, Jev and Laya, AU/NT context, gaps.
+- [Data survey, 2026-10-03](reports/2026-10-03-data-survey-brief6.md): NT policies and their licence,
+  case material, corpora, ground-truth methods, and combinations A, B and C.
 - Reusable: span verification `fair_turn/core/verify_spans.py` on branch `archive/v2-weekly-plan`.
 - Workshops: the Workshop 2 recording is in Otter (shared to Tarık's student mail by Dewa Pratama and
   Nikhitha Karne, 2026-10-02). The Workshop 1 transcript held only the first and last minutes.

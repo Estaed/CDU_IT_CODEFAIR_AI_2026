@@ -20,9 +20,9 @@ on the road first. So the plan that fixes the most repairs keeps crews near town
 households far away wait longest: the brief's "efficiency" pressure. Fair Turn makes the
 cost of a trip explicit, puts one setting in the coordinator's hands (Efficiency first ↔ Most
 overdue first), and shows the whole trade-off on one line before anything is signed. On the
-planning day of the synthetic data, Efficiency first fixes 88 repairs and leaves 130 overdue
-households waiting, all remote; Balanced fixes 77 and leaves 108; Most overdue first fixes
-49 and leaves 98. Over thirteen weeks, Balanced does more repairs than pure efficiency
+planning week of the synthetic data, Efficiency first fixes 88 repairs and leaves 105 overdue
+households waiting, all remote; a little weight on need (0.2) fixes the same 88 and leaves
+93; Balanced fixes 79 and leaves 82; Most overdue first fixes 46 and leaves 78. Over thirteen weeks, Balanced does more repairs than pure efficiency
 (1,084 against 1,074) and leaves 142 instead of 199 repairs more than 300 km from a base
 still waiting. Is this situation real, and who is the user? The public record behind
 each part, and what is our assumption, are in [`docs/PRODUCT.md`](docs/PRODUCT.md).

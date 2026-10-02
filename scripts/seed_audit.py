@@ -49,9 +49,8 @@ def main() -> None:
     art = artefacts.load_all()
     jobs = artefacts.to_jobs(art)
     places = geography.places(art.communities)
-    first = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
     history = weeks.simulate(
-        jobs, places, 0.0, first, (constants.PLAN_DAY - first).days // 7, art.closures
+        jobs, places, 0.0, weeks.FIRST_MONDAY, weeks.HISTORY_WEEKS, art.closures
     )
     open_jobs = history.open_on(jobs, constants.PLAN_DAY)
     closed = weeks.closed_for_week(art.closures, constants.PLAN_DAY)

@@ -26,6 +26,4 @@ pg = st.navigation(
         st.Page("pages/evidence.py", title="Evidence", icon=":material/analytics:"),
     ]
 )
-with st.sidebar:
-    st.caption(theme.PROVENANCE_LINE)
 pg.run()

@@ -24,7 +24,7 @@ Needs-a-human queue: 1 non-adversarial reports with an unverified required field
 - Repairs per crew-day: 3
 - Road km driven per day: 400
 - Repairs per remote trip, at most: 9
-- Planning day: 2025-12-29
+- Planning day: 2025-12-15
 
 ## Event window (*provisional*, PRD section 6.2)
 

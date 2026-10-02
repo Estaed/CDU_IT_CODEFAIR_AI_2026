@@ -6,7 +6,7 @@ the committed artefacts once per process; runtime records (new reports, fields a
 set) are laid over it on every read.
 """
 
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 
 import streamlit as st
@@ -20,8 +20,8 @@ from fair_turn.data.artefacts import Artefacts, load_all
 # The backlog the coordinator meets on the planning day: what weeks of "Efficiency first"
 # planning left behind, simulated from the first Monday of the synthetic window.
 HISTORY_SETTING = constants.SETTINGS["Efficiency first"]
-FIRST_MONDAY = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
-HISTORY_WEEKS = (constants.PLAN_DAY - FIRST_MONDAY).days // 7
+FIRST_MONDAY = weeks.FIRST_MONDAY
+HISTORY_WEEKS = weeks.HISTORY_WEEKS
 
 
 @st.cache_resource

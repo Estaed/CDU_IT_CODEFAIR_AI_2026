@@ -41,8 +41,9 @@ MAX_JOBS_PER_TRIP = 9  # three working days at one community
 # NT public holidays inside the window and the planning week (Public Holidays Act 1981):
 # not business days. A crew's week is still five days; see docs/PRODUCT.md.
 PUBLIC_HOLIDAYS = (date(2025, 12, 25), date(2025, 12, 26), date(2026, 1, 1))
-# The planning week the app shows: the Monday after the last synthetic report.
-PLAN_DAY = date(2025, 12, 29)
+# The planning week the app shows: a full working week before Christmas, so no public
+# holiday falls inside it.
+PLAN_DAY = date(2025, 12, 15)
 # The three named settings of "what decides where crews go" (0 = efficiency first).
 SETTINGS = {"Efficiency first": 0.0, "Balanced": 0.5, "Most overdue first": 1.0}
 CREW_BASE_COORDS = {

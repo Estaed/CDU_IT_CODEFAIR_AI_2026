@@ -24,7 +24,7 @@ FAULT_WORDS = {
     FaultType.DOORS_LOCKS_SECURITY: "doors, locks or security",
     FaultType.STOVE_COOKING: "stove or cooking",
     FaultType.PESTS: "pests",
-    FaultType.OTHER: "another repair",
+    FaultType.OTHER: "a repair outside our usual list",
 }
 
 HEALTH_WORDS = {
@@ -46,6 +46,21 @@ SETTING_MEANING = {
 }
 
 WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+_DAYS = constants.RESPONSE_BUSINESS_DAYS
+URGENCY_WORDS = {
+    "immediate": f"immediate: an emergency, made safe within {constants.MAKE_SAFE_HOURS} hours "
+    "by the make-safe team",
+    **{
+        cls: f"{cls}: within {_DAYS[(cls, False)]} business days in town, "
+        f"{_DAYS[(cls, True)]} in a remote community"
+        for cls in ("urgent", "routine")
+    },
+}
+
+
+def place_name(community_id: str) -> str:
+    """A community id as people read it: "Big Rivers R-01", not "BIG RIVERS R-01"."""
+    return community_id.title() if community_id.isupper() else community_id
 
 
 def days(n: float) -> str:
@@ -108,11 +123,16 @@ def waiting_line(waiting: weekly.Waiting, plan: weekly.WeekPlan) -> str:
     if waiting.reason == weekly.NO_ROOM:
         return f"Needs {days(waiting.trip_days)} in a row; no crew had them left"
     cut = plan.last_priority(waiting.base)
-    if waiting.priority is None or cut is None:
-        return "Below the cut"
     added = any(t.added and t.base == waiting.base for t in plan.trips)
-    after = " after your added trip" if added else ""
-    return f"Below the cut{after}: {waiting.priority:.1f} against {cut:.1f}"
+    after = ", after your added trip" if added else ""
+    if waiting.priority is None or cut is None:
+        return f"Other trips came first{after}"
+    if f"{waiting.priority:.1f}" == f"{cut:.1f}":
+        return f"Other trips came first{after} (a tie at {cut:.1f} a crew-day; the days ran out)"
+    return (
+        f"Other trips came first{after} ({waiting.priority:.1f} a crew-day; the last trip "
+        f"in was {cut:.1f})"
+    )
 
 
 # --- the tenant answer ---------------------------------------------------------------------
@@ -136,6 +156,7 @@ class TenantFacts:
     waiting: weekly.Waiting | None = None  # why it has no trip this week
     travel_days: float = 0.0  # there and back, for a trip to the job's community
     reopens_on: date | None = None  # when closed access opens again
+    queue_position: int | None = None  # place in line at its community when only part goes
     in_plan_under: tuple[str, ...] = ()  # the named settings under which it has a trip
     missing_fields: tuple[str, ...] = ()  # required fields nobody has read yet
 
@@ -169,19 +190,17 @@ def _read(f: TenantFacts) -> list[str]:
             "A person is reading it now. It joins the crew plan once they have.",
         ]
     lines = [
+        f"Repair {job.job_id}, {place_name(job.community_id)}.",
         f"Your report is about {FAULT_WORDS[job.fault_type]}. "
-        f"We read it as {job.safety_class.value}."
+        f"We read it as {job.safety_class.value}.",
     ]
     for factor in sorted(job.health_risk):
         lines.append(f"We also read that {HEALTH_WORDS[factor]}.")
     return lines
 
 
-def _when(f: TenantFacts) -> str:
-    if f.start_day is None:
-        return "this week"
-    day = WEEKDAYS[min(int(f.start_day), len(WEEKDAYS) - 1)]
-    return f"this week, from {day}"
+def _day(f: TenantFacts) -> str:
+    return WEEKDAYS[min(int(f.start_day or 0), len(WEEKDAYS) - 1)]
 
 
 def _repairs(n: int) -> str:
@@ -221,6 +240,8 @@ def _why(f: TenantFacts) -> list[str]:
             f"A crew is going to your community this week, with time for "
             f"{_repairs(waiting.trip_repairs)}. Other repairs there {order}."
         )
+        if f.queue_position:
+            lines.append(f"Yours is number {f.queue_position} in line there for the next trip.")
     elif f.is_town:
         lines.append(
             f"The {f.base} crews have more repairs than days this week, and others came first."
@@ -251,15 +272,12 @@ def _next(f: TenantFacts) -> list[str]:
     if f.trip is not None:
         return ["The crew will contact you before they come."]
     lines = ["The plan is made again every Monday."]
-    if f.setting <= 0:
-        lines.append(
-            "Under this setting, waiting longer does not move a repair up. The coordinator can "
-            "change the setting."
-        )
-    elif scoring.urgency(f.job, f.today) < scoring.URGENCY_CAP:
+    if f.setting > 0 and scoring.urgency(f.job, f.today) < scoring.URGENCY_CAP:
         lines.append("Each week your repair waits, it counts for more in the next plan.")
-    else:
-        lines.append("Your repair already counts as much as waiting can make it.")
+    lines.append(
+        "Your Community Housing Officer can ask the coordinator to add a trip for your "
+        "community. The coordinator must give a reason, and it is written down."
+    )
     return lines
 
 
@@ -316,11 +334,12 @@ def tenant_answer(f: TenantFacts) -> TenantAnswer:
                 ),
             ),
         )
+    week = f"the week of {f.today:%d %B}"
     if f.trip is not None:
         who = f"in {f.base}" if f.is_town else f"from {f.base} to your community"
-        headline = f"Yes. A crew is planned {who} {_when(f)}."
+        headline = f"Yes. A crew is planned {who} in {week}, from {_day(f)}."
     else:
-        headline = "Not this week."
+        headline = f"Not in {week}."
     return TenantAnswer(
         headline=headline,
         blocks=(

@@ -179,7 +179,10 @@ def export_rows(records: list[Record]) -> list[dict[str, str]]:
         elif isinstance(record, FieldSet):
             row["what"] = "field set by hand"
             row["who"] = record.actor
-            row["detail"] = f"{record.job_id}: {record.field} = {record.value}"
+            label = {"fault_type": "what is broken", "safety_class": "urgency"}.get(
+                record.field, record.field.replace("_", " ")
+            )
+            row["detail"] = f"{record.job_id}: {label} set to {record.value.replace('_', ' ')}"
         else:
             row["what"] = "report read"
             row["who"] = f"{record.provider} ({record.model})"

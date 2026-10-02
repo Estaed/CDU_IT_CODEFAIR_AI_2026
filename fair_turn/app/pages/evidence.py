@@ -12,7 +12,7 @@ from fair_turn.core import audit, constants, weeks
 from fair_turn.data import artefacts
 from fair_turn.eval import metrics as eval_metrics
 
-SEASON_WEEKS = state.HISTORY_WEEKS + 1  # every Monday of the synthetic window
+SEASON_WEEKS = weeks.SEASON_WEEKS  # every Monday of the synthetic window
 
 
 @st.cache_resource(show_spinner="Planning 13 weeks under each setting")
@@ -106,6 +106,15 @@ def render_season() -> None:
         f"{efficiency.on_time_town:.0%} to {need.on_time_town:.0%}. Neither end is the fair "
         "answer; the choice in between is the coordinator's."
     )
+    st.caption(
+        "Why this differs from the plan page: in a single week, Balanced fixes fewer repairs "
+        "than Efficiency first because its trips drive further. Over a season the order "
+        "matters more: under Efficiency first every repair counts the same, so the oldest goes "
+        "first whatever its class, and the farthest places pile up; Balanced ends the season "
+        "ahead. Most "
+        "overdue first is on time least often, remote included: it keeps sending crews to "
+        "repairs that are already late, while newer ones pass their limit."
+    )
     left, right = st.columns(2)
     data = band_frame()
     left.altair_chart(
@@ -151,9 +160,23 @@ def render_season() -> None:
         "Crew numbers, repairs per crew-day and driving speed are our assumptions "
         f"({sum(constants.CREWS_AT_BASE.values())} crews, {constants.JOBS_PER_CREW_DAY} "
         f"repairs a day, {constants.DRIVE_KM_PER_DAY} km of road a day): NT does not publish "
-        "them. Change them in fair_turn/core/constants.py; the pattern above is what to test "
-        "in a pilot, not a forecast."
+        "them. They are set in one file; the pattern above is what to test in a pilot, not a "
+        "forecast."
     )
+    with st.container(border=True):
+        st.markdown("**What a pilot in one region would need**")
+        st.markdown(
+            "- **The trade roster:** crews per town and their working days, in place of our "
+            "assumption.\n"
+            "- **The contractor's job list:** an export from its tasking system in place of the "
+            "synthetic reports; the plan reads typed fields only.\n"
+            "- **Where the reading runs:** Claude through a government-approved account, or a "
+            "local model on the agency's own machine (we measured one: urgency macro-F1 0.65 "
+            "against Claude's 0.97, so it needs more work before it can replace it).\n"
+            "- **One measure that does not exist today:** the time from a tenant's report to the "
+            "finished repair, which the NT's evaluator found cannot be measured now "
+            "(Menzies 2023)."
+        )
 
 
 def render_reading() -> None:
@@ -224,7 +247,17 @@ def render_log() -> None:
     shown = records or sample
     if not records:
         st.caption("Nothing signed on this machine yet; showing the committed sample log.")
-    frame = pd.DataFrame(audit.export_rows(shown))
+    frame = pd.DataFrame(audit.export_rows(shown)).rename(
+        columns={
+            "what": "What",
+            "planning_day": "Week planned (data)",
+            "recorded_at": "Recorded at (real time)",
+            "who": "Who",
+            "reason": "Reason",
+            "detail": "Detail",
+            "hash": "Check code",
+        }
+    )
     st.dataframe(frame, hide_index=True, width="stretch")
     st.download_button(
         "Download the log (CSV)",

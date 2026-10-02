@@ -19,6 +19,13 @@ from statistics import median
 from fair_turn.core import constants, scoring, weekly
 from fair_turn.core.types import Job, SafetyClass
 
+# Every Monday of the synthetic window: the season the Evidence page replays, and the weeks
+# before the planning day that leave its backlog.
+FIRST_MONDAY = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
+_LAST_DAY = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS - 1)
+SEASON_WEEKS = (_LAST_DAY - FIRST_MONDAY).days // 7 + 1
+HISTORY_WEEKS = (constants.PLAN_DAY - FIRST_MONDAY).days // 7
+
 # Distance bands for the "who waits" table: road km one way from the crew base.
 BANDS = (("town", 0.0), ("under 150 km", 150.0), ("150-300 km", 300.0), ("over 300 km", math.inf))
 

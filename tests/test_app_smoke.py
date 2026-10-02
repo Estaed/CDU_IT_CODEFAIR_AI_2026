@@ -10,7 +10,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app import theme
-from fair_turn.core import audit, wording
+from fair_turn.core import audit, constants, wording
 from fair_turn.core.types import Job
 from fair_turn.data import artefacts, runtime
 
@@ -70,8 +70,9 @@ def test_every_page_runs_offline_with_no_provider(app, page) -> None:
     if page != "plan":
         app.switch_page(f"pages/{page}.py").run()
     assert not app.exception
-    captions = [c.value for c in app.caption]
+    captions = [c.value for c in app.main.caption]
     assert any(theme.PROVENANCE_LINE in c for c in captions)  # stated on the page itself
+    assert not any(theme.PROVENANCE_LINE in c.value for c in app.sidebar.caption)
 
 
 def test_default_page_is_the_plan_and_names_the_backlog(app) -> None:
@@ -98,14 +99,11 @@ def test_signing_needs_a_name_and_a_reason(app, tmp_path) -> None:
 
 
 def test_a_change_and_a_signature_reach_the_log(app, tmp_path) -> None:
-    add = next(s for s in app.selectbox if s.label == "Add a trip to")
-    community = add.options[0]
-    add.select(community)
-    next(t for t in app.text_input if t.key == "add_reason").input("Funeral next week")
-    next(b for b in app.button if b.label == "Add trip").click().run()
+    _add_first_trip(app, "Funeral next week")
     assert not app.exception
     next(t for t in app.text_input if t.label == "Your name").input("A. Coordinator")
-    next(t for t in app.text_area if t.label == "Why this plan").input("Remote waits are long")
+    sign_label = "Why this plan. Tenants who ask are told this, word for word."
+    next(t for t in app.text_area if t.label == sign_label).input("Remote waits are long")
     next(b for b in app.button if b.label == "Sign this week's plan").click().run()
     assert not app.exception
     assert any("Signed by **A. Coordinator**" in s.value for s in app.success)
@@ -113,17 +111,68 @@ def test_a_change_and_a_signature_reach_the_log(app, tmp_path) -> None:
     assert isinstance(signed, audit.PlanSigned)
     assert signed.version == 1 and signed.signer == "A. Coordinator"
     assert signed.added and signed.changes[0].endswith("Funeral next week")
-    assert signed.recorded_at.tzinfo is not None and signed.day.isoformat() == "2025-12-29"
+    assert signed.recorded_at.tzinfo is not None and signed.day == constants.PLAN_DAY
+
+
+def _add_first_trip(at, reason: str) -> str:
+    """Add a trip to the first community offered; returns the label shown for it."""
+    add = next(s for s in at.selectbox if s.label == "Add a trip to")
+    add.select_index(0)
+    community = add.value
+    next(t for t in at.text_input if t.key == "add_reason").input(reason)
+    next(b for b in at.button if b.label == "Add trip").click().run()
+    return community
+
+
+def test_an_added_trip_that_displaces_another_shows_what_moved(app) -> None:
+    # The first community offered is in a base whose crews are full: adding it pushes one of
+    # the base's own remote trips out of the week.
+    assert not any("What your changes moved" in m.value for m in app.markdown)
+    community = _add_first_trip(app, "Funeral next week")
+    assert not app.exception
+    lines = [m.value for m in app.markdown]
+    assert "**What your changes moved**" in lines
+    shown = community.split(" · ")[0]  # AppTest reports the option's label: "Name · n waiting"
+    assert any(line.startswith(f"- In: **{shown}**") for line in lines)
+    out = [line for line in lines if line.startswith("- Out: **")]
+    assert out and all(line.endswith("now wait.") for line in out)
+    assert any(line.startswith("- Repairs this week ") for line in lines)
+
+
+def test_plan_tables_use_the_new_column_names(app) -> None:
+    frames = [d.value for d in app.dataframe]
+    trips = next(f for f in frames if "Where" in f.columns and "Worth a crew-day" in f.columns)
+    assert "Priority" not in trips.columns
+    waiting = next(f for f in frames if "Why no crew" in f.columns)
+    assert list(waiting.columns) == [
+        "Where",
+        "Repairs",
+        "Overdue",
+        "Longest wait (days)",
+        "Why no crew",
+    ]
+    assert any(e.label == "Every repair, in the order the plan takes them" for e in app.expander)
 
 
 def test_tenant_page_answers_the_default_example(app) -> None:
     app.switch_page("pages/tenant.py").run()
     assert not app.exception
     headline = app.subheader[0].value
-    assert headline in {"Not this week."} or headline.startswith("Yes.")
+    assert headline in {"Not in the week of 15 December."} or headline.startswith("Yes.")
     answer = " ".join(m.value for m in app.markdown)
     assert "Who decided?" in answer
     assert not wording.check(" ".join(_text(app)).replace("*", ""))
+
+
+@pytest.mark.parametrize("typed", ["JR-2025-00005", "jr 2025 5", "5", "jr-2025-00005", " 00005 "])
+def test_tenant_page_accepts_the_number_as_people_type_it(app, typed) -> None:
+    app.switch_page("pages/tenant.py").run()
+    app.text_input[0].set_value(typed).run()
+    assert not app.exception
+    assert not app.error
+    assert app.subheader[0].value == "Not in the week of 15 December."
+    answer = " ".join(m.value for m in app.markdown)
+    assert "Repair JR-2025-00005, " in answer
 
 
 def test_tenant_page_refuses_an_unknown_number(app) -> None:
@@ -156,7 +205,9 @@ def _fill_missing_facts(at, reason: str | None) -> None:
 
 def _sign(at, signer: str = "A. Coordinator") -> None:
     next(t for t in at.text_input if t.label == "Your name").input(signer)
-    next(t for t in at.text_area if t.label == "Why this plan").input("Remote waits are long")
+    next(t for t in at.text_area if t.label.startswith("Why this plan")).input(
+        "Remote waits are long"
+    )
     next(b for b in at.button if b.label == "Sign this week's plan").click().run()
     assert not at.exception
 
@@ -211,7 +262,9 @@ def test_a_replayed_report_that_changes_the_plan_shows_the_plan_changed(app) -> 
     _sign(app)
     for _ in range(8):  # the seeded order reaches a report that changes the trips by the 5th
         app.switch_page("pages/reports.py").run()
-        next(b for b in app.button if b.label == "Add a test-set report (no model)").click().run()
+        next(
+            b for b in app.button if b.label == "Add a sample report (no model needed)"
+        ).click().run()
         assert not app.exception
         app.switch_page("pages/plan.py").run()
         if _changed_after_signing(app):
@@ -238,8 +291,8 @@ def test_tenant_is_told_the_signed_plan_not_the_sessions_setting(app) -> None:
 
 def test_new_report_is_offered_without_a_model_and_saves_a_replay(app, tmp_path) -> None:
     app.switch_page("pages/reports.py").run()
-    assert any("No model is set on this machine" in i.value for i in app.info)
-    next(b for b in app.button if b.label == "Add a test-set report (no model)").click().run()
+    assert any("No reading model is set up on this computer" in i.value for i in app.info)
+    next(b for b in app.button if b.label == "Add a sample report (no model needed)").click().run()
     assert not app.exception
     assert any(s.value.startswith("Saved as JR-2025-") for s in app.success)
     (intake,) = audit.read(tmp_path / "audit.jsonl")

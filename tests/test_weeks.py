@@ -5,7 +5,7 @@ from datetime import date, timedelta
 
 import pytest
 
-from fair_turn.core import weekly, weeks
+from fair_turn.core import constants, weekly, weeks
 from fair_turn.core.types import FaultType, Job, SafetyClass
 
 MONDAY = date(2025, 6, 2)
@@ -38,6 +38,24 @@ def job(
 
 def simulate(jobs, n_weeks=1, setting=0.5, closures=()) -> weeks.Season:
     return weeks.simulate(jobs, PLACES, setting, MONDAY, n_weeks, closures, ONE_CREW)
+
+
+def test_season_and_history_weeks() -> None:
+    assert weeks.FIRST_MONDAY == date(2025, 10, 6)  # the first Monday of the window
+    assert weeks.FIRST_MONDAY.weekday() == 0
+    assert weeks.SEASON_WEEKS == 13
+    assert weeks.HISTORY_WEEKS == 10
+    plan_day = weeks.FIRST_MONDAY + timedelta(weeks=weeks.HISTORY_WEEKS)
+    assert plan_day == constants.PLAN_DAY == date(2025, 12, 15)
+    last_day = constants.WINDOW_START + timedelta(days=constants.WINDOW_DAYS - 1)
+    last_monday = weeks.FIRST_MONDAY + timedelta(weeks=weeks.SEASON_WEEKS - 1)
+    assert last_monday <= last_day < last_monday + timedelta(weeks=1)
+
+
+def test_the_planning_week_has_no_public_holiday() -> None:
+    week = {constants.PLAN_DAY + timedelta(days=d) for d in range(constants.CREW_DAYS_PER_WEEK)}
+    assert constants.PLAN_DAY.weekday() == 0
+    assert not week & set(constants.PUBLIC_HOLIDAYS)
 
 
 def test_simulate_refuses_a_day_that_is_not_monday() -> None:

@@ -2,8 +2,11 @@
 waits, the counterfactual setting, sentences that stay true for the setting in force, and
 plain wording (no deficit terms, grade 7 or lower) across every state."""
 
+import ast
+import re
 from dataclasses import replace
 from datetime import date, timedelta
+from pathlib import Path
 
 import pytest
 
@@ -63,6 +66,10 @@ def facts(
         start = next(s.start for c in plan.crews for s in c.stops if s.trip == trip)
     place = PLACES[target.community_id]
     closed = {"closed": plan_kw["closed"]} if "closed" in plan_kw else {}
+    waiting = None if trip else plan.waiting_at(target.community_id)
+    queue = None  # the tenant page's rule: place in line when only part of the repairs go
+    if waiting is not None and waiting.reason == weekly.TRIP_FULL:
+        queue = waiting.job_ids.index(target.job_id) + 1
     return explain.TenantFacts(
         job=target,
         today=TODAY,
@@ -74,8 +81,9 @@ def facts(
         signed_reason=REASON if signed else None,
         trip=trip,
         start_day=start,
-        waiting=None if trip else plan.waiting_at(target.community_id),
+        waiting=waiting,
         travel_days=weekly.travel_days(place),
+        queue_position=queue,
         in_plan_under=tuple(
             name
             for name, value in constants.SETTINGS.items()
@@ -106,6 +114,8 @@ BUSY_TOWN = town_jobs(15)
 NO_ROOM_JOBS = [*(job(f"M{i}", "R-MID", OLD) for i in range(9)), OVERDUE_FAR, *town_jobs(3)]
 # Ten at R-NEAR, the last reported latest: a trip carries nine.
 FULL_NEAR = [job(f"N{i}", "R-NEAR", OLD + timedelta(i)) for i in range(10)]
+# Twelve at R-NEAR, reported a day apart: nine go, the last three wait in report order.
+LONG_LINE = [job(f"L{i:02d}", "R-NEAR", OLD + timedelta(i)) for i in range(12)]
 # Twelve at R-FAR: a week's trip there carries only seven (2.5 driving + 2.5 work days).
 BIG_FAR = [job(f"B{i:02d}", "R-FAR") for i in range(12)]
 
@@ -141,6 +151,7 @@ def all_states() -> dict[str, explain.TenantFacts]:
         "dropped": facts(OVERDUE_FAR, [OVERDUE_FAR], drop={"R-FAR"}),
         "trip_full": facts(full[-1], full, "Most overdue first"),
         "trip_full_efficiency": facts(FULL_NEAR[-1], FULL_NEAR),
+        "trip_full_third": facts(LONG_LINE[-1], LONG_LINE),
         "unsigned": facts(OVERDUE_FAR, [*BUSY_TOWN, OVERDUE_FAR], signed=False),
     }
 
@@ -160,6 +171,7 @@ def test_the_states_are_the_ones_named() -> None:
         "dropped": weekly.DROPPED,
         "trip_full": weekly.TRIP_FULL,
         "trip_full_efficiency": weekly.TRIP_FULL,
+        "trip_full_third": weekly.TRIP_FULL,
     }
     for name, reason in reasons.items():
         assert STATES[name].trip is None, name
@@ -204,12 +216,12 @@ def test_headline_emergency() -> None:
 
 
 def test_headline_crew_coming_town_and_remote() -> None:
-    assert (
-        ANSWERS["crew_town"].headline
-        == "Yes. A crew is planned in Katherine this week, from Monday."
+    assert ANSWERS["crew_town"].headline == (
+        "Yes. A crew is planned in Katherine in the week of 02 June, from Monday."
     )
     assert ANSWERS["crew_remote"].headline == (
-        "Yes. A crew is planned from Katherine to your community this week, from Monday."
+        "Yes. A crew is planned from Katherine to your community in the week of 02 June, "
+        "from Monday."
     )
     assert "The crew will contact you before they come." in ANSWERS["crew_remote"].text
 
@@ -217,7 +229,7 @@ def test_headline_crew_coming_town_and_remote() -> None:
 def test_start_day_names_the_weekday() -> None:
     f = facts(BUSY_TOWN[0], BUSY_TOWN)
     later = explain.tenant_answer(simple(BUSY_TOWN[0], trip=f.trip, start_day=3.5))
-    assert later.headline.endswith("this week, from Thursday.")
+    assert later.headline.endswith("in the week of 02 June, from Thursday.")
 
 
 def test_headline_not_this_week() -> None:
@@ -230,7 +242,59 @@ def test_headline_not_this_week() -> None:
         "dropped",
         "trip_full",
     ):
-        assert ANSWERS[name].headline == "Not this week.", name
+        assert ANSWERS[name].headline == "Not in the week of 02 June.", name
+
+
+def test_what_we_read_starts_with_the_repair_and_its_place() -> None:
+    answer = ANSWERS["outranked_counterfactual"]
+    read = next(b for b in answer.blocks if b.question == "What did we read in your report?")
+    assert read.paragraphs[0] == "Repair F0, R-Far."
+    named = Job(
+        "JR-2025-00005", "BIG RIVERS R-01", True, TODAY, FaultType.OTHER, SafetyClass.URGENT
+    )
+    text = explain.tenant_answer(simple(named, waiting=None)).text
+    assert "Repair JR-2025-00005, Big Rivers R-01." in text
+    assert "Your report is about a repair outside our usual list." in text
+
+
+@pytest.mark.parametrize(
+    ("community_id", "name"),
+    [("BIG RIVERS R-01", "Big Rivers R-01"), ("Katherine", "Katherine"), ("TOP END", "Top End")],
+)
+def test_place_name(community_id, name) -> None:
+    assert explain.place_name(community_id) == name
+
+
+def test_urgency_words_quote_the_nt_windows() -> None:
+    days = constants.RESPONSE_BUSINESS_DAYS
+    assert set(explain.URGENCY_WORDS) == set(constants.SAFETY_CLASSES)
+    assert f"within {constants.MAKE_SAFE_HOURS} hours" in explain.URGENCY_WORDS["immediate"]
+    for cls in ("urgent", "routine"):
+        expected = (
+            f"within {days[(cls, False)]} business days in town, "
+            f"{days[(cls, True)]} in a remote community"
+        )
+        assert expected in explain.URGENCY_WORDS[cls]
+    for cls, words in explain.URGENCY_WORDS.items():
+        assert words.startswith(f"{cls}: ")
+        # a coordinator-facing label, so only the deficit lexicon binds it, not grade 7
+        assert [t for t in wording.check(words) if t != wording.READING_LEVEL] == []
+
+
+def test_urgency_words_carry_no_literal_policy_numbers() -> None:
+    tree = ast.parse(Path(explain.__file__).read_text("utf-8"))
+    block = next(
+        node.value
+        for node in tree.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == "URGENCY_WORDS" for t in node.targets)
+    )
+    literals = [
+        node.value
+        for node in ast.walk(block)
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+    ]
+    assert not [text for text in literals if re.search(r"\d", text)]
 
 
 # --- why: true for the setting in force -----------------------------------------------------
@@ -320,24 +384,61 @@ def test_trip_full_names_the_carried_trip_and_the_order_under_the_setting() -> N
     assert "with time for 9 repairs. Other repairs there were reported earlier." in first
 
 
+def test_trip_full_says_the_place_in_line() -> None:
+    assert STATES["trip_full_third"].waiting.job_ids == ("L09", "L10", "L11")
+    assert STATES["trip_full_third"].queue_position == 3
+    text = ANSWERS["trip_full_third"].text
+    assert "Yours is number 3 in line there for the next trip." in text
+    first = ANSWERS["trip_full_efficiency"].text
+    assert "Yours is number 1 in line there for the next trip." in first
+    # no place in line, no sentence about it
+    no_queue = explain.tenant_answer(replace(STATES["trip_full_third"], queue_position=None))
+    assert "in line there" not in no_queue.text
+
+
 # --- what happens next ----------------------------------------------------------------------
 
-
-def test_next_at_efficiency_first_waiting_does_not_move_a_repair_up() -> None:
-    text = ANSWERS["outranked_counterfactual"].text
-    assert "Under this setting, waiting longer does not move a repair up." in text
-    assert "counts for more" not in text
-
-
-def test_next_above_zero_waiting_counts_for_more() -> None:
-    text = ANSWERS["outranked_none"].text  # Balanced, reported today
-    assert "Each week your repair waits, it counts for more in the next plan." in text
+COUNTS_FOR_MORE = "Each week your repair waits, it counts for more in the next plan."
+ASK_FOR_A_TRIP = (
+    "Your Community Housing Officer can ask the coordinator to add a trip for your community. "
+    "The coordinator must give a reason, and it is written down."
+)
 
 
-def test_next_at_the_urgency_cap_says_waiting_adds_nothing() -> None:
-    text = ANSWERS["no_room"].text  # most overdue first, far past its window
-    assert "Your repair already counts as much as waiting can make it." in text
-    assert "counts for more" not in text
+def _next_block(name: str) -> tuple[str, ...]:
+    return next(b for b in ANSWERS[name].blocks if b.question == "What happens next?").paragraphs
+
+
+def test_next_at_efficiency_first() -> None:
+    assert _next_block("outranked_counterfactual") == (
+        "The plan is made again every Monday.",
+        ASK_FOR_A_TRIP,
+    )
+
+
+def test_next_above_zero_and_below_the_cap_counts_for_more() -> None:
+    assert _next_block("outranked_none") == (  # Balanced, reported today
+        "The plan is made again every Monday.",
+        COUNTS_FOR_MORE,
+        ASK_FOR_A_TRIP,
+    )
+
+
+def test_next_at_the_urgency_cap() -> None:
+    assert _next_block("no_room") == (  # most overdue first, far past its window
+        "The plan is made again every Monday.",
+        ASK_FOR_A_TRIP,
+    )
+
+
+def test_next_never_uses_the_old_waiting_sentences() -> None:
+    for answer in ANSWERS.values():
+        assert "does not move a repair up" not in answer.text
+        assert "already counts as much as waiting" not in answer.text
+
+
+def test_next_with_a_trip_says_the_crew_will_call() -> None:
+    assert _next_block("crew_remote") == ("The crew will contact you before they come.",)
 
 
 # --- who decided, wording ------------------------------------------------------------------
@@ -430,7 +531,9 @@ def _line(jobs: list[Job], cid: str, setting: float, **kw) -> str:
 
 def test_waiting_line_per_reason() -> None:
     far = [*BUSY_TOWN, OVERDUE_FAR]
-    assert _line(far, "R-FAR", 0.0) == "Below the cut: 0.3 against 3.0"
+    assert _line(far, "R-FAR", 0.0) == (
+        "Other trips came first (0.3 a crew-day; the last trip in was 3.0)"
+    )
     assert _line(far, "R-FAR", 0.0, closed={"R-FAR"}) == "Access closed most of the week"
     assert _line(far, "R-FAR", 0.0, drop={"R-FAR"}) == "Taken out by you"
     full = [job(f"N{i}", "R-NEAR", OLD) for i in range(10)]
@@ -441,5 +544,39 @@ def test_waiting_line_per_reason() -> None:
 def test_waiting_line_after_an_added_trip() -> None:
     jobs = [*BUSY_TOWN, OVERDUE_FAR, job("N0", "R-NEAR")]
     assert _line(jobs, "R-FAR", 0.0, add={"R-NEAR"}) == (
-        "Below the cut after your added trip: 0.3 against 3.0"
+        "Other trips came first, after your added trip (0.3 a crew-day; the last trip in was 3.0)"
     )
+
+
+def test_waiting_line_tie_says_the_days_ran_out() -> None:
+    # 18 town repairs, one crew: the last three are worth 3.0 a crew-day, as is the cut.
+    assert _line(town_jobs(18), "K-TOWN", 0.0) == (
+        "Other trips came first (a tie at 3.0 a crew-day; the days ran out)"
+    )
+    with_added = [*town_jobs(18), job("N0", "R-NEAR")]
+    assert _line(with_added, "K-TOWN", 0.0, add={"R-NEAR"}) == (
+        "Other trips came first, after your added trip (a tie at 3.0 a crew-day; the days ran out)"
+    )
+
+
+def _outranked(priority: float | None, cut: float | None) -> str:
+    """The line for a hand-made plan: one waiting place and, if ``cut``, one trip."""
+    trips = () if cut is None else (weekly.Trip("K-TOWN", BASE, True, ("T0",), 0.0, 1.0, cut),)
+    waiting = weekly.Waiting("R-FAR", BASE, ("F0",), weekly.OUTRANKED, priority)
+    plan = weekly.WeekPlan(TODAY, 0.0, trips, (), (waiting,))
+    return explain.waiting_line(waiting, plan)
+
+
+def test_waiting_line_tie_is_decided_at_one_decimal() -> None:
+    assert (
+        _outranked(2.96, 3.0)
+        == "Other trips came first (a tie at 3.0 a crew-day; the days ran out)"
+    )
+    assert _outranked(2.94, 3.0) == (
+        "Other trips came first (2.9 a crew-day; the last trip in was 3.0)"
+    )
+
+
+def test_waiting_line_without_a_priority_or_cut() -> None:
+    assert _outranked(None, 3.0) == "Other trips came first"
+    assert _outranked(1.0, None) == "Other trips came first"

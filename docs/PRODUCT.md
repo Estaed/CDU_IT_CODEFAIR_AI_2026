@@ -96,20 +96,21 @@ meaning, whether another setting would have sent a crew, and who signed with wha
 
 ## What the numbers show (synthetic data, our crew assumptions)
 
-Planning day Monday 29 December 2025, after 12 weeks planned efficiency first: 336 repairs
-wait for a crew, 139 are past the NT time limit, and all 139 are remote
+Planning week of Monday 15 December 2025 (no public holiday in it), after 10 weeks planned
+efficiency first: 295 repairs wait for a crew, 116 are past the NT time limit, 113 of them
+remote
 (`data/build/report/this_week_by_setting.csv`):
 
 | Setting | Repairs this week | Overdue repairs still waiting |
 |---|---|---|
-| Efficiency first | 88 | 130 (all remote) |
-| 0.1 | 90 | 120 |
-| Balanced | 77 | 108 |
-| Most overdue first | 49 | 98 |
+| Efficiency first | 88 | 105 (all remote) |
+| 0.2 | 88 | 93 |
+| Balanced | 79 | 82 |
+| Most overdue first | 46 | 78 |
 
 Efficiency first ranks trips by repairs per crew-day; it is a rule, not a guarantee of the
-most repairs, because each base fills its week greedily. A little weight on need (0.1) packs
-two more repairs **and** reaches ten more overdue households. Past that, every overdue
+most repairs, because each base fills its week greedily. A little weight on need (0.2) fixes
+the same 88 repairs **and** reaches twelve more overdue households. Past that, every overdue
 household reached costs repairs.
 
 Thirteen weeks, every Monday planned under one setting

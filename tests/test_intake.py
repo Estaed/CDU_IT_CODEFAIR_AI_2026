@@ -10,6 +10,7 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from fair_turn.app import intake
+from fair_turn.core import constants
 from fair_turn.data import artefacts
 from fair_turn.llm import intake as intake_llm
 
@@ -108,7 +109,7 @@ def test_provider_unset_disables_reading(tmp_path, monkeypatch) -> None:
     monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
     at = _app(tmp_path)
     assert _button(at, "Read the report").disabled
-    assert any("No model is set on this machine" in i.value for i in at.info)
+    assert any("No reading model is set up on this computer" in i.value for i in at.info)
 
 
 def test_a_second_save_of_the_same_draft_writes_nothing(tmp_path, monkeypatch) -> None:
@@ -136,7 +137,13 @@ def test_provider_selectbox_and_example_pills_render(tmp_path, monkeypatch) -> N
     monkeypatch.delenv("FAIR_TURN_PROVIDER", raising=False)
     at = _app(tmp_path)
     assert at.selectbox[0].label == "Who reads the report"
-    assert at.selectbox[0].options == ["none", "claude", "ollama"]
+    box = at.selectbox[0]
+    assert box.options == [
+        "No reading model on this computer",
+        "Claude (needs the logged-in Claude app)",
+        "A local model on this computer (Ollama)",
+    ]
+    assert box.value == "none"  # the labels change, the values do not
     assert at.button_group[0].options == list(intake.EXAMPLE_REPORTS)
 
 
@@ -170,13 +177,17 @@ def test_runtime_record_carries_the_chosen_provider(tmp_path, monkeypatch) -> No
     _button(at, "Save the report").click().run(timeout=60)
     row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
     assert row["provider"] == "ollama"
-    assert row["reported_on"] == "2025-12-29"
+    assert row["reported_on"] == constants.PLAN_DAY.isoformat()
 
 
 @pytest.mark.parametrize("needs_person", [False, True])
 def test_replay_adds_a_test_set_report_without_a_model(tmp_path, needs_person) -> None:
     at = _app(tmp_path)
-    label = "Add one the AI could not read" if needs_person else "Add a test-set report (no model)"
+    label = (
+        "Add a sample the AI could not fully read"
+        if needs_person
+        else "Add a sample report (no model needed)"
+    )
     _button(at, label).click().run(timeout=60)
     assert not at.exception
     row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
@@ -192,7 +203,7 @@ def test_replay_adds_a_test_set_report_without_a_model(tmp_path, needs_person) -
 def test_replay_never_adds_an_immediate_report(tmp_path) -> None:
     at = _app(tmp_path)
     for _ in range(4):
-        _button(at, "Add a test-set report (no model)").click().run(timeout=60)
+        _button(at, "Add a sample report (no model needed)").click().run(timeout=60)
         assert not at.exception
     lines = (tmp_path / "runtime.jsonl").read_text("utf-8").splitlines()
     rows = [json.loads(line) for line in lines]
@@ -210,8 +221,17 @@ def test_replay_never_adds_an_immediate_report(tmp_path) -> None:
 def test_a_second_unreadable_replay_does_not_crash_the_page(tmp_path) -> None:
     at = _app(tmp_path)
     for _ in range(2):
-        _button(at, "Add one the AI could not read").click().run(timeout=60)
+        _button(at, "Add a sample the AI could not fully read").click().run(timeout=60)
         assert not at.exception
+    rows = [
+        json.loads(line) for line in (tmp_path / "runtime.jsonl").read_text("utf-8").splitlines()
+    ]
+    labels = {lb["job_id"]: lb for lb in artefacts.load_all().labels}
+    assert len(rows) == 2 and rows[0]["text"] != rows[1]["text"]
+    for row in rows:
+        assert row["status"] == "needs_review"
+        source = re.match(r"copy of (JR-2025-\d{5}),", row["model"]).group(1)
+        assert labels[source]["safety_class"] != "immediate"  # never a real emergency
 
 
 def test_instruction_like_text_goes_to_review_even_when_every_phrase_verifies() -> None:

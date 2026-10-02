@@ -12,7 +12,7 @@ import streamlit as st
 
 from fair_turn.app import state
 from fair_turn.app.components.highlight import render, spans
-from fair_turn.core import verify_spans, wording
+from fair_turn.core import explain, verify_spans, wording
 from fair_turn.data import runtime
 
 LABELS = {
@@ -60,7 +60,7 @@ def reading(job_id: str) -> Reading:
         community = next(lb["community_id"] for lb in art.labels if lb["job_id"] == job_id)
         found = {name: (ev.value, ev.evidence) for name, ev in row.kept.items()}
         steered = tuple(row.injection_markers)
-        source = "test set, read by Claude Sonnet"
+        source = "sample report, read by the AI (Claude Sonnet)"
     else:
         report = next(
             r
@@ -113,7 +113,7 @@ def show(r: Reading) -> None:
     """The report with its phrases in bold, and the facts table."""
     evidence = {f"{f.field}:{i}": f.phrase for i, f in enumerate(r.facts) if f.phrase}
     with st.container(border=True):
-        st.caption(f"{r.job_id} · {r.community_id} · {r.source}")
+        st.caption(f"{r.job_id} · {explain.place_name(r.community_id)} · {r.source}")
         st.markdown(render(r.text, spans(r.text, evidence)))
     if r.steered:
         st.warning(

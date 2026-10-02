@@ -56,7 +56,7 @@ and roles. Date.
   household health risk. A trip's cost = driving days (400 road km a day) + work days (3
   repairs a day, at most 9 a trip). Priority per crew-day under the setting s:
   Σ((1−s) + s·need) / (work + (1−s)·driving). Each base fills its crews' week greedily.
-- **Evaluation.** The planning week (29 Dec 2025) after 12 weeks of efficiency-first
+- **Evaluation.** The planning week (15 Dec 2025) after 10 weeks of efficiency-first
   planning; and 13 weeks re-planned every Monday under each setting, measured by distance
   band; one extra crew at each base.
 - **Assumptions, stated as such:** crew numbers (10 crews), productivity and speed; one
@@ -66,10 +66,10 @@ and roles. Date.
 
 | This week (`this_week_by_setting.csv`) | Repairs | Overdue still waiting |
 |---|---|---|
-| Efficiency first | 88 | 130 (all remote) |
-| 0.1 | 90 | 120 |
-| Balanced | 77 | 108 |
-| Most overdue first | 49 | 98 |
+| Efficiency first | 88 | 105 (all remote) |
+| 0.2 | 88 | 93 |
+| Balanced | 79 | 82 |
+| Most overdue first | 46 | 78 |
 
 | 13 weeks (`season_by_setting.csv`) | Repairs | Town on time | Remote on time | Over 300 km still waiting |
 |---|---|---|---|---|
@@ -77,9 +77,11 @@ and roles. Date.
 | Balanced | 1,084 | 90 % | 49 % | 142 |
 | Most overdue first | 923 | 31 % | 36 % | 156 |
 
-- The backlog after 12 weeks of efficiency first: 139 repairs past the NT limit, all remote.
-- Efficiency first is not even the most efficient: 0.1 packs two more repairs and reaches
-  ten more overdue households this week; over 13 weeks Balanced does more repairs.
+- The backlog after 10 weeks of efficiency first: 116 repairs past the NT limit, 113 of them
+  remote.
+- A little weight on need is free: 0.2 fixes the same 88 repairs and reaches twelve more
+  overdue households this week; over 13 weeks Balanced does more repairs than efficiency
+  first.
 - The cost is real: Balanced lowers remote on-time by two points (it serves the households
   already longest past the limit) and need-first collapses town service.
 - One more crew at any base under Balanced: 127–137 far repairs waiting instead of 142

@@ -12,7 +12,6 @@ and floats are formatted to a fixed number of decimals, so a rerun is byte-ident
 import csv
 import json
 import sys
-from datetime import timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -56,9 +55,9 @@ def _write_csv(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
 
 
 SETTING_STEPS = 11  # 0.0, 0.1, ... 1.0
-FIRST_MONDAY = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
-SEASON_WEEKS = (constants.PLAN_DAY - FIRST_MONDAY).days // 7 + 1
-HISTORY_WEEKS = SEASON_WEEKS - 1
+FIRST_MONDAY = weeks.FIRST_MONDAY
+SEASON_WEEKS = weeks.SEASON_WEEKS
+HISTORY_WEEKS = weeks.HISTORY_WEEKS
 WEEK_COLUMNS = [
     "setting",
     "name",

@@ -13,7 +13,7 @@ import numpy as np
 import streamlit as st
 
 from fair_turn.app import state
-from fair_turn.core import audit, constants, verify_spans
+from fair_turn.core import audit, constants, explain, verify_spans
 from fair_turn.data import runtime
 from fair_turn.llm import intake as intake_llm
 
@@ -161,10 +161,16 @@ def render() -> str | None:
         default = intake_llm.configured() or "none"
     except ValueError:
         default = "none"
+    labels = {
+        "none": "No reading model on this computer",
+        "claude": "Claude (needs the logged-in Claude app)",
+        "ollama": "A local model on this computer (Ollama)",
+    }
     chosen = st.selectbox(
         "Who reads the report",
         options,
         index=options.index(default),
+        format_func=labels.get,
         help="claude = Claude Sonnet through the logged-in claude CLI; ollama = a local "
         "model. FAIR_TURN_PROVIDER sets the default. none = no model on this machine.",
     )
@@ -178,7 +184,9 @@ def render() -> str | None:
         )
     text = st.text_area("Report, in the tenant's words", key="intake_text", height=140)
     communities = sorted(art.communities)
-    community = st.selectbox("Community", communities, key="intake_community")
+    community = st.selectbox(
+        "Community", communities, key="intake_community", format_func=explain.place_name
+    )
 
     provider = None
     if CALL_OVERRIDE is not None:
@@ -187,8 +195,8 @@ def render() -> str | None:
         provider = intake_llm.configured(override=chosen)
     if provider is None:
         st.info(
-            "No model is set on this machine, so a report cannot be read here. Choose claude "
-            "or ollama above, or add a test-set report with its committed reading below."
+            "No reading model is set up on this computer, so a typed report cannot be read "
+            "here. You can still add one of the sample reports below, already read."
         )
     too_long = len(text) > 4_000
     if too_long:
@@ -216,8 +224,8 @@ def render() -> str | None:
             _reset_draft()
     st.divider()
     left, right = st.columns(2)
-    if left.button("Add a test-set report (no model)"):
+    if left.button("Add a sample report (no model needed)"):
         saved = replay()
-    if right.button("Add one the AI could not read"):
+    if right.button("Add a sample the AI could not fully read"):
         saved = replay(needs_person=True)
     return saved

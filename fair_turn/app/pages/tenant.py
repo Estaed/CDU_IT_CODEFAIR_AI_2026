@@ -4,6 +4,8 @@ Is a crew coming this week? If not, why not, what would change it, and who decid
 sentence is a template over the plan; no model writes to a tenant.
 """
 
+import re
+
 import streamlit as st
 
 from fair_turn.app import state, theme
@@ -45,6 +47,9 @@ def facts_for(job_id: str) -> explain.TenantFacts | None:
         if job_id in state.week_plan(jobs_open, value, with_changes=False).planned_job_ids()
     )
     waiting = None if trip else plan.waiting_at(job.community_id)
+    queue = None
+    if waiting is not None and waiting.reason == weekly.TRIP_FULL and job_id in waiting.job_ids:
+        queue = waiting.job_ids.index(job_id) + 1
     reopens = None
     if waiting is not None and waiting.reason == weekly.CLOSED:
         reopens = weeks.reopens(state.artefacts().closures, job.community_id, state.today())
@@ -55,8 +60,18 @@ def facts_for(job_id: str) -> explain.TenantFacts | None:
         waiting=waiting,
         travel_days=weekly.travel_days(place),
         reopens_on=reopens,
+        queue_position=queue,
         in_plan_under=in_plan_under,
     )
+
+
+def normalise(typed: str) -> str:
+    """Accept the number as people type it: "JR-2025-00005", "jr 2025 5" or just "5"."""
+    digits = re.findall(r"\d+", typed)
+    if not digits:
+        return typed.strip().upper()
+    number = digits[-1] if len(digits) > 1 or len(digits[0]) <= 5 else digits[0][-5:]
+    return f"{explain.JOB_ID_PREFIX}{int(number):05d}"
 
 
 def examples() -> dict[str, str]:
@@ -100,7 +115,7 @@ typed = st.text_input(
     value=picks.get(choice, "") if choice else "",
     placeholder=explain.JOB_ID_EXAMPLE,
 )
-job_id = typed.strip().upper()
+job_id = normalise(typed)
 if job_id:
     facts = facts_for(job_id)
     if facts is None:

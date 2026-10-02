@@ -6,7 +6,7 @@ import streamlit as st
 
 from fair_turn.app import intake, state, theme
 from fair_turn.app.components import reading
-from fair_turn.core import audit
+from fair_turn.core import audit, explain
 from fair_turn.core.types import FaultType, SafetyClass
 from fair_turn.data import runtime
 
@@ -50,7 +50,7 @@ def set_missing(r: reading.Reading) -> None:
                 reading.LABELS[field],
                 CHOICES[field],
                 index=None,
-                format_func=lambda v: v.replace("_", " "),
+                format_func=lambda v: explain.URGENCY_WORDS.get(v, v.replace("_", " ")),
                 key=f"value_{r.job_id}_{field}",
             )
             for field in r.missing
@@ -97,7 +97,8 @@ with tab_person:
             "Report",
             [j.job_id for j in waiting_for_person],
             format_func=lambda i: (
-                f"{i} · {next(j.community_id for j in jobs_open if j.job_id == i)}"
+                f"{i} · "
+                f"{explain.place_name(next(j.community_id for j in jobs_open if j.job_id == i))}"
             ),
         )
         r = reading.reading(job_id)

@@ -1,6 +1,7 @@
 # Demo script — three minutes, one story
 
-For the Challenge Day pitch (10 minutes plus Q&A; this is the live part). Start the app with
+For the Challenge Day pitch (10 minutes plus Q&A; this is the live part). **Restart the app
+right before the demo** (its season results are cached per process). Start it with
 no model and an empty local log (`data/audit/audit.jsonl` absent), on "This week's plan".
 Numbers below are what the committed data shows; if a number on screen differs, read the
 screen.
@@ -9,40 +10,44 @@ screen.
 
 "This is Monday for the coordinator who schedules the licensed trades out of the
 regional towns. The maintenance officer in a community can fix what needs no licence; an
-electrician or a plumber has to come from town. 336 repairs wait for a crew. 139 are
-past the NT time limit, and all 139 are in remote communities. That is what twelve
+electrician or a plumber has to come from town. 295 repairs wait for a crew. 116 are
+past the NT time limit, 113 of them in remote communities. That is what ten
 weeks of planning efficiency first left behind. A crew in Darwin fixes three repairs a
 day; a trip to Top End R-01 spends three days driving there and back first. So the efficient
 plan stays near town. That is the brief's trust twist, and here it is as numbers."
 
-Point at the four numbers: **88 repairs this week, 130 overdue repairs still waiting.**
+Point at the four numbers: **88 repairs this week, 105 overdue repairs still waiting.**
 
 ## 0:40 — The coordinator owns the trade-off
 
-Click **Balanced**. "77 repairs, 11 fewer, and 22 more overdue households reached." Point at
+Click **Balanced**. "79 repairs, 9 fewer, and 23 more overdue households reached." Point at
 the line chart: "Every setting is on this line. The top dot is Efficiency first. Notice the first
-step down is better on both counts: two more repairs and ten more overdue households
-reached, because efficiency first is a greedy rule, not a maximum. After that, every
+steps down are free: the same 88 repairs and twelve more overdue households reached.
+After that, every
 household costs repairs. The tool does not pick the point. The coordinator does."
 
 Scroll to the map: green trips, red places still waiting with overdue repairs. In **Left
-waiting**, read one reason: "Road closed" for Top End R-05; "Below the cut" with its two
-numbers for another.
+waiting**, read the top row: Top End R-01, 17 repairs, 11 overdue, waiting 52 days, "Other
+trips came first". Then open **Every repair, in the order the plan takes them**: the brief's
+"ranks jobs and explains why each sits where it does", one row per repair.
 
 ## 1:30 — A human decides, and it is written down
 
-Open **Add or take out a trip**. Add a trip with the reason "Funeral next week; go now".
-Show the numbers move. Sign: name and reason. "Every change and the reason are in the log,
+Open **Add or take out a trip**. Add Top End R-01 with the reason "Longest wait in the
+region; go now". The box beside the map says what moved: which trip came in, which went out,
+and the two numbers before and after. Sign: name and reason. "Every change and the reason are in the log,
 with the planning day and the real time. If I change the plan now, I must sign again; the old
 version stays."
 
 ## 2:00 — The tenant gets a real answer
 
 Open **Ask about a repair**; the example "Remote, still waiting" is selected. Read the
-headline and two lines aloud: "Not this week. NT policy says routine repairs in a remote home
-are done within 25 business days; it is 38 business days past. A trip to your community
-takes 3.5 days of driving to fix 9 repairs. Under 'Most overdue first', a crew would come to
-you this week." Then: "and it names who signed and why."
+headline and a few lines aloud: "Not in the week of 15 December. Repair JR-2025-00005, Big
+Rivers R-03. NT policy says routine repairs in a remote home are done within 25 business
+days; it is 28 business days past. A trip to your community takes 3.5 days of driving, there
+and back, to fix 4 repairs. Under 'Most overdue first', a crew would come to you this week.
+Your Community Housing Officer can ask the coordinator to add a trip." Then: "and once the
+plan is signed, it names who signed and why."
 
 ## 2:30 — The AI only reads, and we checked it
 

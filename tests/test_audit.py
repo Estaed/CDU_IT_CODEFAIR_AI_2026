@@ -199,10 +199,24 @@ def test_export_rows_have_a_fixed_string_only_schema() -> None:
     assert plan["detail"] == (
         "Balanced: 2 trips, 10 repairs, 3 overdue left; added R-01: tenant called twice"
     )
-    assert field["detail"] == "JR-2025-00001: safety_class = urgent"
+    assert field["detail"] == "JR-2025-00001: urgency set to urgent"
     assert read["who"] == "claude (sonnet)"
     assert read["reason"] == ""
     assert read["detail"] == "JR-2025-00002: extracted (verified), 11.4 s"
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "detail"),
+    [
+        ("fault_type", "roof_structure", "what is broken set to roof structure"),
+        ("safety_class", "urgent", "urgency set to urgent"),
+        ("location_mentioned", "back_room", "location mentioned set to back room"),
+    ],
+)
+def test_export_field_set_detail_reads_as_words(field, value, detail) -> None:
+    (row,) = audit.export_rows([field_set(field=field, value=value)])
+    assert row["detail"] == f"JR-2025-00001: {detail}"
+    assert list(row) == EXPORT_COLUMNS
 
 
 def test_export_without_changes_says_so() -> None:

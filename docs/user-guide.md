@@ -85,7 +85,7 @@ and their reason.
 - **The time limits are NT policy**: fact sheet FS17, October 2025.
 - **Crew numbers are our assumption**: 10 crews at 5 bases, 3 repairs a crew-day, 400 km of
   road a day. NT does not publish them. They live in `fair_turn/core/constants.py`.
-- **The backlog on the planning day** is what 12 weeks of Efficiency first planning left
+- **The backlog on the planning day** is what 10 weeks of Efficiency first planning left
   behind, simulated.
 
 ## 7. Glossary

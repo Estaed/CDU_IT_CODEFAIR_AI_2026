@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock v0 · Priority housing review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@500;600;700&family=Newsreader:opsz,wght@6..72,700&display=swap" rel="stylesheet">
+<style>
+/* Tarik Base tokens v3 (tokens.css, copied unchanged) */
+:root, [data-theme="dark"] {
+  --canvas: #0D0D0F; --surface-1: #16161A; --surface-2: #212026; --surface-3: #2A2930;
+  --hairline: #3A3940; --hairline-strong: #4F4E53; --edge: #4F4E53;
+  --ink: #F2F2F2; --ink-muted: #A1A1AA; --ink-subtle: #71717A;
+  --primary: #FF5A1F; --on-primary: #0D0D0F; --primary-hover: #FF7440; --primary-pressed: #E84A12;
+  --primary-text: #FF7A45; --secondary: #A1A1B5;
+  --success: #3DD68C; --warning: #F5B83D; --danger: #F2555A; --scrim: #000000B3;
+  --shadow-3: none; color-scheme: dark;
+}
+[data-theme="light"] {
+  --canvas: #F4F4F5; --surface-1: #FFFFFF; --surface-2: #EFEFF1; --surface-3: #E7E7EA;
+  --hairline: #E4E4E7; --hairline-strong: #B4B4BB; --edge: #18181B;
+  --ink: #18181B; --ink-muted: #52525B; --ink-subtle: #8B8B94;
+  --primary: #D4400A; --on-primary: #FFFFFF; --primary-hover: #BF3908; --primary-pressed: #A83206;
+  --primary-text: #C2410C; --secondary: #5F5F73;
+  --success: #15803D; --warning: #B45309; --danger: #D92D32; --scrim: #18181B66;
+  --shadow-3: 0 8px 24px #18181B1F; color-scheme: light;
+}
+:root {
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px; --r-button: 12px; --r-pill: 9999px;
+  --fast: 120ms ease-out; --base: 200ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) { :root { --fast: 0ms linear; --base: 0ms linear; } }
+
+/* Mock styles */
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font: 500 16px/1.5 var(--font-sans); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.eyebrow { font: 600 12px/1.3 var(--font-sans); color: var(--ink-muted); }
+h1 { font: 700 28px/1.1 var(--font-display); letter-spacing: -0.5px; margin: 4px 0 6px; }
+.accent { color: var(--primary-text); }
+.sub { color: var(--ink-muted); font-size: 14px; }
+.mono { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.tags { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.tag { font: 600 12px/1.3 var(--font-sans); color: var(--ink-muted); border: 1px solid var(--hairline-strong); border-radius: var(--r-sm); padding: 3px 7px; }
+.actions { display: flex; align-items: center; gap: 16px; }
+.gate { display: flex; flex-direction: column; gap: 6px; }
+.segs { display: flex; gap: 3px; }
+.segs i { width: 30px; height: 6px; border-radius: var(--r-sm); background: var(--surface-3); transition: background var(--base); }
+.segs i.on { background: var(--primary); }
+button { font: inherit; }
+.btn-primary { background: var(--primary); color: var(--on-primary); font: 700 16px/1.2 var(--font-sans); border: 0; border-radius: var(--r-button); padding: 14px 24px; min-height: 48px; cursor: pointer; transition: background var(--fast); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { background: var(--primary-pressed); }
+.btn-secondary { background: var(--surface-2); color: var(--ink); font: 700 16px/1.2 var(--font-sans); border: 0; border-radius: var(--r-button); padding: 12px 20px; min-height: 44px; cursor: pointer; }
+.ghost { background: none; border: 0; color: var(--primary-text); font: 600 12px/1.3 var(--font-sans); cursor: pointer; padding: 8px 4px; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.bar { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; gap: 16px; flex-wrap: wrap; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: var(--r-button); padding: 4px; gap: 4px; }
+.seg button { height: 32px; border: 0; background: transparent; color: var(--ink-muted); border-radius: 8px; padding: 0 14px; font: 600 14px var(--font-sans); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface-3); color: var(--ink); }
+.banner { display: flex; gap: 12px; align-items: flex-start; background: var(--surface-2); border-radius: var(--r-md); padding: 12px 16px; margin-top: 16px; font-size: 14px; }
+.banner svg { color: var(--warning); flex: none; margin-top: 2px; }
+.grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 24px; margin-top: 24px; align-items: start; }
+@media (max-width: 1023px) { .grid { grid-template-columns: 1fr; } }
+.card { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); }
+.group + .group { margin-top: 24px; }
+.group > .eyebrow { margin-bottom: 8px; }
+.row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: start; width: 100%; min-height: 56px; padding: 16px; background: none; color: inherit; text-align: left; border: 0; border-top: 1px solid var(--hairline); cursor: pointer; transition: background var(--fast); }
+.row:first-child { border-top: 0; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+.row:last-child { border-radius: 0 0 var(--r-lg) var(--r-lg); }
+.row:only-child { border-radius: var(--r-lg); }
+.row:hover { background: var(--surface-2); }
+.row[aria-pressed="true"] { background: var(--surface-3); }
+.claim { font-weight: 600; font-size: 15px; }
+.why { color: var(--ink-muted); font-size: 14px; margin-top: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; border: 1px solid currentColor; border-radius: var(--r-pill); padding: 3px 8px; font: 500 12px/1.4 var(--font-sans); white-space: nowrap; }
+.st-supported { color: var(--success); }
+.st-conflict, .st-omitted { color: var(--warning); }
+.st-unsupported { color: var(--danger); }
+.st-missing { color: var(--ink-muted); }
+.req { font: 600 12px/1.3 var(--font-sans); color: var(--primary-text); border: 1px solid var(--primary-text); border-radius: var(--r-sm); padding: 3px 7px; white-space: nowrap; }
+.req.done { color: var(--success); border-color: var(--success); }
+.pane { position: sticky; top: 24px; }
+.pane-head { padding: 16px 16px 0; }
+.src { padding: 16px; }
+.src + .src { border-top: 1px solid var(--hairline); }
+.src-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.src-doc { font-weight: 700; font-size: 15px; }
+.passage { background: var(--surface-2); border-radius: var(--r-md); padding: 12px 14px; font-size: 15px; line-height: 1.6; }
+mark { background: color-mix(in srgb, var(--warning) 30%, transparent); color: inherit; border-radius: 3px; padding: 0 2px; }
+.src-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ink-muted); }
+.verdict { margin: 0 16px 16px; padding: 12px 14px; border-radius: var(--r-md); border: 1px solid var(--hairline); font-size: 14px; }
+.empty { text-align: center; padding: 48px 24px; color: var(--ink-muted); font-size: 14px; }
+.circle { width: 88px; height: 88px; border-radius: var(--r-pill); background: var(--surface-2); display: grid; place-items: center; margin: 0 auto 12px; color: var(--ink-muted); }
+.plain { padding: 24px; }
+.plain p { margin: 8px 0 0; }
+.note { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--hairline); color: var(--ink-muted); font-size: 14px; }
+.scrim { position: fixed; inset: 0; background: var(--scrim); display: none; place-items: center; padding: 24px; }
+.scrim.open { display: grid; }
+.dialog { background: var(--surface-1); border: 1px solid var(--hairline-strong); border-radius: var(--r-xl); padding: 24px; width: min(480px, 100%); box-shadow: var(--shadow-3); }
+.dialog h2 { font: 700 18px/1.3 var(--font-sans); margin: 0 0 4px; }
+.opts { display: grid; gap: 8px; margin: 16px 0; }
+.opts label { display: flex; gap: 10px; align-items: center; background: var(--surface-2); border-radius: var(--r-md); padding: 12px 14px; cursor: pointer; font-size: 15px; }
+.opts input { accent-color: var(--primary); width: 18px; height: 18px; }
+.field-label { font: 700 14px/1.45 var(--font-sans); display: block; margin-bottom: 6px; }
+textarea { width: 100%; min-height: 96px; background: var(--surface-2); color: var(--ink); border: 2px solid transparent; border-radius: var(--r-md); padding: 12px 14px; font: 500 15px/1.5 var(--font-sans); resize: vertical; }
+textarea:focus { outline: none; border-color: var(--primary); }
+.helper { font-size: 12px; color: var(--ink-muted); margin-top: 6px; }
+.helper.err { color: var(--danger); }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
+.rec { padding: 16px; }
+.rec dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 12px 0 0; font-size: 14px; }
+.rec dt { color: var(--ink-muted); }
+.rec dd { margin: 0; }
+.rec ul { list-style: none; padding: 0; margin: 8px 0 0; font-size: 14px; }
+.rec li { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--hairline); }
+footer { margin-top: 32px; color: var(--ink-muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Priority housing review · Darwin</div>
+      <h1>Applicant file <span class="accent">A-0142</span></h1>
+      <div class="sub">Synthetic file, <span class="mono">62</span> pages · checked against <span class="mono">5</span> NT public housing policies</div>
+      <div class="tags"><span class="tag">Writer: Claude</span><span class="tag">Checker: MiniCheck, local</span><button class="ghost" id="theme">Light mode</button></div>
+    </div>
+    <div class="actions">
+      <div class="gate" aria-live="polite">
+        <span class="eyebrow">Required reading <span class="mono" id="gateCount">0/4</span></span>
+        <div class="segs" id="segs"></div>
+      </div>
+      <button class="btn-primary" id="signBtn">Sign decision</button>
+    </div>
+  </div>
+  <div id="banner"></div>
+
+  <div class="bar">
+    <div class="seg" role="group" aria-label="View">
+      <button id="vMap" aria-pressed="true">Evidence by policy clause</button>
+      <button id="vPlain" aria-pressed="false">Plain AI summary</button>
+    </div>
+    <button class="ghost" id="reset">Reset demo</button>
+  </div>
+
+  <div class="grid">
+    <div id="left"></div>
+    <div class="pane card" id="pane"></div>
+  </div>
+
+  <footer>Mock v0, 2026-10-03, for discussion only. The case file is invented. Policy wording comes from NT public housing policies: Eligibility §3.4 and §3.5 were checked in the PDF; Priority §3.1 is an excerpt. In this mock, opening a passage counts as reading it.</footer>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <h2 id="dlgTitle">Sign the decision</h2>
+    <div class="sub">The decision is yours. The record keeps your reason and the passages you opened.</div>
+    <div class="opts" id="opts">
+      <label><input type="radio" name="d" value="Approve priority housing"> Approve priority housing</label>
+      <label><input type="radio" name="d" value="Decline"> Decline</label>
+      <label><input type="radio" name="d" value="Request more information"> Request more information</label>
+    </div>
+    <label class="field-label" for="reason">Reason</label>
+    <textarea id="reason" placeholder="For example: Eligibility §3.4, debt does not withhold housing; arrears cleared on p. 23; family violence documented on p. 51."></textarea>
+    <div class="helper" id="helper">Write it so the applicant could read and challenge it.</div>
+    <div class="dialog-actions">
+      <button class="btn-secondary" id="cancel">Cancel</button>
+      <button class="btn-primary" id="confirm">Sign decision</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const I = {
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  minus: '<path d="M5 12h14"/>',
+  file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+};
+const icon = (n, s = 14) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+
+const SRC = {
+  'pol-3.4': { doc: 'Eligibility for social housing policy', loc: '§3.4 Debts', real: true,
+    text: 'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing). The CEO (Housing) will seek to recover outstanding debts in line with the Debt Management policy.',
+    quote: 'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).' },
+  'p8': { doc: 'Applicant file A-0142', loc: 'p. 8 · Rent ledger, January',
+    text: 'Tenant ledger summary. Statement date 15 Jan 2026. Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight.',
+    quote: 'Arrears balance $2,400.00.' },
+  'p23': { doc: 'Applicant file A-0142', loc: 'p. 23 · Rent ledger, March',
+    text: 'Statement date 4 Mar 2026. Lump-sum payment received from a support agency on behalf of the tenant. Arrears cleared in full. Balance $0.00.',
+    quote: 'Arrears cleared in full. Balance $0.00.' },
+  'p51': { doc: 'Applicant file A-0142', loc: 'p. 51 · Letter from a support agency',
+    text: 'I am writing in support of Ms K.’s application. Ms K. and her two children are fleeing family violence and cannot safely return to their current address. Police attended the property on 2 February 2026.',
+    quote: 'Ms K. and her two children are fleeing family violence and cannot safely return to their current address.' },
+  'pol-p3.1': { doc: 'Priority housing policy', loc: '§3.1 (excerpt)', real: true,
+    text: 'The applicant … must prove their urgent need … documentation that supports their claim.',
+    quote: 'must prove their urgent need' },
+  'p30': { doc: 'Applicant file A-0142', loc: 'p. 30 · Previous tenancy record',
+    text: 'Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023. No breach of the tenancy agreement recorded.',
+    quote: 'ended by mutual agreement on 12 June 2023. No breach of the tenancy agreement recorded.' },
+  'pol-3.5': { doc: 'Eligibility for social housing policy', loc: '§3.5 (excerpt)', real: true,
+    text: 'Former social housing tenants who have had their tenancy agreement terminated … are ineligible to apply for social housing for a period of 2 years …',
+    quote: 'are ineligible to apply for social housing for a period of 2 years' },
+};
+const LABEL = { 'pol-3.4': 'Eligibility §3.4', p8: 'p. 8', p23: 'p. 23', p51: 'p. 51' };
+const REQUIRED = ['pol-3.4', 'p8', 'p23', 'p51'];
+const STATUS = {
+  supported: ['Supported', 'check'], conflict: ['Sources disagree', 'alert'], unsupported: ['Not supported', 'x'],
+  omitted: ['Not in summary', 'alert'], missing: ['Not in file', 'minus'],
+};
+const GROUPS = [
+  { policy: 'Eligibility §3.4', clause: 'Debts', claims: [
+    { id: 'c1', status: 'unsupported', text: 'Not eligible because of $2,400 rent arrears.', why: 'The checker finds no support: §3.4 says debt does not stop social housing.', sources: ['pol-3.4'] },
+    { id: 'c2', status: 'conflict', text: 'Rent arrears of $2,400.', why: 'Two passages disagree: January shows $2,400, March shows $0.', sources: ['p8', 'p23'] } ] },
+  { policy: 'Priority housing §3.1', clause: 'Urgent need documented', claims: [
+    { id: 'c3', status: 'omitted', text: 'A support letter documents family violence and an unsafe home.', why: 'This passage bears on §3.1, but the AI summary never used it.', sources: ['p51', 'pol-p3.1'] } ] },
+  { policy: 'Eligibility §3.5', clause: 'Previous tenancy', claims: [
+    { id: 'c4', status: 'supported', text: 'Previous tenancy ended by agreement in June 2023, with no breach.', why: 'Quote found on p. 30 and the checker agrees.', sources: ['p30', 'pol-3.5'] } ] },
+  { policy: 'Income and assets policy', clause: 'Income evidence', claims: [
+    { id: 'c5', status: 'missing', text: 'No income statement found in this file.', why: 'Nothing in the 62 pages matches. Ask the applicant rather than assume.', sources: [] } ] },
+];
+const CLAIMS = GROUPS.flatMap(g => g.claims);
+
+let opened = {}, selected = null, signed = null, view = 'map', bannerOn = false;
+const now = () => new Date().toLocaleTimeString('en-AU', { hour12: false });
+const $ = id => document.getElementById(id);
+
+function rowHtml(c) {
+  const [label, ic] = STATUS[c.status];
+  const req = c.sources.filter(s => REQUIRED.includes(s));
+  const tag = req.length ? (req.every(s => opened[s]) ? '<span class="req done">Read</span>' : '<span class="req">Must read</span>') : '';
+  return `<button class="row" data-id="${c.id}" aria-pressed="${selected === c.id}">
+    <span class="pill st-${c.status}">${icon(ic, 12)} ${label}</span>
+    <span><div class="claim">${c.text}</div><div class="why">${c.why}</div></span>${tag}</button>`;
+}
+function passage(s) {
+  return s.text.replace(s.quote, `<mark>${s.quote}</mark>`);
+}
+function paneHtml() {
+  if (signed) {
+    return `<div class="rec"><div class="eyebrow">Decision record</div>
+      <div class="claim" style="font-size:18px;margin-top:4px">${signed.decision}</div>
+      <dl><dt>Reason</dt><dd>${signed.reason.replace(/</g, '&lt;')}</dd>
+      <dt>Signed</dt><dd><span class="mono">${signed.time}</span> by J. Officer</dd>
+      <dt>Claims</dt><dd><span class="mono">5</span> shown · <span class="mono">3</span> flagged · <span class="mono">0</span> overridden</dd>
+      <dt>Models</dt><dd>Writer Claude · checker MiniCheck (local)</dd></dl>
+      <div class="eyebrow" style="margin-top:16px">Passages opened before signing</div>
+      <ul>${Object.entries(opened).map(([k, t]) => `<li><span>${SRC[k].doc}, ${SRC[k].loc}</span><span class="mono">${t}</span></li>`).join('')}</ul></div>`;
+  }
+  if (view === 'plain') {
+    return `<div class="empty"><div class="circle">${icon('alert', 40)}</div>A plain summary gives nothing to open. Switch back to the evidence view to see why each sentence holds or fails.</div>`;
+  }
+  const c = CLAIMS.find(x => x.id === selected);
+  if (!c) return `<div class="empty"><div class="circle">${icon('file', 40)}</div>Select a claim on the left to open its source passage.</div>`;
+  if (!c.sources.length) return `<div class="pane-head"><div class="eyebrow">Source</div></div><div class="empty"><div class="circle">${icon('minus', 40)}</div>No passage in the file supports or contradicts this. The app says so instead of guessing.</div>`;
+  const [label] = STATUS[c.status];
+  return `<div class="pane-head"><div class="eyebrow">Source passages for: ${c.text}</div></div>` +
+    c.sources.map(id => { const s = SRC[id]; return `<div class="src">
+      <div class="src-head"><span class="src-doc">${s.doc}</span><span class="tag">${s.real ? 'Real NT policy' : 'Synthetic file'}</span></div>
+      <div class="sub" style="margin-bottom:8px">${s.loc}</div>
+      <div class="passage">${passage(s)}</div>
+      <div class="src-foot"><span>Highlighted: the exact quote the claim rests on</span><span>Opened <span class="mono">${opened[id]}</span></span></div></div>`; }).join('') +
+    `<div class="verdict"><span class="pill st-${c.status}">${label}</span> ${c.why}</div>`;
+}
+function leftHtml() {
+  if (view === 'plain') {
+    return `<div class="card plain"><div class="eyebrow">What a plain AI summary shows</div>
+      <p>Ms K. applied for priority housing for herself and two children. The rent ledger shows arrears of $2,400. Because of the outstanding debt, the applicant does not meet priority housing criteria. A previous tenancy ended in 2023 without issues. Recommendation: decline.</p>
+      <div class="note">It is fluent and confident, but it has no sources and no flags. The decline rests on a misread of Eligibility §3.4 and a stale January figure, and it never mentions the support letter on p. 51.</div></div>`;
+  }
+  return GROUPS.map(g => `<section class="group"><div class="eyebrow">${g.policy} · ${g.clause}</div><div class="card">${g.claims.map(rowHtml).join('')}</div></section>`).join('');
+}
+function render() {
+  const n = REQUIRED.filter(s => opened[s]).length;
+  $('gateCount').textContent = `${n}/${REQUIRED.length}`;
+  $('segs').innerHTML = REQUIRED.map(s => `<i class="${opened[s] ? 'on' : ''}"></i>`).join('');
+  const missing = REQUIRED.filter(s => !opened[s]).map(s => LABEL[s]);
+  $('banner').innerHTML = bannerOn && missing.length && !signed
+    ? `<div class="banner">${icon('alert', 16)}<span>Open the required passages before signing: ${missing.join(', ')}. Each one is a claim the AI got wrong, could not settle, or left out.</span></div>` : '';
+  $('left').innerHTML = leftHtml();
+  $('pane').innerHTML = paneHtml();
+  $('vMap').setAttribute('aria-pressed', view === 'map');
+  $('vPlain').setAttribute('aria-pressed', view === 'plain');
+  $('signBtn').textContent = signed ? 'Signed' : 'Sign decision';
+  $('signBtn').className = signed ? 'btn-secondary' : 'btn-primary';
+  document.querySelectorAll('.row').forEach(r => r.onclick = () => {
+    selected = r.dataset.id;
+    CLAIMS.find(c => c.id === selected).sources.forEach(s => { opened[s] ||= now(); });
+    render();
+  });
+}
+$('vMap').onclick = () => { view = 'map'; render(); };
+$('vPlain').onclick = () => { view = 'plain'; render(); };
+$('signBtn').onclick = () => {
+  if (signed) return;
+  if (REQUIRED.some(s => !opened[s])) { bannerOn = true; render(); return; }
+  $('scrim').classList.add('open'); $('reason').focus();
+};
+$('cancel').onclick = () => $('scrim').classList.remove('open');
+$('confirm').onclick = () => {
+  const d = document.querySelector('input[name=d]:checked');
+  const reason = $('reason').value.trim();
+  if (!d || !reason) { $('helper').textContent = 'Choose a decision and write a reason. Both go on the record.'; $('helper').className = 'helper err'; return; }
+  signed = { decision: d.value, reason, time: now() };
+  $('scrim').classList.remove('open'); render();
+};
+$('reset').onclick = () => { opened = {}; selected = null; signed = null; bannerOn = false; view = 'map'; $('reason').value = ''; document.querySelectorAll('input[name=d]').forEach(i => i.checked = false); render(); };
+$('theme').onclick = () => {
+  const h = document.documentElement, light = h.dataset.theme === 'dark';
+  h.dataset.theme = light ? 'light' : 'dark';
+  $('theme').textContent = light ? 'Dark mode' : 'Light mode';
+};
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('scrim').classList.remove('open'); });
+render();
+</script>
+</body>
+</html>

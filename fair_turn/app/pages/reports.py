@@ -55,11 +55,11 @@ def set_missing(r: reading.Reading) -> None:
             )
             for field in r.missing
         }
-        why = st.radio("Why you are sure", REASONS, key=f"why_{r.job_id}")
+        why = st.radio("Why you are sure", REASONS, index=None, key=f"why_{r.job_id}")
         who = st.text_input("Your name", value=state.get_signer(), key=f"who_{r.job_id}")
         if st.form_submit_button("Save and add to the plan", type="primary"):
-            if any(v is None for v in values.values()) or not who.strip():
-                st.error("Set every missing fact and give your name.")
+            if any(v is None for v in values.values()) or why is None or not who.strip():
+                st.error("Set every missing fact, say why you are sure, and give your name.")
                 return
             for field, value in values.items():
                 runtime.append(

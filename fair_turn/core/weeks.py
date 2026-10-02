@@ -2,7 +2,9 @@
 
 A measurement device, not a scheduler. Every Monday the planner (``weekly.plan``) makes the
 week's trips from the jobs open that morning. A remote trip fixes the repairs it took on
-Monday, finishing on the last day of the trip. Town days are flexible, as they are in
+Monday, done on the day its work ends (before the drive home); if the community's access is
+closed early in the week, the trip starts the day it reopens, and work pushed past Friday
+waits for next week's plan. Town days are flexible, as they are in
 practice: each day a crew works in town it fixes the most needed open town repairs of that
 day, including ones reported since Monday. Immediate jobs go to the emergency make-safe
 contractor and are done on their report day. Deterministic.
@@ -31,12 +33,39 @@ def band(place: weekly.Place) -> str:
 
 
 def closed_on(closures: Iterable[Mapping[str, str]], day: date) -> set[str]:
-    """Communities whose road is closed on ``day`` (rows of ``closures.json``)."""
+    """Communities whose access is closed on ``day`` (rows of ``closures.json``)."""
     return {
         c["community_id"]
         for c in closures
         if date.fromisoformat(c["closed_from"]) <= day <= date.fromisoformat(c["closed_to"])
     }
+
+
+CLOSED_WEEKDAYS = 3  # access closed on at least this many weekdays: no trip that week
+
+
+def closed_for_week(closures: Iterable[Mapping[str, str]], monday: date) -> set[str]:
+    """Communities a crew cannot plan a trip to in the week from ``monday``: access closed on
+    most of its weekdays. A two-day closure leaves room to go later in the week."""
+    closures = list(closures)
+    counts: dict[str, int] = {}
+    for offset in range(constants.CREW_DAYS_PER_WEEK):
+        for cid in closed_on(closures, monday + timedelta(days=offset)):
+            counts[cid] = counts.get(cid, 0) + 1
+    return {cid for cid, n in counts.items() if n >= CLOSED_WEEKDAYS}
+
+
+def reopens(closures: Iterable[Mapping[str, str]], community_id: str, day: date) -> date | None:
+    """The first day after ``day`` the community's access is open again, if it is closed."""
+    spans = [
+        (date.fromisoformat(c["closed_from"]), date.fromisoformat(c["closed_to"]))
+        for c in closures
+        if c["community_id"] == community_id
+    ]
+    current = day
+    while any(start <= current <= end for start, end in spans):
+        current += timedelta(days=1)
+    return None if current == day else current
 
 
 @dataclass
@@ -75,7 +104,12 @@ def simulate(
         monday = first_monday + timedelta(weeks=week)
         open_jobs = [j for j in jobs if j.reported_on <= monday and done[j.job_id] is None]
         plan = weekly.plan(
-            open_jobs, places, monday, setting, crews_at_base, closed=closed_on(closures, monday)
+            open_jobs,
+            places,
+            monday,
+            setting,
+            crews_at_base,
+            closed=closed_for_week(closures, monday),
         )
         driving += sum(t.travel_days for t in plan.trips)
         town_slots: dict[tuple[str, int], float] = {}  # (base, weekday) -> repairs
@@ -91,7 +125,14 @@ def simulate(
                                 town_slots.get(key, 0.0) + overlap * constants.JOBS_PER_CREW_DAY
                             )
                 else:
-                    last = math.ceil(stop.start + trip.days) - 1
+                    # Done when the work is, before the drive home; a closed road at the
+                    # start of the week delays the trip to the day access reopens.
+                    opens = reopens(closures, trip.community_id, monday)
+                    delay = max(0, (opens - monday).days - stop.start) if opens else 0
+                    finished = stop.start + delay + trip.travel_days / 2 + trip.work_days
+                    last = math.ceil(finished - 1e-9) - 1
+                    if last >= constants.CREW_DAYS_PER_WEEK:
+                        continue
                     for job_id in trip.job_ids:
                         done[job_id] = monday + timedelta(days=last)
         for day in range(constants.CREW_DAYS_PER_WEEK):

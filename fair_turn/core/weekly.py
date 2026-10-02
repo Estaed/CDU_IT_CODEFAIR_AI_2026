@@ -11,10 +11,12 @@ One number, the **setting** ``s`` from 0 to 1, says what decides where crews go:
     priority of a trip = sum over its repairs of ((1 - s) + s * need)
                          / (work days + (1 - s) * driving days)
 
-At ``s = 0`` (Most repairs) every repair counts the same and driving counts in full, so the
-plan is the most repairs per crew-day. At ``s = 1`` (Most overdue first) repairs count by
-the household's need and driving days are not held against a trip. Each base fills its
-crews' week greedily, highest priority first. Pure Python, deterministic.
+At ``s = 0`` (Efficiency first) every repair counts the same and driving counts in full, so
+trips that fix the most per crew-day go first. That is a rule, not a guarantee of the
+maximum: the fill is greedy, and a little weight on need sometimes packs more repairs. At
+``s = 1`` (Most overdue first) repairs count by the household's need and driving days are
+not held against a trip. Each base fills its crews' week greedily, highest priority first.
+Pure Python, deterministic.
 """
 
 import math
@@ -25,11 +27,12 @@ from datetime import date
 from fair_turn.core import constants, scoring
 from fair_turn.core.types import Job, SafetyClass
 
-# Why a community with open repairs gets no trip this week.
-CLOSED = "road closed"
+# Why a community with open repairs gets no trip, or only part of one, this week.
+CLOSED = "access is closed for most of this week"
 DROPPED = "taken out of the plan by the coordinator"
-OUTRANKED = "the crews' days went to trips with a higher priority"
-TRIP_FULL = "more repairs than one trip can carry"
+OUTRANKED = "below the cut: the crews' days went to trips worth more per crew-day"
+NO_ROOM = "its trip needs more days in a row than any crew had left"
+TRIP_FULL = "a crew goes there, but its trip carries only part of the repairs"
 
 
 @dataclass(frozen=True)
@@ -112,7 +115,9 @@ class Waiting:
     base: str
     job_ids: tuple[str, ...]
     reason: str
-    priority: float | None  # of the trip it would have been; None when it cannot go
+    priority: float | None  # of the full-week trip it would have been; None when it cannot go
+    trip_repairs: int = 0  # repairs that trip would carry (TRIP_FULL: the trip that goes)
+    trip_days: float = 0.0  # crew-days that trip takes
 
 
 @dataclass(frozen=True)
@@ -123,6 +128,7 @@ class WeekPlan:
     crews: tuple[CrewWeek, ...]
     waiting: tuple[Waiting, ...]
     spare_days: Mapping[str, float] = field(default_factory=dict)  # per base, in town on call
+    not_fitted: tuple[str, ...] = ()  # communities the coordinator added that did not fit
 
     def planned_job_ids(self) -> set[str]:
         return {job_id for trip in self.trips for job_id in trip.job_ids}
@@ -202,6 +208,7 @@ def plan(
     crews: list[CrewWeek] = []
     waiting: list[Waiting] = []
     spare: dict[str, float] = {}
+    not_fitted: list[str] = []
     for base in constants.CREW_BASES:
         ids = crew_ids(base, crews_at_base.get(base, 0))
         left = [float(constants.CREW_DAYS_PER_WEEK)] * len(ids)
@@ -230,7 +237,9 @@ def plan(
                 continue
             room = max(left, default=0.0)
             trip = _trip(places[cid], local[cid], today, setting, room, added=True)
-            if trip is not None:
+            if trip is None:
+                not_fitted.append(cid)
+            else:
                 place_trip(trip)
 
         while left and max(left) > 0:
@@ -256,24 +265,31 @@ def plan(
             CrewWeek(crew_id, base, tuple(crew_stops))
             for crew_id, crew_stops in zip(ids, stops, strict=True)
         )
+        cut = min((t.priority for t in trips if t.base == base and not t.added), default=None)
+        week = float(constants.CREW_DAYS_PER_WEEK)
         for cid in sorted(local):
             pool = local[cid]
             if not pool:
                 continue
             ids_left = tuple(j.job_id for j in pool)
+            full = _trip(places[cid], pool, today, setting, week, False)
+            size = (len(full.job_ids), full.days) if full else (0, 0.0)
             if cid in closed:
-                reason, value = CLOSED, None
+                waiting.append(Waiting(cid, base, ids_left, CLOSED, None, *size))
             elif cid in drop:
-                reason, value = DROPPED, None
+                waiting.append(Waiting(cid, base, ids_left, DROPPED, None, *size))
             elif cid in visited:
-                reason, value = TRIP_FULL, None
-            else:
-                reason = OUTRANKED
-                full = _trip(
-                    places[cid], pool, today, setting, float(constants.CREW_DAYS_PER_WEEK), False
+                carried = next(t for t in trips if t.community_id == cid)
+                waiting.append(
+                    Waiting(
+                        cid, base, ids_left, TRIP_FULL, None, len(carried.job_ids), carried.days
+                    )
                 )
+            else:
                 value = full.priority if full else None
-            waiting.append(Waiting(cid, base, ids_left, reason, value))
+                beaten = value is not None and cut is not None and value <= cut + 1e-9
+                reason = OUTRANKED if beaten else NO_ROOM
+                waiting.append(Waiting(cid, base, ids_left, reason, value, *size))
 
     return WeekPlan(
         day=today,
@@ -282,6 +298,7 @@ def plan(
         crews=tuple(crews),
         waiting=tuple(waiting),
         spare_days=spare,
+        not_fitted=tuple(not_fitted),
     )
 
 

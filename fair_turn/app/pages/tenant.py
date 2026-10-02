@@ -7,7 +7,7 @@ sentence is a template over the plan; no model writes to a tenant.
 import streamlit as st
 
 from fair_turn.app import state, theme
-from fair_turn.core import constants, explain, weekly
+from fair_turn.core import constants, explain, weekly, weeks
 from fair_turn.core.types import SafetyClass
 
 
@@ -16,15 +16,15 @@ def facts_for(job_id: str) -> explain.TenantFacts | None:
     if job is None:
         return None
     place = state.places()[job.community_id]
-    signed = state.signature()
     jobs_open = state.open_jobs()
-    plan = state.week_plan(jobs_open)
+    plan, signed = state.published_plan(jobs_open)
     common = {
         "job": job,
         "today": state.today(),
         "base": place.base,
         "is_town": place.is_town,
-        "setting_name": weekly.setting_name(state.get_setting()),
+        "setting_name": weekly.setting_name(plan.setting),
+        "setting": plan.setting,
         "signed_by": signed.signer if signed else None,
         "signed_reason": signed.reason if signed else None,
     }
@@ -42,14 +42,19 @@ def facts_for(job_id: str) -> explain.TenantFacts | None:
     in_plan_under = tuple(
         name
         for name, value in constants.SETTINGS.items()
-        if job_id in state.week_plan(jobs_open, value).planned_job_ids()
+        if job_id in state.week_plan(jobs_open, value, with_changes=False).planned_job_ids()
     )
+    waiting = None if trip else plan.waiting_at(job.community_id)
+    reopens = None
+    if waiting is not None and waiting.reason == weekly.CLOSED:
+        reopens = weeks.reopens(state.artefacts().closures, job.community_id, state.today())
     return explain.TenantFacts(
         **common,
         trip=trip,
         start_day=start,
-        waiting=None if trip else plan.waiting_at(job.community_id),
+        waiting=waiting,
         travel_days=weekly.travel_days(place),
+        reopens_on=reopens,
         in_plan_under=in_plan_under,
     )
 
@@ -58,7 +63,7 @@ def examples() -> dict[str, str]:
     """Three real lookups for the demo: a remote repair with a crew coming, a remote one left
     waiting, and one a person still has to read."""
     jobs_open = state.open_jobs()
-    plan = state.week_plan(jobs_open)
+    plan, _ = state.published_plan(jobs_open)
     planned = plan.planned_job_ids()
     remote = [j for j in jobs_open if j.is_remote and weekly.in_plan(j, state.today())]
     found = {}

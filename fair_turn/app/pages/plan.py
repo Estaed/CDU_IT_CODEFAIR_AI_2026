@@ -96,7 +96,8 @@ def frontier_chart(frontier: pd.DataFrame, current: weekly.Summary) -> alt.Chart
 def effect_sentence(current: weekly.Summary, base: weekly.Summary, is_base: bool) -> str:
     if is_base:
         return (
-            f"This is the plan with the most repairs. {current.overdue_left} repairs past "
+            "This proposal sends each crew-day where it fixes the most repairs. "
+            f"{current.overdue_left} repairs past "
             f"the NT time limit still wait after this week, {current.overdue_left_remote} "
             "of them in remote communities."
         )
@@ -116,7 +117,7 @@ def effect_sentence(current: weekly.Summary, base: weekly.Summary, is_base: bool
         if reached < 0
         else "no change in overdue repairs reached"
     )
-    return f"Compared with Most repairs: {repairs}, and {overdue}."
+    return f"Compared with Efficiency first: {repairs}, and {overdue}."
 
 
 def trips_table(plan: weekly.WeekPlan, jobs: dict) -> pd.DataFrame:
@@ -170,7 +171,6 @@ def waiting_table(plan: weekly.WeekPlan, jobs: dict) -> pd.DataFrame:
                 "Longest wait (days)": max(
                     (plan.day - jobs[j].reported_on).days for j in waiting.job_ids
                 ),
-                "Base": waiting.base,
             }
         )
     frame = pd.DataFrame(rows)
@@ -232,7 +232,7 @@ st.write(
 st.info(
     f"**{len(plannable)} repairs are waiting for a crew. {len(overdue)} are past the NT time "
     f"limit, and {sum(j.is_remote for j in overdue)} of those are in remote communities.**  \n"
-    f"This is what {state.HISTORY_WEEKS} weeks of planning for the most repairs left behind "
+    f"This is what {state.HISTORY_WEEKS} weeks of planning efficiency first left behind "
     "(simulated)."
 )
 needs_person = [j for j in jobs_open if j.needs_human]
@@ -276,7 +276,7 @@ st.caption(
 )
 with st.expander("Fine-tune the setting"):
     st.slider(
-        "From most repairs (0) to most overdue first (1)",
+        "From efficiency first (0) to most overdue first (1)",
         0.0,
         1.0,
         step=0.05,
@@ -287,7 +287,8 @@ with st.expander("Fine-tune the setting"):
 plan = state.week_plan(jobs_open)
 summary = weekly.summarise(plan, jobs_open)
 base_summary = weekly.summarise(
-    state.week_plan(jobs_open, constants.SETTINGS["Most repairs"], with_changes=False), jobs_open
+    state.week_plan(jobs_open, constants.SETTINGS["Efficiency first"], with_changes=False),
+    jobs_open,
 )
 is_base = math.isclose(setting, 0.0) and not state.get_changes()
 
@@ -306,9 +307,10 @@ m2.metric(
     help="Repairs already past the NT time limit that get no crew this week.",
 )
 m3.metric(
-    "Remote communities visited",
-    summary.remote_trips,
-    delta=None if is_base else summary.remote_trips - base_summary.remote_trips,
+    "Remote repairs this week",
+    summary.repairs_remote,
+    delta=None if is_base else summary.repairs_remote - base_summary.repairs_remote,
+    help=f"Repairs in remote communities, on {summary.remote_trips} trips.",
 )
 m4.metric(
     "Crew-days spent driving",
@@ -320,9 +322,10 @@ with st.container(border=True):
     st.markdown("**Every setting on one line: more repairs, or fewer overdue households**")
     st.altair_chart(frontier_chart(_frontier(jobs_open), summary), width="stretch")
     st.caption(
-        "Each dot is one setting from Most repairs (0) to Most overdue first (1). Moving along "
-        "the line trades repairs this week for overdue households reached. No point is free: "
-        "the choice is yours, and it is logged when you sign."
+        "Each dot is one setting from Efficiency first (0) to Most overdue first (1). The first "
+        "step down is often free: the same repairs, more overdue households reached. After "
+        "that, every overdue household reached costs repairs. The choice is yours, and it is "
+        "logged when you sign."
     )
 
 # --- 2. the trips --------------------------------------------------------------------------
@@ -340,13 +343,26 @@ with list_col:
             "Priority": st.column_config.NumberColumn(
                 format="%.1f", help="What the trip counts for, per crew-day, under the setting."
             ),
-            "Driving days": st.column_config.NumberColumn(format="%g"),
-            "Work days": st.column_config.NumberColumn(format="%g"),
+            "Driving days": st.column_config.NumberColumn("Driving", format="%g", width="small"),
+            "Work days": st.column_config.NumberColumn("Work", format="%g", width="small"),
+            "Repairs": st.column_config.NumberColumn(width="small"),
+            "Overdue": st.column_config.NumberColumn(width="small"),
         },
     )
     waiting = waiting_table(plan, by_id)
     st.markdown(f"**Left waiting this week** · {len(waiting)} places")
-    st.dataframe(waiting, hide_index=True, width="stretch", height=260)
+    st.dataframe(
+        waiting,
+        hide_index=True,
+        width="stretch",
+        height=260,
+        column_config={
+            "Why no crew": st.column_config.TextColumn(width="large"),
+            "Repairs": st.column_config.NumberColumn(width="small"),
+            "Overdue": st.column_config.NumberColumn(width="small"),
+            "Longest wait (days)": st.column_config.NumberColumn("Longest wait", width="small"),
+        },
+    )
 
 changes = state.get_changes()
 with st.expander("Add or take out a trip", expanded=bool(changes)):
@@ -383,6 +399,11 @@ with st.expander("Add or take out a trip", expanded=bool(changes)):
                 st.rerun()
             else:
                 st.error("Choose a trip and give a reason.")
+    for cid in plan.not_fitted:
+        st.warning(
+            f"The trip to {_name(cid)} you added does not fit: no {state.places()[cid].base} "
+            "crew has enough days left. Take out another trip first, or undo it."
+        )
     for cid, (action, reason) in changes.items():
         line, undo = st.columns([5, 1])
         verb = "Added" if action == "add" else "Took out"
@@ -394,7 +415,7 @@ with st.expander("Add or take out a trip", expanded=bool(changes)):
 # --- 3. sign -------------------------------------------------------------------------------
 st.subheader("3. Sign the plan")
 signed = state.signature()
-matches = signed is not None and state.signed_state() == state.current_state()
+matches = signed is not None and state.signed_state() == state.current_state(plan)
 if signed is not None and matches:
     st.success(
         f"Signed by **{signed.signer}** at {signed.recorded_at:%H:%M on %d %B %Y} "
@@ -402,8 +423,9 @@ if signed is not None and matches:
     )
 elif signed is not None:
     st.warning(
-        f"You changed the plan after signing version {signed.version}. Sign again to replace "
-        "it; the old version stays in the log."
+        f"The plan changed after version {signed.version} was signed (your changes, a new "
+        "report, or a fact a person set). Sign again to replace it; the old version stays in "
+        "the log."
     )
 with st.form("sign"):
     signer = st.text_input("Your name", value=state.get_signer())
@@ -417,8 +439,8 @@ if pressed:
         st.error("Give your name and a reason. The reason is what a tenant is told.")
     else:
         version = 1 if signed is None else signed.version + 1
-        added = tuple(sorted(c for c, (a, _) in changes.items() if a == "add"))
-        dropped = tuple(sorted(c for c, (a, _) in changes.items() if a == "drop"))
+        kept = {c: v for c, v in changes.items() if c not in plan.not_fitted}
+        _, added, dropped, _ = state.current_state(plan)
         audit.append(
             state.get_audit_path(),
             audit.PlanSigned(
@@ -429,9 +451,10 @@ if pressed:
                 signer=signer.strip(),
                 reason=reason.strip(),
                 trips=weekly.trip_lines(plan),
+                job_ids=tuple(sorted(plan.planned_job_ids())),
                 changes=tuple(
                     f"{'added' if a == 'add' else 'took out'} {c}: {r}"
-                    for c, (a, r) in changes.items()
+                    for c, (a, r) in kept.items()
                 ),
                 repairs=summary.repairs,
                 overdue_left=summary.overdue_left,
@@ -454,7 +477,7 @@ with st.expander("How the plan is made"):
   a day. A trip to a remote community first spends days driving there and back
   ({constants.DRIVE_KM_PER_DAY} km of road a day), then fixes up to
   {constants.MAX_JOBS_PER_TRIP} repairs.
-- **The setting decides what a trip is worth.** At *Most repairs* every repair counts 1 and
+- **The setting decides what a trip is worth.** At *Efficiency first* every repair counts 1 and
   driving days count in full, so the town always wins. At *Most overdue first* a repair
   counts by its need (how far past the NT time limit, how serious, who lives there) and
   driving days are not held against the trip.

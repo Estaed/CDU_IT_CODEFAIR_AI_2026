@@ -38,10 +38,11 @@ HEALTH_WORDS = {
 }
 
 SETTING_MEANING = {
-    "Most repairs": "every repair counts the same, and days spent driving count in full",
-    "Balanced": "a repair counts for more the longer it waits, and driving counts half",
-    "Most overdue first": "the repairs waiting longest past the NT time limit count most, "
-    "and driving days are not counted against a trip",
+    "Efficiency first": "every repair counts the same, and days spent driving count in full",
+    "Balanced": "a repair counts for more when it is past the NT time limit, serious, or in "
+    "a house with a health risk, and driving days count half",
+    "Most overdue first": "a repair counts by how far past the NT time limit it is, how "
+    "serious it is and who lives there, and driving days are not counted against a trip",
 }
 
 WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
@@ -96,22 +97,22 @@ def trip_line(trip: weekly.Trip, jobs: dict[str, Job], today: date) -> str:
     return f"{repairs}{late} · {days(trip.travel_days)} driving + {days(trip.work_days)} work"
 
 
-WAITING_SHORT = {
-    weekly.CLOSED: "Road closed",
-    weekly.DROPPED: "Taken out by you",
-    weekly.TRIP_FULL: f"Trip full ({constants.MAX_JOBS_PER_TRIP} max)",
-    weekly.OUTRANKED: "Below the cut",
-}
-
-
 def waiting_line(waiting: weekly.Waiting, plan: weekly.WeekPlan) -> str:
-    """Why a community gets no trip this week, in a few words."""
-    short = WAITING_SHORT[waiting.reason]
-    if waiting.reason == weekly.OUTRANKED and waiting.priority is not None:
-        cut = plan.last_priority(waiting.base)
-        if cut is not None:
-            return f"{short}: {waiting.priority:.1f} against {cut:.1f}"
-    return short
+    """Why a community gets no trip, or only part of one, this week, in a few words."""
+    if waiting.reason == weekly.CLOSED:
+        return "Access closed most of the week"
+    if waiting.reason == weekly.DROPPED:
+        return "Taken out by you"
+    if waiting.reason == weekly.TRIP_FULL:
+        return f"Partly planned: the trip carries {waiting.trip_repairs}"
+    if waiting.reason == weekly.NO_ROOM:
+        return f"Needs {days(waiting.trip_days)} in a row; no crew had them left"
+    cut = plan.last_priority(waiting.base)
+    if waiting.priority is None or cut is None:
+        return "Below the cut"
+    added = any(t.added and t.base == waiting.base for t in plan.trips)
+    after = " after your added trip" if added else ""
+    return f"Below the cut{after}: {waiting.priority:.1f} against {cut:.1f}"
 
 
 # --- the tenant answer ---------------------------------------------------------------------
@@ -126,6 +127,7 @@ class TenantFacts:
     base: str
     is_town: bool
     setting_name: str
+    setting: float
     signed_by: str | None  # None while the week's plan is a proposal
     signed_reason: str | None
     done_on: date | None = None  # finished before this week
@@ -133,6 +135,7 @@ class TenantFacts:
     start_day: float | None = None  # crew-day offset the trip starts
     waiting: weekly.Waiting | None = None  # why it has no trip this week
     travel_days: float = 0.0  # there and back, for a trip to the job's community
+    reopens_on: date | None = None  # when closed access opens again
     in_plan_under: tuple[str, ...] = ()  # the named settings under which it has a trip
     missing_fields: tuple[str, ...] = ()  # required fields nobody has read yet
 
@@ -181,54 +184,83 @@ def _when(f: TenantFacts) -> str:
     return f"this week, from {day}"
 
 
+def _repairs(n: int) -> str:
+    return "1 repair" if n == 1 else f"{n} repairs"
+
+
+def _first(f: TenantFacts) -> str:
+    """Which repairs came first under the setting, in words true for that setting."""
+    if f.setting <= 0:
+        return "Trips that fixed the most repairs for each crew day came first."
+    return (
+        "Trips with the most need for each crew day came first: repairs past the time "
+        "limit, serious repairs, and houses with a health risk."
+    )
+
+
 def _why(f: TenantFacts) -> list[str]:
     job, waiting = f.job, f.waiting
     lines = [window_sentence(job), wait_sentence(job, f.today)]
     if f.trip is not None or waiting is None:
         return lines
+    setting = (
+        f'This week the setting is "{f.setting_name}": '
+        f"{SETTING_MEANING.get(f.setting_name, 'a mix of the named settings')}."
+    )
     if waiting.reason == weekly.CLOSED:
-        lines.append("The road to your community is closed this week, so no crew can get there.")
+        until = f" until {f.reopens_on:%d %B}" if f.reopens_on else ""
+        lines.append(
+            f"Access to your community is closed{until}, for most of this week, so no trip "
+            "was planned."
+        )
     elif waiting.reason == weekly.DROPPED:
         lines.append("The coordinator took your community's trip out of this week's plan.")
     elif waiting.reason == weekly.TRIP_FULL:
+        order = "were reported earlier" if f.setting <= 0 else "had more need under this setting"
         lines.append(
-            f"A crew is going to your community, but one trip carries "
-            f"{constants.MAX_JOBS_PER_TRIP} repairs, and others there were waiting longer."
+            f"A crew is going to your community this week, with time for "
+            f"{_repairs(waiting.trip_repairs)}. Other repairs there {order}."
         )
     elif f.is_town:
         lines.append(
-            f"The {f.base} crews have more repairs in town than days this week, "
-            "and others came first."
+            f"The {f.base} crews have more repairs than days this week, and others came first."
+        )
+        lines += [setting, _first(f)]
+    elif waiting.reason == weekly.NO_ROOM:
+        lines.append(
+            f"A trip to your community takes {days(waiting.trip_days)} of a crew's week, "
+            f"with {days(f.travel_days)} of driving there and back. By the time it came up, "
+            f"no {f.base} crew had that many days left."
         )
     else:
         if f.travel_days:
-            count = len(waiting.job_ids)
-            repairs = "1 repair" if count == 1 else f"{count} repairs"
             lines.append(
-                f"A trip to your community takes {days(f.travel_days)} of driving, "
-                f"there and back, to fix {repairs}."
+                f"A trip to your community takes {days(f.travel_days)} of driving, there and "
+                f"back, to fix {_repairs(waiting.trip_repairs)}."
             )
-        lines.append(
-            f"The {f.base} crews only have so many days. "
-            f'This week the setting was "{f.setting_name}": '
-            f"{SETTING_MEANING.get(f.setting_name, 'a mix of the two')}."
-        )
-        lines.append("Trips that fixed more for each crew day came first, and the days ran out.")
+        lines += [setting, _first(f) + " The days ran out before your trip."]
     others = [name for name in f.in_plan_under if name != f.setting_name]
     if others:
         lines.append(f'Under "{others[0]}", a crew would come to you this week.')
-    elif f.in_plan_under == () and waiting.reason == weekly.OUTRANKED:
-        lines.append("None of the three settings would plan your repair this week.")
+    elif waiting.reason in (weekly.OUTRANKED, weekly.NO_ROOM):
+        lines.append("None of the three named settings would plan your repair this week.")
     return lines
 
 
 def _next(f: TenantFacts) -> list[str]:
     if f.trip is not None:
         return ["The crew will contact you before they come."]
-    return [
-        "The plan is made again every Monday.",
-        "Each week your repair waits, it counts for more in the next plan.",
-    ]
+    lines = ["The plan is made again every Monday."]
+    if f.setting <= 0:
+        lines.append(
+            "Under this setting, waiting longer does not move a repair up. The coordinator can "
+            "change the setting."
+        )
+    elif scoring.urgency(f.job, f.today) < scoring.URGENCY_CAP:
+        lines.append("Each week your repair waits, it counts for more in the next plan.")
+    else:
+        lines.append("Your repair already counts as much as waiting can make it.")
+    return lines
 
 
 def _who(f: TenantFacts) -> list[str]:
@@ -243,6 +275,16 @@ def tenant_answer(f: TenantFacts) -> TenantAnswer:
     """Plain answers to the four questions a tenant asks about one repair."""
     job = f.job
     if f.done_on is not None:
+        if job.safety_class is SafetyClass.IMMEDIATE:
+            return TenantAnswer(
+                headline=f"This emergency was made safe on {f.done_on:%d %B %Y}.",
+                blocks=(
+                    Block(
+                        "What happens next?",
+                        ("Any repair it still needs is a separate job.", _who(f)[-1]),
+                    ),
+                ),
+            )
         return TenantAnswer(
             headline=f"This repair was done on {f.done_on:%d %B %Y}.",
             blocks=(Block("Who can you ask?", (_who(f)[-1],)),),

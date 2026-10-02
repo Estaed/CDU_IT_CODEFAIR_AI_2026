@@ -38,6 +38,7 @@ class PlanSigned:
     changes: tuple[str, ...]  # "added C: reason" / "took out C: reason"
     repairs: int
     overdue_left: int
+    job_ids: tuple[str, ...] = ()  # every planned job, sorted: what the signature covers
     added: tuple[str, ...] = ()  # community ids the coordinator put in
     dropped: tuple[str, ...] = ()  # community ids the coordinator took out
     recorded_at: datetime | None = None
@@ -92,7 +93,7 @@ Record = PlanSigned | FieldSet | Intake
 
 _KIND_OF = {PlanSigned: "plan_signed", FieldSet: "field_set", Intake: "intake"}
 _CLASS_OF = {kind: cls for cls, kind in _KIND_OF.items()}
-_TUPLES = ("trips", "changes", "added", "dropped")
+_TUPLES = ("trips", "changes", "job_ids", "added", "dropped")
 
 
 def _to_row(record: Record) -> dict:

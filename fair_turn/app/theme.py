@@ -11,7 +11,7 @@ BASE = "#161616"  # a crew base
 TOWN = "#262626"
 REMOTE = "#8a3ffc"
 SETTING_COLOURS = {
-    "Most repairs": "#0072c3",
+    "Efficiency first": "#0072c3",
     "Balanced": "#8a6400",
     "Most overdue first": "#b4462a",
 }

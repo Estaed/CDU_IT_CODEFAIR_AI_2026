@@ -72,6 +72,33 @@ def test_business_days_match_a_day_by_day_count() -> None:
         assert scoring.business_days_between(start, end) == by_hand
 
 
+def test_public_holidays_are_not_business_days() -> None:
+    christmas_eve = date(2025, 12, 24)  # Wednesday; 25 and 26 December are holidays
+    assert scoring.business_days_between(christmas_eve, date(2025, 12, 26)) == 0
+    assert scoring.business_days_between(christmas_eve, date(2025, 12, 29)) == 1
+    assert scoring.business_days_between(date(2025, 12, 25), date(2025, 12, 29)) == 1
+    assert scoring.business_days_between(date(2025, 12, 31), date(2026, 1, 2)) == 1
+    for holiday in constants.PUBLIC_HOLIDAYS:
+        assert scoring.business_days_between(holiday - timedelta(1), holiday) == 0
+
+
+def test_business_days_match_a_day_by_day_count_over_the_holidays() -> None:
+    start = date(2025, 12, 10)
+    for n in range(40):
+        end = start + timedelta(n)
+        by_hand = sum(
+            (day := start + timedelta(k)).weekday() < 5 and day not in constants.PUBLIC_HOLIDAYS
+            for k in range(1, n + 1)
+        )
+        assert scoring.business_days_between(start, end) == by_hand
+
+
+def test_overdue_boundary_moves_past_the_holidays() -> None:
+    urgent = job(reported=date(2025, 12, 23), cls=SafetyClass.URGENT)  # 2 business days
+    assert not scoring.is_overdue(urgent, date(2025, 12, 29))  # 24 Dec and 29 Dec used
+    assert scoring.is_overdue(urgent, date(2025, 12, 30))
+
+
 def test_is_overdue_boundary_urgent_town() -> None:
     urgent = job(cls=SafetyClass.URGENT)  # 2 business days, reported Monday
     assert not scoring.is_overdue(urgent, MONDAY + timedelta(2))  # Wednesday: 2 used

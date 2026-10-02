@@ -61,18 +61,19 @@ def _rows(path: Path) -> dict[str, dict[str, str]]:
 def test_this_week_trades_repairs_for_overdue_households(exported: Path) -> None:
     rows = _rows(exported / "this_week_by_setting.csv")
     assert set(rows) == {f"{i / 10:.1f}" for i in range(11)}
-    most, need = rows["0.0"], rows["1.0"]
-    assert most["name"] == "Most repairs" and need["name"] == "Most overdue first"
-    assert int(most["repairs"]) == max(int(r["repairs"]) for r in rows.values())
-    assert int(need["repairs"]) < int(most["repairs"])
-    assert int(need["overdue_left"]) < int(most["overdue_left"])
+    efficiency, need = rows["0.0"], rows["1.0"]
+    assert efficiency["name"] == "Efficiency first" and need["name"] == "Most overdue first"
+    # Efficiency first is a rule (trips by repairs per crew-day), not a guarantee of the most
+    # repairs: the greedy fill can pack more at a small setting. Only the two ends compare.
+    assert int(need["repairs"]) < int(efficiency["repairs"])
+    assert int(need["overdue_left"]) < int(efficiency["overdue_left"])
 
 
-def test_season_most_repairs_leaves_the_farthest_waiting(exported: Path) -> None:
+def test_season_efficiency_first_leaves_the_farthest_waiting(exported: Path) -> None:
     rows = _rows(exported / "season_by_setting.csv")
-    most, balanced = rows["0.0"], rows["0.5"]
-    assert int(most["over_300_km_still_open"]) > int(balanced["over_300_km_still_open"])
-    assert int(most["town_still_open"]) <= int(rows["1.0"]["town_still_open"])
+    efficiency, balanced = rows["0.0"], rows["0.5"]
+    assert int(efficiency["over_300_km_still_open"]) > int(balanced["over_300_km_still_open"])
+    assert int(efficiency["town_still_open"]) <= int(rows["1.0"]["town_still_open"])
 
 
 def test_extraction_vs_baseline_matches_eval_json(exported: Path) -> None:

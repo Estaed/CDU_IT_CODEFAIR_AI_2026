@@ -78,12 +78,21 @@ def append(path: Path, record: HumanSetField | IntakeReport) -> bool:
 
 
 def read(path: Path) -> list[HumanSetField | IntakeReport]:
-    """Return records in file order, or an empty list when the store is absent."""
+    """Return records in file order, or an empty list when the store is absent. A line cut
+    off mid-write, or of an unknown kind, is skipped rather than breaking every page."""
     path = Path(path)
     if not path.exists():
         return []
+    records = []
     with open(path, encoding="utf-8", newline="") as f:
-        return [_from_row(json.loads(line)) for line in f if line.strip()]
+        for line in f:
+            if not line.strip():
+                continue
+            try:
+                records.append(_from_row(json.loads(line)))
+            except (ValueError, KeyError, TypeError):
+                continue
+    return records
 
 
 def human_set_for(records: list[HumanSetField | IntakeReport]) -> dict[str, dict[str, str]]:

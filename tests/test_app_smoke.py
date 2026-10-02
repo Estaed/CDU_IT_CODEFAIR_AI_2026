@@ -88,7 +88,7 @@ def test_choosing_a_setting_moves_repairs_and_overdue(app) -> None:
     assert not app.exception
     assert _metric(app, "Repairs this week") < repairs
     assert _metric(app, "Overdue repairs still waiting") < overdue
-    assert any(t.startswith("**Compared with Most repairs:") for t in _text(app))
+    assert any(t.startswith("**Compared with Efficiency first:") for t in _text(app))
 
 
 def test_signing_needs_a_name_and_a_reason(app, tmp_path) -> None:
@@ -132,24 +132,108 @@ def test_tenant_page_refuses_an_unknown_number(app) -> None:
     assert any("No repair has the number" in e.value for e in app.error)
 
 
+def _queue_count(at) -> int:
+    waiting = next(t for t in at.tabs if t.label.startswith("Needs a person"))
+    return int(waiting.label.split("(")[1].rstrip(")"))
+
+
+def _fill_missing_facts(at, reason: str | None) -> None:
+    """Set every missing fact (urgent for the safety class, so the job joins the plan), the
+    reason if given, and the person's name, then press save."""
+    for box in at.selectbox:
+        if box.key and box.key.startswith("value_"):
+            if box.key.endswith("safety_class"):
+                box.select("urgent")
+            else:
+                box.select_index(0)
+    why = next(r for r in at.radio if r.key and r.key.startswith("why_"))
+    assert why.value is None  # no reason is chosen for the person
+    if reason is not None:
+        why.set_value(reason)
+    next(t for t in at.text_input if t.key and t.key.startswith("who_")).input("A. Officer")
+    next(b for b in at.button if b.label == "Save and add to the plan").click().run()
+
+
+def _sign(at, signer: str = "A. Coordinator") -> None:
+    next(t for t in at.text_input if t.label == "Your name").input(signer)
+    next(t for t in at.text_area if t.label == "Why this plan").input("Remote waits are long")
+    next(b for b in at.button if b.label == "Sign this week's plan").click().run()
+    assert not at.exception
+
+
+def _sign_button(at):
+    return next(b for b in at.button if b.label == "Sign this week's plan")
+
+
+def _changed_after_signing(at) -> bool:
+    return any("The plan changed after version 1 was signed" in w.value for w in at.warning)
+
+
 def test_a_person_sets_the_missing_fact_and_the_job_leaves_the_queue(app, tmp_path) -> None:
     app.switch_page("pages/reports.py").run()
     assert not app.exception
-    waiting = next(t for t in app.tabs if t.label.startswith("Needs a person"))
-    count = int(waiting.label.split("(")[1].rstrip(")"))
+    count = _queue_count(app)
     assert count >= 1
-    for box in app.selectbox:
-        if box.key and box.key.startswith("value_"):
-            box.select_index(0)
-    next(t for t in app.text_input if t.key and t.key.startswith("who_")).input("A. Officer")
-    next(b for b in app.button if b.label == "Save and add to the plan").click().run()
+    _fill_missing_facts(app, "Tenant confirmed by phone")
     assert not app.exception
-    after = next(t for t in app.tabs if t.label.startswith("Needs a person"))
-    assert after.label == f"Needs a person ({count - 1})"
+    assert _queue_count(app) == count - 1
     assert any(
         isinstance(r, runtime.HumanSetField) for r in runtime.read(tmp_path / "runtime.jsonl")
     )
-    assert any(isinstance(r, audit.FieldSet) for r in audit.read(tmp_path / "audit.jsonl"))
+    (field_set,) = audit.read(tmp_path / "audit.jsonl")
+    assert isinstance(field_set, audit.FieldSet)
+    assert field_set.reason == "Tenant confirmed by phone"
+
+
+def test_saving_a_missing_fact_without_a_reason_shows_the_error(app, tmp_path) -> None:
+    app.switch_page("pages/reports.py").run()
+    count = _queue_count(app)
+    _fill_missing_facts(app, None)
+    assert not app.exception
+    assert any("say why you are sure" in e.value for e in app.error)
+    assert _queue_count(app) == count
+    assert not (tmp_path / "runtime.jsonl").exists()
+    assert not (tmp_path / "audit.jsonl").exists()
+
+
+def test_a_fact_set_after_signing_shows_the_plan_changed(app) -> None:
+    _sign(app)
+    assert _sign_button(app).disabled and not _changed_after_signing(app)
+    app.switch_page("pages/reports.py").run()
+    _fill_missing_facts(app, "Tenant confirmed by phone")
+    assert not app.exception
+    app.switch_page("pages/plan.py").run()
+    assert _changed_after_signing(app)
+    assert not _sign_button(app).disabled
+
+
+def test_a_replayed_report_that_changes_the_plan_shows_the_plan_changed(app) -> None:
+    _sign(app)
+    for _ in range(8):  # the seeded order reaches a report that changes the trips by the 5th
+        app.switch_page("pages/reports.py").run()
+        next(b for b in app.button if b.label == "Add a test-set report (no model)").click().run()
+        assert not app.exception
+        app.switch_page("pages/plan.py").run()
+        if _changed_after_signing(app):
+            break
+        assert _sign_button(app).disabled  # a report that changes nothing keeps the signature
+    assert _changed_after_signing(app)
+    assert not _sign_button(app).disabled
+
+
+def test_tenant_is_told_the_signed_plan_not_the_sessions_setting(app) -> None:
+    app.get("button_group")[0].set_value("Balanced").run()
+    _sign(app)
+    app.get("button_group")[0].set_value("Efficiency first").run()
+    assert _changed_after_signing(app)  # the session now proposes another plan
+    app.switch_page("pages/tenant.py").run()
+    # A remote repair below the cut under Balanced: its answer names the setting in force.
+    app.text_input[0].set_value("JR-2025-00008").run()
+    assert not app.exception
+    answer = " ".join(m.value for m in app.markdown)
+    assert 'This week the setting is "Balanced"' in answer
+    assert 'This week the setting is "Efficiency first"' not in answer
+    assert "A person signed this week's plan: A. Coordinator." in answer
 
 
 def test_new_report_is_offered_without_a_model_and_saves_a_replay(app, tmp_path) -> None:

@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import re
 import socket
 from pathlib import Path
 
@@ -181,8 +182,36 @@ def test_replay_adds_a_test_set_report_without_a_model(tmp_path, needs_person) -
     row = json.loads((tmp_path / "runtime.jsonl").read_text("utf-8"))
     assert row["provider"] == intake.REPLAY_PROVIDER
     assert row["status"] == ("needs_review" if needs_person else "extracted")
+    note = "urgency left unread to show the review path, no model call"
+    expected = note if needs_person else "no model call"
+    assert re.fullmatch(rf"copy of JR-2025-\d{{5}}, {expected}", row["model"])
     saved = next(t.value for t in at.text if t.value.startswith("saved="))
     assert saved == f"saved={row['job_id']}"
+
+
+def test_replay_never_adds_an_immediate_report(tmp_path) -> None:
+    at = _app(tmp_path)
+    for _ in range(4):
+        _button(at, "Add a test-set report (no model)").click().run(timeout=60)
+        assert not at.exception
+    lines = (tmp_path / "runtime.jsonl").read_text("utf-8").splitlines()
+    rows = [json.loads(line) for line in lines]
+    art = artefacts.load_all()
+    labels = {lb["job_id"]: lb for lb in art.labels}
+    assert len(rows) == 4
+    assert len({row["text"] for row in rows}) == 4  # each a different report
+    for row in rows:
+        source = re.fullmatch(r"copy of (JR-2025-\d{5}), no model call", row["model"]).group(1)
+        assert row["extraction"]["safety_class"] != "immediate"
+        assert labels[source]["safety_class"] != "immediate"
+        assert row["text"] == art.reports[source]
+
+
+def test_a_second_unreadable_replay_does_not_crash_the_page(tmp_path) -> None:
+    at = _app(tmp_path)
+    for _ in range(2):
+        _button(at, "Add one the AI could not read").click().run(timeout=60)
+        assert not at.exception
 
 
 def test_instruction_like_text_goes_to_review_even_when_every_phrase_verifies() -> None:

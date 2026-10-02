@@ -137,7 +137,7 @@ task itself).
 `MAX_JOBS_PER_TRIP`). One setting `s` in [0, 1] prices a trip per crew-day,
 `Σ((1−s) + s·need) / (work + (1−s)·driving)`; each base fills its crews' week greedily,
 best-fit packing. The planning day `PLAN_DAY` follows `HISTORY_WEEKS` simulated weeks of
-Most repairs planning.
+Efficiency first planning.
 
 **Seams** (one implementation each, no interface classes): `data/artefacts.py` loads the
 committed reports and readings (a pilot reads the agency's intake instead); `core/audit.py`

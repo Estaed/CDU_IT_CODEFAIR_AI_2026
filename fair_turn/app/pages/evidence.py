@@ -97,11 +97,14 @@ def render_season() -> None:
     efficiency, balanced, need = (season(v) for v in constants.SETTINGS.values())
     far = [r.bands[-1].still_open for r in (efficiency, balanced, need)]
     st.info(
-        f"**Most repairs leaves {far[0]} repairs over 300 km from a base still waiting after "
+        f"**Efficiency first leaves {far[0]} repairs over 300 km from a base still waiting after "
         f"{SEASON_WEEKS} weeks. Balanced leaves {far[1]}, and does "
-        f"{balanced.repairs - efficiency.repairs:+d} repairs in total.** Most overdue first "
-        f"leaves {far[2]}, but town repairs on time fall from {efficiency.on_time_town:.0%} to "
-        f"{need.on_time_town:.0%}. Neither end is the fair answer; the middle costs little."
+        f"{balanced.repairs - efficiency.repairs:+d} repairs in total.** Its cost: remote "
+        f"repairs on time go from {efficiency.on_time_remote:.0%} to "
+        f"{balanced.on_time_remote:.0%}, because crew time goes to households already longest "
+        f"past the limit. Most overdue first leaves {far[2]}, and town repairs on time fall from "
+        f"{efficiency.on_time_town:.0%} to {need.on_time_town:.0%}. Neither end is the fair "
+        "answer; the choice in between is the coordinator's."
     )
     left, right = st.columns(2)
     data = band_frame()

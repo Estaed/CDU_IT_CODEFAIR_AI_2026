@@ -67,7 +67,7 @@ part of the work those local teams cannot do without a licensed trade from town.
   household health risk read from the report. Unchanged from the first version.
 - **One setting, s from 0 to 1**, decides what a trip is worth per crew-day:
   `priority = Σ((1 − s) + s × need) / (work days + (1 − s) × driving days)`.
-  At **Most repairs** (0) every repair counts 1 and driving counts in full, so the most
+  At **Efficiency first** (0) every repair counts 1 and driving counts in full, so the most
   repairs per crew-day wins: the brief's efficiency, made exact. At **Most overdue first**
   (1) repairs count by need and driving is not held against a trip. **Balanced** is 0.5.
 - **Each base fills its crews' week**, highest priority first, packing each trip onto the
@@ -81,7 +81,7 @@ part of the work those local teams cannot do without a licensed trade from town.
 
 1. The backlog in one sentence, with how many repairs are past the NT time limit and how
    many of those are remote.
-2. The setting, and its cost in four numbers against Most repairs: repairs this week,
+2. The setting, and its cost in four numbers against Efficiency first: repairs this week,
    overdue repairs still waiting, remote communities visited, crew-days driving. A line
    chart shows every setting from 0 to 1, so the coordinator sees the whole trade-off,
    not one point.
@@ -96,39 +96,50 @@ meaning, whether another setting would have sent a crew, and who signed with wha
 
 ## What the numbers show (synthetic data, our crew assumptions)
 
-Planning day Monday 29 December 2025, after 12 weeks planned for the most repairs
+Planning day Monday 29 December 2025, after 12 weeks planned efficiency first: 336 repairs
+wait for a crew, 139 are past the NT time limit, and all 139 are remote
 (`data/build/report/this_week_by_setting.csv`):
 
 | Setting | Repairs this week | Overdue repairs still waiting |
 |---|---|---|
-| Most repairs | 91 | 148 (all remote) |
-| 0.1 to 0.2 | 91 | 137 to 138 |
-| Balanced | 79 | 126 |
-| Most overdue first | 54 | 117 |
+| Efficiency first | 88 | 130 (all remote) |
+| 0.1 | 90 | 120 |
+| Balanced | 77 | 108 |
+| Most overdue first | 49 | 98 |
 
-A little weight on need is free this week; past that, every overdue household reached costs
-repairs.
+Efficiency first ranks trips by repairs per crew-day; it is a rule, not a guarantee of the
+most repairs, because each base fills its week greedily. A little weight on need (0.1) packs
+two more repairs **and** reaches ten more overdue households. Past that, every overdue
+household reached costs repairs.
 
 Thirteen weeks, every Monday planned under one setting
 (`data/build/report/season_by_setting.csv`):
 
 | Setting | Repairs | Town on time | Remote on time | Over 300 km, still waiting at the end |
 |---|---|---|---|---|
-| Most repairs | 1069 | 79 % | 48 % | 201 |
-| Balanced | 1087 | 90 % | 46 % | 154 |
-| Most overdue first | 922 | 31 % | 34 % | 154 |
+| Efficiency first | 1074 | 80 % | 51 % | 199 |
+| Balanced | 1084 | 90 % | 49 % | 142 |
+| Most overdue first | 923 | 31 % | 36 % | 156 |
 
 Pure efficiency is not even the most efficient over a season: it treats a fresh routine
-repair like an urgent one. Pure need-first collapses town service and does not help the
-farthest households more than Balanced. One more crew at Katherine, under Balanced, leaves
-123 instead of 154 far repairs waiting (`one_more_crew.csv`): the setting decides who waits,
-and crews decide how long.
+repair like an urgent one. Balanced does more repairs and leaves 57 fewer far repairs
+waiting, but remote on-time falls two points: it spends crew time on the households already
+longest past the limit, which can no longer be on time. Pure need-first collapses town
+service and leaves more far repairs waiting than Balanced. One more crew at any base, under
+Balanced, leaves 127 to 137 far repairs waiting instead of 142 (`one_more_crew.csv`): the
+setting decides who waits, and crews decide how long.
 
 ## What is deliberately not claimed
 
 - Crew counts, repairs per crew-day and driving speed are assumptions; NT does not publish
   them. The pattern is what a pilot should test, not a forecast.
 - A trip visits one community; multi-stop circuits are not modelled.
+- Each base fills its crews' week greedily. It is fast and explainable line by line, not
+  optimal: a slightly different setting sometimes packs a repair or two more.
+- Access closures are synthetic; a community counts as cut off for the week when its access
+  is closed on at least three weekdays.
+- NT time limits skip the public holidays in the window (25 and 26 December, 1 January),
+  but a crew's week is still counted as five days in the New Year week.
 - Every report is treated as work for a licensed trade. In practice the community's
   maintenance officer does part of it (what needs no licence); which fault types fall on
   which side is not published, so we did not invent a split. A pilot would take it from the

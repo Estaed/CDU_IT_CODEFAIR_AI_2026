@@ -27,7 +27,6 @@ EXAMPLE_REPORTS = {
     "Electrical, emergency": "JR-2025-00011",
 }
 REPLAY_PROVIDER = "test-set replay"
-REPLAY_MODEL = "no model call: the committed reading of a test-set report"
 
 
 def _draft() -> dict:
@@ -111,7 +110,9 @@ def _flat(row) -> dict:
 
 def replay(needs_person: bool = False) -> str:
     """Add one unused test-set report through the same save path, with no model call: its
-    committed reading, re-checked against the text. Returns the new job id."""
+    committed reading, re-checked against the text. With ``needs_person`` the urgency phrase
+    is left out of the reading (and the record says so), to show the path a report takes when
+    the AI cannot find the words. Never an emergency. Returns the new job id."""
     art = state.artefacts()
     ids = sorted(label["job_id"] for label in art.labels)
     order = [ids[i] for i in np.random.default_rng(constants.SEED).permutation(len(ids))]
@@ -121,21 +122,27 @@ def replay(needs_person: bool = False) -> str:
         if isinstance(r, runtime.IntakeReport) and r.provider == REPLAY_PROVIDER
     }
     community_of = {label["job_id"]: label["community_id"] for label in art.labels}
+    label_class = {label["job_id"]: label["safety_class"] for label in art.labels}
     for source_id in order:
         text = art.reports[source_id]
-        if text in used:
+        if text in used or label_class[source_id] == "immediate":
             continue
         flat = _flat(art.extraction[source_id])
         verified = verify_spans.verify(text, flat)
-        if verified.needs_human != needs_person:
+        if verified.needs_human:
             continue
+        note = "no model call"
+        if needs_person:
+            flat = {k: v for k, v in flat.items() if not k.startswith("safety_class")}
+            verified = verify_spans.verify(text, flat)
+            note = "urgency left unread to show the review path, no model call"
         failed = [f for f in verify_spans.REQUIRED_FIELDS if getattr(verified, f) is None]
         result = intake_llm.IntakeResult(
             extraction=flat,
             verified=verified,
             status="needs_review" if failed else "extracted",
             provider=REPLAY_PROVIDER,
-            model=REPLAY_MODEL,
+            model=f"copy of {source_id}, {note}",
             prompt_version=REPLAY_PROVIDER,
             latency_s=0.0,
             validation="verified" if not failed else f"{', '.join(failed)} not found",

@@ -1,9 +1,11 @@
 """Write the committed sample decision log, ``data/audit/sample.jsonl``.
 
 A short, believable morning on the planning day: a person sets a fact the AI could not
-read, a new report is read, the coordinator signs the Most repairs proposal, then changes
-the setting, adds a trip with a reason and signs again. Fixed wall-clock times, so the file
-is the same on every run. The Evidence page shows it until a real plan is signed locally.
+read, a test-set report is replayed with no model, the coordinator signs the Efficiency
+first proposal, then changes the setting, adds a trip with a reason and signs again. The
+wall clock is a demo morning (5 October 2026) and the planning day is in the data, so the
+two clocks differ. Fixed times: the file is the same on every run. The Evidence page shows
+it until a real plan is signed locally.
 
     venv/Scripts/python scripts/seed_audit.py
 """
@@ -33,11 +35,12 @@ def _signed(plan, jobs, version, reason, changes=(), added=()) -> audit.PlanSign
         signer=SIGNER,
         reason=reason,
         trips=weekly.trip_lines(plan),
+        job_ids=tuple(sorted(plan.planned_job_ids())),
         changes=tuple(changes),
         repairs=summary.repairs,
         overdue_left=summary.overdue_left,
         added=tuple(added),
-        recorded_at=datetime(2025, 12, 29, 9, 40, tzinfo=DARWIN)
+        recorded_at=datetime(2026, 10, 5, 9, 40, tzinfo=DARWIN)
         + timedelta(minutes=25 * (version - 1)),
     )
 
@@ -51,7 +54,7 @@ def main() -> None:
         jobs, places, 0.0, first, (constants.PLAN_DAY - first).days // 7, art.closures
     )
     open_jobs = history.open_on(jobs, constants.PLAN_DAY)
-    closed = weeks.closed_on(art.closures, constants.PLAN_DAY)
+    closed = weeks.closed_for_week(art.closures, constants.PLAN_DAY)
     person = next(j for j in open_jobs if j.needs_human)
     missing = "fault_type" if person.fault_type is None else "safety_class"
     value = "roof_structure" if missing == "fault_type" else "urgent"
@@ -63,18 +66,18 @@ def main() -> None:
             value,
             SIGNER,
             "Tenant confirmed by phone",
-            recorded_at=datetime(2025, 12, 29, 9, 5, tzinfo=DARWIN),
+            recorded_at=datetime(2026, 10, 5, 9, 5, tzinfo=DARWIN),
         ),
         audit.Intake(
             constants.PLAN_DAY,
             "JR-2025-01453",
-            "claude",
-            "sonnet",
-            "intake-v1",
-            11.4,
+            "test-set replay",
+            "copy of a test-set report, no model call",
+            "test-set replay",
+            0.0,
             "verified",
             "extracted",
-            recorded_at=datetime(2025, 12, 29, 9, 20, tzinfo=DARWIN),
+            recorded_at=datetime(2026, 10, 5, 9, 20, tzinfo=DARWIN),
         ),
     ]
     first_plan = weekly.plan(open_jobs, places, constants.PLAN_DAY, 0.0, closed=closed)

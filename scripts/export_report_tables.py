@@ -90,7 +90,7 @@ def this_week(jobs: list[Job], places, closures) -> list[dict]:
     """The planning-day trade-off line the plan page draws: one plan per setting."""
     history = weeks.simulate(jobs, places, 0.0, FIRST_MONDAY, HISTORY_WEEKS, closures)
     open_jobs = history.open_on(jobs, constants.PLAN_DAY)
-    closed = weeks.closed_on(closures, constants.PLAN_DAY)
+    closed = weeks.closed_for_week(closures, constants.PLAN_DAY)
     rows = []
     for setting in _settings():
         plan = weekly.plan(open_jobs, places, constants.PLAN_DAY, setting, closed=closed)
@@ -133,12 +133,12 @@ def season(jobs: list[Job], places, closures) -> list[dict]:
 
 
 def one_more_crew(jobs: list[Job], places, closures) -> list[dict]:
-    """One extra crew at each base in turn, at Most repairs and Balanced."""
+    """One extra crew at each base in turn, at Efficiency first and Balanced."""
     rows = []
     for base in constants.CREW_BASES:
         crews = dict(constants.CREWS_AT_BASE)
         crews[base] += 1
-        for name in ("Most repairs", "Balanced"):
+        for name in ("Efficiency first", "Balanced"):
             setting = constants.SETTINGS[name]
             run = weeks.simulate(jobs, places, setting, FIRST_MONDAY, SEASON_WEEKS, closures, crews)
             r = weeks.measure(run, jobs, places, setting)

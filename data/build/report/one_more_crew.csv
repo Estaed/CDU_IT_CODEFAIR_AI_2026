@@ -1,11 +1,11 @@
 extra_crew_at,setting,name,repairs,on_time_remote,far_still_open
-Darwin,0.0,Most repairs,1105,0.5351,168
-Darwin,0.5,Balanced,1125,0.5313,140
-Katherine,0.0,Most repairs,1091,0.5201,189
-Katherine,0.5,Balanced,1114,0.4937,123
-Tennant Creek,0.0,Most repairs,1082,0.5000,192
-Tennant Creek,0.5,Balanced,1097,0.4837,147
-Alice Springs,0.0,Most repairs,1101,0.5238,177
-Alice Springs,0.5,Balanced,1122,0.5000,140
-Nhulunbuy,0.0,Most repairs,1102,0.5301,173
-Nhulunbuy,0.5,Balanced,1107,0.5088,145
+Darwin,0.0,Efficiency first,1109,0.5664,166
+Darwin,0.5,Balanced,1123,0.5614,127
+Katherine,0.0,Efficiency first,1098,0.5439,184
+Katherine,0.5,Balanced,1108,0.5288,133
+Tennant Creek,0.0,Efficiency first,1086,0.5288,190
+Tennant Creek,0.5,Balanced,1092,0.5088,137
+Alice Springs,0.0,Efficiency first,1107,0.5514,177
+Alice Springs,0.5,Balanced,1121,0.5288,127
+Nhulunbuy,0.0,Efficiency first,1107,0.5551,167
+Nhulunbuy,0.5,Balanced,1108,0.5439,131

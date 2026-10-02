@@ -57,20 +57,32 @@ def test_needs_human_jobs_stay_open() -> None:
     assert season.completed_on == {"H0": None}
 
 
-def test_remote_trip_jobs_complete_on_the_trips_last_day() -> None:
-    jobs = [job(f"M{i}", "R-MID", OLD) for i in range(3)]  # 1 driving + 1 work day
+def test_remote_trip_jobs_complete_when_the_work_ends() -> None:
+    # R-MID: half of 1 driving day out, then 1 work day: work ends at 1.5, on Tuesday.
+    jobs = [job(f"M{i}", "R-MID", OLD) for i in range(3)]
     season = simulate(jobs)
     assert set(season.completed_on.values()) == {MONDAY + timedelta(1)}
 
 
-def test_a_full_week_trip_finishes_by_friday_and_leftovers_go_next_week() -> None:
+def test_remote_job_is_done_before_the_drive_home() -> None:
+    # R-FAR: 1.25 days out, 0.5 work: done Tuesday. The crew is home only on Wednesday.
+    season = simulate([job("F0", "R-FAR", OLD)])
+    assert season.completed_on["F0"] == MONDAY + timedelta(1)
+
+
+def test_work_ending_exactly_at_a_day_boundary_counts_that_day() -> None:
+    # R-MID with 1 repair: 0.5 out + 0.5 work ends at 1.0, the end of Monday.
+    season = simulate([job("M0", "R-MID", OLD)])
+    assert season.completed_on["M0"] == MONDAY
+
+
+def test_a_full_week_trip_and_its_leftovers_next_week() -> None:
     # 2.5 driving days leave room for 7 repairs (2.5 work days); the other 2 go next week.
     jobs = [job(f"F{i}", "R-FAR", OLD) for i in range(9)]
     season = simulate(jobs, n_weeks=2)
     done = sorted(season.completed_on.values())
-    friday = MONDAY + timedelta(4)
-    assert done[:7] == [friday] * 7
-    assert done[7:] == [MONDAY + timedelta(weeks=1, days=3)] * 2  # 2.5 + 1 days: Thursday
+    assert done[:7] == [MONDAY + timedelta(3)] * 7  # 1.25 out + 2.5 work = 3.75: Thursday
+    assert done[7:] == [MONDAY + timedelta(weeks=1, days=2)] * 2  # 1.25 + 1 = 2.25: Wednesday
     for day in done:
         assert day.weekday() < 5
 
@@ -83,10 +95,50 @@ def test_town_job_reported_midweek_is_done_that_day() -> None:
     assert season.completed_on["S0"] == MONDAY + timedelta(weeks=1)
 
 
+def _closure(cid: str, start: str, end: str) -> dict[str, str]:
+    return {"community_id": cid, "closed_from": start, "closed_to": end}
+
+
 def test_closed_road_keeps_a_remote_job_open() -> None:
-    closures = [{"community_id": "R-NEAR", "closed_from": "2025-06-01", "closed_to": "2025-06-08"}]
+    closures = [_closure("R-NEAR", "2025-06-01", "2025-06-08")]
     season = simulate([job("N0", "R-NEAR", OLD)], n_weeks=2, closures=closures)
     assert season.completed_on["N0"] == MONDAY + timedelta(weeks=1)  # first open Monday
+
+
+def test_a_two_day_closure_does_not_block_the_week() -> None:
+    closures = [_closure("R-NEAR", "2025-06-02", "2025-06-03")]  # Monday and Tuesday
+    season = simulate([job("N0", "R-NEAR", OLD)], closures=closures)
+    assert season.completed_on["N0"] is not None
+    assert MONDAY <= season.completed_on["N0"] <= MONDAY + timedelta(4)
+
+
+def test_closed_for_week_needs_three_closed_weekdays() -> None:
+    closures = [
+        _closure("THREE", "2025-06-02", "2025-06-04"),  # Mon-Wed
+        _closure("TWO", "2025-06-02", "2025-06-03"),  # Mon-Tue
+        _closure("WEEKEND", "2025-06-05", "2025-06-08"),  # Thu-Sun: two weekdays
+        _closure("SPLIT", "2025-06-02", "2025-06-03"),  # Mon-Tue ...
+        _closure("SPLIT", "2025-06-05", "2025-06-06"),  # ... and Thu-Fri: four
+        _closure("OVERLAP", "2025-06-02", "2025-06-03"),  # the same two days twice
+        _closure("OVERLAP", "2025-06-02", "2025-06-03"),
+        _closure("WHOLE", "2025-05-20", "2025-06-30"),
+        _closure("LAST WEEK", "2025-05-26", "2025-06-01"),
+    ]
+    assert weeks.closed_for_week(closures, MONDAY) == {"THREE", "SPLIT", "WHOLE"}
+    assert weeks.closed_for_week([], MONDAY) == set()
+
+
+def test_reopens_gives_the_first_open_day() -> None:
+    closures = [
+        _closure("A", "2025-06-01", "2025-06-04"),
+        _closure("A", "2025-06-05", "2025-06-07"),  # back to back: one closure
+        _closure("B", "2025-06-10", "2025-06-12"),
+    ]
+    assert weeks.reopens(closures, "A", MONDAY) == date(2025, 6, 8)
+    assert weeks.reopens(closures, "A", date(2025, 6, 7)) == date(2025, 6, 8)
+    assert weeks.reopens(closures, "A", date(2025, 6, 8)) is None  # open that day
+    assert weeks.reopens(closures, "B", MONDAY) is None  # closes later, open now
+    assert weeks.reopens(closures, "C", MONDAY) is None
 
 
 def test_open_on() -> None:

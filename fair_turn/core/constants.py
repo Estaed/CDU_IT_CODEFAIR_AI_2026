@@ -38,10 +38,13 @@ CREW_DAYS_PER_WEEK = 5
 JOBS_PER_CREW_DAY = 3
 DRIVE_KM_PER_DAY = 400  # road km a crew covers in one day of driving
 MAX_JOBS_PER_TRIP = 9  # three working days at one community
+# NT public holidays inside the window and the planning week (Public Holidays Act 1981):
+# not business days. A crew's week is still five days; see docs/PRODUCT.md.
+PUBLIC_HOLIDAYS = (date(2025, 12, 25), date(2025, 12, 26), date(2026, 1, 1))
 # The planning week the app shows: the Monday after the last synthetic report.
 PLAN_DAY = date(2025, 12, 29)
-# The three named settings of "what decides where crews go" (0 = most repairs).
-SETTINGS = {"Most repairs": 0.0, "Balanced": 0.5, "Most overdue first": 1.0}
+# The three named settings of "what decides where crews go" (0 = efficiency first).
+SETTINGS = {"Efficiency first": 0.0, "Balanced": 0.5, "Most overdue first": 1.0}
 CREW_BASE_COORDS = {
     "Darwin": (-12.461534, 130.842442),
     "Katherine": (-14.46676, 132.266768),

@@ -37,6 +37,25 @@ def test_round_trip_and_duplicate_intake_draft_token(tmp_path) -> None:
     }
 
 
+def test_read_skips_a_truncated_or_unknown_line(tmp_path) -> None:
+    path = tmp_path / "runtime.jsonl"
+    first = runtime.HumanSetField(
+        "JR-2025-00001", "fault_type", "electrical", "Ada", "report", datetime(2025, 12, 29, 9)
+    )
+    last = runtime.HumanSetField(
+        "JR-2025-00002", "safety_class", "urgent", "Ada", "phone", datetime(2025, 12, 29, 10)
+    )
+    runtime.append(path, first)
+    with open(path, "a", encoding="utf-8", newline="") as f:
+        f.write('{"kind": "human_set", "job_id": "JR-2025-0\n')  # cut off mid-write
+        f.write('{"kind": "promotion", "job_id": "JR-2025-00003"}\n')  # an older kind
+        f.write('{"kind": "human_set", "job_id": "JR-2025-00004"}\n')  # fields missing
+        f.write('{"job_id": "JR-2025-00005"}\n')  # no kind
+        f.write("\n")
+    runtime.append(path, last)
+    assert runtime.read(path) == [first, last]
+
+
 def test_next_job_id_uses_highest_valid_existing_id() -> None:
     assert runtime.next_job_id([]) == "JR-2025-00001"
     assert runtime.next_job_id(["JR-2025-01452", "not-a-job", "JR-2025-00007"]) == "JR-2025-01453"

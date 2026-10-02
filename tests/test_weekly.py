@@ -88,6 +88,8 @@ def test_at_most_repairs_enough_town_work_keeps_the_crew_in_town() -> None:
     waiting = week.waiting_at("R-NEAR")
     assert waiting.reason == weekly.OUTRANKED
     assert waiting.priority == pytest.approx(9 / 3.5)
+    assert waiting.priority <= week.last_priority(BASE)
+    assert (waiting.trip_repairs, waiting.trip_days) == (9, 3.5)
 
 
 remote_spec = st.tuples(
@@ -168,7 +170,51 @@ def test_one_trip_per_remote_community_and_leftovers_are_trip_full() -> None:
     waiting = week.waiting_at("R-NEAR")
     assert (waiting.reason, waiting.priority) == (weekly.TRIP_FULL, None)
     assert set(waiting.job_ids) == {"N0", "N1", "N2"}
+    # the size of the trip that goes, not of a trip for the leftovers
+    assert (waiting.trip_repairs, waiting.trip_days) == (len(remote[0].job_ids), remote[0].days)
+    assert (waiting.trip_repairs, waiting.trip_days) == (9, 3.5)
     assert week.spare_days[BASE] == 10.0 - 3.5  # the second crew stays on call
+
+
+def test_no_room_when_a_trip_above_the_cut_needs_more_days_in_a_row() -> None:
+    # One crew, most overdue first: R-MID (9 repairs, 4 days, priority 12) goes first, the
+    # town day (priority 3) fills the last day; R-FAR (priority 8) beats that cut but needs
+    # 3 days in a row, and only 1 was left when it came up.
+    mid = [job(f"M{i}", "R-MID", OLD) for i in range(9)]
+    week = plan([*mid, job("F0", "R-FAR", OLD), *town_jobs(3)], 1.0)
+    assert [t.community_id for t in week.trips] == ["R-MID", "K-TOWN"]
+    assert week.last_priority(BASE) == 3.0
+    waiting = week.waiting_at("R-FAR")
+    assert waiting.reason == weekly.NO_ROOM
+    assert waiting.priority == pytest.approx(8.0)
+    assert waiting.priority > week.last_priority(BASE)
+    assert (waiting.trip_repairs, waiting.trip_days) == (1, 3.0)
+
+
+def test_below_the_cut_is_outranked_not_no_room() -> None:
+    mid = [job(f"M{i}", "R-MID", OLD) for i in range(9)]
+    week = plan([*mid, job("F0", "R-FAR", OLD)], 1.0)  # no town day: the cut is R-MID's 12
+    waiting = week.waiting_at("R-FAR")
+    assert waiting.reason == weekly.OUTRANKED
+    assert waiting.priority <= week.last_priority(BASE)
+
+
+def test_an_added_trip_that_cannot_fit_is_listed_and_gets_no_trip() -> None:
+    # R-FAR goes first (sorted) and takes the whole week; R-MID has no room left.
+    far = [job(f"F{i}", "R-FAR", OLD) for i in range(9)]
+    week = plan([*far, job("M0", "R-MID", OLD)], 0.0, add={"R-FAR", "R-MID"})
+    assert week.not_fitted == ("R-MID",)
+    assert week.trip_to("R-MID") is None
+    assert week.waiting_at("R-MID").job_ids == ("M0",)
+    carried = week.trip_to("R-FAR")
+    assert carried.added and len(carried.job_ids) == 7  # 2.5 driving + 2.5 work days
+    full = week.waiting_at("R-FAR")
+    assert (full.reason, full.trip_repairs, full.trip_days) == (weekly.TRIP_FULL, 7, 5.0)
+
+
+def test_added_trips_that_fit_are_not_listed_as_not_fitted() -> None:
+    week = plan([job("F0", "R-FAR")], 0.0, add={"R-FAR"})
+    assert week.not_fitted == ()
 
 
 def test_town_leftovers_wait_outranked_with_a_priority() -> None:
@@ -177,6 +223,7 @@ def test_town_leftovers_wait_outranked_with_a_priority() -> None:
     assert waiting.reason == weekly.OUTRANKED
     assert waiting.job_ids == ("T15", "T16", "T17")
     assert waiting.priority == 3.0
+    assert (waiting.trip_repairs, waiting.trip_days) == (3, 1.0)
 
 
 def test_spare_days_become_an_on_call_stop_in_town() -> None:
@@ -300,6 +347,26 @@ def test_plan_invariants(specs, setting, crews, closed, drop, add, heat) -> None
     for waiting in week.waiting:
         if waiting.community_id in closed:
             assert waiting.reason == weekly.CLOSED
+        cut = week.last_priority(waiting.base)
+        if waiting.reason == weekly.OUTRANKED:
+            # below the cut means below the cut: never above the lowest trip the base made
+            assert waiting.priority is not None and cut is not None
+            assert waiting.priority <= cut + 1e-9
+        if waiting.reason == weekly.NO_ROOM:
+            assert waiting.priority is None or cut is None or waiting.priority > cut
+        if waiting.reason == weekly.TRIP_FULL:
+            carried = week.trip_to(waiting.community_id)
+            assert waiting.trip_repairs == len(carried.job_ids)
+            assert waiting.trip_days == carried.days
+        else:
+            assert waiting.trip_repairs <= constants.MAX_JOBS_PER_TRIP
+            assert waiting.trip_days <= constants.CREW_DAYS_PER_WEEK
+
+    # an added community that did not fit is listed and has no trip
+    assert set(week.not_fitted) <= set(add) - set(closed)
+    assert len(week.not_fitted) == len(set(week.not_fitted))
+    for cid in week.not_fitted:
+        assert week.trip_to(cid) is None
 
 
 # --- summary and log lines ----------------------------------------------------------------
@@ -335,7 +402,7 @@ def test_summarise_matches_a_hand_count() -> None:
 @pytest.mark.parametrize(
     ("value", "name"),
     [
-        (0.0, "Most repairs"),
+        (0.0, "Efficiency first"),
         (0.5, "Balanced"),
         (1.0, "Most overdue first"),
         (0.35, "Custom (0.35)"),

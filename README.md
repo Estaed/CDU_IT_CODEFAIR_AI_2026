@@ -18,12 +18,12 @@ Team AIC014.
 A crew in its own town fixes three repairs a day. A trip to a remote community spends days
 on the road first. So the plan that fixes the most repairs keeps crews near town, and the
 households far away wait longest: the brief's "efficiency" pressure. Fair Turn makes the
-cost of a trip explicit, puts one setting in the coordinator's hands (Most repairs ↔ Most
+cost of a trip explicit, puts one setting in the coordinator's hands (Efficiency first ↔ Most
 overdue first), and shows the whole trade-off on one line before anything is signed. On the
-planning day of the synthetic data, Most repairs fixes 91 repairs and leaves 148 overdue
-households waiting, all remote; Balanced fixes 79 and leaves 126; Most overdue first fixes
-54 and leaves 117. Over thirteen weeks, Balanced does more repairs than pure efficiency
-(1,087 against 1,069) and leaves 154 instead of 201 repairs more than 300 km from a base
+planning day of the synthetic data, Efficiency first fixes 88 repairs and leaves 130 overdue
+households waiting, all remote; Balanced fixes 77 and leaves 108; Most overdue first fixes
+49 and leaves 98. Over thirteen weeks, Balanced does more repairs than pure efficiency
+(1,084 against 1,074) and leaves 142 instead of 199 repairs more than 300 km from a base
 still waiting. Is this situation real, and who is the user? The public record behind
 each part, and what is our assumption, are in [`docs/PRODUCT.md`](docs/PRODUCT.md).
 
@@ -109,6 +109,7 @@ and not adopted (`MODELS.md`). Full tables: `data/build/eval.json`,
 | `docs/PRODUCT.md` | What the app does, the model, the numbers and what is not claimed. Start here. |
 | `docs/user-guide.md` | The coordinator's Monday, step by step; the glossary. |
 | `docs/demo-script.md` | The three-minute live demo for Challenge Day, with the likely questions. |
+| `docs/report-brief.md` | What the project report should say, section by section, with every number's source. |
 | `docs/competition-*.md`, `docs/task-briefs.md`, `docs/report-requirements.md` | The organiser's brief, deliverables and criteria, transcribed. |
 | `docs/archive/` | The first version's PRD, design notes and build tasks, kept as history. |
 | `CLAUDE.md`, `AGENTS.md` | Project rules and the binding architecture (Blueprint). `AGENTS.md` mirrors `CLAUDE.md` for Codex. The opening "TarikOS" section is the owner's assistant setup; ignore it on another machine. |

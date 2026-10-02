@@ -30,7 +30,7 @@ def business_days_between(start: date, end: date) -> int:
     """Weekdays after ``start`` up to and including ``end``; 0 when ``end`` is not later.
 
     A report made on a Friday has used 0 business days on Saturday and Sunday and 1 on
-    Monday. Public holidays are not modelled (no NT holiday table in ``data/raw``).
+    Monday. NT public holidays in the window (``constants.PUBLIC_HOLIDAYS``) do not count.
     """
     if end <= start:
         return 0
@@ -40,7 +40,8 @@ def business_days_between(start: date, end: date) -> int:
     for offset in range(1, rest + 1):
         if (start + timedelta(days=offset)).weekday() < 5:
             count += 1
-    return count
+    holidays = sum(1 for h in constants.PUBLIC_HOLIDAYS if start < h <= end and h.weekday() < 5)
+    return count - holidays
 
 
 def window_used(job: Job, today: date) -> float:

@@ -21,8 +21,9 @@ is two logged-in CLIs).
 | `JOBS_PER_CREW_DAY` | 3 | Repairs a crew fixes in one working day at one place | Provisional, our assumption; unchanged from the first version |
 | `DRIVE_KM_PER_DAY` | 400 | Road km a crew covers in a day of driving; a trip's driving days are its round trip at this rate, in half days | Provisional, our assumption; road km are haversine times the road factor below |
 | `MAX_JOBS_PER_TRIP` | 9 | Repairs one trip carries: three working days at one community | Provisional, our assumption |
+| `PUBLIC_HOLIDAYS` | 2025-12-25, 2025-12-26, 2026-01-01 | NT public holidays in the window and the planning week; not business days for the NT time limits | Public Holidays Act 1981 (NT): Christmas Day, Boxing Day, New Year's Day |
 | `PLAN_DAY` | 2025-12-29 | The planning Monday the app shows: the Monday after the last synthetic report | Project decision, 2026-10-02 |
-| `SETTINGS` | Most repairs 0.0, Balanced 0.5, Most overdue first 1.0 | The three named settings of what decides where crews go | Project decision, 2026-10-02; the formula is in `fair_turn/core/weekly.py` and `docs/PRODUCT.md` |
+| `SETTINGS` | Efficiency first 0.0, Balanced 0.5, Most overdue first 1.0 | The three named settings of what decides where crews go | Project decision, 2026-10-02; the formula is in `fair_turn/core/weekly.py` and `docs/PRODUCT.md` |
 | `REMOTE_REGIONS` | CENTRAL AUSTRALIA, BIG RIVERS, BARKLY, TOP END, EAST ARNHEM | Region names, BushTel spelling | `NTRegionName` in `data/raw/bushtel_community_detail_2026-09-12.json` |
 | `TOWN_REGION` | DARWIN, PALMERSTON, LITCHFIELD | The town region, BushTel spelling | Same field |
 | `HEAT_SEASON_MONTHS` | Oct–Mar | Extreme-heat exposure factor | NT Health heat-health advice (reports/2026-09-12-research-data-and-stack.md) |

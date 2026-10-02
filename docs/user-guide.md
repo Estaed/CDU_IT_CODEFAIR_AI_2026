@@ -37,7 +37,7 @@ person decides and signs.
 2. If a yellow box says a report needs a person, open Reports. Read the report. Set what
    is missing. Say why you are sure. Save it. The repair joins the plan.
 
-3. Choose what decides where crews go. Most repairs fixes the most this week. Most
+3. Choose what decides where crews go. Efficiency first fixes the most this week. Most
    overdue first sends crews to the homes that have waited longest past the time limit.
    Balanced is in between.
 
@@ -85,14 +85,14 @@ and their reason.
 - **The time limits are NT policy**: fact sheet FS17, October 2025.
 - **Crew numbers are our assumption**: 10 crews at 5 bases, 3 repairs a crew-day, 400 km of
   road a day. NT does not publish them. They live in `fair_turn/core/constants.py`.
-- **The backlog on the planning day** is what 12 weeks of Most repairs planning left
+- **The backlog on the planning day** is what 12 weeks of Efficiency first planning left
   behind, simulated.
 
 ## 7. Glossary
 
 - **Trip.** A crew going from its base to one community and back. It costs driving days
   plus work days.
-- **Setting.** One number from 0 (Most repairs) to 1 (Most overdue first). It sets what a
+- **Setting.** One number from 0 (Efficiency first) to 1 (Most overdue first). It sets what a
   trip is worth.
 - **Priority.** What a trip is worth per crew-day under the setting. Higher goes first.
 - **Below the cut.** The base's crew-days ran out before this trip's priority.

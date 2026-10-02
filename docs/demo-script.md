@@ -9,19 +9,20 @@ screen.
 
 "This is Monday for the coordinator who schedules the licensed trades out of the
 regional towns. The maintenance officer in a community can fix what needs no licence; an
-electrician or a plumber has to come from town. 342 repairs wait for a crew. 159 are
-past the NT time limit, and 157 of those are in remote communities. That is what twelve
-weeks of planning for the most repairs left behind. A crew in Darwin fixes three repairs a
+electrician or a plumber has to come from town. 336 repairs wait for a crew. 139 are
+past the NT time limit, and all 139 are in remote communities. That is what twelve
+weeks of planning efficiency first left behind. A crew in Darwin fixes three repairs a
 day; a trip to Top End R-01 spends three days driving there and back first. So the efficient
 plan stays near town. That is the brief's trust twist, and here it is as numbers."
 
-Point at the four numbers: **91 repairs this week, 148 overdue repairs still waiting.**
+Point at the four numbers: **88 repairs this week, 130 overdue repairs still waiting.**
 
 ## 0:40 — The coordinator owns the trade-off
 
-Click **Balanced**. "79 repairs, 12 fewer, and 22 more overdue households reached." Point at
-the line chart: "Every setting is on this line. The top dot is Most repairs. Notice the first
-step down is free: same 91 repairs, ten more overdue households reached. After that, every
+Click **Balanced**. "77 repairs, 11 fewer, and 22 more overdue households reached." Point at
+the line chart: "Every setting is on this line. The top dot is Efficiency first. Notice the first
+step down is better on both counts: two more repairs and ten more overdue households
+reached, because efficiency first is a greedy rule, not a maximum. After that, every
 household costs repairs. The tool does not pick the point. The coordinator does."
 
 Scroll to the map: green trips, red places still waiting with overdue repairs. In **Left
@@ -47,8 +48,8 @@ you this week." Then: "and it names who signed and why."
 
 Open **Reports**: one report the AI could not read fully; the urgency is empty and the
 model's guess is not shown, so a person sets it. Then **Evidence**: "Over thirteen weeks,
-Most repairs leaves 201 repairs more than 300 km out still waiting; Balanced leaves 154 and
-does more repairs in total. One more crew at Katherine cuts that to 123. The AI reads what
+Efficiency first leaves 199 repairs more than 300 km out still waiting; Balanced leaves 142 and
+does more repairs in total. One more crew at Darwin cuts that to 127. The AI reads what
 is broken and how urgent at 98 % and 97 %, every fact tied to the tenant's words, and all 20
 manipulation attempts changed nothing but sending the report to a person."
 

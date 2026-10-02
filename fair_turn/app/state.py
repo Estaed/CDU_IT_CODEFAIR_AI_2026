@@ -17,9 +17,9 @@ from fair_turn.data import artefacts as artefacts_module
 from fair_turn.data import geography, runtime
 from fair_turn.data.artefacts import Artefacts, load_all
 
-# The backlog the coordinator meets on the planning day: what weeks of "Most repairs"
+# The backlog the coordinator meets on the planning day: what weeks of "Efficiency first"
 # planning left behind, simulated from the first Monday of the synthetic window.
-HISTORY_SETTING = constants.SETTINGS["Most repairs"]
+HISTORY_SETTING = constants.SETTINGS["Efficiency first"]
 FIRST_MONDAY = constants.WINDOW_START + timedelta(days=(7 - constants.WINDOW_START.weekday()) % 7)
 HISTORY_WEEKS = (constants.PLAN_DAY - FIRST_MONDAY).days // 7
 
@@ -37,7 +37,7 @@ def places() -> dict[str, weekly.Place]:
 
 @st.cache_resource
 def history() -> weeks.Season:
-    """The weeks before the planning day, planned for the most repairs."""
+    """The weeks before the planning day, planned efficiency first."""
     art = artefacts()
     return weeks.simulate(
         artefacts_module.to_jobs(art),
@@ -54,7 +54,7 @@ def today() -> date:
 
 
 def closed() -> set[str]:
-    return weeks.closed_on(artefacts().closures, today())
+    return weeks.closed_for_week(artefacts().closures, today())
 
 
 def get_audit_path() -> Path:
@@ -192,21 +192,48 @@ def signature() -> audit.PlanSigned | None:
     return audit.latest_signature(audit.read(get_audit_path()), today())
 
 
-def signed_state() -> tuple[float, tuple[str, ...], tuple[str, ...]] | None:
-    """What the latest signature covered: the setting and the added and dropped ids."""
+State = tuple[float, tuple[str, ...], tuple[str, ...], tuple[str, ...]]
+
+
+def signed_state() -> State | None:
+    """What the latest signature covered: the setting, the added and dropped ids, and the
+    trips themselves, so a new report or a person's field after signing shows as a change."""
     signed = signature()
     if signed is None:
         return None
-    return signed.setting, signed.added, signed.dropped
+    return signed.setting, signed.added, signed.dropped, signed.job_ids
 
 
-def current_state() -> tuple[float, tuple[str, ...], tuple[str, ...]]:
+def current_state(plan: weekly.WeekPlan) -> State:
+    """The same four things for the plan on screen."""
     changes = get_changes()
     return (
-        get_setting(),
-        tuple(sorted(c for c, (a, _) in changes.items() if a == "add")),
+        plan.setting,
+        tuple(
+            sorted(c for c, (a, _) in changes.items() if a == "add" and c not in plan.not_fitted)
+        ),
         tuple(sorted(c for c, (a, _) in changes.items() if a == "drop")),
+        tuple(sorted(plan.planned_job_ids())),
     )
+
+
+def published_plan(jobs: list[Job]) -> tuple[weekly.WeekPlan, audit.PlanSigned | None]:
+    """The plan a tenant is told about: the signed one while it still holds, else the
+    proposal under this session's setting (and no signer)."""
+    signed = signature()
+    if signed is not None:
+        plan = weekly.plan(
+            jobs,
+            places(),
+            today(),
+            signed.setting,
+            closed=closed(),
+            add=signed.added,
+            drop=signed.dropped,
+        )
+        if tuple(sorted(plan.planned_job_ids())) == signed.job_ids:
+            return plan, signed
+    return week_plan(jobs), None
 
 
 def _restore_signature() -> None:
@@ -218,6 +245,7 @@ def _restore_signature() -> None:
     if signed is None:
         return
     st.session_state["setting"] = signed.setting
+    st.session_state["signer"] = signed.signer
     reasons = dict(line.split(": ", 1) for line in signed.changes if ": " in line)
     changes = {}
     for cid in signed.added:

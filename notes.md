@@ -183,9 +183,13 @@ In the survey's §5:
 - **User:** the NT priority-housing officer.
 - **Data:** combination A. Five real NT policies (40 pp) plus a synthetic case file built from a facts
   table written first.
-- **Models:** Claude now, local models later.
-  - Eko's reading: the v1 fact-checker is a separate, narrow Claude call that answers yes/no.
-  - Bespoke-MiniCheck (local, a different model family) is added after v1.
+- **Models:**
+  - **Writer:** Claude.
+  - **v1 fact-checker:** Jev (Tarık, 2026-10-03). It is a different model family from the writer.
+  - **After v1:** local models (Bespoke-MiniCheck, a local writer).
+  - **Jev smoke test (2026-10-03, synthetic):** claim support 3/3 correct at ~0.4 s per call;
+    relevance scan put the decisive passage first in 0.6 s for 6 parallel calls.
+    [Report](reports/2026-10-03-jev-smoke-test.md).
 - **Clause outcome:** the officer sets it (met / not met / not enough information). The AI only marks
   its own claims. The pitch says why: in the oncology RCT, humans followed the AI exactly where it was
   worst (ECOG).
@@ -195,6 +199,35 @@ In the survey's §5:
     download step, because the site blocks scripts.
   - The app shows only the short clause quotes it relies on, with attribution.
   - The organisers are not asked.
+
+## Proposal: goal for the writer, contract for the checkers (draft, Eko, 2026-10-03, awaiting Tarık)
+- **Claude gets a goal, not steps.** The prompt says only:
+  - The officer decides this file against these clauses.
+  - Find everything that could change the decision: for and against, contradictions, what is missing,
+    and anything important the checklist does not name.
+  - Give each fact with a verbatim quote and passage id. "Not found" is a valid answer.
+
+  The output contract is the only fixed constraint.
+- **The checkers stay narrow and fixed** (code plus Jev). Trust comes from a checker that is simple,
+  fast and predictable. A free agent cannot be checked by itself, and the screen depends on the
+  contract.
+- **Four Jev jobs:**
+  1. **Second key on every claim.** `noul` plus `choice` (supports / contradicts / not enough
+     information).
+  2. **Exhaustive scan.** A `score` for every passage × every decisive clause. High-scoring passages
+     Claude never cited become "possibly missed". One reader can skip something; a scan of every
+     paragraph does not.
+  3. **Contradiction pairs.** A `choice` on the high-relevance passages of the same clause.
+  4. **Reading order.** Required items are sorted by Jev score and disagreement, so the most decisive
+     come first.
+- **Disagreement rule.** Where Claude and Jev agree, the item can pass quickly. Where they disagree, or
+  Jev finds something Claude skipped, the officer must read. The "flags where it's unsure" in the brief
+  comes from measured disagreement and Jev probability bands, not from the model's self-report.
+  Calibration is measured on the gold set.
+- **File heat strip.** Per clause, a strip of the whole file coloured by Jev relevance, with the
+  passages already read marked. The officer sees where in 60 pages the evidence sits and which
+  relevant parts are still unread.
+- **Evidence for and against each clause:** part of Claude's goal, so it costs only prompt text.
 
 ## Framing (draft, Eko, 2026-10-03; see the [UI and logic survey](reports/2026-10-03-ui-patterns-and-logic-brief6.md))
 - **The main output is an evidence map by policy clause, not a bullet summary.**
@@ -239,8 +272,15 @@ In the survey's §5:
 - 2026-10-03: Prompt-injection defence and the hidden-text demo. Tarık dropped the demo because new
   models do not fall for it. If a judge asks, the precedent is a Connecticut court filing in 3-point
   white font (Aug 2026).
-- 2026-10-03: Local models: Bespoke-MiniCheck as an independent checker, and a local writer. v1 runs
-  on Claude.
+- 2026-10-03: Local models: Bespoke-MiniCheck as a third vote, and a local writer. v1 runs on Claude
+  plus Jev.
+- 2026-10-03: A draft request to the applicant for items marked "not in file", citing the policy
+  clause. Cheap, but not needed for v1.
+- 2026-10-03: A plain-language decision letter to the applicant built from the decision record.
+- 2026-10-03: A backlog queue that orders files by flag count, and a supervisor view of reading
+  coverage across officers.
+- 2026-10-03: A reason check, where Jev asks whether the officer's reason addresses the flagged
+  evidence. It risks feeling paternalistic.
 - 2026-10-03: Planted-trap vigilance check on the reviewer (survey G5). The ethics of testing staff
   this way has not been checked.
 - 2026-10-03: Chat with the document. It is not what the brief asks for.

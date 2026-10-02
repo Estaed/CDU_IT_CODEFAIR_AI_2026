@@ -80,11 +80,14 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
 3. **Code checks.** Deterministic code verifies that each quote exists word for word in the cited
    passage, and that the numbers, dates and negations in the sentence match the quote. This reuses
    the archive's `verify_spans.py`.
-4. **Fact-checker (a Jev-style role).** A small model gives a typed verdict on each claim: "Does
-   this passage support this claim? yes/no + score".
-   - It must come from a different model family from the writer.
-   - **Recommendation: Bespoke-MiniCheck-7B, local on Ollama.** It fits the 8 GB GPU.
-   - Jev competes in the 1-hour, 50-pair test.
+4. **Fact-checker (a Jev-style role).** Gives a typed verdict on each claim: "Does this passage
+   support this claim? yes/no".
+   - **v1:** a separate, narrow Claude call.
+   - **After v1:** Bespoke-MiniCheck-7B, local on Ollama. It is a different model family and fits the
+     8 GB GPU.
+   - Jev competes in the 50-pair test at that point.
+   - Also checks across passages: other passages on the same fact (p.8 against p.23) become a
+     contradiction flag.
 5. **Critical passages come from the policy.** For each decisive clause, the writer lists the file
    facts that bear on it (Fox 2026: list the source facts first). Facts the summary did not use
    become the omission map. Criticality is set by the policy, not guessed by the AI.
@@ -176,15 +179,22 @@ In the survey's §5:
 - ASIC trial: AI summaries scored 47% against 81% for humans.
 - NT AI Policy (2026-06-05) and NT AI Assurance Framework wording.
 
-### Open questions (Tarık's to answer)
-- Is the NT priority-housing officer the user? The real NT policies now back this scenario.
-- Which data combination: A, B or C? Eko suggests A.
-- Writer in the cloud (Claude) or local? Eko suggests Claude, because only public and synthetic text
-  goes in.
-- Should we ask the organisers whether bundling the NT policy PDFs counts as fair dealing, or ship
-  links instead?
-- Should the officer set each clause outcome while the AI only marks its own claims? Eko suggests yes.
-- Should a hidden-text injection page go into the demo file in v1, or wait until after v1?
+### Decisions (Tarık, 2026-10-03)
+- **User:** the NT priority-housing officer.
+- **Data:** combination A. Five real NT policies (40 pp) plus a synthetic case file built from a facts
+  table written first.
+- **Models:** Claude now, local models later.
+  - Eko's reading: the v1 fact-checker is a separate, narrow Claude call that answers yes/no.
+  - Bespoke-MiniCheck (local, a different model family) is added after v1.
+- **Clause outcome:** the officer sets it (met / not met / not enough information). The AI only marks
+  its own claims. The pitch says why: in the oncology RCT, humans followed the AI exactly where it was
+  worst (ECOG).
+- **Hidden-text injection demo:** dropped. Tarık's view is that new models do not fall for it.
+- **Policy PDFs (Tarık left it to Eko):**
+  - The PDFs are not bundled in the ZIP. The README lists the five official links with a manual
+    download step, because the site blocks scripts.
+  - The app shows only the short clause quotes it relies on, with attribution.
+  - The organisers are not asked.
 
 ## Framing (draft, Eko, 2026-10-03; see the [UI and logic survey](reports/2026-10-03-ui-patterns-and-logic-brief6.md))
 - **The main output is an evidence map by policy clause, not a bullet summary.**
@@ -199,8 +209,8 @@ In the survey's §5:
 - **Two kinds of status:**
   - The app marks its *own claims*: supported / sources disagree / not supported / not in summary /
     not in file.
-  - The officer sets the *clause outcome* (met / not met). Eko suggests the AI does not pre-fill it:
-    in the oncology RCT, humans followed the AI where it was badly wrong (ECOG).
+  - The officer sets the *clause outcome* (met / not met). Decided 2026-10-03: the AI does not
+    pre-fill it, because in the oncology RCT humans followed the AI where it was badly wrong (ECOG).
 
 ## Screens
 **Mock v0:** [design/mock-v0.html](design/mock-v0.html), a single file for discussion, not approved.
@@ -226,9 +236,11 @@ In the survey's §5:
 - 2026-10-03: Search across many documents (RAG). v1 is one case file plus one policy.
 - 2026-10-03: OCR for scanned PDFs. Claude cannot cite scans; say in the pitch that real files contain them.
 - 2026-10-03: Multi-file upload. v1 ships the demo case; passage ids still carry a document id.
-- 2026-10-03: Full prompt-injection defence. A cheap option: plant one hidden-text page in the synthetic
-  file and flag it in the demo. Precedent: a Connecticut court filing in 3-point white font (Aug 2026).
-  Whether it goes into v1 is Tarık's call.
+- 2026-10-03: Prompt-injection defence and the hidden-text demo. Tarık dropped the demo because new
+  models do not fall for it. If a judge asks, the precedent is a Connecticut court filing in 3-point
+  white font (Aug 2026).
+- 2026-10-03: Local models: Bespoke-MiniCheck as an independent checker, and a local writer. v1 runs
+  on Claude.
 - 2026-10-03: Planted-trap vigilance check on the reviewer (survey G5). The ethics of testing staff
   this way has not been checked.
 - 2026-10-03: Chat with the document. It is not what the brief asks for.

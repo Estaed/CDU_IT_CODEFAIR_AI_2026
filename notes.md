@@ -119,6 +119,40 @@ Analogy: a newsroom. A reporter writes, a separate fact-checker checks, and the 
 - **Download caveat.** The PDFs sit behind a Cloudflare challenge: a plain `curl` got a "Just a
   moment" page on 2026-10-03, so a fetch script in the README may fail.
 
+## v1 scope (draft, Eko, 2026-10-03; input for Blueprint)
+**Core v1:**
+- **Input:** split the synthetic case file and the 5 NT policies into numbered passages. The decisive
+  clause checklist is written once and approved.
+- **Claude reads:** a goal, not steps, so it looks for evidence for and against, contradictions and
+  what is missing. The output contract is a verbatim quote plus passage id per fact, and "not found"
+  is allowed. Claude also writes a short summary for the second tab.
+- **Code checks:** the quote is present, and numbers, dates and negations match.
+- **Jev:** a second key on every claim (supports / contradicts / not enough information), plus an
+  exhaustive relevance scan of every passage × every clause, which produces the "possibly missed" flags.
+- **Required reading:** red items, contradictions, missed items and Claude–Jev disagreements. Most
+  decisive first.
+- **Officer screen:**
+  - the evidence map with a status word and colour on each claim;
+  - a source pane with the highlighted quote;
+  - dispute with a reason;
+  - the officer sets each clause outcome; "not in file" leads to a request, never to an automatic
+    "not met";
+  - the plain-summary tab;
+  - the sign-off lock;
+  - the decision record, exported as HTML or JSON.
+- **Measurement:**
+  - 3–5 trap files and a set of mutated summaries, comparing the plain summary with our app;
+  - the team timing test.
+- **Submission:** a README with the official policy links and a manual download step; demo results
+  precomputed.
+
+**If time allows, in this order:**
+1. Jev contradiction pairs. Without them the stale-ledger trap depends on Claude alone noticing it.
+2. The file heat strip.
+3. Two-way hover links.
+
+**After v1:** the list below.
+
 ## Riskiest assumption
 *(draft, Eko)* The reading gate saves more time than it costs. In a UK social-work pilot the time
 spent checking cancelled the time AI saved (Ada Lovelace Institute, 2026-02-11).

@@ -23,6 +23,7 @@ INCLUDE_FILES = (
     "data/audit/sample.jsonl",
     "docs/PRODUCT.md",
     "docs/user-guide.md",
+    "docs/demo-script.md",
     "constants.md",
     "README.md",
     "pyproject.toml",

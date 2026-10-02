@@ -1,7 +1,8 @@
 # Fair Turn
 
-Decision support for a housing maintenance coordinator in the Northern Territory: **where
-do the crews go this week?** The AI reads tenants' free-text repair reports. A plain,
+Decision support for the Northern Territory housing maintenance coordinator who schedules
+the licensed trades (electricians, plumbers, refrigeration mechanics) working out of the
+regional towns: **where do the crews go this week?** The AI reads tenants' free-text repair reports. A plain,
 visible formula proposes the week's trips. The coordinator chooses how much weight to give
 efficiency against the households waiting longest, sees exactly what that choice costs,
 changes what they know better, and signs. A tenant can ask why their repair is or is not
@@ -23,7 +24,8 @@ planning day of the synthetic data, Most repairs fixes 91 repairs and leaves 148
 households waiting, all remote; Balanced fixes 79 and leaves 126; Most overdue first fixes
 54 and leaves 117. Over thirteen weeks, Balanced does more repairs than pure efficiency
 (1,087 against 1,069) and leaves 154 instead of 201 repairs more than 300 km from a base
-still waiting. Details and caveats: [`docs/PRODUCT.md`](docs/PRODUCT.md).
+still waiting. Is this situation real, and who is the user? The public record behind
+each part, and what is our assumption, are in [`docs/PRODUCT.md`](docs/PRODUCT.md).
 
 ## Run it (no accounts, no network)
 
@@ -106,6 +108,7 @@ and not adopted (`MODELS.md`). Full tables: `data/build/eval.json`,
 |---|---|
 | `docs/PRODUCT.md` | What the app does, the model, the numbers and what is not claimed. Start here. |
 | `docs/user-guide.md` | The coordinator's Monday, step by step; the glossary. |
+| `docs/demo-script.md` | The three-minute live demo for Challenge Day, with the likely questions. |
 | `docs/competition-*.md`, `docs/task-briefs.md`, `docs/report-requirements.md` | The organiser's brief, deliverables and criteria, transcribed. |
 | `docs/archive/` | The first version's PRD, design notes and build tasks, kept as history. |
 | `CLAUDE.md`, `AGENTS.md` | Project rules and the binding architecture (Blueprint). `AGENTS.md` mirrors `CLAUDE.md` for Codex. The opening "TarikOS" section is the owner's assistant setup; ignore it on another machine. |

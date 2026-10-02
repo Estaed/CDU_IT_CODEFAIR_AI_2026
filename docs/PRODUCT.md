@@ -25,10 +25,40 @@ coordinator to accept or reject each of today's jobs. Two things were wrong with
    never competed for the same crew, and moving λ changed little. On the default screen
    the effect line read "No job changes", the opposite of the story the brief asks for.
 
+## Who uses it, and is the situation real?
+
+**The user is the scheduler of the licensed trades**: the electricians, plumbers and
+refrigeration mechanics who work out of the regional towns (Darwin, Katherine, Tennant Creek,
+Alice Springs, Nhulunbuy). That is where the trade-off in the brief actually happens, and the
+public record supports each part of it (sources in `reports/2026-09-12-research-*.md`):
+
+- A tenant's report goes to the maintenance contractor's tasking system, through the 1800
+  line or the Community Housing Officer (NT Remote Housing Handbook §3.2.1, June 2021).
+- The Housing Maintenance Officer in a community fixes what needs no licence and makes
+  things safe when a contractor is not available (FS17, 10/2025). Licensed work needs a
+  trade from somewhere else.
+- Where providers sit in regional towns, "significant travel costs are involved", and some
+  communities need plane, ferry or barge travel (Menzies School of Health Research, Healthy
+  Homes evaluation, 2023).
+- NT policy already allows remote homes 2.5 times longer: urgent in 5 business days against
+  2 in town, routine in 25 against 10 (FS17).
+- Delays are real and measured nearby: in Western Australia the first work order took 21.9
+  days in remote areas against 10.6 in the city, and urgent targets were met 74 % of the time
+  (WA Auditor General, August 2025). A wet-season access case in the NT ran nine months
+  (Commonwealth Ombudsman, 2012).
+- And the NT cannot see the wait: its own evaluator found "it is not possible to determine"
+  the time from a tenant's report to the finished repair (Menzies 2023 §7.6.2).
+
+What is **our assumption**, not a source: that the trades batch their remote work as one
+trip per community (the contracts' per-community work plans imply it), and the crew numbers,
+repairs per day and driving speed. Since 2021 most Healthy Homes contracts cover one to three
+communities and are often held by local Aboriginal Business Enterprises; Fair Turn is for the
+part of the work those local teams cannot do without a licensed trade from town.
+
 ## The model
 
-- **The decision:** where each base's crews go this week. One decision, one user (the
-  regional maintenance coordinator), signed.
+- **The decision:** where each base's licensed trade crews go this week. One decision, one
+  user (the regional trades scheduler), signed.
 - **A trip is the unit.** Ten crews at five bases (Darwin 3, Katherine 2, Alice Springs 2,
   Nhulunbuy 2, Tennant Creek 1), five crew-days each. A crew in its own town fixes 3
   repairs a day. A trip to a remote community costs the road days there and back (400 road
@@ -99,6 +129,10 @@ and crews decide how long.
 - Crew counts, repairs per crew-day and driving speed are assumptions; NT does not publish
   them. The pattern is what a pilot should test, not a forecast.
 - A trip visits one community; multi-stop circuits are not modelled.
+- Every report is treated as work for a licensed trade. In practice the community's
+  maintenance officer does part of it (what needs no licence); which fault types fall on
+  which side is not published, so we did not invent a split. A pilot would take it from the
+  contractor's own job codes.
 - Weekly planning: remote urgent jobs reported midweek wait for Monday. Real dispatch is
   more flexible; the town days in the model are flexible for that reason.
 - The AI's reading scores (fault 98 %, urgency 97 % macro-F1) are on synthetic text written

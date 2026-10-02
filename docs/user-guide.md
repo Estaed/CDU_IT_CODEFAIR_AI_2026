@@ -6,7 +6,9 @@ model behind each number.
 ## 1. What Fair Turn is
 
 Fair Turn helps a housing maintenance coordinator in the Northern Territory decide where
-the repair crews go this week.
+the licensed trades go this week: the electricians, plumbers and cooling mechanics who
+work out of the regional towns. The maintenance officer in a community fixes what needs
+no licence; the rest waits for a trade from town.
 
 A crew in its own town fixes three repairs a day. A trip to a remote community first
 spends days on the road. So the plan with the most repairs keeps crews in town, and remote

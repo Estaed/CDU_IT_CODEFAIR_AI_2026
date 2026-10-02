@@ -218,12 +218,15 @@ plannable = [j for j in jobs_open if weekly.in_plan(j, today)]
 overdue = [j for j in plannable if scoring.is_overdue(j, today)]
 crews = sum(constants.CREWS_AT_BASE.values())
 st.caption(
-    f"Week of Monday {today:%d %B %Y} · {crews} crews at {len(constants.CREW_BASES)} bases · "
+    f"Week of Monday {today:%d %B %Y} · {crews} licensed trade crews at "
+    f"{len(constants.CREW_BASES)} regional towns · "
     f"{crews * constants.CREW_DAYS_PER_WEEK} crew-days · {theme.PROVENANCE_LINE}"
 )
 st.write(
-    "Fair Turn reads repair reports and proposes where your crews go this week. It shows "
-    "what each choice costs and who is left waiting. Nothing goes to a crew until you sign."
+    "For the coordinator who schedules the licensed trades (electrical, plumbing, cooling) "
+    "out of the regional towns. Fair Turn reads repair reports and proposes where your "
+    "crews go this week. It shows what each choice costs and who is left waiting. Nothing "
+    "goes to a crew until you sign."
 )
 
 st.info(

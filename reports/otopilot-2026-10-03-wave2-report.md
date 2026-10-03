@@ -11,7 +11,8 @@ ACST; wave 2a launched 12:29.
 | Task-05 | 2a | ultracode Workflow `wf_e58e292b-566`, spec lens | green | 1 (no fix round) | 12:29–12:59 | `uv run python scripts/gate.py` lane (0), main (0: ruff ok, 32 passed, replay smoke stub and A-0142 at schema 2) | `c911a88` |
 | Task-08 | 2a | same Workflow, spec lens | green | 1 (no fix round) | 12:29–13:00 | lane (0), main (0: ruff ok, 39 passed, both smokes ok) | `961a3d4` |
 | Task-06 | 2b | ultracode Workflow `wf_e04d13ff-b3e`, spec lens | green | 1 (no fix round) | 13:03–14:06 | lane (0), main (0: ruff ok, 49 passed, both smokes ok) | `337aff2` |
-| Task-07 | 2b | same Workflow, screen lens, 1 fix round; attempt 2 `wf_3c54762c-ada` | attempt 1 red on main; attempt 2 running | 1 + 1 | 13:03–14:07; attempt 2 from 14:10 | attempt 1: lane (0: 43 passed); main after Task-06 (1: 2 failed, 51 passed); pick reverted in `67411ba` | |
+| Task-07 | 2b | same Workflow, screen lens, 1 fix round; attempt 2 `wf_3c54762c-ada`, screen lens | green on attempt 2, eye check pending: 1 | 2 | 13:03–14:07; attempt 2 14:10–14:26 | attempt 1: lane (0: 43 passed); main after Task-06 (1: 2 failed, 51 passed); pick reverted in `67411ba`. Attempt 2: lane (0: 44 passed), main (0: 54 passed) | `4faaeb4` |
+| Task-09 | 2c | Codex bee `gpt-6.1-sol`/`high`, network on | running | | from 14:28 | | |
 
 Failure counts: Task-07 `0 -> 2` (lane gate 0 fail, main gate 2 fail:
 `test_guided_review_flow_on_a0142[1280]` and `[1440]`). The flow test expected A-0142's audit tab
@@ -54,6 +55,18 @@ an integration preview (main's HEAD without `data/heldout`, plus the lane's scre
 - Suggested unsure band for Jev: below 0.8. Calls below it are right 0.655 of the time (n=55);
   calls at or above it, 0.865 (n=245).
 - Cost: 30 `claude -p` opus calls (10 pairs each), 600 Jev calls.
+
+**Task-07 attempt 2:** only `tests/test_screen.py` changed. A new helper checks the audit tab in
+both states: no audit, and a real audit. No assertion about behaviour was relaxed (the screen lens
+checked the diff). The builder ran the gate in an integration preview: main with Task-06's real
+block, no `data/heldout`, its own files laid on top. It exited 0 with 54 passed. On the real block:
+all 44 sentences present, "17 of 44 sentences flagged", no console errors, no overflow.
+
+Left for the polish wave:
+- The audit tab is very long (about 40,000 px at 1440) because all 95 claims are shown expanded.
+- The summary's markdown shows as raw characters.
+- A sentence with a single claim hides that claim, so its reason names figures that are not in the
+  sentence (screen lens, 70).
 
 ## What 2b produced
 

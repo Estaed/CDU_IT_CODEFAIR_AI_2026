@@ -6,7 +6,9 @@ the questions, choose an outcome, or turn missing evidence into a failed require
 Each list lives in `readmark/checklist/lists/<id>/`. Adding a folder needs no code change.
 Use a lowercase id with hyphens. The default is `nt-priority-housing`.
 
-- `list.yaml` holds `id`, `title` and a `policies` array.
+- `list.yaml` holds `id`, `title` and a `policies` array. Optional `decisions` maps `approve`,
+  `decline` and `request_information` to the labels the officer sees. Housing keeps the default
+  wording.
 - Each policy has `key`, `file`, `title` and `pin`.
 - The pin has `sha256`, `version`, `approved`, `pages` and `url`, matching the existing lock format.
 - `clauses.yaml` holds the approved questions: `clause_id`, `policy` (the policy key), `source`,

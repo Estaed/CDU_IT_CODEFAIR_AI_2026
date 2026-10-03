@@ -3808,6 +3808,8 @@
        "readmark/checklist/__init__.py",
        "readmark/checklist/clauses.yaml",
        "readmark/checklist/lists.py",
+       "readmark/checklist/lists/cdu-extension/clauses.yaml",
+       "readmark/checklist/lists/cdu-extension/list.yaml",
        "readmark/checklist/lists/nt-priority-housing/clauses.yaml",
        "readmark/checklist/lists/nt-priority-housing/list.yaml",
        "readmark/checklist/writer.py",

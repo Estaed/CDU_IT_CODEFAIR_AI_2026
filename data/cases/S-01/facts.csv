@@ -1,0 +1,13 @@
+fact_id,clause_id,statement,value,page,quote,role,trap,decisive
+S01F01,ext-before-due,The request was lodged before the due date and time,2026-09-10 21:40,1,"Request lodged: Thursday 10 September 2026, 9:40 pm",supports,none,yes
+S01F02,ext-before-due,The assignment is due on Friday 11 September at 11:59 pm,2026-09-11 23:59,4,"Assignment 2: Requirements report. Due Friday 11 September 2026, 11:59 pm (Darwin time). Weighting 30%.",supports,none,yes
+S01F03,ext-grounds,The stated reason is acute illness,acute illness,1,"Reason for extension: acute illness (gastroenteritis)",supports,none,yes
+S01F04,ext-form,The form names the student and student number,Alex Moreno S401127,1,"Student name: Alex Moreno. Student number: S401127.",supports,none,no
+S01F05,ext-form,The form names the unit and task,ITX215 Assignment 2,1,"Unit: ITX215 Systems Analysis. Assessment task: Assignment 2, Requirements report (task 2).",supports,none,no
+S01F06,ext-form,The form proposes a new due date of 17 September,2026-09-17,1,"Proposed new due date: Thursday 17 September 2026, 11:59 pm",supports,contradiction,yes
+S01F07,ext-form,The student's email names 16 September as the new date,2026-09-16,3,"I have asked on the form to move my due date to Wednesday 16 September.",contradicts,contradiction,yes
+S01F08,ext-form,A current draft was attached,draft attached,5,"File received: ITX215_A2_draft_Moreno.docx (current draft, about 60% complete).",supports,none,no
+S01F09,ext-evidence,The request is longer than 72 hours,6 days,1,"Proposed new due date: Thursday 17 September 2026, 11:59 pm",supports,none,yes
+S01F10,ext-evidence,The medical certificate covers 9 to 12 September only,2026-09-09 to 2026-09-12,2,"is unfit for study from 9 September 2026 to 12 September 2026 inclusive.",against,missing_doc,yes
+S01F11,ext-evidence,No free 72-hour extension was used in this unit this semester,none used,6,"No extension has been recorded for this student in ITX215 this semester.",supports,none,no
+S01F12,ext-length,The new date is within seven calendar days of the old one,6 days,1,"Proposed new due date: Thursday 17 September 2026, 11:59 pm",supports,none,yes

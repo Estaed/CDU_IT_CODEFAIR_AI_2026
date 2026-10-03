@@ -36,6 +36,15 @@ If the site has published a newer version, its SHA-256 will differ and ingest wi
 on purpose (update `policies.lock.json` and check that `readmark/checklist/clauses.yaml` still
 matches word for word), never silently.
 
+**The easy example (S-01)** uses CDU's coursework assessment policy, which CDU publishes as a web
+page. Its terms allow private and in-organisation use, not publishing, so the text is rebuilt
+locally rather than shipped. The script pins it to the SHA-256 in
+`readmark/checklist/lists/cdu-extension/list.yaml`:
+
+```
+uv run python scripts/fetch_cdu_policy.py
+```
+
 ## 3. Replay first: no keys, no network
 
 Every model response from our runs is in the replay cache (`runs/<case>/cache/`). Replay rebuilds

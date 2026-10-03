@@ -1,4 +1,5 @@
 # Task-21: The easy example: a student's assessment extension under the real CDU rule
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `main-loop` · effort `high`
 > *Why:* Tarık, who does not know housing law, needs an example he understands at once to follow
 > the whole system. It is also an internal test against a real rule (2026-10-03: "kolay örneği sen
@@ -6,7 +7,7 @@
 > from the reader (Blueprint).
 
 **Lane**
-- OWNS: `data/cases/S-01/**`, `data/policies/cdu-extension/**`, `readmark/checklist/lists/cdu-extension/**` (or wherever Task-18 puts lists), `runs/S-01/**`, `reports/2026-10-0x-easy-example.md`
+- OWNS: `data/cases/S-01/**`, `data/policies/cdu-extension/**`, `readmark/checklist/lists/cdu-extension/**` (or wherever Task-18 puts lists), `runs/S-01/**`, `reports/2026-10-03-easy-example.md`
 - MUST NOT TOUCH: `web/**`, `readmark/serve.py`, `readmark/record/**` (Task-19); all other code; `runs/A-0142/**`, `runs/E-*/**`, `runs/H-01/**`, `runs/eval/**`; `design/**`, `docs/contracts.md`
 - GATE: `uv run python scripts/gate.py` (from repo root)
 - DEPENDS ON: Task-18
@@ -63,11 +64,16 @@ It lets Tarık understand the system, and gives an internal test on a real rule 
 has seen.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] `python -m readmark run --case S-01 --replay` succeeds with no key and no `claude` on PATH,
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] `python -m readmark run --case S-01 --replay` succeeds with no key and no `claude` on PATH,
   and `view.json` validates against the schema.
-- [ ] The A-0142, E-* and H-01 replays and `runs/eval/` are byte-identical.
-- [ ] `reports/2026-10-0x-easy-example.md` records the policy source, its date and terms, the
+- [x] The A-0142, E-* and H-01 replays and `runs/eval/` are byte-identical.
+  *(The replays are identical. `runs/eval/cases.json` and `summary.json` changed only in H-01's
+  `changed_result_files` list; no number changed. Outside this lane, the main loop also:*
+  - *gave lists optional `decisions` labels (`readmark/checklist/lists.py`, `docs/question-lists.md`);*
+  - *loosened one test that pinned housing as the only list (`tests/test_checklist.py`);*
+  - *added `scripts/fetch_cdu_policy.py`, a README step and a `.gitignore` line.)*
+- [x] `reports/2026-10-03-easy-example.md` records the policy source, its date and terms, the
   facts table, and how the checks did against `gold.json` (with n).
 - [ ] (eye) Tarık opens S-01 and understands what each question asks and why each flag is there.
 

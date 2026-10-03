@@ -4,3 +4,5 @@
 data/policies/*.pdf
 __pycache__/
 runs/*/records/
+# CDU policy text: rebuilt by scripts/fetch_cdu_policy.py, not published (CDU terms)
+data/policies/cdu-extension/*.txt

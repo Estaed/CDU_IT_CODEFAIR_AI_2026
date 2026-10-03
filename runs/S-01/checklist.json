@@ -1,0 +1,42 @@
+[
+ {
+  "clause_id": "ext-before-due",
+  "item_passage_ids": [],
+  "passage_id": "assessment:p1:135"
+ },
+ {
+  "clause_id": "ext-grounds",
+  "item_passage_ids": [
+   "assessment:p1:140",
+   "assessment:p1:141",
+   "assessment:p1:142",
+   "assessment:p1:143",
+   "assessment:p1:144",
+   "assessment:p1:145",
+   "assessment:p1:146",
+   "assessment:p1:147"
+  ],
+  "passage_id": "assessment:p1:139"
+ },
+ {
+  "clause_id": "ext-form",
+  "item_passage_ids": [
+   "assessment:p1:152",
+   "assessment:p1:153",
+   "assessment:p1:154",
+   "assessment:p1:155",
+   "assessment:p1:156"
+  ],
+  "passage_id": "assessment:p1:151"
+ },
+ {
+  "clause_id": "ext-evidence",
+  "item_passage_ids": [],
+  "passage_id": "assessment:p1:138"
+ },
+ {
+  "clause_id": "ext-length",
+  "item_passage_ids": [],
+  "passage_id": "assessment:p1:161"
+ }
+]

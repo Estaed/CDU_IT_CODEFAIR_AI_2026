@@ -44,6 +44,6 @@ Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 
 - [x] Task-18: Question lists: each list brings its own policies and questions (codex)
 - [ ] Task-19: Case home screen: cases in progress and completed (codex)
 - [ ] Task-20: New case: upload several documents and run the checks live (ultracode)
-- [ ] Task-21: The easy example: a student's assessment extension under the real CDU rule (main-loop)
+- [x] Task-21: The easy example: a student's assessment extension under the real CDU rule (main-loop)
 - [ ] Task-22: Scanned pages: Claude reads the page image, and the image stays beside the text (ultracode)
 - [ ] Task-23: Search within a case: its documents and its policies (ultracode)

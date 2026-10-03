@@ -55,7 +55,8 @@ def make_tiny_list(tmp_path):
 
 def test_default_list_preserves_the_housing_contract():
     spec = load_question_list()
-    assert list_question_lists() == [{"id": DEFAULT_LIST_ID, "title": "NT priority housing, urban"}]
+    # Other lists may exist (the easy example adds one); the default must be among them.
+    assert {"id": DEFAULT_LIST_ID, "title": "NT priority housing, urban"} in list_question_lists()
     assert tuple(c["clause_id"] for c in spec["clauses"]) == CLAUSE_IDS == (
         "elig-residency", "elig-property", "elig-income", "elig-debts", "elig-former-tenancy",
         "prio-category", "prio-documentation", "prio-discretion",

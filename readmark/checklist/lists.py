@@ -86,8 +86,15 @@ def load_question_list(list_id: str = DEFAULT_LIST_ID,
     directory = spec.get("policy_directory", "policies")
     if not isinstance(directory, str) or not directory.strip():
         raise IngestError(f"{path}: policy_directory must be a path")
+    # Optional officer-facing labels for the three decisions (approve, decline, request
+    # information); a list without them keeps the housing wording in readmark.record.
+    decisions = spec.get("decisions", {})
+    if (not isinstance(decisions, dict)
+            or not set(decisions) <= {"approve", "decline", "request_information"}
+            or not all(isinstance(v, str) and v.strip() for v in decisions.values())):
+        raise IngestError(f"{path}: decisions must map approve/decline/request_information to labels")
     return {
-        "id": spec["id"], "title": spec["title"], "policies": policies,
+        "id": spec["id"], "title": spec["title"], "policies": policies, "decisions": decisions,
         "policies_dir": (folder / directory).resolve(),
         "clauses": validate_clauses(read_yaml(folder / "clauses.yaml"),
                                    folder / "clauses.yaml", keys),

@@ -1,0 +1,173 @@
+{
+ "cap": 8,
+ "required": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-length"
+   ],
+   "passage_id": "S-01:p1:4",
+   "rank": 1,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-length"
+   ],
+   "passage_id": "S-01:p3:4",
+   "rank": 2,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-form"
+   ],
+   "passage_id": "S-01:p5:3",
+   "rank": 3,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-form"
+   ],
+   "passage_id": "S-01:p5:5",
+   "rank": 4,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-grounds",
+    "ext-form",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p3:3",
+   "rank": 5,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form",
+    "ext-grounds",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p5:4",
+   "rank": 6,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due"
+   ],
+   "passage_id": "S-01:p3:1",
+   "rank": 7,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form"
+   ],
+   "passage_id": "S-01:p3:8",
+   "rank": 8,
+   "reasons": [
+    "possibly_missed"
+   ]
+  }
+ ],
+ "suggested": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p2:1",
+   "rank": 9,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form",
+    "ext-before-due"
+   ],
+   "passage_id": "S-01:p5:1",
+   "rank": 10,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-form"
+   ],
+   "passage_id": "S-01:p1:10",
+   "rank": 11,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-grounds",
+    "ext-form",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p3:5",
+   "rank": 12,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form"
+   ],
+   "passage_id": "S-01:p2:2",
+   "rank": 13,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form"
+   ],
+   "passage_id": "S-01:p2:6",
+   "rank": 14,
+   "reasons": [
+    "possibly_missed"
+   ]
+  }
+ ]
+}

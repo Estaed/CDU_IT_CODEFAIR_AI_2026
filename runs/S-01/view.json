@@ -1,0 +1,1372 @@
+{
+ "audit": null,
+ "cap": 8,
+ "case": {
+  "case_id": "S-01",
+  "documents": [
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Learnline assessment extension request",
+    "doc_type": "form",
+    "page": 1
+   },
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Certificate of incapacity for study",
+    "doc_type": "medical-certificate",
+    "page": 2
+   },
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Assignment 2 extension request",
+    "doc_type": "email",
+    "page": 3
+   },
+   {
+    "doc_date": "2026-09-01",
+    "doc_title": "ITX215 assessment schedule extract",
+    "doc_type": "unit-outline",
+    "page": 4
+   },
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Learnline draft attachment receipt",
+    "doc_type": "upload-receipt",
+    "page": 5
+   },
+   {
+    "doc_date": "2026-09-11",
+    "doc_title": "ITX215 student extension register",
+    "doc_type": "extension-history",
+    "page": 6
+   },
+   {
+    "doc_date": "2026-09-11",
+    "doc_title": "Receipt acknowledgement for Alex Moreno",
+    "doc_type": "lecturer-note",
+    "page": 7
+   }
+  ],
+  "pages": 7,
+  "sha256": "ed02de31f3e436c3d9351f44cc072799234267735be7ae3f15a822978366df61",
+  "synthetic": true
+ },
+ "claims": [
+  {
+   "checker": {
+    "claim_id": "c01",
+    "probability": 0.9,
+    "supports": 0.18,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:9",
+     "quote": "Request lodged: Thursday 10 September 2026, 9:40 pm",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:3",
+     "quote": "Current due date: Friday 11 September 2026, 11:59 pm (Darwin time).",
+     "quote_found": true
+    }
+   ],
+   "claim": "The request was lodged in Learnline the evening before the assignment was due.",
+   "claim_id": "c01",
+   "clause_id": "ext-before-due",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c02",
+    "probability": 0.81,
+    "supports": 0.63,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p6:5",
+     "quote": "ITX215-EXT-S401127-0910 received through Learnline on Thursday 10 September 2026 at 9:40 pm.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p4:3",
+     "quote": "Due Friday 11 September 2026, 11:59 pm (Darwin time).",
+     "quote_found": true
+    }
+   ],
+   "claim": "The Learnline register independently records the request as received the night before the due date shown in the unit outline.",
+   "claim_id": "c02",
+   "clause_id": "ext-before-due",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c03",
+    "probability": 1.0,
+    "supports": 0.76,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:5",
+     "quote": "Reason for extension: acute illness (gastroenteritis)",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "assessment:p1:140",
+     "quote": "acute illness or medical reasons;",
+     "quote_found": true
+    }
+   ],
+   "claim": "The stated reason is acute illness (gastroenteritis), which is one of the grounds the procedure lists.",
+   "claim_id": "c03",
+   "clause_id": "ext-grounds",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c04",
+    "probability": 0.96,
+    "supports": 0.79,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p2:4",
+     "quote": "The patient presented with an acute gastrointestinal illness.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p2:3",
+     "quote": "In my clinical opinion, Alex Moreno is unfit for study",
+     "quote_found": true
+    }
+   ],
+   "claim": "A general practitioner examined the student and found an acute gastrointestinal illness that made them unfit for study.",
+   "claim_id": "c04",
+   "clause_id": "ext-grounds",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c05",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:1",
+     "quote": "Student name: Alex Moreno. Student number: S401127.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The form gives the student's name and student number.",
+   "claim_id": "c05",
+   "clause_id": "ext-form",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c06",
+    "probability": 0.91,
+    "supports": 0.85,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:2",
+     "quote": "Unit: ITX215 Systems Analysis. Assessment task: Assignment 2, Requirements report (task 2).",
+     "quote_found": true
+    }
+   ],
+   "claim": "The form gives the unit name, unit code, assessment task name and task number.",
+   "claim_id": "c06",
+   "clause_id": "ext-form",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c07",
+    "probability": 1.0,
+    "supports": 0.93,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:3",
+     "quote": "Current due date: Friday 11 September 2026, 11:59 pm (Darwin time).",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:4",
+     "quote": "Proposed new due date: Thursday 17 September 2026, 11:59 pm",
+     "quote_found": true
+    }
+   ],
+   "claim": "The form gives the current due date and time and a proposed new due date.",
+   "claim_id": "c07",
+   "clause_id": "ext-form",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c08",
+    "probability": 1.0,
+    "supports": 0.94,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:5",
+     "quote": "Reason for extension: acute illness (gastroenteritis)",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:7",
+     "quote": "Attachments: medical_certificate_Moreno.pdf; ITX215_A2_draft_Moreno.docx.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The form gives a reason and attaches a medical certificate and the current draft.",
+   "claim_id": "c08",
+   "clause_id": "ext-form",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c09",
+    "probability": 1.0,
+    "supports": 0.91,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p7:4",
+     "quote": "The medical certificate and Word draft are attached to the request.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The lecturer confirms the medical certificate and the draft are attached to the request.",
+   "claim_id": "c09",
+   "clause_id": "ext-form",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c10",
+    "probability": 1.0,
+    "supports": 0.88,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p5:2",
+     "quote": "File received: ITX215_A2_draft_Moreno.docx (current draft, about 60% complete).",
+     "quote_found": true
+    }
+   ],
+   "claim": "The attached draft is recorded as about 60% complete.",
+   "claim_id": "c10",
+   "clause_id": "ext-form",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c11",
+    "probability": 0.93,
+    "supports": 0.81,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p3:4",
+     "quote": "I have asked on the form to move my due date to Wednesday 16 September.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:4",
+     "quote": "Proposed new due date: Thursday 17 September 2026, 11:59 pm",
+     "quote_found": true
+    }
+   ],
+   "claim": "The student's email says the form asks for Wednesday 16 September, but the form itself proposes Thursday 17 September 2026.",
+   "claim_id": "c11",
+   "clause_id": "ext-form",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c12",
+    "probability": 0.83,
+    "supports": 0.26,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "assessment:p1:138",
+     "quote": "Students must provide evidence for extension requests beyond 72 hours",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:3",
+     "quote": "Current due date: Friday 11 September 2026, 11:59 pm (Darwin time).",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:4",
+     "quote": "Proposed new due date: Thursday 17 September 2026, 11:59 pm",
+     "quote_found": true
+    }
+   ],
+   "claim": "The proposed new due date is more than 72 hours after the current due date, so evidence is required.",
+   "claim_id": "c12",
+   "clause_id": "ext-evidence",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c13",
+    "probability": 0.91,
+    "supports": 0.76,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p2:3",
+     "quote": "Alex Moreno is unfit for study from 9 September 2026 to 12 September 2026 inclusive.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The medical certificate covers only 9 September 2026 to 12 September 2026.",
+   "claim_id": "c13",
+   "clause_id": "ext-evidence",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c14",
+    "probability": 0.86,
+    "supports": 0.75,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p2:3",
+     "quote": "Alex Moreno is unfit for study from 9 September 2026 to 12 September 2026 inclusive.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:4",
+     "quote": "Proposed new due date: Thursday 17 September 2026, 11:59 pm",
+     "quote_found": true
+    }
+   ],
+   "claim": "The certificate period ends several days before the proposed new due date, so it does not cover the whole extension asked for.",
+   "claim_id": "c14",
+   "clause_id": "ext-evidence",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c16",
+    "probability": 1.0,
+    "supports": 0.96,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:6",
+     "quote": "I became unwell on Wednesday 9 September",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p2:3",
+     "quote": "Alex Moreno is unfit for study from 9 September 2026 to 12 September 2026 inclusive.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The student says the illness began on Wednesday 9 September, which matches the start of the certificate period.",
+   "claim_id": "c16",
+   "clause_id": "ext-evidence",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c17",
+    "probability": 1.0,
+    "supports": 0.96,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p6:3",
+     "quote": "No extension has been recorded for this student in ITX215 this semester.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p6:4",
+     "quote": "recorded 72-hour extensions, zero",
+     "quote_found": true
+    }
+   ],
+   "claim": "No earlier extension, including a 72-hour one, is recorded for this student in this unit this semester.",
+   "claim_id": "c17",
+   "clause_id": "ext-evidence",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c18",
+    "probability": 0.92,
+    "supports": 0.81,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:3",
+     "quote": "Current due date: Friday 11 September 2026, 11:59 pm (Darwin time).",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p1:4",
+     "quote": "Proposed new due date: Thursday 17 September 2026, 11:59 pm",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "assessment:p1:161",
+     "quote": "Extensions without penalty may be approved for up to seven (7) calendar days for an assessment.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The proposed new due date on the form falls within seven calendar days of the current due date.",
+   "claim_id": "c18",
+   "clause_id": "ext-length",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c19",
+    "probability": 0.9,
+    "supports": 0.1,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p3:4",
+     "quote": "I have asked on the form to move my due date to Wednesday 16 September.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "assessment:p1:161",
+     "quote": "Extensions without penalty may be approved for up to seven (7) calendar days for an assessment.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The different date in the student's email, Wednesday 16 September, would also fall within seven calendar days.",
+   "claim_id": "c19",
+   "clause_id": "ext-length",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c20",
+    "probability": 0.83,
+    "supports": 0.65,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "S-01:p6:6",
+     "quote": "This extract covers ITX215 only; records for other units are outside the search scope.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The extension register search covers only this unit, so extensions in other units are not checked.",
+   "claim_id": "c20",
+   "clause_id": "other",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  }
+ ],
+ "clauses": [
+  {
+   "claim_ids": [
+    "c01",
+    "c02"
+   ],
+   "clause_id": "ext-before-due",
+   "contradictions": [],
+   "coverage": "possibly_missed",
+   "decides": "Was the request made before the due date and time? A later request has to go as special consideration.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "assessment:p1:135",
+   "policy_sentence": "A student can request an extension to the lecturer via the CDU online form in Learnline up until the due date and time of submission.",
+   "possibly_missed": [
+    {
+     "passage_id": "S-01:p5:3",
+     "score": 3.88
+    },
+    {
+     "passage_id": "S-01:p5:5",
+     "score": 3.73
+    },
+    {
+     "passage_id": "S-01:p3:3",
+     "score": 3.46
+    },
+    {
+     "passage_id": "S-01:p3:1",
+     "score": 3.09
+    },
+    {
+     "passage_id": "S-01:p1:10",
+     "score": 2.68
+    },
+    {
+     "passage_id": "S-01:p5:1",
+     "score": 2.26
+    }
+   ],
+   "source": "Procedure (64)",
+   "title": "Asked before the due date"
+  },
+  {
+   "claim_ids": [
+    "c03",
+    "c04"
+   ],
+   "clause_id": "ext-grounds",
+   "contradictions": [],
+   "coverage": "possibly_missed",
+   "decides": "Is the student's reason one of the reasons the procedure lists, and not a discretionary activity?",
+   "missing": [],
+   "policy_items": [
+    "acute illness or medical reasons;",
+    "disability, as per a formally approved Access Plan;",
+    "personal or family circumstances;",
+    "unforeseen employment related circumstances;",
+    "religious and cultural obligations;",
+    "volunteer, emergency, or military service;",
+    "elite athlete; or",
+    "other unforeseen or extenuating circumstance."
+   ],
+   "policy_passage_id": "assessment:p1:139",
+   "policy_sentence": "A request for extension can be made on the following grounds:",
+   "possibly_missed": [
+    {
+     "passage_id": "S-01:p3:3",
+     "score": 2.89
+    },
+    {
+     "passage_id": "S-01:p5:4",
+     "score": 2.7
+    },
+    {
+     "passage_id": "S-01:p3:5",
+     "score": 2.62
+    }
+   ],
+   "source": "Procedure (66)",
+   "title": "A listed reason"
+  },
+  {
+   "claim_ids": [
+    "c05",
+    "c06",
+    "c07",
+    "c08",
+    "c09",
+    "c10",
+    "c11"
+   ],
+   "clause_id": "ext-form",
+   "contradictions": [],
+   "coverage": "possibly_missed",
+   "decides": "Does the request give everything the form asks for?",
+   "missing": [],
+   "policy_items": [
+    "student name and student number;",
+    "unit name, unit code, the assessment task name and task number;",
+    "current due time and date, and the proposed adjusted due date;",
+    "reason for requesting an extension, accompanied by relevant evidence to support the request (i.e., a medical certificate, or statutory declaration); and",
+    "a copy of the current draft of their assessment task (where applicable)."
+   ],
+   "policy_passage_id": "assessment:p1:151",
+   "policy_sentence": "Students must complete the formal CDU extension request form online in Learnline and include the following information in their request:",
+   "possibly_missed": [
+    {
+     "passage_id": "S-01:p5:4",
+     "score": 3.13
+    },
+    {
+     "passage_id": "S-01:p3:8",
+     "score": 2.87
+    },
+    {
+     "passage_id": "S-01:p2:1",
+     "score": 2.78
+    },
+    {
+     "passage_id": "S-01:p5:1",
+     "score": 2.72
+    },
+    {
+     "passage_id": "S-01:p5:3",
+     "score": 2.5
+    },
+    {
+     "passage_id": "S-01:p5:5",
+     "score": 2.43
+    },
+    {
+     "passage_id": "S-01:p2:2",
+     "score": 2.35
+    },
+    {
+     "passage_id": "S-01:p3:3",
+     "score": 2.25
+    },
+    {
+     "passage_id": "S-01:p2:6",
+     "score": 2.19
+    },
+    {
+     "passage_id": "S-01:p1:10",
+     "score": 2.18
+    },
+    {
+     "passage_id": "S-01:p3:5",
+     "score": 1.94
+    }
+   ],
+   "source": "Procedure (68)",
+   "title": "Request form complete"
+  },
+  {
+   "claim_ids": [
+    "c12",
+    "c13",
+    "c14",
+    "c16",
+    "c17"
+   ],
+   "clause_id": "ext-evidence",
+   "contradictions": [],
+   "coverage": "possibly_missed",
+   "decides": "If the extension is longer than 72 hours, or the free 72-hour extension was already used, does evidence support the whole period asked for?",
+   "missing": [
+    {
+     "claim_id": "c15",
+     "statement": "The file holds no evidence that the student was unwell or unable to study after the certificate period ends."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": "assessment:p1:138",
+   "policy_sentence": "Students must provide evidence for extension requests beyond 72 hours, or once the 72-hour unevidenced extension for a unit has been accessed.",
+   "possibly_missed": [
+    {
+     "passage_id": "S-01:p5:4",
+     "score": 2.28
+    },
+    {
+     "passage_id": "S-01:p3:3",
+     "score": 2.03
+    },
+    {
+     "passage_id": "S-01:p2:1",
+     "score": 1.91
+    },
+    {
+     "passage_id": "S-01:p3:5",
+     "score": 1.84
+    }
+   ],
+   "source": "Procedure (65)",
+   "title": "Evidence for more than 72 hours"
+  },
+  {
+   "claim_ids": [
+    "c18",
+    "c19"
+   ],
+   "clause_id": "ext-length",
+   "contradictions": [
+    {
+     "a": "S-01:p1:4",
+     "b": "S-01:p3:4",
+     "probability": 0.78
+    }
+   ],
+   "coverage": null,
+   "decides": "Is the new due date within seven calendar days of the old one? Longer needs special consideration.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "assessment:p1:161",
+   "policy_sentence": "Extensions without penalty may be approved for up to seven (7) calendar days for an assessment.",
+   "possibly_missed": [],
+   "source": "Procedure (71)",
+   "title": "Seven days at most"
+  },
+  {
+   "claim_ids": [
+    "c20"
+   ],
+   "clause_id": "other",
+   "contradictions": [],
+   "coverage": null,
+   "decides": "Facts the writer found important that no clause names.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": null,
+   "policy_sentence": null,
+   "possibly_missed": [],
+   "source": null,
+   "title": "Not on the checklist"
+  }
+ ],
+ "models": {
+  "checker": {
+   "model": "jev-1.13.0",
+   "name": "jev"
+  },
+  "writer": {
+   "model": "claude-opus-5-5",
+   "name": "claude"
+  }
+ },
+ "policies": [
+  {
+   "approved": "2025-10-29",
+   "file": "cdu-coursework-assessment.txt",
+   "sha256": "1562db500f28f83d3e90e550b01fc02b8b9623627aba5eae50946dd063d98d62",
+   "title": "CDU Higher Education Coursework Assessment Policy and Procedure",
+   "version": "current, effective 2026-03-01"
+  }
+ ],
+ "required_reading": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-length"
+   ],
+   "passage_id": "S-01:p1:4",
+   "rank": 1,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-length"
+   ],
+   "passage_id": "S-01:p3:4",
+   "rank": 2,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-form"
+   ],
+   "passage_id": "S-01:p5:3",
+   "rank": 3,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-form"
+   ],
+   "passage_id": "S-01:p5:5",
+   "rank": 4,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-grounds",
+    "ext-form",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p3:3",
+   "rank": 5,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form",
+    "ext-grounds",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p5:4",
+   "rank": 6,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due"
+   ],
+   "passage_id": "S-01:p3:1",
+   "rank": 7,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form"
+   ],
+   "passage_id": "S-01:p3:8",
+   "rank": 8,
+   "reasons": [
+    "possibly_missed"
+   ]
+  }
+ ],
+ "schema_version": 2,
+ "sources": {
+  "S-01:p1:1": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:1",
+   "text": "Student name: Alex Moreno. Student number: S401127."
+  },
+  "S-01:p1:10": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:10",
+   "text": "Submission channel: Learnline, ITX215 assessment extension request form. Receipt reference: ITX215-EXT-S401127-0910. All times shown are Darwin time."
+  },
+  "S-01:p1:2": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:2",
+   "text": "Unit: ITX215 Systems Analysis. Assessment task: Assignment 2, Requirements report (task 2)."
+  },
+  "S-01:p1:3": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:3",
+   "text": "Current due date: Friday 11 September 2026, 11:59 pm (Darwin time)."
+  },
+  "S-01:p1:4": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:4",
+   "text": "Proposed new due date: Thursday 17 September 2026, 11:59 pm"
+  },
+  "S-01:p1:5": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:5",
+   "text": "Reason for extension: acute illness (gastroenteritis)"
+  },
+  "S-01:p1:6": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:6",
+   "text": "I became unwell on Wednesday 9 September and have been unable to continue working on my report. I attended a general practice today. I have attached the medical certificate issued at that appointment and my current draft of the requirements report. The draft includes the work I completed before becoming unwell."
+  },
+  "S-01:p1:7": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:7",
+   "text": "Attachments: medical_certificate_Moreno.pdf; ITX215_A2_draft_Moreno.docx. Correspondence preference: university student email."
+  },
+  "S-01:p1:9": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "S-01:p1:9",
+   "text": "Request lodged: Thursday 10 September 2026, 9:40 pm"
+  },
+  "S-01:p2:1": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "S-01:p2:1",
+   "text": "Paperbark Lane General Practice, Darwin, NT. Medical certificate issued on Thursday 10 September 2026."
+  },
+  "S-01:p2:2": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "S-01:p2:2",
+   "text": "Patient: Alex Moreno. Consultation date: 10 September 2026. Attending practitioner: Dr Julia Mercer, General Practitioner."
+  },
+  "S-01:p2:3": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "S-01:p2:3",
+   "text": "This is to certify that I examined Alex Moreno at this practice today. In my clinical opinion, Alex Moreno is unfit for study from 9 September 2026 to 12 September 2026 inclusive."
+  },
+  "S-01:p2:4": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "S-01:p2:4",
+   "text": "The patient presented with an acute gastrointestinal illness. Rest and oral hydration were advised during the period stated above. The patient was advised to seek further medical attention if symptoms persist or worsen, or if unable to maintain fluid intake."
+  },
+  "S-01:p2:6": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "S-01:p2:6",
+   "text": "Signed: Dr Julia Mercer. Date signed: 10 September 2026. Place of issue: Darwin, Northern Territory. Document reference: PLGP-20260910-AM."
+  },
+  "S-01:p3:1": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "S-01:p3:1",
+   "text": "From: Alex Moreno, S401127. To: Dr Elise Hart, ITX215 lecturer. Sent: Thursday 10 September 2026, 9:48 pm (Darwin time). Subject: ITX215 Assignment 2 extension request."
+  },
+  "S-01:p3:3": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "S-01:p3:3",
+   "text": "I have just submitted an extension request through Learnline for the requirements report due tomorrow night. I have been sick with gastroenteritis since Wednesday and saw a doctor today. I have attached the certificate and my current draft to the request."
+  },
+  "S-01:p3:4": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "S-01:p3:4",
+   "text": "I have asked on the form to move my due date to Wednesday 16 September."
+  },
+  "S-01:p3:5": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "S-01:p3:5",
+   "text": "My draft has the report structure and the sections I had worked on before I became unwell. I still need to finish the remaining sections, check the references and proofread the report. I have kept a copy of the draft on my computer."
+  },
+  "S-01:p3:8": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "S-01:p3:8",
+   "text": "Alex Moreno. Student number: S401127. ITX215 Systems Analysis."
+  },
+  "S-01:p4:3": {
+   "doc_date": "2026-09-01",
+   "doc_title": "ITX215 assessment schedule extract",
+   "doc_type": "unit-outline",
+   "exists": true,
+   "kind": "case",
+   "page": 4,
+   "passage_id": "S-01:p4:3",
+   "text": "Assignment 2: Requirements report. Due Friday 11 September 2026, 11:59 pm (Darwin time). Weighting 30%."
+  },
+  "S-01:p5:1": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "S-01:p5:1",
+   "text": "Learnline attachment receipt. Student: Alex Moreno. Student number: S401127. Unit: ITX215 Systems Analysis. Assessment: Assignment 2, Requirements report."
+  },
+  "S-01:p5:2": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "S-01:p5:2",
+   "text": "File received: ITX215_A2_draft_Moreno.docx (current draft, about 60% complete)."
+  },
+  "S-01:p5:3": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "S-01:p5:3",
+   "text": "Upload completed: Thursday 10 September 2026, 9:37 pm (Darwin time). Upload location: assessment extension request form, draft attachment field. Request reference: ITX215-EXT-S401127-0910."
+  },
+  "S-01:p5:4": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "S-01:p5:4",
+   "text": "Attachment description entered by student: Current requirements report draft. This is the copy saved before I stopped working because of illness. It contains my report structure and the sections completed so far."
+  },
+  "S-01:p5:5": {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "S-01:p5:5",
+   "text": "File status: upload successful. File type: Microsoft Word document. Attachment saved with the extension request lodged at 9:40 pm on 10 September 2026. Uploaded by: Alex Moreno, signed in under student number S401127."
+  },
+  "S-01:p6:3": {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "S-01:p6:3",
+   "text": "No extension has been recorded for this student in ITX215 this semester."
+  },
+  "S-01:p6:4": {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "S-01:p6:4",
+   "text": "Register totals: recorded extensions, zero; recorded 72-hour extensions, zero. Previous adjusted due dates: no entries returned. Previous extension reference numbers: no entries returned."
+  },
+  "S-01:p6:5": {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "S-01:p6:5",
+   "text": "Request activity: ITX215-EXT-S401127-0910 received through Learnline on Thursday 10 September 2026 at 9:40 pm. Assessment linked to request: Assignment 2, Requirements report. Request activity and recorded extensions are held in separate register fields."
+  },
+  "S-01:p6:6": {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "S-01:p6:6",
+   "text": "Extract prepared for the unit's assessment correspondence file. Student number and unit code were used as the search fields. This extract covers ITX215 only; records for other units are outside the search scope. Generated by the Learnline assessment administration service in Darwin, NT."
+  },
+  "S-01:p7:4": {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "exists": true,
+   "kind": "case",
+   "page": 7,
+   "passage_id": "S-01:p7:4",
+   "text": "I acknowledge receipt of your Learnline extension request lodged last night and your email sent at 9:48 pm. The medical certificate and Word draft are attached to the request. I have saved your email with the assessment correspondence for ITX215."
+  },
+  "assessment:p1:135": {
+   "doc_title": "CDU Higher Education Coursework Assessment Policy and Procedure policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 1,
+   "passage_id": "assessment:p1:135",
+   "section": null,
+   "text": null,
+   "version": "current, effective 2026-03-01"
+  },
+  "assessment:p1:138": {
+   "doc_title": "CDU Higher Education Coursework Assessment Policy and Procedure policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 1,
+   "passage_id": "assessment:p1:138",
+   "section": null,
+   "text": null,
+   "version": "current, effective 2026-03-01"
+  },
+  "assessment:p1:139": {
+   "doc_title": "CDU Higher Education Coursework Assessment Policy and Procedure policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 1,
+   "passage_id": "assessment:p1:139",
+   "section": null,
+   "text": null,
+   "version": "current, effective 2026-03-01"
+  },
+  "assessment:p1:140": {
+   "doc_title": "CDU Higher Education Coursework Assessment Policy and Procedure policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 1,
+   "passage_id": "assessment:p1:140",
+   "section": null,
+   "text": null,
+   "version": "current, effective 2026-03-01"
+  },
+  "assessment:p1:151": {
+   "doc_title": "CDU Higher Education Coursework Assessment Policy and Procedure policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 1,
+   "passage_id": "assessment:p1:151",
+   "section": null,
+   "text": null,
+   "version": "current, effective 2026-03-01"
+  },
+  "assessment:p1:161": {
+   "doc_title": "CDU Higher Education Coursework Assessment Policy and Procedure policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 1,
+   "passage_id": "assessment:p1:161",
+   "section": null,
+   "text": null,
+   "version": "current, effective 2026-03-01"
+  }
+ },
+ "suggested_reading": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p2:1",
+   "rank": 9,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form",
+    "ext-before-due"
+   ],
+   "passage_id": "S-01:p5:1",
+   "rank": 10,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-before-due",
+    "ext-form"
+   ],
+   "passage_id": "S-01:p1:10",
+   "rank": 11,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-grounds",
+    "ext-form",
+    "ext-evidence"
+   ],
+   "passage_id": "S-01:p3:5",
+   "rank": 12,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form"
+   ],
+   "passage_id": "S-01:p2:2",
+   "rank": 13,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "ext-form"
+   ],
+   "passage_id": "S-01:p2:6",
+   "rank": 14,
+   "reasons": [
+    "possibly_missed"
+   ]
+  }
+ ]
+}

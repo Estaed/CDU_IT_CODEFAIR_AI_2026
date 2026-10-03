@@ -1,0 +1,2147 @@
+{
+ "case": {
+  "case_id": "S-01",
+  "documents": [
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Learnline assessment extension request",
+    "doc_type": "form",
+    "page": 1
+   },
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Certificate of incapacity for study",
+    "doc_type": "medical-certificate",
+    "page": 2
+   },
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Assignment 2 extension request",
+    "doc_type": "email",
+    "page": 3
+   },
+   {
+    "doc_date": "2026-09-01",
+    "doc_title": "ITX215 assessment schedule extract",
+    "doc_type": "unit-outline",
+    "page": 4
+   },
+   {
+    "doc_date": "2026-09-10",
+    "doc_title": "Learnline draft attachment receipt",
+    "doc_type": "upload-receipt",
+    "page": 5
+   },
+   {
+    "doc_date": "2026-09-11",
+    "doc_title": "ITX215 student extension register",
+    "doc_type": "extension-history",
+    "page": 6
+   },
+   {
+    "doc_date": "2026-09-11",
+    "doc_title": "Receipt acknowledgement for Alex Moreno",
+    "doc_type": "lecturer-note",
+    "page": 7
+   }
+  ],
+  "pages": 7,
+  "sha256": "ed02de31f3e436c3d9351f44cc072799234267735be7ae3f15a822978366df61"
+ },
+ "case_passages": [
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 1,
+   "page": 1,
+   "passage_id": "S-01:p1:1",
+   "source": "case",
+   "text": "Student name: Alex Moreno. Student number: S401127."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 2,
+   "page": 1,
+   "passage_id": "S-01:p1:2",
+   "source": "case",
+   "text": "Unit: ITX215 Systems Analysis. Assessment task: Assignment 2, Requirements report (task 2)."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 3,
+   "page": 1,
+   "passage_id": "S-01:p1:3",
+   "source": "case",
+   "text": "Current due date: Friday 11 September 2026, 11:59 pm (Darwin time)."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 4,
+   "page": 1,
+   "passage_id": "S-01:p1:4",
+   "source": "case",
+   "text": "Proposed new due date: Thursday 17 September 2026, 11:59 pm"
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 5,
+   "page": 1,
+   "passage_id": "S-01:p1:5",
+   "source": "case",
+   "text": "Reason for extension: acute illness (gastroenteritis)"
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 6,
+   "page": 1,
+   "passage_id": "S-01:p1:6",
+   "source": "case",
+   "text": "I became unwell on Wednesday 9 September and have been unable to continue working on my report. I attended a general practice today. I have attached the medical certificate issued at that appointment and my current draft of the requirements report. The draft includes the work I completed before becoming unwell."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 7,
+   "page": 1,
+   "passage_id": "S-01:p1:7",
+   "source": "case",
+   "text": "Attachments: medical_certificate_Moreno.pdf; ITX215_A2_draft_Moreno.docx. Correspondence preference: university student email."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 8,
+   "page": 1,
+   "passage_id": "S-01:p1:8",
+   "source": "case",
+   "text": "I confirm that the details in this request are accurate to the best of my knowledge. Student acknowledgement: Alex Moreno."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 9,
+   "page": 1,
+   "passage_id": "S-01:p1:9",
+   "source": "case",
+   "text": "Request lodged: Thursday 10 September 2026, 9:40 pm"
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline assessment extension request",
+   "doc_type": "form",
+   "k": 10,
+   "page": 1,
+   "passage_id": "S-01:p1:10",
+   "source": "case",
+   "text": "Submission channel: Learnline, ITX215 assessment extension request form. Receipt reference: ITX215-EXT-S401127-0910. All times shown are Darwin time."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "k": 1,
+   "page": 2,
+   "passage_id": "S-01:p2:1",
+   "source": "case",
+   "text": "Paperbark Lane General Practice, Darwin, NT. Medical certificate issued on Thursday 10 September 2026."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "k": 2,
+   "page": 2,
+   "passage_id": "S-01:p2:2",
+   "source": "case",
+   "text": "Patient: Alex Moreno. Consultation date: 10 September 2026. Attending practitioner: Dr Julia Mercer, General Practitioner."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "k": 3,
+   "page": 2,
+   "passage_id": "S-01:p2:3",
+   "source": "case",
+   "text": "This is to certify that I examined Alex Moreno at this practice today. In my clinical opinion, Alex Moreno is unfit for study from 9 September 2026 to 12 September 2026 inclusive."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "k": 4,
+   "page": 2,
+   "passage_id": "S-01:p2:4",
+   "source": "case",
+   "text": "The patient presented with an acute gastrointestinal illness. Rest and oral hydration were advised during the period stated above. The patient was advised to seek further medical attention if symptoms persist or worsen, or if unable to maintain fluid intake."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "k": 5,
+   "page": 2,
+   "passage_id": "S-01:p2:5",
+   "source": "case",
+   "text": "This certificate was issued at the patient's request for submission to the university. The patient consented to the inclusion of the clinical description above. A copy was provided to the patient following the consultation."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Certificate of incapacity for study",
+   "doc_type": "medical-certificate",
+   "k": 6,
+   "page": 2,
+   "passage_id": "S-01:p2:6",
+   "source": "case",
+   "text": "Signed: Dr Julia Mercer. Date signed: 10 September 2026. Place of issue: Darwin, Northern Territory. Document reference: PLGP-20260910-AM."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 1,
+   "page": 3,
+   "passage_id": "S-01:p3:1",
+   "source": "case",
+   "text": "From: Alex Moreno, S401127. To: Dr Elise Hart, ITX215 lecturer. Sent: Thursday 10 September 2026, 9:48 pm (Darwin time). Subject: ITX215 Assignment 2 extension request."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 2,
+   "page": 3,
+   "passage_id": "S-01:p3:2",
+   "source": "case",
+   "text": "Dear Dr Hart,"
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 3,
+   "page": 3,
+   "passage_id": "S-01:p3:3",
+   "source": "case",
+   "text": "I have just submitted an extension request through Learnline for the requirements report due tomorrow night. I have been sick with gastroenteritis since Wednesday and saw a doctor today. I have attached the certificate and my current draft to the request."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 4,
+   "page": 3,
+   "passage_id": "S-01:p3:4",
+   "source": "case",
+   "text": "I have asked on the form to move my due date to Wednesday 16 September."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 5,
+   "page": 3,
+   "passage_id": "S-01:p3:5",
+   "source": "case",
+   "text": "My draft has the report structure and the sections I had worked on before I became unwell. I still need to finish the remaining sections, check the references and proofread the report. I have kept a copy of the draft on my computer."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 6,
+   "page": 3,
+   "passage_id": "S-01:p3:6",
+   "source": "case",
+   "text": "Please let me know that my request has reached you. I will check my university email for your reply."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 7,
+   "page": 3,
+   "passage_id": "S-01:p3:7",
+   "source": "case",
+   "text": "Kind regards,"
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Assignment 2 extension request",
+   "doc_type": "email",
+   "k": 8,
+   "page": 3,
+   "passage_id": "S-01:p3:8",
+   "source": "case",
+   "text": "Alex Moreno. Student number: S401127. ITX215 Systems Analysis."
+  },
+  {
+   "doc_date": "2026-09-01",
+   "doc_title": "ITX215 assessment schedule extract",
+   "doc_type": "unit-outline",
+   "k": 1,
+   "page": 4,
+   "passage_id": "S-01:p4:1",
+   "source": "case",
+   "text": "ITX215 Systems Analysis. Semester 2, 2026. Charles Darwin University, Darwin, NT. Unit lecturer: Dr Elise Hart."
+  },
+  {
+   "doc_date": "2026-09-01",
+   "doc_title": "ITX215 assessment schedule extract",
+   "doc_type": "unit-outline",
+   "k": 2,
+   "page": 4,
+   "passage_id": "S-01:p4:2",
+   "source": "case",
+   "text": "Assessment table extract. Columns: assessment task; due date and time; weighting. Row for task 2 follows."
+  },
+  {
+   "doc_date": "2026-09-01",
+   "doc_title": "ITX215 assessment schedule extract",
+   "doc_type": "unit-outline",
+   "k": 3,
+   "page": 4,
+   "passage_id": "S-01:p4:3",
+   "source": "case",
+   "text": "Assignment 2: Requirements report. Due Friday 11 September 2026, 11:59 pm (Darwin time). Weighting 30%."
+  },
+  {
+   "doc_date": "2026-09-01",
+   "doc_title": "ITX215 assessment schedule extract",
+   "doc_type": "unit-outline",
+   "k": 4,
+   "page": 4,
+   "passage_id": "S-01:p4:4",
+   "source": "case",
+   "text": "Submit the requirements report through the Assignment 2 submission link in the ITX215 Learnline site. The assessment brief and marking rubric are available in the same assessment area. Include your name, student number, unit code and assessment title on the report's cover page."
+  },
+  {
+   "doc_date": "2026-09-01",
+   "doc_title": "ITX215 assessment schedule extract",
+   "doc_type": "unit-outline",
+   "k": 5,
+   "page": 4,
+   "passage_id": "S-01:p4:5",
+   "source": "case",
+   "text": "Before submitting, check that the uploaded file opens and contains the complete report, including the reference list. Keep a copy of your submitted file and the Learnline submission receipt for your records."
+  },
+  {
+   "doc_date": "2026-09-01",
+   "doc_title": "ITX215 assessment schedule extract",
+   "doc_type": "unit-outline",
+   "k": 6,
+   "page": 4,
+   "passage_id": "S-01:p4:6",
+   "source": "case",
+   "text": "Questions about the task may be sent to the unit lecturer through university email. Include ITX215 and Assignment 2 in the subject line so the correspondence can be filed with the unit's assessment records."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "k": 1,
+   "page": 5,
+   "passage_id": "S-01:p5:1",
+   "source": "case",
+   "text": "Learnline attachment receipt. Student: Alex Moreno. Student number: S401127. Unit: ITX215 Systems Analysis. Assessment: Assignment 2, Requirements report."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "k": 2,
+   "page": 5,
+   "passage_id": "S-01:p5:2",
+   "source": "case",
+   "text": "File received: ITX215_A2_draft_Moreno.docx (current draft, about 60% complete)."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "k": 3,
+   "page": 5,
+   "passage_id": "S-01:p5:3",
+   "source": "case",
+   "text": "Upload completed: Thursday 10 September 2026, 9:37 pm (Darwin time). Upload location: assessment extension request form, draft attachment field. Request reference: ITX215-EXT-S401127-0910."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "k": 4,
+   "page": 5,
+   "passage_id": "S-01:p5:4",
+   "source": "case",
+   "text": "Attachment description entered by student: Current requirements report draft. This is the copy saved before I stopped working because of illness. It contains my report structure and the sections completed so far."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "k": 5,
+   "page": 5,
+   "passage_id": "S-01:p5:5",
+   "source": "case",
+   "text": "File status: upload successful. File type: Microsoft Word document. Attachment saved with the extension request lodged at 9:40 pm on 10 September 2026. Uploaded by: Alex Moreno, signed in under student number S401127."
+  },
+  {
+   "doc_date": "2026-09-10",
+   "doc_title": "Learnline draft attachment receipt",
+   "doc_type": "upload-receipt",
+   "k": 6,
+   "page": 5,
+   "passage_id": "S-01:p5:6",
+   "source": "case",
+   "text": "This receipt records an attachment to the extension request. The final assessment submission is made through the separate Assignment 2 submission link. Retain this receipt with your copy of the uploaded draft and the request acknowledgement."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "k": 1,
+   "page": 6,
+   "passage_id": "S-01:p6:1",
+   "source": "case",
+   "text": "Learnline assessment administration. Student extension history extract generated Friday 11 September 2026, 8:15 am (Darwin time)."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "k": 2,
+   "page": 6,
+   "passage_id": "S-01:p6:2",
+   "source": "case",
+   "text": "Student: Alex Moreno. Student number: S401127. Unit: ITX215 Systems Analysis. Teaching period: Semester 2, 2026. Search scope: recorded assessment extensions for this student in this unit during the current semester."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "k": 3,
+   "page": 6,
+   "passage_id": "S-01:p6:3",
+   "source": "case",
+   "text": "No extension has been recorded for this student in ITX215 this semester."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "k": 4,
+   "page": 6,
+   "passage_id": "S-01:p6:4",
+   "source": "case",
+   "text": "Register totals: recorded extensions, zero; recorded 72-hour extensions, zero. Previous adjusted due dates: no entries returned. Previous extension reference numbers: no entries returned."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "k": 5,
+   "page": 6,
+   "passage_id": "S-01:p6:5",
+   "source": "case",
+   "text": "Request activity: ITX215-EXT-S401127-0910 received through Learnline on Thursday 10 September 2026 at 9:40 pm. Assessment linked to request: Assignment 2, Requirements report. Request activity and recorded extensions are held in separate register fields."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "ITX215 student extension register",
+   "doc_type": "extension-history",
+   "k": 6,
+   "page": 6,
+   "passage_id": "S-01:p6:6",
+   "source": "case",
+   "text": "Extract prepared for the unit's assessment correspondence file. Student number and unit code were used as the search fields. This extract covers ITX215 only; records for other units are outside the search scope. Generated by the Learnline assessment administration service in Darwin, NT."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 1,
+   "page": 7,
+   "passage_id": "S-01:p7:1",
+   "source": "case",
+   "text": "Dr Elise Hart, ITX215 Systems Analysis. File note entered Friday 11 September 2026, 8:30 am (Darwin time). Student: Alex Moreno, S401127. Assessment: Assignment 2, Requirements report."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 2,
+   "page": 7,
+   "passage_id": "S-01:p7:2",
+   "source": "case",
+   "text": "Acknowledgement sent to Alex Moreno through university email at 8:30 am. Subject: Receipt of ITX215 extension request. Message retained below."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 3,
+   "page": 7,
+   "passage_id": "S-01:p7:3",
+   "source": "case",
+   "text": "Dear Alex,"
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 4,
+   "page": 7,
+   "passage_id": "S-01:p7:4",
+   "source": "case",
+   "text": "I acknowledge receipt of your Learnline extension request lodged last night and your email sent at 9:48 pm. The medical certificate and Word draft are attached to the request. I have saved your email with the assessment correspondence for ITX215."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 5,
+   "page": 7,
+   "passage_id": "S-01:p7:5",
+   "source": "case",
+   "text": "Please keep the Learnline receipt and a copy of both attachments for your records. Use your university email account for correspondence about this request and include ITX215 Assignment 2 in the subject line."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 6,
+   "page": 7,
+   "passage_id": "S-01:p7:6",
+   "source": "case",
+   "text": "Kind regards,"
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 7,
+   "page": 7,
+   "passage_id": "S-01:p7:7",
+   "source": "case",
+   "text": "Dr Elise Hart. Unit lecturer, ITX215 Systems Analysis. Darwin, NT."
+  },
+  {
+   "doc_date": "2026-09-11",
+   "doc_title": "Receipt acknowledgement for Alex Moreno",
+   "doc_type": "lecturer-note",
+   "k": 8,
+   "page": 7,
+   "passage_id": "S-01:p7:8",
+   "source": "case",
+   "text": "File reference: ITX215-EXT-S401127-0910. A copy of the acknowledgement is retained with the received form, attachments and student email."
+  }
+ ],
+ "policies": {
+  "cdu-coursework-assessment.txt": {
+   "approved": "2025-10-29",
+   "pages": 1,
+   "sha256": "1562db500f28f83d3e90e550b01fc02b8b9623627aba5eae50946dd063d98d62",
+   "version": "current, effective 2026-03-01"
+  }
+ },
+ "policy_passages": [
+  {
+   "chars": 59,
+   "page": 1,
+   "passage_id": "assessment:p1:1",
+   "sha256": "101b2ecb3601c0f9e51951332b82e5ae89abb9a9d58544223c0680f04e8b4ab1"
+  },
+  {
+   "chars": 20,
+   "page": 1,
+   "passage_id": "assessment:p1:2",
+   "sha256": "e01b770a213c0a956b27d21b5c3780a6c81931d4ea90f0980316c9f738fe4963"
+  },
+  {
+   "chars": 279,
+   "page": 1,
+   "passage_id": "assessment:p1:3",
+   "sha256": "be1cbbf44ec92ebc19acb12caf9aa59b24493a5e32199c8b6d804539c9068e53"
+  },
+  {
+   "chars": 213,
+   "page": 1,
+   "passage_id": "assessment:p1:4",
+   "sha256": "905b322dbbdfcc21e6e6e2f5773a8e8b431c2f2db156a356a43dd62ad9179257"
+  },
+  {
+   "chars": 19,
+   "page": 1,
+   "passage_id": "assessment:p1:5",
+   "sha256": "8aacb36a19300fe26be9ea6e5c41ebbce3a025e3a0c18e70df8bd09bb02d5c4b"
+  },
+  {
+   "chars": 202,
+   "page": 1,
+   "passage_id": "assessment:p1:6",
+   "sha256": "a5e8c3c5b891e65163584e505dc1057ee82da5edebc92ce73322a89bcc5deaa4"
+  },
+  {
+   "chars": 151,
+   "page": 1,
+   "passage_id": "assessment:p1:7",
+   "sha256": "520e8d5b9bfdd32e96bd760d8ee472096f5a8245677ef835620f3a7d673b177e"
+  },
+  {
+   "chars": 17,
+   "page": 1,
+   "passage_id": "assessment:p1:8",
+   "sha256": "e477150f419717eaedf23eec002f6edf371c45b92c5e9d24b60654c041e73f82"
+  },
+  {
+   "chars": 221,
+   "page": 1,
+   "passage_id": "assessment:p1:9",
+   "sha256": "c7b9fdeca7353c05cd4d20e3cb7ac0f52b8856311f402ca30407bd0fc05b6c4b"
+  },
+  {
+   "chars": 192,
+   "page": 1,
+   "passage_id": "assessment:p1:10",
+   "sha256": "5615ce384dad2023282a80376be79524b11673e955e29112ed4fe5f77991352d"
+  },
+  {
+   "chars": 18,
+   "page": 1,
+   "passage_id": "assessment:p1:11",
+   "sha256": "41d0c1fb8ba008bfee0a101a7d99e52f2ff8917247dab204d427cd478becc367"
+  },
+  {
+   "chars": 257,
+   "page": 1,
+   "passage_id": "assessment:p1:12",
+   "sha256": "0a08e7f94fb706979a69a033fd0b6590d7206902dda6a36f508be29d93389cab"
+  },
+  {
+   "chars": 126,
+   "page": 1,
+   "passage_id": "assessment:p1:13",
+   "sha256": "3281592c3c529364384f75ec176c6027dc2e3c3f29bdd679cb3d739279711002"
+  },
+  {
+   "chars": 124,
+   "page": 1,
+   "passage_id": "assessment:p1:14",
+   "sha256": "8e512cb42becadad2caf8169f141c5c0f7c4f45b89fdd88934051a76d832ba4f"
+  },
+  {
+   "chars": 21,
+   "page": 1,
+   "passage_id": "assessment:p1:15",
+   "sha256": "c2ed7c286560978453abec115f6d4176cd6a28ad1a9afcdbc9b7d7b82155b957"
+  },
+  {
+   "chars": 42,
+   "page": 1,
+   "passage_id": "assessment:p1:16",
+   "sha256": "5582f24d88456fcd9738b4360558bbdbe2ca1ef3ce0450471f8e8a8431bb5bea"
+  },
+  {
+   "chars": 40,
+   "page": 1,
+   "passage_id": "assessment:p1:17",
+   "sha256": "fde1b1084ddee9d2b11523ca7bdbff51842ed090b5d6cc540a92e74db2f751bd"
+  },
+  {
+   "chars": 100,
+   "page": 1,
+   "passage_id": "assessment:p1:18",
+   "sha256": "2d81b435b99634cc49b1dedda0f2c29b3f2502d8c3019b6aa2f90e70577d22e2"
+  },
+  {
+   "chars": 78,
+   "page": 1,
+   "passage_id": "assessment:p1:19",
+   "sha256": "f12d2d795b5326bfd68b8e443a66c756071acf532f8cc953ebf441471fb49729"
+  },
+  {
+   "chars": 54,
+   "page": 1,
+   "passage_id": "assessment:p1:20",
+   "sha256": "a11f609dd0caa2e3c540dcc188972d7f61e1b9b9633a96cb38f7a218d626bee9"
+  },
+  {
+   "chars": 165,
+   "page": 1,
+   "passage_id": "assessment:p1:21",
+   "sha256": "029d349f998f1f43647b69fc6ae836a0dc1f21c8573a0c614129a19d7314859b"
+  },
+  {
+   "chars": 142,
+   "page": 1,
+   "passage_id": "assessment:p1:22",
+   "sha256": "9461a76b71c557fa9353fb91cd61c2f9d8e4e6f841a8008f48e3c823c2f5f463"
+  },
+  {
+   "chars": 162,
+   "page": 1,
+   "passage_id": "assessment:p1:23",
+   "sha256": "af6527f1ec90f0a3a8e31ada11ac26458e14796942173dfc30c907a51d92d3dc"
+  },
+  {
+   "chars": 135,
+   "page": 1,
+   "passage_id": "assessment:p1:24",
+   "sha256": "ff5b6f9b46ad99a6847059f5078582c9f62ebcb93f3e4cd8221c2cb997376733"
+  },
+  {
+   "chars": 88,
+   "page": 1,
+   "passage_id": "assessment:p1:25",
+   "sha256": "935d4464b0d98b1132f05f874ea8d7294b8d00669cdf077e47200cb252d52da3"
+  },
+  {
+   "chars": 35,
+   "page": 1,
+   "passage_id": "assessment:p1:26",
+   "sha256": "7a4b7a2a0f1ed73687083b9e860869c842a5e0f6d186adefdf6b1ac08d9e8517"
+  },
+  {
+   "chars": 163,
+   "page": 1,
+   "passage_id": "assessment:p1:27",
+   "sha256": "a7d2895869c8452a5d521e169ee3bfd4dd3bb1283c4a52cff415b8edc2c9ece9"
+  },
+  {
+   "chars": 96,
+   "page": 1,
+   "passage_id": "assessment:p1:28",
+   "sha256": "f65452f98f7bd6bc5398769566ef03fd2c8f8f6899a59e3a013f659f7cd9db2f"
+  },
+  {
+   "chars": 40,
+   "page": 1,
+   "passage_id": "assessment:p1:29",
+   "sha256": "d89b7ab23e72186bed4bf2446d1884b29a254deba867998ac54a7805798feef5"
+  },
+  {
+   "chars": 151,
+   "page": 1,
+   "passage_id": "assessment:p1:30",
+   "sha256": "db43a4f8b601109b50fc010c08f786a68a71a08863536566f1dd0def5c89bbcb"
+  },
+  {
+   "chars": 81,
+   "page": 1,
+   "passage_id": "assessment:p1:31",
+   "sha256": "f7ff19833949f0195e4ab1037b9f78819f493de6a1ef71e1b888a966ddbdbd72"
+  },
+  {
+   "chars": 87,
+   "page": 1,
+   "passage_id": "assessment:p1:32",
+   "sha256": "cdba714c147ff8566a96d5f9c96db0fde9ca994c7524d16687215564008e1cab"
+  },
+  {
+   "chars": 253,
+   "page": 1,
+   "passage_id": "assessment:p1:33",
+   "sha256": "e4dbb532bbbb00bcbd0e9e4dc1b87d8dcda1bc97a2c29ce2719196d3a4b78c05"
+  },
+  {
+   "chars": 211,
+   "page": 1,
+   "passage_id": "assessment:p1:34",
+   "sha256": "c70e07efa3c80f08d6372e26a2d66103df7b1dab17de90d4462f8eb572b795ff"
+  },
+  {
+   "chars": 38,
+   "page": 1,
+   "passage_id": "assessment:p1:35",
+   "sha256": "ad1f2dda4d779d7ee1a3822eebc8ab1be0c8fa1d0ea72372cb504a48a9e48062"
+  },
+  {
+   "chars": 139,
+   "page": 1,
+   "passage_id": "assessment:p1:36",
+   "sha256": "4fde6edd8894f3e3fccd2635aaa117d673534ff49534b2dcb16324c0031519b6"
+  },
+  {
+   "chars": 108,
+   "page": 1,
+   "passage_id": "assessment:p1:37",
+   "sha256": "4e714efc00a8a6061eedf83c466ac0c2d8c0059736a4099dc5fec052134be1c5"
+  },
+  {
+   "chars": 139,
+   "page": 1,
+   "passage_id": "assessment:p1:38",
+   "sha256": "ea7907b7aefcf8435990d41cf88faf5eb27b09d8cf6588d43728cd4e42b0f601"
+  },
+  {
+   "chars": 77,
+   "page": 1,
+   "passage_id": "assessment:p1:39",
+   "sha256": "8e6aa21466c2a79eb303bdc9a9b0889194053ca7bd16a8dc12b08ac6ce58ba25"
+  },
+  {
+   "chars": 62,
+   "page": 1,
+   "passage_id": "assessment:p1:40",
+   "sha256": "d97a1c2437aacad6736d1317f3edf0e9e0beca11d1c2cd44b8edd1197022fbe6"
+  },
+  {
+   "chars": 222,
+   "page": 1,
+   "passage_id": "assessment:p1:41",
+   "sha256": "94858e2e289a8bb14823111d6733ed17b58b59e67769c6bdea8d9d6acfbff2d3"
+  },
+  {
+   "chars": 281,
+   "page": 1,
+   "passage_id": "assessment:p1:42",
+   "sha256": "4a8f1b50bd1869d5b6d724691f1dd5ff8380df39ba1ec5ed8ca1bc0e73897c42"
+  },
+  {
+   "chars": 49,
+   "page": 1,
+   "passage_id": "assessment:p1:43",
+   "sha256": "1b0eafd3a9e95cf233c873393eb53f56274e8a5d27a592a32c58208a7240b066"
+  },
+  {
+   "chars": 105,
+   "page": 1,
+   "passage_id": "assessment:p1:44",
+   "sha256": "a5056ce6ba9321a1cf6962708345a798e5ae6f55549ff2dd6b885edca22caaec"
+  },
+  {
+   "chars": 134,
+   "page": 1,
+   "passage_id": "assessment:p1:45",
+   "sha256": "43ccd8b7651428484684ef21e3c701f4b20334c1b84ff3f9ea73ec8a5cd29943"
+  },
+  {
+   "chars": 135,
+   "page": 1,
+   "passage_id": "assessment:p1:46",
+   "sha256": "190dc5b3efc91013140b03770d89a9bc7da8db8c9acfcd99f71e6adddadc77d7"
+  },
+  {
+   "chars": 138,
+   "page": 1,
+   "passage_id": "assessment:p1:47",
+   "sha256": "baac638c2405f6d42232c90d2618c1fc061a35472edf7dd851762d369fe5ab6a"
+  },
+  {
+   "chars": 29,
+   "page": 1,
+   "passage_id": "assessment:p1:48",
+   "sha256": "cb6f2e4fba93733ac23ffe6dd10927268ccd5f48a550a399e4c21c217cbfe3a6"
+  },
+  {
+   "chars": 286,
+   "page": 1,
+   "passage_id": "assessment:p1:49",
+   "sha256": "682beeed57324ef4fb3369c40b989ca4b0f60b475623012d154c25d861271403"
+  },
+  {
+   "chars": 128,
+   "page": 1,
+   "passage_id": "assessment:p1:50",
+   "sha256": "0031f29f7d39fd5362767626776204cb4558f586593f955c95ee01c9faa7c231"
+  },
+  {
+   "chars": 111,
+   "page": 1,
+   "passage_id": "assessment:p1:51",
+   "sha256": "1b08b78774fee4bcee73460715bbb48edd06bf45d24dc90484a8e613d0508621"
+  },
+  {
+   "chars": 33,
+   "page": 1,
+   "passage_id": "assessment:p1:52",
+   "sha256": "d790973a56306c747c89ed4433cbca304aeda26288a8cf383538545fb0265470"
+  },
+  {
+   "chars": 102,
+   "page": 1,
+   "passage_id": "assessment:p1:53",
+   "sha256": "b6f5b3b6b346c1bac596f6fa6c8896f58f39898cb4264c32785db70202ce100c"
+  },
+  {
+   "chars": 143,
+   "page": 1,
+   "passage_id": "assessment:p1:54",
+   "sha256": "d50559243dd6f47fde4607eb7cf4551b87d46da91a7d11fb5cc92d109a3d5381"
+  },
+  {
+   "chars": 316,
+   "page": 1,
+   "passage_id": "assessment:p1:55",
+   "sha256": "e54c070a20fcd718013af08167b32d9b2504176850ce83819d4affb943016f9b"
+  },
+  {
+   "chars": 315,
+   "page": 1,
+   "passage_id": "assessment:p1:56",
+   "sha256": "35c5f19e1660e86f41bb433729f91a824b0917b344412074f8a215e8216bd571"
+  },
+  {
+   "chars": 206,
+   "page": 1,
+   "passage_id": "assessment:p1:57",
+   "sha256": "10dfc886ffbffaa77a49459c41b2aaa597b46aa934069897010cd3a75e520b62"
+  },
+  {
+   "chars": 52,
+   "page": 1,
+   "passage_id": "assessment:p1:58",
+   "sha256": "18b81739c4b0f490452fbb831dbccfcaac743fff51d3d93e441cdeb20622120f"
+  },
+  {
+   "chars": 120,
+   "page": 1,
+   "passage_id": "assessment:p1:59",
+   "sha256": "19a7c46a11eb62d2ed3ae80bf144ee3926bc129acd6b06e6f075db0938fbbb59"
+  },
+  {
+   "chars": 55,
+   "page": 1,
+   "passage_id": "assessment:p1:60",
+   "sha256": "58480f27638e9b57bcf5b65491c03ab7b65e41df844538446c9bb7845ad0d5d2"
+  },
+  {
+   "chars": 154,
+   "page": 1,
+   "passage_id": "assessment:p1:61",
+   "sha256": "2e2f552d773394a99f028c32b6b730b3424aede98264a0ecd63ee41cba60a60d"
+  },
+  {
+   "chars": 158,
+   "page": 1,
+   "passage_id": "assessment:p1:62",
+   "sha256": "80f9ffb84cca9e1d2d4f2a0aec321a6133aea09eecf52e60cd4a48fe3c9d657a"
+  },
+  {
+   "chars": 26,
+   "page": 1,
+   "passage_id": "assessment:p1:63",
+   "sha256": "0f215f71c14019ae81e9a9290c3a3c486b7321584a4e16324d0682a4b8735e88"
+  },
+  {
+   "chars": 168,
+   "page": 1,
+   "passage_id": "assessment:p1:64",
+   "sha256": "2103ce02da0931babdee81f1789c611bebdf0bf1d6ae693b8110e86b3e015d15"
+  },
+  {
+   "chars": 148,
+   "page": 1,
+   "passage_id": "assessment:p1:65",
+   "sha256": "5525d1f39313a4282980f6f89c3211466b22389d96140d0b16cdae3b26bebdc6"
+  },
+  {
+   "chars": 82,
+   "page": 1,
+   "passage_id": "assessment:p1:66",
+   "sha256": "686e43324a3bb66fe167b201dd83a53f21ef06aea4284307085ddb619c1b78ea"
+  },
+  {
+   "chars": 148,
+   "page": 1,
+   "passage_id": "assessment:p1:67",
+   "sha256": "32dd5aeef13a7c431844f33f863746b29bfef405c397559f9b3cfe3d1d596cfa"
+  },
+  {
+   "chars": 194,
+   "page": 1,
+   "passage_id": "assessment:p1:68",
+   "sha256": "ce526c2bf4f08f83f96de7d2fb372ce646c1f3a556893119e06c1beaf5d2e9c7"
+  },
+  {
+   "chars": 124,
+   "page": 1,
+   "passage_id": "assessment:p1:69",
+   "sha256": "317fcb9c341d95c4aef3b635f4aed146226304cf1d322bfb0376ef384931e974"
+  },
+  {
+   "chars": 45,
+   "page": 1,
+   "passage_id": "assessment:p1:70",
+   "sha256": "072d2be15fa9abd5d12c75f004a5847e79dc1ad69eb51626ea5522f856b3fa5f"
+  },
+  {
+   "chars": 144,
+   "page": 1,
+   "passage_id": "assessment:p1:71",
+   "sha256": "1b4b1e02ab1efbcf654e0c76b7c295065634deb6a448c12f1cd6445dd718b9e5"
+  },
+  {
+   "chars": 144,
+   "page": 1,
+   "passage_id": "assessment:p1:72",
+   "sha256": "e554d2387388adccf0fdf5974bdb1537d4c22518756cf7e4cb8e4b79dcbe548e"
+  },
+  {
+   "chars": 172,
+   "page": 1,
+   "passage_id": "assessment:p1:73",
+   "sha256": "2c3bd3329f54dcffca933b06fc74a972d22248c14c6c1adeca56e4fdd5824eec"
+  },
+  {
+   "chars": 154,
+   "page": 1,
+   "passage_id": "assessment:p1:74",
+   "sha256": "3702ca52a454df6d79f503e8e8697f85849d89200f2d1fdd20a811e4bc3f0531"
+  },
+  {
+   "chars": 172,
+   "page": 1,
+   "passage_id": "assessment:p1:75",
+   "sha256": "552e469adc6cc4e614653afcd279ed30bbcc2ef950777ab841f84e2326768d24"
+  },
+  {
+   "chars": 89,
+   "page": 1,
+   "passage_id": "assessment:p1:76",
+   "sha256": "d40bda8acb5ef2309c1d96e2b5d6c9fd6a90ffb357356d222c7027026f93bc78"
+  },
+  {
+   "chars": 178,
+   "page": 1,
+   "passage_id": "assessment:p1:77",
+   "sha256": "3609664dbe75368002dfc6c991a0f10fee5ceaac0cf323b57fecd90d153d8f30"
+  },
+  {
+   "chars": 144,
+   "page": 1,
+   "passage_id": "assessment:p1:78",
+   "sha256": "d890b5cafcc38fc67272ffd4c2128c7c50f2abe9b05b480927abc9b63cf879cb"
+  },
+  {
+   "chars": 120,
+   "page": 1,
+   "passage_id": "assessment:p1:79",
+   "sha256": "58f8384ac57bc679fcc1a476365264b2c7cf1c72bfdbf24aa1d25df771b2a8d3"
+  },
+  {
+   "chars": 151,
+   "page": 1,
+   "passage_id": "assessment:p1:80",
+   "sha256": "993a7429b7f9b2912cc8f08f1dbd215b119630ac1964a3d5237defce10618780"
+  },
+  {
+   "chars": 127,
+   "page": 1,
+   "passage_id": "assessment:p1:81",
+   "sha256": "ea1c4f41eebcfd44256298e7030fe2a408f6f7f7c24224725e082e3d01253693"
+  },
+  {
+   "chars": 39,
+   "page": 1,
+   "passage_id": "assessment:p1:82",
+   "sha256": "8020bca5b4f9ba7a4b08105959b68f3cea31b59cabfe5ab0f29a81eee3ea3b2d"
+  },
+  {
+   "chars": 100,
+   "page": 1,
+   "passage_id": "assessment:p1:83",
+   "sha256": "b8b1c2ba647a302519e2cbfa95a64b36123128f897fbda267d8f862b455e23ff"
+  },
+  {
+   "chars": 69,
+   "page": 1,
+   "passage_id": "assessment:p1:84",
+   "sha256": "44c55ae211c3f4e71d5234638a81714c9bbc94c2c8f0d9b35b6bade9db22fd55"
+  },
+  {
+   "chars": 84,
+   "page": 1,
+   "passage_id": "assessment:p1:85",
+   "sha256": "a4b8bf3f7c6010f2f4a5c9ecc69f68a5b441ed19e38c1fbef2a7c0ec53d4025a"
+  },
+  {
+   "chars": 79,
+   "page": 1,
+   "passage_id": "assessment:p1:86",
+   "sha256": "0c57cc3843ccf0461be16ec065e118409ae111e24304cf104273b4e6b09c1686"
+  },
+  {
+   "chars": 70,
+   "page": 1,
+   "passage_id": "assessment:p1:87",
+   "sha256": "917991fae166397d9cf029d71d28e7a68fedc3486442e90a777a3ebc8cf02cc2"
+  },
+  {
+   "chars": 48,
+   "page": 1,
+   "passage_id": "assessment:p1:88",
+   "sha256": "889fb366d6b0313922ff20e26d4868a2bcc65c249a714e741b3d61d87019a92e"
+  },
+  {
+   "chars": 57,
+   "page": 1,
+   "passage_id": "assessment:p1:89",
+   "sha256": "9d31389eb329a5faa0bd76d0872dabf504b92519e20a2c87cf95765da7ee221f"
+  },
+  {
+   "chars": 114,
+   "page": 1,
+   "passage_id": "assessment:p1:90",
+   "sha256": "0b7c5d0d986291fe85b419d68de2b64d2a4604245ab6047079c9143b935def59"
+  },
+  {
+   "chars": 165,
+   "page": 1,
+   "passage_id": "assessment:p1:91",
+   "sha256": "a186e2ed59e882f6bee4a5e0bf2dc8381ba8a32f8892d4b5d11733576585bd2f"
+  },
+  {
+   "chars": 110,
+   "page": 1,
+   "passage_id": "assessment:p1:92",
+   "sha256": "af05e821282dc21899c33d2921cdaa6bd06cbbf6f01727c92e9345a451a2aab3"
+  },
+  {
+   "chars": 21,
+   "page": 1,
+   "passage_id": "assessment:p1:93",
+   "sha256": "7b76953c179cdd55df549c653702446461209fef0e2b7e4c13a90f858157be97"
+  },
+  {
+   "chars": 10,
+   "page": 1,
+   "passage_id": "assessment:p1:94",
+   "sha256": "7808eeeb45dfa074e21b1b6b1be5edfca205495c2b46df66ee1005e479948eaa"
+  },
+  {
+   "chars": 174,
+   "page": 1,
+   "passage_id": "assessment:p1:95",
+   "sha256": "9bb2ba266ad84da735d2888c63a696aa325d653f0c821836f27f40be77d44512"
+  },
+  {
+   "chars": 33,
+   "page": 1,
+   "passage_id": "assessment:p1:96",
+   "sha256": "56d1997854356a3b9ac5419f386e14be7e48f8d875cd32e05f27dbb6f2b88223"
+  },
+  {
+   "chars": 119,
+   "page": 1,
+   "passage_id": "assessment:p1:97",
+   "sha256": "f6cbc4ecb1c6946563398a7143ffd21555ac3221d2c3eb5c7b874cdec89dd408"
+  },
+  {
+   "chars": 53,
+   "page": 1,
+   "passage_id": "assessment:p1:98",
+   "sha256": "a45664afe84e92e14e5ca6a5179d23da049867a686c685e098f11cbc8b9885c3"
+  },
+  {
+   "chars": 45,
+   "page": 1,
+   "passage_id": "assessment:p1:99",
+   "sha256": "68f898035dea8dff65f7dee3161346ca18a69670001d817c96f0183b39ed0890"
+  },
+  {
+   "chars": 95,
+   "page": 1,
+   "passage_id": "assessment:p1:100",
+   "sha256": "28b97beaca06dffc0f25cd7be9dca8f5baa2e9be8a5102b4eaf7ae8bfc23df9d"
+  },
+  {
+   "chars": 197,
+   "page": 1,
+   "passage_id": "assessment:p1:101",
+   "sha256": "fabf5fbc25a00860f31920ca724c0d37991ebdfbb9fed43634d2426d0078241c"
+  },
+  {
+   "chars": 137,
+   "page": 1,
+   "passage_id": "assessment:p1:102",
+   "sha256": "1dd0ef78d7b0936f14dbc08bbdfe8b26ccf8a0bdb403d602658b11a70dbe1ce1"
+  },
+  {
+   "chars": 199,
+   "page": 1,
+   "passage_id": "assessment:p1:103",
+   "sha256": "9a6fb07deedb9fed483aeb539afd8deae1a2702f561419643c4871443eed4d07"
+  },
+  {
+   "chars": 156,
+   "page": 1,
+   "passage_id": "assessment:p1:104",
+   "sha256": "afd2d252dfd2ad29ad39b4a50676a89c62b6380123db76e5ba4627046f60169e"
+  },
+  {
+   "chars": 200,
+   "page": 1,
+   "passage_id": "assessment:p1:105",
+   "sha256": "def472ca9686a884c94ddbb472425b39f09c3a064bf8b4558bafe833a136f700"
+  },
+  {
+   "chars": 41,
+   "page": 1,
+   "passage_id": "assessment:p1:106",
+   "sha256": "537aa14c331a78b7f6e371e7862c212dac54c1e4d23eb8e9e85daaba147b0bf0"
+  },
+  {
+   "chars": 82,
+   "page": 1,
+   "passage_id": "assessment:p1:107",
+   "sha256": "ae25b222ff365578fe409e8f73c7a4fe0b3f299a1c408cfae8cf149654d09659"
+  },
+  {
+   "chars": 193,
+   "page": 1,
+   "passage_id": "assessment:p1:108",
+   "sha256": "0b1e6c65024a715b42938c1832598b0efc66d906eeda9d9b22ca6a0fcafa7743"
+  },
+  {
+   "chars": 86,
+   "page": 1,
+   "passage_id": "assessment:p1:109",
+   "sha256": "12fbc62c6c8f8f2fb6c12475e921fa54438181d22412444d806726afb3697007"
+  },
+  {
+   "chars": 69,
+   "page": 1,
+   "passage_id": "assessment:p1:110",
+   "sha256": "a5f1a50d815b9404516b24ac648173de1900f835d107ee3feaa90764a855102a"
+  },
+  {
+   "chars": 16,
+   "page": 1,
+   "passage_id": "assessment:p1:111",
+   "sha256": "241430b2404490b9f940ba55f5d3c9573019c339ce93c29c49ef5256f2a17d98"
+  },
+  {
+   "chars": 160,
+   "page": 1,
+   "passage_id": "assessment:p1:112",
+   "sha256": "b40edf6bfd7eb9f8b0dfeaac4d077508e130587d3c650c727f5f8b989c2d44fc"
+  },
+  {
+   "chars": 115,
+   "page": 1,
+   "passage_id": "assessment:p1:113",
+   "sha256": "f0e64bfbdb0441731a694b9cb7cd9aeeeb9a6fbf58f7171196b5e59195544ec7"
+  },
+  {
+   "chars": 114,
+   "page": 1,
+   "passage_id": "assessment:p1:114",
+   "sha256": "63b401ae95e31b63ee819ffea30feb02783443005ee0769a0ff3906ce22c7409"
+  },
+  {
+   "chars": 104,
+   "page": 1,
+   "passage_id": "assessment:p1:115",
+   "sha256": "92bba3a20bcb8c1b0a5d0dc04884d987c7bca7fba73f27ed9d8f3496d66f11e7"
+  },
+  {
+   "chars": 117,
+   "page": 1,
+   "passage_id": "assessment:p1:116",
+   "sha256": "b8a299b26cb7244a271266fad1bfbf5f7f7f0393a4acf8594390474aa0d7959a"
+  },
+  {
+   "chars": 10,
+   "page": 1,
+   "passage_id": "assessment:p1:117",
+   "sha256": "4cecc708584fc197b32b39cac65d3e4bf3fe15cf7b0d8bb4d1faa0af363a6d3b"
+  },
+  {
+   "chars": 231,
+   "page": 1,
+   "passage_id": "assessment:p1:118",
+   "sha256": "55b1f8806d1a5b5932e43bb059626ba0de112de2c34ba4b8c844e26205a1fd86"
+  },
+  {
+   "chars": 62,
+   "page": 1,
+   "passage_id": "assessment:p1:119",
+   "sha256": "314162362d4b62e487fc314fd0d14cdc34dfdb95374a428493e4abe46b6e95a8"
+  },
+  {
+   "chars": 97,
+   "page": 1,
+   "passage_id": "assessment:p1:120",
+   "sha256": "5d14b7dbe33535ac0af415583f31b00f4c630102c26ebd9926a07c96343ddcb3"
+  },
+  {
+   "chars": 96,
+   "page": 1,
+   "passage_id": "assessment:p1:121",
+   "sha256": "14931f389c47e9372ccc48dff3f2a094d74b6a1a44eacb85e29da29ae6749c37"
+  },
+  {
+   "chars": 242,
+   "page": 1,
+   "passage_id": "assessment:p1:122",
+   "sha256": "433aa5bd673c46abae2ae8933e24fdcba1785b128e553b89acd8fb26d6f23ead"
+  },
+  {
+   "chars": 39,
+   "page": 1,
+   "passage_id": "assessment:p1:123",
+   "sha256": "fe329d6cd9ca47a7c68ea26e0372500e8dc10b95634a1c6dc0fbd7facb1a8117"
+  },
+  {
+   "chars": 95,
+   "page": 1,
+   "passage_id": "assessment:p1:124",
+   "sha256": "518f934ec6560ea45c0ad474ab53c0ac84be90c4f24cd3a2f1250449fe45a689"
+  },
+  {
+   "chars": 96,
+   "page": 1,
+   "passage_id": "assessment:p1:125",
+   "sha256": "dfd0dd7f1437ce25335bcc8d57fe11ec1b427125e92f356bd5cf02edc3d97b46"
+  },
+  {
+   "chars": 159,
+   "page": 1,
+   "passage_id": "assessment:p1:126",
+   "sha256": "e48bbc6227e4a31b328f4d8d4a26f1cb825531989bbced08fa1880839bc79fe0"
+  },
+  {
+   "chars": 138,
+   "page": 1,
+   "passage_id": "assessment:p1:127",
+   "sha256": "e0d3a4af402caa8da7c265109ad53ef9de608c6e992b39a3e49d030ca1666376"
+  },
+  {
+   "chars": 171,
+   "page": 1,
+   "passage_id": "assessment:p1:128",
+   "sha256": "abb7cbe12b99d48ffd629f1306191782b88fa689589548e974016b73576d525a"
+  },
+  {
+   "chars": 218,
+   "page": 1,
+   "passage_id": "assessment:p1:129",
+   "sha256": "9b3b21e2a7d085c362843b6b336f63ca60c55810ae84794cb9f003d75db7291e"
+  },
+  {
+   "chars": 140,
+   "page": 1,
+   "passage_id": "assessment:p1:130",
+   "sha256": "4b2ba46e4ee225de7f15bd2d65a6b6302292802d47c84072553240d96d7402fd"
+  },
+  {
+   "chars": 21,
+   "page": 1,
+   "passage_id": "assessment:p1:131",
+   "sha256": "d0e6b60d96dfe100234b0f7163b3a88fc637001c58bb6c87fe60ce481c9d2034"
+  },
+  {
+   "chars": 149,
+   "page": 1,
+   "passage_id": "assessment:p1:132",
+   "sha256": "bfd403056a0b0c5683e083fdf3f238d22fadcd178aa7d5ede54581221ad37819"
+  },
+  {
+   "chars": 274,
+   "page": 1,
+   "passage_id": "assessment:p1:133",
+   "sha256": "e1ee183bb4dadeebf0508597a704b766fffba2dcb2f811a8336045a9697e8cf1"
+  },
+  {
+   "chars": 43,
+   "page": 1,
+   "passage_id": "assessment:p1:134",
+   "sha256": "440a31ca10aa9bb82da20cc5d82c1d553214441b7f0a388abdac7a3f13f9aaf2"
+  },
+  {
+   "chars": 244,
+   "page": 1,
+   "passage_id": "assessment:p1:135",
+   "sha256": "7285fedc22e2192c895fd543d96390fa9f3a47678cf2d89fbbe4b2f25f9ae7c3"
+  },
+  {
+   "chars": 117,
+   "page": 1,
+   "passage_id": "assessment:p1:136",
+   "sha256": "0e648fec064edc1be91203583054607cb77911e73289e5515eb52f3812771610"
+  },
+  {
+   "chars": 168,
+   "page": 1,
+   "passage_id": "assessment:p1:137",
+   "sha256": "18687aa1ea2f8c29a4ca4c86b50ead67c0cd3904cf7e5cb8bbad4ae848c4f543"
+  },
+  {
+   "chars": 142,
+   "page": 1,
+   "passage_id": "assessment:p1:138",
+   "sha256": "06a57f750dd9b3adaf09526d0f0ecb8e7e0cfc21d831ebcf279d29a2b7f4728a"
+  },
+  {
+   "chars": 66,
+   "page": 1,
+   "passage_id": "assessment:p1:139",
+   "sha256": "3350db1711597fda0b9c88a3e89b07424d48953289d4f7ba309b638e39ac00f1"
+  },
+  {
+   "chars": 33,
+   "page": 1,
+   "passage_id": "assessment:p1:140",
+   "sha256": "80165502367619462ac3f4bea9394fa57373b5fb5078ed543f5ea0f336825d61"
+  },
+  {
+   "chars": 51,
+   "page": 1,
+   "passage_id": "assessment:p1:141",
+   "sha256": "8954fdf2577cede7cddfb68ca5818219f6644257d13bd520164ebcc5e47c5845"
+  },
+  {
+   "chars": 33,
+   "page": 1,
+   "passage_id": "assessment:p1:142",
+   "sha256": "0022bd004c8c3733c5cf6b9594720c25b1427d06697afe532a4453b6734d2838"
+  },
+  {
+   "chars": 44,
+   "page": 1,
+   "passage_id": "assessment:p1:143",
+   "sha256": "1c83b40b7061ae3e75c848ed0ef21090f6c4fc19644c572b88986b46a889f011"
+  },
+  {
+   "chars": 35,
+   "page": 1,
+   "passage_id": "assessment:p1:144",
+   "sha256": "0e2bd285b55e3d907205f3d68c40f5410c5de7fb1a08c5dce0f1ef4c6a87fa57"
+  },
+  {
+   "chars": 42,
+   "page": 1,
+   "passage_id": "assessment:p1:145",
+   "sha256": "5959347e3881506689b9bfb2853702ce7c1a3058968a530d3d296e75ce89f3f1"
+  },
+  {
+   "chars": 17,
+   "page": 1,
+   "passage_id": "assessment:p1:146",
+   "sha256": "6890aff22ee9ee15a0a24fe058e93c56d4de63798ada157b7e1a88cc10e8bccd"
+  },
+  {
+   "chars": 45,
+   "page": 1,
+   "passage_id": "assessment:p1:147",
+   "sha256": "1af6286b8e4f4cabfc40f6f1e1a728ad7896566e733ded4debb5814f7befc921"
+  },
+  {
+   "chars": 216,
+   "page": 1,
+   "passage_id": "assessment:p1:148",
+   "sha256": "18fde548dbb1d1c86baa1c26b0c5a781941590af02e57a20a698392851e8ffe3"
+  },
+  {
+   "chars": 254,
+   "page": 1,
+   "passage_id": "assessment:p1:149",
+   "sha256": "8a45eb1e4f6377177bdcbf1207d578ed5b6a3914ebb5f8350e565918e40fe41b"
+  },
+  {
+   "chars": 142,
+   "page": 1,
+   "passage_id": "assessment:p1:150",
+   "sha256": "c70489f99a43b83915e3c7c05219b8b73c9f5a778d59241f67e351bff9aadc21"
+  },
+  {
+   "chars": 141,
+   "page": 1,
+   "passage_id": "assessment:p1:151",
+   "sha256": "bd8a973dc6b688b393e40556719ce3eb17bec849a8d8b4167b03dc99c3b05e13"
+  },
+  {
+   "chars": 32,
+   "page": 1,
+   "passage_id": "assessment:p1:152",
+   "sha256": "98ed1395e6e97dfaf5a67889953af9dd209fbbdf837734790cf2ead7e3c7f993"
+  },
+  {
+   "chars": 63,
+   "page": 1,
+   "passage_id": "assessment:p1:153",
+   "sha256": "584313265f80369e9e636d8e290c38fe118fc03c14faf0929f045b9711d43c0c"
+  },
+  {
+   "chars": 62,
+   "page": 1,
+   "passage_id": "assessment:p1:154",
+   "sha256": "0bddb594a4dbbf291a0f9946a96a869382e3d074879141177aca1eda2a82f0ff"
+  },
+  {
+   "chars": 152,
+   "page": 1,
+   "passage_id": "assessment:p1:155",
+   "sha256": "e0421d449694854bc0ae1896c9256b5a410d193a0491f99b7b6362e1c8ce87df"
+  },
+  {
+   "chars": 72,
+   "page": 1,
+   "passage_id": "assessment:p1:156",
+   "sha256": "aa857ce63c975ade07ea88bb7bac497a6625264b9cce553368a97ee0cfe7bb8b"
+  },
+  {
+   "chars": 204,
+   "page": 1,
+   "passage_id": "assessment:p1:157",
+   "sha256": "ccaed9ca401ab542daa0c09d6771db315866a260edc61740bece794620f04007"
+  },
+  {
+   "chars": 190,
+   "page": 1,
+   "passage_id": "assessment:p1:158",
+   "sha256": "f5b6e0e20700655679f9dc72df8ba07f4d0bbc2ddd7fae51257114562747bb14"
+  },
+  {
+   "chars": 128,
+   "page": 1,
+   "passage_id": "assessment:p1:159",
+   "sha256": "d6c7eaf0bc340af8630b6cdc3db9dd82d5015fc6e3c3b3d0ea403c52ed0be477"
+  },
+  {
+   "chars": 72,
+   "page": 1,
+   "passage_id": "assessment:p1:160",
+   "sha256": "fa90d1a5a281776f49adad7c017ec9aff46df3e53b049aaa5c22c2fb35c6dd63"
+  },
+  {
+   "chars": 100,
+   "page": 1,
+   "passage_id": "assessment:p1:161",
+   "sha256": "863317a63c9f4d75e135c5830f16efd1158dd62f382a62a15634534c042571d1"
+  },
+  {
+   "chars": 231,
+   "page": 1,
+   "passage_id": "assessment:p1:162",
+   "sha256": "2c00aa869dabbc7348afa495cd10049cab595ce425d4c4e1d625c14ce5c94b81"
+  },
+  {
+   "chars": 68,
+   "page": 1,
+   "passage_id": "assessment:p1:163",
+   "sha256": "33941911d248f375a8d1f0a9ea89186b9b2a920f5c3a02234a170b1d5bac654b"
+  },
+  {
+   "chars": 115,
+   "page": 1,
+   "passage_id": "assessment:p1:164",
+   "sha256": "09ad6dd6e632075d586f53cb0b1bb65e89a6a0adf830176a262c4005123df81c"
+  },
+  {
+   "chars": 80,
+   "page": 1,
+   "passage_id": "assessment:p1:165",
+   "sha256": "26fb220d985cef16d983d68b94a4a4283c0a873a55ad4bb6d1b5613797a55d6c"
+  },
+  {
+   "chars": 157,
+   "page": 1,
+   "passage_id": "assessment:p1:166",
+   "sha256": "a9ccdbac137c6dde484fac2f6bbc6f31d37e41e9e7d7234de1e8c5ad47075f18"
+  },
+  {
+   "chars": 151,
+   "page": 1,
+   "passage_id": "assessment:p1:167",
+   "sha256": "08326b7dc2db680c1da83d1f580650f079dbf094284abac9eff1e481e741b0d6"
+  },
+  {
+   "chars": 21,
+   "page": 1,
+   "passage_id": "assessment:p1:168",
+   "sha256": "fe64d85dd55f81219373e826e3bc7348970269f077be8e6da6bd71342963a8cb"
+  },
+  {
+   "chars": 252,
+   "page": 1,
+   "passage_id": "assessment:p1:169",
+   "sha256": "5daa04bc360d3b0e7a28e2bda082e5fd4f9f0f830fff6873559b35e78e6bf8cb"
+  },
+  {
+   "chars": 170,
+   "page": 1,
+   "passage_id": "assessment:p1:170",
+   "sha256": "37ac3c3cbfe7db1f53c165de9ab765ef5d60f0a62801ae733645eee041e9c238"
+  },
+  {
+   "chars": 108,
+   "page": 1,
+   "passage_id": "assessment:p1:171",
+   "sha256": "8f38ca3c5ae2f64fc617d93ac27319e317e14746d45cda2eac7db105ca72b2a4"
+  },
+  {
+   "chars": 145,
+   "page": 1,
+   "passage_id": "assessment:p1:172",
+   "sha256": "67c082535428790c26548d9f9c6a26b384a1bc9cf84feab6c4e5e62d8c9073b1"
+  },
+  {
+   "chars": 161,
+   "page": 1,
+   "passage_id": "assessment:p1:173",
+   "sha256": "bfd557ce4f3ccd8dda66d2b00d11618709dba63e7b8d48f9e6d6295cf2490af3"
+  },
+  {
+   "chars": 154,
+   "page": 1,
+   "passage_id": "assessment:p1:174",
+   "sha256": "c8e34058d660eee9d815f36fcc81f6317cd0e42bd927f02f1aa3f4131864239d"
+  },
+  {
+   "chars": 29,
+   "page": 1,
+   "passage_id": "assessment:p1:175",
+   "sha256": "f42bb0f6748c7da1e933adcd712bb1ee9528a7365f0e05c29213988db043e8fc"
+  },
+  {
+   "chars": 294,
+   "page": 1,
+   "passage_id": "assessment:p1:176",
+   "sha256": "8ca5d5d8a323dc2f765898e861bbb33c27ed46050b045370e00d7810c60cb641"
+  },
+  {
+   "chars": 236,
+   "page": 1,
+   "passage_id": "assessment:p1:177",
+   "sha256": "7aaaefaf0001d80a213cb6b223712fcc6a4b6c995df4c5ff4abcb569e38fcf34"
+  },
+  {
+   "chars": 403,
+   "page": 1,
+   "passage_id": "assessment:p1:178",
+   "sha256": "96523c78a76c148348bbafc81929120fe5e62d83e3caa22cbcf8fa248ced9cd9"
+  },
+  {
+   "chars": 118,
+   "page": 1,
+   "passage_id": "assessment:p1:179",
+   "sha256": "aee9896f19ac01a246f909b656c1dfbd192e91668d9c2ed82caea269c7a34fbd"
+  },
+  {
+   "chars": 41,
+   "page": 1,
+   "passage_id": "assessment:p1:180",
+   "sha256": "d3c38eab1606ae58281d8b8697b42193158e70b9b24b51779d8d12a682f6e1a8"
+  },
+  {
+   "chars": 86,
+   "page": 1,
+   "passage_id": "assessment:p1:181",
+   "sha256": "0434c1144e05d8aa37b760351c95af3509f56eda27e1b8d2acd1a2c9e291a324"
+  },
+  {
+   "chars": 351,
+   "page": 1,
+   "passage_id": "assessment:p1:182",
+   "sha256": "e6b1af2843d7a9aa5a9a96889527c647d4c625fdb30d409949a4ac69dfe5e7c0"
+  },
+  {
+   "chars": 29,
+   "page": 1,
+   "passage_id": "assessment:p1:183",
+   "sha256": "e7ec76341411565ea3a2da3d205a120826037a053fa73419a23f64f0c289001f"
+  },
+  {
+   "chars": 37,
+   "page": 1,
+   "passage_id": "assessment:p1:184",
+   "sha256": "a4e6d22feac0b4722d5889c565e64097a2f5452a182d5d83c46e38b2f3255f92"
+  },
+  {
+   "chars": 138,
+   "page": 1,
+   "passage_id": "assessment:p1:185",
+   "sha256": "eb7652a68f8d903bd64c8c2b256cfdaf7f317327f63c73262a330164100caf68"
+  },
+  {
+   "chars": 159,
+   "page": 1,
+   "passage_id": "assessment:p1:186",
+   "sha256": "7ff35bf07612a7a34ee183aa8fbd3c62cc325bb17f15d7be10db62420f6ce359"
+  },
+  {
+   "chars": 220,
+   "page": 1,
+   "passage_id": "assessment:p1:187",
+   "sha256": "784552305ca5a61dd51860a2b92469f7224260b4c147a51f903ea03aae0677ce"
+  },
+  {
+   "chars": 34,
+   "page": 1,
+   "passage_id": "assessment:p1:188",
+   "sha256": "b8435fdc683a383440f621b20411f6c724c9a1d26c1331056f6921c179e8fe44"
+  },
+  {
+   "chars": 213,
+   "page": 1,
+   "passage_id": "assessment:p1:189",
+   "sha256": "e6b1d3ed73c2bfe625a4b43f73656b5306f5a8edbc9f87261a0bab633e29a794"
+  },
+  {
+   "chars": 46,
+   "page": 1,
+   "passage_id": "assessment:p1:190",
+   "sha256": "f831ef57bfd01ae4f45c2935406055f1b69bb2f78d62a80b363d2cb0fc8d6302"
+  },
+  {
+   "chars": 109,
+   "page": 1,
+   "passage_id": "assessment:p1:191",
+   "sha256": "ed21ced4eff27c6b2770a94d4fd153154cc9b24d279528ec0539d00bab23d7a1"
+  },
+  {
+   "chars": 60,
+   "page": 1,
+   "passage_id": "assessment:p1:192",
+   "sha256": "40face89517d0741901d6d4543fdf5ec9001b8af78d089ca2a645f35c06786e0"
+  },
+  {
+   "chars": 73,
+   "page": 1,
+   "passage_id": "assessment:p1:193",
+   "sha256": "07fdd20c9b38ff1462e34f563348000092b982dd03140480f0a944cb3e3aa1e0"
+  },
+  {
+   "chars": 47,
+   "page": 1,
+   "passage_id": "assessment:p1:194",
+   "sha256": "fd7fcfb0a10cddc493247cb28f6ec3c4f3b213a2ec548bcd7c794c19e0fb772e"
+  },
+  {
+   "chars": 21,
+   "page": 1,
+   "passage_id": "assessment:p1:195",
+   "sha256": "ecab782dd67c496bcdb807c5500b396e7aa3c85b0d75134ac307e939b500f20a"
+  },
+  {
+   "chars": 55,
+   "page": 1,
+   "passage_id": "assessment:p1:196",
+   "sha256": "e6a81d85328bf9f308e2a5c9bba009bda9367395bfa0ef0306f64136ab1c54a7"
+  },
+  {
+   "chars": 175,
+   "page": 1,
+   "passage_id": "assessment:p1:197",
+   "sha256": "db17757a23a1e63ac86568435dc999a881f7e0fe286775548348f5a1b11096c7"
+  },
+  {
+   "chars": 269,
+   "page": 1,
+   "passage_id": "assessment:p1:198",
+   "sha256": "46f38d2ba222b49125ca95c27303e13dafcdaad61395bb914dfe2e458b384e60"
+  },
+  {
+   "chars": 85,
+   "page": 1,
+   "passage_id": "assessment:p1:199",
+   "sha256": "7dd9535103b26af283b45a9801085bb9950cb0e762969b3f80e34d7d41f26b62"
+  },
+  {
+   "chars": 139,
+   "page": 1,
+   "passage_id": "assessment:p1:200",
+   "sha256": "01690d960388e3153dbee305ccb5561e91cdfb82fe0bbbf82c5f2de640ac615d"
+  },
+  {
+   "chars": 51,
+   "page": 1,
+   "passage_id": "assessment:p1:201",
+   "sha256": "726e73509590e18d37fb5de621a27a87cbe915f8c251734d6b704ad998e60fa7"
+  },
+  {
+   "chars": 53,
+   "page": 1,
+   "passage_id": "assessment:p1:202",
+   "sha256": "ead242e4e8a7e9d27aeb07a39fda8d51bf4b6ee8367c0dc2061d2499cd0afc90"
+  },
+  {
+   "chars": 23,
+   "page": 1,
+   "passage_id": "assessment:p1:203",
+   "sha256": "3c57a3ebf38fe028b763e479bf4e22c16fd73e9008d95017b5e6d78ee74035cd"
+  },
+  {
+   "chars": 94,
+   "page": 1,
+   "passage_id": "assessment:p1:204",
+   "sha256": "2b0ee966f6867dad2bbaf8b5e23387f3cdd9b9da747cc95ebbdb8ab0f10ac321"
+  },
+  {
+   "chars": 113,
+   "page": 1,
+   "passage_id": "assessment:p1:205",
+   "sha256": "4e99558ba4c0012ac47eff3865d536bf2216f3fb8d28a37de8a6b4e224790125"
+  },
+  {
+   "chars": 98,
+   "page": 1,
+   "passage_id": "assessment:p1:206",
+   "sha256": "6b958f4b1c8257f4d8cd770585af9bec53c5082a2be1ff214e644a4aa70f5efd"
+  },
+  {
+   "chars": 70,
+   "page": 1,
+   "passage_id": "assessment:p1:207",
+   "sha256": "5a042d472c385a6bb76c49493f831e557eec4f47217f42b1ad01f3e7262175bf"
+  },
+  {
+   "chars": 73,
+   "page": 1,
+   "passage_id": "assessment:p1:208",
+   "sha256": "07fdd20c9b38ff1462e34f563348000092b982dd03140480f0a944cb3e3aa1e0"
+  },
+  {
+   "chars": 66,
+   "page": 1,
+   "passage_id": "assessment:p1:209",
+   "sha256": "28653cccb4ddaeb27478158503e78a36f95d38ccebe13e26f049d992dbecb396"
+  },
+  {
+   "chars": 54,
+   "page": 1,
+   "passage_id": "assessment:p1:210",
+   "sha256": "f6504992666433f0c08aa26d20b594e080ba2108d84226a01e1e74f0be465c56"
+  },
+  {
+   "chars": 21,
+   "page": 1,
+   "passage_id": "assessment:p1:211",
+   "sha256": "ecab782dd67c496bcdb807c5500b396e7aa3c85b0d75134ac307e939b500f20a"
+  },
+  {
+   "chars": 55,
+   "page": 1,
+   "passage_id": "assessment:p1:212",
+   "sha256": "e6a81d85328bf9f308e2a5c9bba009bda9367395bfa0ef0306f64136ab1c54a7"
+  },
+  {
+   "chars": 38,
+   "page": 1,
+   "passage_id": "assessment:p1:213",
+   "sha256": "a7406595c62c732082d31f071b3d19c170820233f7fffc109100c3452e52ee21"
+  },
+  {
+   "chars": 139,
+   "page": 1,
+   "passage_id": "assessment:p1:214",
+   "sha256": "a7c551f7c2522086861ea7168b27bf84529ceee6d01008a4fb14171a9f564404"
+  },
+  {
+   "chars": 122,
+   "page": 1,
+   "passage_id": "assessment:p1:215",
+   "sha256": "10dad4a0cf9ed35cb6bf4d7b5612372d25b9b4d9612fe4ad69c6805b494d3df0"
+  },
+  {
+   "chars": 46,
+   "page": 1,
+   "passage_id": "assessment:p1:216",
+   "sha256": "f831ef57bfd01ae4f45c2935406055f1b69bb2f78d62a80b363d2cb0fc8d6302"
+  },
+  {
+   "chars": 145,
+   "page": 1,
+   "passage_id": "assessment:p1:217",
+   "sha256": "f8b325e38b620175c42ec2ef0a60ebc64ffe565f5c5c22ced4fa37625b73ec65"
+  },
+  {
+   "chars": 110,
+   "page": 1,
+   "passage_id": "assessment:p1:218",
+   "sha256": "9fdec404a682e7b6b3831bb0236fdf942c3009430d87116642fd3950875b513a"
+  },
+  {
+   "chars": 62,
+   "page": 1,
+   "passage_id": "assessment:p1:219",
+   "sha256": "37b88b745c4b6b00e1ee1d06724a22c8e7a9b6c367010555515ff7950b6e4d59"
+  },
+  {
+   "chars": 51,
+   "page": 1,
+   "passage_id": "assessment:p1:220",
+   "sha256": "24852b6236b880a7772cb160dd5c9f179d6c0943c825c547200fd8c9ef2d17c0"
+  },
+  {
+   "chars": 135,
+   "page": 1,
+   "passage_id": "assessment:p1:221",
+   "sha256": "6346f7835810367fbb1d9dc51bac371737170ab6a29b5ad6ab7ba52b40891a56"
+  },
+  {
+   "chars": 210,
+   "page": 1,
+   "passage_id": "assessment:p1:222",
+   "sha256": "d0ba3a5246486ada96149c12abf156090813e9b56547558671d0dd1ee446d53c"
+  },
+  {
+   "chars": 88,
+   "page": 1,
+   "passage_id": "assessment:p1:223",
+   "sha256": "39ae231f62597e3ded4707a4e93beb709d50b11f5a208ba438950def4efdbde4"
+  },
+  {
+   "chars": 48,
+   "page": 1,
+   "passage_id": "assessment:p1:224",
+   "sha256": "dabafb039e68e26ccba857323e8acc7a35eacbed52103e9dc003153822eabacf"
+  },
+  {
+   "chars": 18,
+   "page": 1,
+   "passage_id": "assessment:p1:225",
+   "sha256": "40b7fcc2877eb45170e5fba79190235a89c2b9377ee71bfbd2ccfda656703ea4"
+  },
+  {
+   "chars": 250,
+   "page": 1,
+   "passage_id": "assessment:p1:226",
+   "sha256": "7a345ad40456740fcb314d162eaf7632fef4ad8b686489506746da61c1ea1cf1"
+  },
+  {
+   "chars": 67,
+   "page": 1,
+   "passage_id": "assessment:p1:227",
+   "sha256": "b39a672d17197a8f64c03e7caaa6c310c2d8f5bfffc3193eba5455f0379942b0"
+  },
+  {
+   "chars": 146,
+   "page": 1,
+   "passage_id": "assessment:p1:228",
+   "sha256": "5057e92664678bf77ea40d1d130637fe4a5b0d6d37c666d73c2b8371564f010f"
+  },
+  {
+   "chars": 389,
+   "page": 1,
+   "passage_id": "assessment:p1:229",
+   "sha256": "2cbb78d25a508aed46173526ba5a6eb346033eab8473d8122722a41bc9358b57"
+  },
+  {
+   "chars": 38,
+   "page": 1,
+   "passage_id": "assessment:p1:230",
+   "sha256": "639f293bdc01b18e63dc12971b22cad1390957f1f982f29379905256a81fb45a"
+  },
+  {
+   "chars": 71,
+   "page": 1,
+   "passage_id": "assessment:p1:231",
+   "sha256": "7ebaed9073aa7aac39c2c1975e22a1fddffbfdd50fb9cd87273a7329681da337"
+  },
+  {
+   "chars": 77,
+   "page": 1,
+   "passage_id": "assessment:p1:232",
+   "sha256": "af82974a8a4da4656a1c4e418ff77da8b0f4e8a52e1aca492f372fb570207b2a"
+  },
+  {
+   "chars": 98,
+   "page": 1,
+   "passage_id": "assessment:p1:233",
+   "sha256": "ed36f38cf0c63449e66bf94660dea04ee3d3744fd9d0f4308f9851a24c1127e5"
+  },
+  {
+   "chars": 123,
+   "page": 1,
+   "passage_id": "assessment:p1:234",
+   "sha256": "5fc2baeefd2846bb22be2027ec0b12607d95e4b84dd5bdf6a60a164119de632d"
+  },
+  {
+   "chars": 84,
+   "page": 1,
+   "passage_id": "assessment:p1:235",
+   "sha256": "0db21da53f028e01d574af016b1bdfd0c84465253de0b2ecba5b73578476f0e4"
+  },
+  {
+   "chars": 154,
+   "page": 1,
+   "passage_id": "assessment:p1:236",
+   "sha256": "b39333c5b4f189029a77320ce99eb8a94bbb3da3f594d913f5e1170ae473774a"
+  },
+  {
+   "chars": 113,
+   "page": 1,
+   "passage_id": "assessment:p1:237",
+   "sha256": "7728c43f7ec72de2ef69300561d096b06ce9de580c99bd87d00c5fea8475f9f8"
+  },
+  {
+   "chars": 137,
+   "page": 1,
+   "passage_id": "assessment:p1:238",
+   "sha256": "061c7ee2448fb0977b585433863c73b1cbca321329c9ef803164346611cd4970"
+  },
+  {
+   "chars": 139,
+   "page": 1,
+   "passage_id": "assessment:p1:239",
+   "sha256": "0309047b04cb0127022ac80c5b86107d5d3495af858fb8d5d9ab59d9923f1c37"
+  },
+  {
+   "chars": 89,
+   "page": 1,
+   "passage_id": "assessment:p1:240",
+   "sha256": "b4dda5915503436b0f13b2c5bfaa5ff9fb7cc9d0401793570cd927bad46eb411"
+  },
+  {
+   "chars": 59,
+   "page": 1,
+   "passage_id": "assessment:p1:241",
+   "sha256": "1c373156a5c1d3fde5343b248512eccc0e085184417153f152b1e23f2b485d64"
+  },
+  {
+   "chars": 222,
+   "page": 1,
+   "passage_id": "assessment:p1:242",
+   "sha256": "252c3d33da1372360c11ea4eb3494f4778c730db4c70d675f2080ca42bea10f5"
+  },
+  {
+   "chars": 159,
+   "page": 1,
+   "passage_id": "assessment:p1:243",
+   "sha256": "f7553b34b5f02f0edf34140cfc75110bc5ecb1cb3990aff15390d3a5e6fa3d77"
+  },
+  {
+   "chars": 111,
+   "page": 1,
+   "passage_id": "assessment:p1:244",
+   "sha256": "0fa4e3252a6830fa8b74efafd1ee1807d703e9a22da4883888c10133f3a60083"
+  },
+  {
+   "chars": 232,
+   "page": 1,
+   "passage_id": "assessment:p1:245",
+   "sha256": "1af780686e7f850e7109d684744f3a577c213b26ebf63abd6378a8e32a8fd075"
+  },
+  {
+   "chars": 96,
+   "page": 1,
+   "passage_id": "assessment:p1:246",
+   "sha256": "da33e14128f06c7bd89cb932dbf941547163acb81934e8d9bcd53ba79120035d"
+  },
+  {
+   "chars": 140,
+   "page": 1,
+   "passage_id": "assessment:p1:247",
+   "sha256": "9235fb92059588e80acc8b1281366ca3cae10f611c9674755092f5c1cdf63384"
+  },
+  {
+   "chars": 218,
+   "page": 1,
+   "passage_id": "assessment:p1:248",
+   "sha256": "36316eb1c519180063b726d013528e2c7ea89b865c3c3e9889960a220927dc7e"
+  },
+  {
+   "chars": 354,
+   "page": 1,
+   "passage_id": "assessment:p1:249",
+   "sha256": "7e695beccc1d9414347fa994e49489292735e92fbbb8547096492f7d5394430e"
+  },
+  {
+   "chars": 146,
+   "page": 1,
+   "passage_id": "assessment:p1:250",
+   "sha256": "3bf6fd550e6f812f670a1ff348645d0568acf2fdfe25f4d48188405528898c16"
+  },
+  {
+   "chars": 135,
+   "page": 1,
+   "passage_id": "assessment:p1:251",
+   "sha256": "f4c3f2da96595277b31987a1e7d4eebbaa868e5c9e795146aac670bc5e67bf11"
+  },
+  {
+   "chars": 303,
+   "page": 1,
+   "passage_id": "assessment:p1:252",
+   "sha256": "dbd17d0649bb728dcc398b6c73a5641cda3aae4966e6f62865452c9085886571"
+  },
+  {
+   "chars": 23,
+   "page": 1,
+   "passage_id": "assessment:p1:253",
+   "sha256": "337c5f66aba90c86725c5e2031838bff09cefa7d6cff1cf6d3f62e42812d7e49"
+  },
+  {
+   "chars": 199,
+   "page": 1,
+   "passage_id": "assessment:p1:254",
+   "sha256": "e9024e0911629fc08cf9dd1a35dd0449dd7dde22086ac9b688de2ffca1d16b79"
+  },
+  {
+   "chars": 9,
+   "page": 1,
+   "passage_id": "assessment:p1:255",
+   "sha256": "b1fa104b9bf0635e9d9550184d989002b9f1bd87fc945e563a1f7024054db6aa"
+  },
+  {
+   "chars": 114,
+   "page": 1,
+   "passage_id": "assessment:p1:256",
+   "sha256": "d820c7184d96a184dbc0bec1ce284778baf749850ec0cae4bbb51cf0edbb8c92"
+  },
+  {
+   "chars": 53,
+   "page": 1,
+   "passage_id": "assessment:p1:257",
+   "sha256": "4520495946c52c48e049f96921c956fcda0c66019b4113b75690b701a56c6e29"
+  },
+  {
+   "chars": 168,
+   "page": 1,
+   "passage_id": "assessment:p1:258",
+   "sha256": "b55e810a49e12611f709557c55775e065e4f9a9858e8a127baeb04d3ddd030fe"
+  },
+  {
+   "chars": 35,
+   "page": 1,
+   "passage_id": "assessment:p1:259",
+   "sha256": "5ea23ad635c84f39a1184353d80730364589565d61e801195fe8ad8225b67c33"
+  },
+  {
+   "chars": 165,
+   "page": 1,
+   "passage_id": "assessment:p1:260",
+   "sha256": "9b5c8603ed622282c46e5f9d52278c1e591df69dc483ac20200cad488c08d48f"
+  },
+  {
+   "chars": 26,
+   "page": 1,
+   "passage_id": "assessment:p1:261",
+   "sha256": "9389ca722d3d38e76924c70650033137535d686b8765f5fdf31b4e7e459141c7"
+  },
+  {
+   "chars": 427,
+   "page": 1,
+   "passage_id": "assessment:p1:262",
+   "sha256": "caec64385a322afccbdb10be9fa07e234c28b2d6f04920e9d805c6c26ade2d97"
+  },
+  {
+   "chars": 145,
+   "page": 1,
+   "passage_id": "assessment:p1:263",
+   "sha256": "a35af08dede3bb26098c07aabb07906f3d0a67c20d82e095275d0ffd8d111143"
+  },
+  {
+   "chars": 242,
+   "page": 1,
+   "passage_id": "assessment:p1:264",
+   "sha256": "fb97e7383781e9ff387276e1f2b22b8cb50830f1a810f87883c2680493e09fe3"
+  }
+ ]
+}

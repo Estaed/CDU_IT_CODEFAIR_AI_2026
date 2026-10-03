@@ -31,11 +31,10 @@
     </div>
   </div>
   <div class="work" id="work">
-    <nav class="rail" id="rail" aria-label="Clauses"></nav>
+    <nav class="rail" id="rail" aria-label="Questions"></nav>
     <section id="intro" aria-label="How this works"></section>
-    <div class="tabs-row"><div class="seg" role="tablist" aria-label="View" id="tabs"></div></div>
+    <section class="reader" id="reader" aria-label="Applicant file"></section>
     <main class="detail" id="detail"></main>
-    <aside class="pane" id="pane" aria-label="Source passage"></aside>
   </div>
   <footer>Synthetic case file. Policy text from NT public housing policies, read from the pinned
     PDFs. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it
@@ -43,6 +42,8 @@
 </div>
 
 <dialog id="about" aria-labelledby="aboutTitle" data-testid="about"></dialog>
+<dialog id="policy" aria-label="Policy passage"><div id="pane"></div></dialog>
+<dialog id="comparison" aria-label="Pages that disagree"></dialog>
 <script src="app.js"></script>
 </body>
 </html>

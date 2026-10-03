@@ -21,7 +21,7 @@ and `notes.md` keeps a one-line link.
 
 - `notes.md`: goal, ideas, *After v1*.
 - `references/`: material Tarık brings (brief, rubric, PDFs, links, sample data); read, not edited.
-- `design/`: the visual source of truth (`design/screens.html` prototype and its screenshots), a
+- `design/`: the visual source of truth (the approved screen's screenshots in `design/screens/`), a
   `design/DESIGN.md` holding only what this project overrides, and `design/deviations.md`. The base
   design language is `D:/TarikOS/.brain/skills/tasarim/references/DESIGN.md`; read it before any UI
   work and never copy it here. The only files copied from there are its code tokens (`tokens.css`
@@ -122,9 +122,11 @@ Provisional until Task-00 writes `uv.lock`.
 - **Gate:** `uv run python scripts/gate.py` from the repo root runs `ruff check`, `pytest`, and a
   replay smoke test: the demo case from the cache, with no keys, validating `view.json`. Clean means
   exit 0. It runs for the first time at the end of Task-00.
-- **Eye check:** Tarık checks the review screen against `design/screens.html` once he has picked A
-  or B. Until then `design/mock-v0.html` defines the behaviour only. Playwright screenshots at 1280
-  and 1440 wide. Intended deviations go in `design/deviations.md`.
+- **Eye check:** Tarık checks the review screen against its reference. Until he approves the
+  Task-07 screen, the look is `design/direction-A.html` and the layout is the Decisions row below;
+  from then, that screen's screenshots in `design/screens/` are the reference.
+  `design/mock-v0.html` defines behaviour only. Playwright screenshots at 1280 and 1440 wide.
+  Intended deviations go in `design/deviations.md`.
 - **Numbers:** every evaluation number is written to `runs/eval/summary.json` with its n.
 
 ### Decisions
@@ -144,6 +146,7 @@ Provisional until Task-00 writes `uv.lock`.
 | Evaluation inside v1: summary under audit; mutation set per error type; held-out file; Jev against Claude-as-checker on several hundred SummEdits pairs (CC BY 4.0), with calibration; an ablation by layer; the position test if time allows | A team timing test: no team dependency |
 | Design A/B: A = Tarik Base via `tasarim`, B = a blind agent. Tarık picked A (2026-10-03, "for now"; a polish pass later) | B: looked like slop to Tarık |
 | Review screen layout (2026-10-03, after `reports/2026-10-03-ux-guided-review.md`): clause list on the left with a status per clause and a sign-off row, the selected clause and its source on the right, a case bar with both counters and the next action, plain language with no internal ids, a linked "before you can sign" summary, a dismissible first-run panel. Check: a first-time viewer names the next step within 10 s | A task-list home with one page per clause: loses the whole-case overview staff tools need, the most rework. C the current long page plus guidance: the long scroll stays |
+| Eye-check reference: once Tarık approves the Task-07 screen, its screenshots in `design/screens/` replace the planned `design/screens.html` (2026-10-03) | A separate static prototype: a second copy of the same screen to keep in step |
 
 ### Constraints
 - No real person's data in any document. No AustLII material as model input.

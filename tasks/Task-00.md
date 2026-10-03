@@ -1,5 +1,5 @@
 # Task-00: Thinnest end-to-end path, from a stub case to a signed decision record
-**Status: DONE** — verified 2026-10-03, eye check pending: 2
+**Status: DONE** — verified 2026-10-03; eye check 2026-10-03: the flow works (Tarık), readability is poor and goes to wave 2 (layout B); clauses.yaml check pending
 > **Execution:** agent `ultracode` · effort `xhigh`
 > *Why:* lays the package, the stage contract, the model seams and the gate. Every later feature
 > plugs into them.
@@ -86,7 +86,7 @@ evaluation as separate features on these seams.
   and finds the record JSON with `opened_at` and `seconds_in_view` per passage.
 - [x] `runs/stub/` and the cache contain no policy text beyond the quotes shown on screen. A test
   greps the cache for a long policy sentence that is not quoted.
-- [ ] (eye) Against `design/mock-v0.html`'s behaviour (not its look): Tarık can follow one claim to
+- [x] (eye) Against `design/mock-v0.html`'s behaviour (not its look): Tarık can follow one claim to
   its passage, see why the gate is locked, open passages, set clause outcomes, sign, and read the
   record. Screenshots at 1280 and 1440 wide go in the wave report.
 - [ ] (eye) `readmark/checklist/clauses.yaml` reads right to Tarık: the eight decisive clauses,

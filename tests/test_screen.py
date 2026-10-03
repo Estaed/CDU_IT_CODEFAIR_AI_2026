@@ -89,10 +89,12 @@ def _free_port() -> int:
 FAST_OPEN = 0.3
 
 # Discover optional examples from replay views; the gate also runs before S-01 is integrated.
-LABELLED_CASES = [path.parent.name for path in sorted((ROOT / "runs").glob("*/view.json"))
+# Uploaded cases (U-*) are local, git-ignored data with user-given names; only committed cases count.
+COMMITTED_VIEWS = [p for p in sorted((ROOT / "runs").glob("*/view.json")) if not p.parent.name.startswith("U-")]
+LABELLED_CASES = [path.parent.name for path in COMMITTED_VIEWS
                   if load_question_list(case_question_list(path.parent.name)).get("labels")]
 DOMAIN_SHOTS = ROOT / ".tmp/shots/wave8b"
-REPLAY_CASES = [path.parent.name for path in sorted((ROOT / "runs").glob("*/view.json"))]
+REPLAY_CASES = [path.parent.name for path in COMMITTED_VIEWS]
 TIER_SHOTS = ROOT / ".tmp/shots/wave8c"
 
 

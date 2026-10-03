@@ -24,6 +24,10 @@ def home_runs(tmp_path):
     runs = tmp_path / "runs"
     # Discover views, so the same suite works when Task-21 adds S-01.
     for source in (ROOT / "runs").glob("*/view.json"):
+        # Uploaded cases (U-*) are local, git-ignored data with user-given names; the suite
+        # tests the committed cases, so a local upload never turns the gate red.
+        if source.parent.name.startswith("U-"):
+            continue
         target = runs / source.parent.name
         target.mkdir(parents=True)
         shutil.copyfile(source, target / "view.json")

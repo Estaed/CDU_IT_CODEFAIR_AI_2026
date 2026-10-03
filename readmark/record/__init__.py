@@ -301,3 +301,16 @@ def save(record: dict, directory: Path) -> tuple[Path, Path]:
     json_path.write_text(dumps(for_export(record)), encoding="utf-8", newline="\n")
     html_path.write_text(to_html(record), encoding="utf-8", newline="\n")
     return json_path, html_path
+
+
+def latest(directory: Path, case_id: str) -> dict | None:
+    """Find a signed export, including records written before the home screen existed."""
+    records = []
+    for path in directory.glob("*.json"):
+        if not RECORD_ID.fullmatch(path.stem):
+            continue
+        record = json.loads(path.read_text(encoding="utf-8"))
+        if (record.get("case_id") == case_id and record.get("signed_at")
+                and record.get("record_id") == path.stem):
+            records.append(record)
+    return max(records, key=lambda r: (r["signed_at"], r["record_id"]), default=None)

@@ -81,11 +81,11 @@ FAST_OPEN = 0.3
 
 
 @contextmanager
-def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN):
+def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN, runs_root=None):
     """The app on a free port (no shared-device lock needed)."""
     port = _free_port()
     config = uvicorn.Config(create_app(case_id, run_dir=run_dir, records_dir=records_dir,
-                                       opened_seconds=opened_seconds),
+                                       opened_seconds=opened_seconds, runs_root=runs_root),
                             host="127.0.0.1", port=port, log_level="warning")
     srv = uvicorn.Server(config)
     thread = threading.Thread(target=srv.run, daemon=True)

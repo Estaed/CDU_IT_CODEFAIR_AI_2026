@@ -1,4 +1,5 @@
 # Task-19: Case home screen: cases in progress and completed
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık wants a home screen that lists the cases, in progress and completed, with a layout
 > like Claude's or Codex's session list (look only, no chat), 2026-10-03. Today the server opens one
@@ -35,16 +36,16 @@ Readmark becomes a tool with a queue of files rather than a single demo page. It
 cases (Task-20) and the easy example (Task-21) live.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] The A-0142 replay is byte-identical (`runs/` shows no diff).
-- [ ] Headless: the home screen lists A-0142 (in progress), E-01, E-02, E-03 and H-01 (Evaluation
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] The A-0142 replay is byte-identical (`runs/` shows no diff).
+- [x] Headless: the home screen lists A-0142 (in progress), E-01, E-02, E-03 and H-01 (Evaluation
   files), each with its list title and page count. No console errors at 1280 or 1440.
-- [ ] Headless: signing A-0142 in a temporary copy moves it to Completed, with its decision and
+- [x] Headless: signing A-0142 in a temporary copy moves it to Completed, with its decision and
   date.
-- [ ] Headless: decide two questions on A-0142, go home, open E-02. E-02 shows 0 decided, and
+- [x] Headless: decide two questions on A-0142, go home, open E-02. E-02 shows 0 decided, and
   going back to A-0142 still shows 2 decided.
-- [ ] `--case A-0142` still opens the case screen directly, and every existing screen test passes.
-- [ ] Screenshots of the home screen (in progress, completed and evaluation groups) at 1280 and
+- [x] `--case A-0142` still opens the case screen directly, and every existing screen test passes.
+- [x] Screenshots of the home screen (in progress, completed and evaluation groups) at 1280 and
   1440 in `reports/screens/2026-10-03-wave8/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık finds the home screen as calm as the case screen, and knows where to click

@@ -57,6 +57,8 @@ function store(key, value) {
 
 const S = {
   view: null,
+  draftKey: null,
+  questionList: null,
   openedSeconds: null, // supplied by /api/settings: the record's single threshold
   progressDirty: false,
   pages: [],         // full synthetic pages from the pinned case file, never the audit block
@@ -85,6 +87,20 @@ const S = {
   policyText: {},    // passage_id -> text, or false when the server could not read it
   intro: !stored(INTRO_KEY),
 };
+
+// Only previously chosen outcomes are restored. New cases start with no outcome selected.
+let activeCase = new URLSearchParams(location.search).get('case');
+const caseApi = (url) => activeCase ? `${url}?case=${encodeURIComponent(activeCase)}` : url;
+function persistCase() {
+  if (!S.draftKey) return;
+  store(S.draftKey, JSON.stringify({
+    outcomes: S.outcomes, disputes: S.disputes,
+    opened: Object.fromEntries(Object.entries(S.opened).map(([pid, o]) => [pid, { ...o, seconds: secondsInView(pid) }])),
+    decision: S.decision, reason: S.reason, signed: S.signed,
+  }));
+}
+window.addEventListener('pagehide', () => { pause(); persistCase(); });
+document.querySelector('[data-testid="home-link"]').addEventListener('click', () => { pause(); persistCase(); });
 
 // ---- Time in view: only the open passage accrues, and only while it can be seen ----
 function pause() {
@@ -130,7 +146,7 @@ function openPassage(pid, claimIds = [], inline = false) {
   S.policyInline = inline && s.kind === 'policy';
   if (!S.fullFile && (s.kind === 'case' || inline)) S.tab = pageKey(s);
   if (s && s.kind === 'policy' && !(pid in S.policyText)) {
-    fetch(`/api/passages/${encodeURIComponent(pid)}`)
+    fetch(caseApi(`/api/passages/${encodeURIComponent(pid)}`))
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { S.policyText[pid] = d ? d.text : false; renderPane(); if (S.policyInline) renderReader(); watchPassage(); })
       .catch(() => { S.policyText[pid] = false; renderPane(); if (S.policyInline) renderReader(); });
@@ -783,8 +799,8 @@ function renderPane() {
   $('pane').innerHTML = `<div class="dlg"><div class="dlg-head"><h2>${esc(s.doc_title)}</h2>
     <button class="icon-btn" data-act="close-pane" aria-label="Close policy passage">${icon('x')}</button></div>
     <div class="sub">${esc(cap(loc(pid)))}</div><div class="v-page" data-testid="source" data-pid="${esc(pid)}">
-    ${text ? highlight(text, quotes) : text === false ? 'The pinned policy PDF could not be read on this machine.' : 'Reading the pinned policy PDF…'}</div>
-    <p class="note">Real NT policy · read from the pinned PDF on demand.</p></div>`;
+    ${text ? highlight(text, quotes) : text === false ? 'The pinned policy file could not be read on this machine.' : 'Reading the pinned policy file…'}</div>
+    <p class="note">${esc(S.questionList.title)} · policy text read from the pinned file on demand.</p></div>`;
 }
 
 let passageObserver = null;
@@ -847,12 +863,14 @@ function renderAbout() {
     <div class="sec-h"><span>Flagged passages</span></div>
     <p class="note">At most ${num(v.cap)} passages are flagged as required, most decisive first; ${num(v.suggested_reading.length)} more are suggested. No score is shown per claim, so a number never stands in for reading the passage.</p>
     <div class="sec-h"><span>Policies checked</span></div>
-    <ul class="pol">${v.policies.map((p) => `<li>${esc(p.title)}, version ${num(esc(p.version))}, approved ${esc(fmtDate(p.approved))}</li>`).join('')}</ul>
+    <p class="note">${esc(S.questionList.title)}</p>
+    <ul class="pol">${S.questionList.policies.map((p) => `<li>${esc(p.title)}, version ${num(esc(p.pin.version))}, approved ${esc(fmtDate(p.pin.approved))}</li>`).join('')}</ul>
   </div>`;
 }
 
 // ---- Render, keeping keyboard focus where it was ----
 function render() {
+  persistCase();
   const a = document.activeElement;
   const key = a && a.dataset && a.dataset.act ? [a.dataset.act, a.dataset.arg || '', a.dataset.val || ''] : null;
   renderBar();
@@ -933,7 +951,7 @@ async function confirmSign() {
   };
   let res;
   try {
-    res = await fetch('/api/records', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    res = await fetch(caseApi('/api/records'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
   } catch {
     S.signErr = 'The record could not be saved. Check that the Readmark server is running and sign again.';
     render();
@@ -1037,14 +1055,14 @@ document.addEventListener('click', (e) => {
     default: break;
   }
 });
-document.addEventListener('input', (e) => { if (e.target.id === 'reason') S.reason = e.target.value; });
+document.addEventListener('input', (e) => { if (e.target.id === 'reason') { S.reason = e.target.value; persistCase(); } });
 document.addEventListener('change', (e) => {
   if (e.target.matches('[data-outcome]') && !S.signed) {
     S.outcomes[e.target.dataset.arg] = e.target.value;
     S.formErr = '';
     render();
   }
-  if (e.target.name === 'decision') S.decision = e.target.value;
+  if (e.target.name === 'decision') { S.decision = e.target.value; persistCase(); }
   if (e.target.id === 'pageJump') goToPage(Number(e.target.value));
 });
 $('about').addEventListener('close', resume);
@@ -1057,6 +1075,7 @@ document.addEventListener('toggle', (e) => {
 }, true);
 
 setInterval(() => {
+  if (!S.view) return;
   updateReaderVisibility();
   if (S.current) qualifyOpening(S.current.pid);
   if (!S.progressDirty) return;
@@ -1072,12 +1091,14 @@ setInterval(() => {
   });
   syncBarHeight();
 }, 100);
+setInterval(persistCase, 1000);
 
 // Loading state: skeleton rows shaped like the clause list and the clause.
 $('rail').innerHTML = Array.from({ length: 6 }, () => '<div class="skel rrow-skel"></div>').join('');
 $('detail').innerHTML = '<div class="skel skel-head"></div><div class="skel skel-body"></div>';
 
 // Context has its own request: an unavailable context file cannot block case review.
+function loadCase() {
 fetch('/api/context').then((r) => {
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
@@ -1085,17 +1106,34 @@ fetch('/api/context').then((r) => {
   $('waitContext').innerHTML = `${esc(context.label)} · <a href="${esc(context.source_url)}" target="_blank" rel="noopener">NT open data, Dec 2020</a> · historical, not priority-specific`;
 }).catch(() => { $('waitContext').textContent = 'Historical housing context unavailable.'; });
 
-Promise.all(['/api/view', '/api/case-pages', '/api/settings'].map((url) => fetch(url)
+Promise.all(['/api/view', '/api/case-pages', '/api/settings', '/api/question-list'].map((url) => fetch(caseApi(url))
   .then(async (r) => { if (!r.ok) throw new Error((await r.json()).detail || `HTTP ${r.status}`); return r.json(); })))
-  .then(([v, file, settings]) => {
+  .then(([v, file, settings, questionList]) => {
     S.view = v;
+    activeCase = v.case.case_id;
+    S.draftKey = settings.draft_key;
+    S.questionList = questionList;
+    if (questionList.id !== 'nt-priority-housing') {
+      $('serviceContext').innerHTML = 'Case review<br>Demonstration service';
+      $('serviceDescription').textContent = questionList.title;
+      $('waitContext').hidden = true;
+      $('reviewFooter').textContent = 'Synthetic case file. Policy text from the selected question list, read from pinned files. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it never sets a question outcome or recommends a decision.';
+    }
+    const draft = readCaseDraft(S.draftKey);
+    S.outcomes = Object.fromEntries(Object.entries(draft.outcomes || {}).filter(([id, outcome]) => decisive().some((c) => c.clause_id === id) && OUTCOME_LABEL[outcome]));
+    S.disputes = draft.disputes || {};
+    S.opened = draft.opened || {};
+    S.decision = draft.decision || null;
+    S.reason = draft.reason || '';
+    S.signed = settings.signed && draft.signed?.record.record_id === settings.signed.record_id ? draft.signed : null;
+    if (settings.signed && !S.signed) { location.replace(settings.signed.html_url); return; }
     S.openedSeconds = settings.opened_seconds;
     S.pages = file.pages;
     buildAnnotations();
-    S.sel = railClauses().length ? railClauses()[0].clause_id : 'signoff';
+    S.sel = S.signed ? 'signoff' : railClauses().length ? railClauses()[0].clause_id : 'signoff';
     renderAbout();
     render();
-    const first = questionPages(clauseById(S.sel))[0];
+    const first = S.signed ? null : questionPages(clauseById(S.sel))[0];
     if (first) openPageTab(first.key);
   })
   .catch((err) => {
@@ -1103,3 +1141,16 @@ Promise.all(['/api/view', '/api/case-pages', '/api/settings'].map((url) => fetch
     $('job').textContent = 'The case could not be loaded.';
     $('detail').innerHTML = `<div class="banner" data-testid="load-error">${icon('alert')}<span>The case view could not be loaded (${esc(err.message)}). Run <span class="mono">python -m readmark run --case &lt;case&gt; --replay</span>, then reload this page.</span></div>`;
   });
+}
+
+fetch('/api/settings').then((r) => {
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}).then((settings) => {
+  const home = new URLSearchParams(location.search).has('home');
+  activeCase = activeCase || settings.default_case;
+  if (home || !activeCase) showHome();
+  else loadCase();
+}).catch((err) => {
+  $('detail').innerHTML = `<p role="alert">Readmark could not be loaded (${esc(err.message)}). <a href="/?home=1">All cases</a></p>`;
+});

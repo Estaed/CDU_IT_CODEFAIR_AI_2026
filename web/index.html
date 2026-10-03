@@ -9,13 +9,14 @@
 </head>
 <body>
 <header class="service-band" data-testid="service-band">
-  <div class="service-context">NT priority housing<br>Demonstration service</div>
-  <div><b>Readmark</b><div>Priority housing review · Darwin urban</div></div>
+  <div class="service-context" id="serviceContext">NT priority housing<br>Demonstration service</div>
+  <div><b>Readmark</b><div id="serviceDescription">Priority housing review · Darwin urban</div></div>
   <span class="officer">Delegated officer</span>
 </header>
 <div class="casebar" id="casebar" aria-label="Case">
   <div class="wrap casebar-in">
     <div class="case-id">
+      <a class="act" href="/?home=1" data-testid="home-link">All cases</a>
       <h1>Applicant file <span class="accent" id="caseId">…</span></h1>
     </div>
     <div class="case-facts"><span id="caseFacts"></span><p class="context" id="waitContext" data-testid="wait-context"></p></div>
@@ -23,7 +24,8 @@
   </div>
 </div>
 
-<div class="wrap">
+<main class="wrap home" id="home" hidden aria-label="Case home"></main>
+<div class="wrap" id="review">
   <p class="sr" id="job">Loading the case…</p>
   <div class="work" id="work">
     <nav class="rail" id="rail" aria-label="Questions"></nav>
@@ -34,7 +36,7 @@
     <button class="act" type="button" data-act="intro-open" data-testid="help-btn">How this works</button>
     <button class="act" type="button" data-act="about-open" data-testid="about-btn">About these checks</button>
   </div>
-  <footer>Synthetic case file. Policy text from NT public housing policies, read from the pinned
+  <footer id="reviewFooter">Synthetic case file. Policy text from NT public housing policies, read from the pinned
     PDFs. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it
     never sets a question outcome or recommends a decision.</footer>
 </div>
@@ -43,6 +45,7 @@
 <dialog id="policy" aria-label="Policy passage"><div id="pane"></div></dialog>
 <dialog id="comparison" aria-label="Pages that disagree"></dialog>
 <dialog id="fullFile" aria-label="Full applicant file"><div class="dlg"><div class="dlg-head"><h2>Applicant file · all pages</h2><button class="act" data-act="full-close">Back to question</button></div><div id="fullReader"></div></div></dialog>
+<script src="home.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

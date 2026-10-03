@@ -449,6 +449,9 @@ In the survey's §5:
 - 2026-10-03: Planted-trap vigilance check on the reviewer (survey G5). The ethics of testing staff
   this way has not been checked.
 - 2026-10-03: Chat with the document. It is not what the brief asks for.
+- 2026-10-03: A home screen to pick a case or upload one. Tarık: the review screen gives everything
+  at once. v1 has one case, so a picker has nothing to pick; upload needs a live pipeline run.
+  Task-07's case bar and first-run panel aim at the same overload; judge them first.
 
 ## Sources
 - [Landscape survey, 2026-10-03](reports/2026-10-03-landscape-verified-summaries.md): products,

@@ -26,12 +26,14 @@ from fastapi.staticfiles import StaticFiles
 
 from readmark import DATA, WEB_DIR, dumps, load_dotenv_key, runs_dir
 from readmark import record as rec
+from readmark.cache import Cache
 from readmark.checklist import (
     QUESTION_LISTS_DIR, case_question_list, list_question_lists, load_question_list,
     set_case_question_list,
 )
 from readmark.ingest import IngestError, case_passages, policy_passages, prepare_upload
 from readmark.pipeline import run
+from readmark.writer.transcription import ClaudeTranscriber
 
 UPLOAD_STEPS = ["Splitting into passages", "The AI is reading", "Checking quotes",
                 "Second reader", "Ready"]
@@ -50,7 +52,8 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                records_dir: Path | None = None,
                opened_seconds: float = rec.OPENED_SECONDS,
                runs_root: Path | None = None, uploads_root: Path | None = None,
-               lists_dir: Path = QUESTION_LISTS_DIR, pipeline_runner=None) -> FastAPI:
+               lists_dir: Path = QUESTION_LISTS_DIR, pipeline_runner=None,
+               transcriber=None) -> FastAPI:
     # opened_seconds is a parameter only so tests can run on a short clock; the CLI never sets it,
     # so the shipped screen and record always use rec.OPENED_SECONDS.
     root = runs_root if runs_root is not None else runs_dir()
@@ -116,7 +119,6 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         try:
             progress(UPLOAD_STEPS[0])
             cid = job["case_id"]
-            case_file = prepare_upload(cid, job["name"], documents, uploads / cid)
             # Test runners inject both model interfaces. Live runs fail before spending
             # writer quota when the second reader's key or the writer CLI is missing.
             if pipeline_runner is None:
@@ -124,6 +126,9 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                     raise IngestError("The second reader's key is missing; your files are kept.")
                 if not shutil.which("claude"):
                     raise IngestError("The AI reader is unavailable; your files are kept.")
+            reader = transcriber or ClaudeTranscriber(Cache(folder(cid) / "cache", replay=False))
+            case_file = prepare_upload(cid, job["name"], documents, uploads / cid,
+                                       transcriber=reader, progress=progress)
             (pipeline_runner or run)(cid, case_file=case_file, lists_dir=lists_dir,
                                      out_dir=folder(cid), audit=False, progress=progress)
             if not (folder(cid) / "view.json").exists():
@@ -132,7 +137,7 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         except IngestError as exc:
             # Extraction and preflight errors above are already plain sentences. Policy
             # errors include paths and hashes, so do not expose their internal wording.
-            known = ("scanned page:", "A document", "A text page", "The second reader's key",
+            known = ("A scanned page", "A document", "A text page", "The second reader's key",
                      "The AI reader is unavailable")
             message = str(exc)
             job.update(status="failed", message=message if message.startswith(known) else
@@ -140,6 +145,7 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         except Exception:
             stage = job["steps"][-1] if job["steps"] else UPLOAD_STEPS[0]
             message = {
+                "Reading scanned pages": "The scanned pages could not be read; your files are kept.",
                 "The AI is reading": "The AI reader could not finish; your files are kept.",
                 "Second reader": "The second reader could not finish; your files are kept.",
             }.get(stage, "The checks could not finish; your files are kept.")
@@ -299,10 +305,8 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
             "period": "2020-12-31",
         }
 
-    @app.get("/api/case-pages")
-    def get_case_pages(request: Request):
+    def case_pages(cid: str):
         # Read only this app's synthetic case. No request parameter becomes a file path.
-        cid = selected(request)
         try:
             if cid.startswith("U-"):
                 meta, passages = case_passages(cid, uploads / cid / "case.json")
@@ -314,8 +318,29 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
             raise HTTPException(409, "The case file has changed since these checks were made.")
         pages = [{"page": n, "passages": []} for n in range(1, meta["pages"] + 1)]
         for passage in passages:
-            pages[passage["page"] - 1]["passages"].append(passage)
+            page = pages[passage["page"] - 1]
+            page["passages"].append(passage)
+            if passage.get("transcribed"):
+                page.update(transcribed=True,
+                            image_url=f"/api/case-pages/{page['page']}/image?case={cid}")
         return {"case_id": cid, "sha256": meta["sha256"], "pages": pages}
+
+    @app.get("/api/case-pages")
+    def get_case_pages(request: Request):
+        return case_pages(selected(request))
+
+    @app.get("/api/case-pages/{page_number}/image")
+    def get_scan_image(page_number: int, request: Request):
+        cid = selected(request)
+        pages = case_pages(cid)["pages"]
+        if not cid.startswith("U-") or not 1 <= page_number <= len(pages):
+            raise HTTPException(404, "No scanned image for this page.")
+        page = pages[page_number - 1]
+        if not page.get("transcribed"):
+            raise HTTPException(404, "No scanned image for this page.")
+        # The case manifest and original/image hashes were checked by case_pages.
+        image = uploads / cid / page["passages"][0]["image"]
+        return FileResponse(image, media_type="image/png", headers={"Cache-Control": "no-store"})
 
     @app.get("/api/passages/{passage_id}")
     def get_passage(passage_id: str, request: Request):

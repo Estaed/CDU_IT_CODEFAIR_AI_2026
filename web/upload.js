@@ -25,7 +25,7 @@ function showNewCase(lists) {
         <p>Drop the files here or choose them together.</p>
         <input id="uploadFiles" type="file" multiple accept=".pdf,.txt,.md" aria-describedby="uploadHelp" data-testid="upload-files">
       </div>
-      <p class="helper" id="uploadHelp">PDFs with selectable text, or UTF-8 text files. Up to 25 MB in total.</p>
+      <p class="helper" id="uploadHelp">PDFs with selectable text or scanned pages, or UTF-8 text files. Up to 25 MB in total.</p>
       <ul id="uploadFileList" class="upload-files" data-testid="upload-file-list"></ul>
       <p class="note">Use synthetic case documents only. The AI checks the evidence; you decide every outcome.</p>
       <p class="err" id="uploadError" role="alert" hidden data-testid="upload-error"></p>
@@ -103,7 +103,9 @@ async function showUpload(cid) {
       const current = job.steps.at(-1);
       const text = job.status === 'ready' ? 'Ready' : job.status === 'failed' ? 'Checks stopped' : current || 'Documents uploaded';
       if ($('uploadStatus').textContent !== text) $('uploadStatus').textContent = text;
-      $('uploadSteps').innerHTML = UPLOAD_STEPS.map((step) => {
+      const steps = [...UPLOAD_STEPS];
+      if (job.steps.includes('Reading scanned pages')) steps.splice(1, 0, 'Reading scanned pages');
+      $('uploadSteps').innerHTML = steps.map((step) => {
         const done = job.steps.includes(step) && (step !== current || job.status === 'ready');
         const state = done ? 'Done' : step === current ? job.status === 'failed' ? 'Stopped' : 'In progress' : 'Waiting';
         return `<li${step === current ? ' aria-current="step"' : ''}><span>${esc(step)}</span><span class="upload-step-state">${done ? '✓ ' : ''}${state}</span></li>`;

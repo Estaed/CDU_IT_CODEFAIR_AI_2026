@@ -199,7 +199,7 @@ def test_model_failure_is_plain_and_keeps_every_original(stage, upload_app):
 
 
 @pytest.mark.parametrize("files,message", [
-    ([("scan.pdf", pdf_bytes("Visible first page", True))], "scanned page: Task-22 adds reading these"),
+    ([("scan.pdf", pdf_bytes("Visible first page", True))], "A scanned page has no readable text; your files are kept."),
     ([("empty.txt", b"")], "A text page is empty; supply text on every page."),
     ([("broken.pdf", b"not a PDF")], "A document could not be opened as a text PDF or UTF-8 text."),
     ([("not-utf8.txt", b"\xff")], "A document could not be opened as a text PDF or UTF-8 text."),

@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 RETRIES = 1  # one more attempt after invalid JSON, then give up
 KILL_GRACE = 30  # seconds to reap a killed tree's pipes before abandoning them
@@ -50,6 +51,8 @@ def generate(
     model: str = "opus",
     timeout: float = 900,
     executable: list[str] | None = None,
+    *,
+    image_path: Path | None = None,
 ) -> dict:
     """One structured call. Returns ``{"output": <schema object>, "model": <model id>}``.
 
@@ -66,6 +69,15 @@ def generate(
         "--json-schema",
         json.dumps(schema),
     ]
+    if image_path is not None:
+        # Read returns PNGs as visual content. Only transcription calls need a tool;
+        # retain the writer's stdin/schema/timeout handling and allow no editing tools.
+        image_path = image_path.resolve(strict=True)
+        cmd += ["--tools", "Read", "--allowedTools", "Read", "--add-dir",
+                str(image_path.parent)]
+        prompt += "\nRead the page image at this JSON-encoded path: " + json.dumps(
+            str(image_path), ensure_ascii=False
+        )
     last = "no attempt made"
     for attempt in range(1, RETRIES + 2):
         started = time.monotonic()

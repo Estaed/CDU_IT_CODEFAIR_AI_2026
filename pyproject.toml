@@ -7,7 +7,9 @@ requires-python = ">=3.13,<3.14"
 dependencies = [
     "fastapi",
     "jsonschema",
+    "pillow>=12.3.0",
     "pypdf",
+    "pypdfium2>=5.13.0",
     "pyyaml",
     "uvicorn",
 ]

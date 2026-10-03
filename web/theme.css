@@ -154,6 +154,13 @@ h1 { font-size: 22px; margin: 0; white-space: nowrap; }
 .file-page { padding: 22px 34px; background: var(--paper); border: 1px solid var(--line); font: 400 15px/1.6 Georgia, serif; overflow-wrap: break-word; min-height: 374px; }
 .file-page + .file-page { margin-top: 24px; }
 .file-page-head { margin-bottom: 8px; font: 400 13px/1.4 Arial, Helvetica, sans-serif; color: var(--secondary); }
+.scan-notice { margin: 12px 0 18px; padding: 12px; border-left: 4px solid var(--flag); background: #fdf1e9; font: 400 14px/1.5 Arial, Helvetica, sans-serif; }
+.scan-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.scan-original { min-width: 0; margin: 0; }
+.scan-original figcaption, .scan-transcription h3 { margin: 0 0 10px; font: 700 14px/1.5 Arial, Helvetica, sans-serif; }
+.scan-original img { display: block; width: 100%; height: auto; border: 1px solid var(--line); }
+.scan-transcription { min-width: 0; }
+@media (max-width: 700px) { .scan-columns { grid-template-columns: minmax(0, 1fr); } }
 .file-paragraph { margin-bottom: 10px; }
 .file-paragraph p { display: inline; margin: 0; }
 .evidence-labels { display: inline; }

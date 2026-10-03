@@ -638,9 +638,14 @@ function pageParagraph(p, previous = []) {
 
 function pageHtml(page) {
   const p = page.passages[0];
+  const text = page.passages.map((p, i) => pageParagraph(p, i ? paragraphAnnotations(page.passages[i - 1]) : [])).join('');
+  const scan = page.transcribed;
   return `<article class="file-page" data-testid="file-page" data-page="${page.page}">
     <header class="file-page-head">Page ${num(page.page)} · ${esc(p?.doc_title || 'Case file')} · ${esc(fmtDate(p?.doc_date))}</header>
-    ${page.passages.map((p, i) => pageParagraph(p, i ? paragraphAnnotations(page.passages[i - 1]) : [])).join('')}</article>`;
+    ${scan ? `<div class="scan-notice" data-testid="scan-notice"><strong>Read from a scanned image by Claude. Check the image.</strong><br>Quotes are verified against the transcription, not the image.</div>
+      <div class="scan-columns"><figure class="scan-original"><figcaption>Original scanned page · <a href="${esc(page.image_url)}" target="_blank" rel="noopener">Open image at full size</a></figcaption>
+      <img src="${esc(page.image_url)}" alt="Original scan of ${esc(p?.doc_title || 'case file')}, page ${page.page}" data-testid="scan-image"></figure>
+      <section class="scan-transcription" aria-label="Transcription"><h3>Transcribed from a scan</h3>${text}</section></div>` : text}</article>`;
 }
 
 const pageKey = (s) => `${s.kind === 'case' ? 'case' : s.passage_id.split(':')[0]}:${s.page}`;

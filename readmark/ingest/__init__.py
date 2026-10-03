@@ -252,7 +252,8 @@ def case_passages(case_id: str, path: Path | None = None) -> tuple[dict, list[di
     return meta, passages
 
 
-def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path) -> Path:
+def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path, *,
+                   transcriber=None, progress=None) -> Path:
     """Extract uploaded pages as data, never as case-file markup; keep every original."""
     extracted = []
     for doc in documents:
@@ -267,10 +268,32 @@ def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path
             raise IngestError("A document could not be opened as a text PDF or UTF-8 text.") from exc
         if not pages:
             raise IngestError("A document has no pages to read.")
-        for page in pages:
-            if not page.strip():
-                if path.suffix == ".pdf":
-                    raise IngestError("scanned page: Task-22 adds reading these")
+        scan_pages = {}
+        for n, page in enumerate(pages, 1):
+            if path.suffix == ".pdf":
+                from readmark.ingest.scans import render_page, usable_text
+
+                if usable_text(page):
+                    continue
+                if progress:
+                    progress("Reading scanned pages")
+                image = folder / "scans" / f"{doc['doc_id']}-p{n}.png"
+                render_page(path, n, image)
+                if transcriber is None:
+                    # A direct preparation uses the same per-case model cache as uploads.
+                    from readmark import case_run_dir
+                    from readmark.cache import Cache
+                    from readmark.writer.transcription import ClaudeTranscriber
+
+                    transcriber = ClaudeTranscriber(Cache(case_run_dir(case_id) / "cache", False))
+                result = transcriber.transcribe(image)
+                if not isinstance(result.get("text"), str) or not usable_text(result["text"]):
+                    raise IngestError("A scanned page has no readable text; your files are kept.")
+                pages[n - 1] = result["text"]
+                scan_pages[str(n)] = {"transcribed": True, "transcription_model": result["model"],
+                                      "image": image.relative_to(folder).as_posix(),
+                                      "image_sha256": sha256_file(image)}
+            elif not page.strip():
                 raise IngestError("A text page is empty; supply text on every page.")
         paragraphs = [
             [text for text, _ in _paragraphs([line.strip() for line in page.splitlines()
@@ -279,7 +302,8 @@ def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path
             [normalise(block) for block in re.split(r"\n\s*\n", page) if block.strip()]
             for page in pages
         ]
-        extracted.append({**doc, "sha256": sha256_file(path), "pages": paragraphs})
+        extracted.append({**doc, "sha256": sha256_file(path), "pages": paragraphs,
+                          **({"scan_pages": scan_pages} if scan_pages else {})})
     target = folder / "case.json"
     target.write_text(dumps({"case_id": case_id, "title": title, "documents": extracted}),
                       encoding="utf-8", newline="\n")
@@ -306,10 +330,16 @@ def _uploaded_passages(case_id: str, path: Path) -> tuple[dict, list[dict]]:
         documents.append({**header, "page": page_no + 1})
         for doc_page, paragraphs in enumerate(doc["pages"], 1):
             page_no += 1
+            scan = doc.get("scan_pages", {}).get(str(doc_page), {})
+            if scan:
+                image = (path.parent / scan["image"]).resolve()
+                if (not image.is_relative_to(path.parent.resolve()) or not image.is_file()
+                        or sha256_file(image) != scan["image_sha256"]):
+                    raise IngestError("A scanned page image has changed since these checks were made.")
             for k, text in enumerate(paragraphs, 1):
                 passages.append({"passage_id": f"{case_id}-{doc['doc_id']}:p{page_no}:{k}",
                                  "source": "case", "page": page_no, "k": k,
-                                 **header, "doc_page": doc_page, "text": text})
+                                 **header, "doc_page": doc_page, "text": text, **scan})
     return {"case_id": case_id, "title": data["title"], "pages": page_no,
             "documents": documents, "sha256": sha256_file(path)}, passages
 

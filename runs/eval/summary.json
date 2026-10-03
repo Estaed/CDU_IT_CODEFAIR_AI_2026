@@ -3821,8 +3821,12 @@
        "readmark/eval/round2.py",
        "readmark/eval/supports.py",
        "readmark/ingest/__init__.py",
+       "readmark/ingest/scans.py",
        "readmark/pipeline.py",
-       "tests/test_eval_cases.py"
+       "readmark/writer/claude_cli.py",
+       "readmark/writer/transcription.py",
+       "tests/test_eval_cases.py",
+       "uv.lock"
       ],
       "code_frozen_at": "2026-10-03T06:16:01.556266+00:00",
       "completed_at": "2026-10-03T06:20:06.544757+00:00",

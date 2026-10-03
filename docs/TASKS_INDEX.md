@@ -45,7 +45,7 @@ Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 
 - [x] Task-19: Case home screen: cases in progress and completed (codex)
 - [x] Task-20: New case: upload several documents and run the checks live (codex)
 - [x] Task-21: The easy example: a student's assessment extension under the real CDU rule (main-loop)
-- [ ] Task-22: Scanned pages: Claude reads the page image, and the image stays beside the text (codex)
+- [x] Task-22: Scanned pages: Claude reads the page image, and the image stays beside the text (codex)
 - [ ] Task-23: Search within a case: words always, meaning through Jev when online (codex)
 - [x] Task-24: The case screen speaks its question list's language (codex)
 - [x] Task-25: A calmer tier for "possibly missed": flags for problems, "worth a look" for unused pages (codex)

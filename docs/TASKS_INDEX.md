@@ -47,3 +47,4 @@ Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 
 - [x] Task-21: The easy example: a student's assessment extension under the real CDU rule (main-loop)
 - [ ] Task-22: Scanned pages: Claude reads the page image, and the image stays beside the text (ultracode)
 - [ ] Task-23: Search within a case: its documents and its policies (ultracode)
+- [ ] Task-24: The case screen speaks its question list's language (codex)

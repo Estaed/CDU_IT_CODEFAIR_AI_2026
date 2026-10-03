@@ -1,6 +1,11 @@
 {
   "id": "cdu-extension",
   "title": "CDU assessment extension request",
+  "labels": {
+    "service": "Assessment extension review · CDU",
+    "case_noun": "Extension request",
+    "officer": "Unit lecturer"
+  },
   "decisions": {
     "approve": "Approve the extension",
     "decline": "Decline the extension",

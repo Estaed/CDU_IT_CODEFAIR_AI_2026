@@ -93,8 +93,15 @@ def load_question_list(list_id: str = DEFAULT_LIST_ID,
             or not set(decisions) <= {"approve", "decline", "request_information"}
             or not all(isinstance(v, str) and v.strip() for v in decisions.values())):
         raise IngestError(f"{path}: decisions must map approve/decline/request_information to labels")
+    # Optional screen wording: the service name, what a case is called, and who decides. A list
+    # without them keeps the housing wording on the screen.
+    labels = spec.get("labels", {})
+    if (not isinstance(labels, dict) or not set(labels) <= {"service", "case_noun", "officer"}
+            or not all(isinstance(v, str) and v.strip() for v in labels.values())):
+        raise IngestError(f"{path}: labels may set service, case_noun and officer as text")
     return {
         "id": spec["id"], "title": spec["title"], "policies": policies, "decisions": decisions,
+        "labels": labels,
         "policies_dir": (folder / directory).resolve(),
         "clauses": validate_clauses(read_yaml(folder / "clauses.yaml"),
                                    folder / "clauses.yaml", keys),

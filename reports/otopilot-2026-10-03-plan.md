@@ -1,6 +1,6 @@
 # otopilot plan, 2026-10-03: wave 1 (Task-00..03)
 
-Status: **approved by Tarık, 2026-10-03 04:55 ACST** (clears the Task-00 marker).
+Status: **approved by Tarık, 2026-10-03 10:40 ACST** (clears the Task-00 marker).
 
 ## Run shape
 - **Direction:** orchestrator Claude (this session). Engines by each task's `Execution` line:
@@ -11,7 +11,7 @@ Status: **approved by Tarık, 2026-10-03 04:55 ACST** (clears the Task-00 marker
   wall cannot move Task-00 to Codex (product code is Opus's, chef 2026-09-27).
 - **Seats:** plan and orchestration in this session, `claude-opus-5-5`.
 - **SOURCE:** `tasks`, Task-00..03. **UNTIL:** `done`.
-- **BASE_SHA:** `3d6661aed842690c58e898b77382bea7a5f99af4`, re-recorded after the plan commit.
+- **BASE_SHA:** `5ac876ef783ddee8ae4fe665aeba8365b889bf89` (the plan commit; preflight rerun green on it, 10:41). Quota at start: Claude weekly 79%, 5-hour 1%; Codex weekly 0%, 5-hour 0%.
 
 ## Waves
 | Wave | Tasks | Why |

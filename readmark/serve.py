@@ -5,6 +5,7 @@ pinned PDFs on demand (so no policy text is ever stored under ``runs/``), and sa
 records under ``runs/<case>/records/`` as JSON and HTML.
 """
 
+import csv
 import json
 from functools import cache
 from pathlib import Path
@@ -15,7 +16,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from readmark import WEB_DIR, case_run_dir
+from readmark import DATA, WEB_DIR, case_run_dir
 from readmark import record as rec
 from readmark.ingest import IngestError, case_passages, policy_passages
 
@@ -41,6 +42,24 @@ def create_app(case_id: str, run_dir: Path | None = None,
     @app.get("/api/view")
     def get_view():
         return view()
+
+    @app.get("/api/context")
+    def get_context():
+        # This historical context stays separate from the view, checks and decision record.
+        with (DATA / "context" / "urban-public-housing-2020-12.csv").open(
+                encoding="utf-8-sig", newline="") as file:
+            rows = [row for row in csv.reader(file) if row and any(row)]
+        assert rows[0][0] == "Estimated Urban Public Housing Wait Times as at 31 December 2020"
+        assert rows[1][1:4] == ["1 bedroom", "2 bedroom", "3 bedroom"]
+        darwin = next(row for row in rows[2:] if row[0] == "Darwin/Casuarina")
+        assert darwin[2] == darwin[3]
+        return {
+            "label": ("Darwin/Casuarina, general housing (2–3 bedrooms): estimated wait "
+                      + darwin[2].replace(" to ", "–")),
+            "source_url": "https://data.nt.gov.au/dataset/urban-public-housing-wait-times-"
+                          "wait-list-and-allocations-december-2020",
+            "period": "2020-12-31",
+        }
 
     @app.get("/api/case-pages")
     def get_case_pages():

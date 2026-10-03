@@ -26,4 +26,4 @@ Wave 3 (2026-10-03). Width 2: Task-10 and Task-11 run together (disjoint OWNS, n
 Wave 4 (2026-10-03). Width 2: Task-12 and Task-13 run together (disjoint OWNS). Codex `gpt-6.1-sol`.
 
 - [ ] Task-12: False alarms, round 2: values in the passage, date ranges, suggestions; H-01 after changes (codex)
-- [ ] Task-13: Light by default, wait-time context on the case header, a cleaner record (codex)
+- [x] Task-13: Light by default, wait-time context on the case header, a cleaner record (codex)

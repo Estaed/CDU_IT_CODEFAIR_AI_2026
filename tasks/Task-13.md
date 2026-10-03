@@ -1,4 +1,5 @@
 # Task-13: Light by default, wait-time context on the case header, a cleaner record
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık asked for a light default and the NT wait-time dataset on the case header (the one
 > real open dataset in v1, for the datasets criterion). He found the exported record still carried
@@ -37,15 +38,15 @@
 Small, visible items Tarık asked for, which the final interface pass would otherwise have to carry.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] Headless: a fresh browser opens in light mode; after toggling to dark and reloading, it stays
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] Headless: a fresh browser opens in light mode; after toggling to dark and reloading, it stays
   dark.
-- [ ] Headless: the case header shows the wait-time line with its source and period.
+- [x] Headless: the case header shows the wait-time line with its source and period.
   `data/context/` holds the CSV and its README, with the licence confirmed at the source.
-- [ ] The exported record JSON has no `decision_label` and no top-level `required_reading`. It has
+- [x] The exported record JSON has no `decision_label` and no top-level `required_reading`. It has
   an `integrity` block. Every opened passage still has `opened_at`, `seconds_in_view` and
   `required`.
-- [ ] The A-0142 screen tests read flagged items, statuses and counts from `runs/A-0142/view.json`
+- [x] The A-0142 screen tests read flagged items, statuses and counts from `runs/A-0142/view.json`
   rather than pinning them. Task-12 changes those values at the same time, and both states must pass.
 
 ## Out of scope

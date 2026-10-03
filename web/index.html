@@ -1,9 +1,15 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Readmark · Priority housing review</title>
+<script>
+try {
+  const theme = localStorage.getItem('readmark-theme');
+  if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+} catch { /* Light mode remains the default when storage is unavailable. */ }
+</script>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="theme.css">
@@ -17,6 +23,7 @@
     </div>
     <div class="counters" id="counters" aria-live="polite"></div>
     <div class="next" id="next"></div>
+    <p class="context" id="waitContext" data-testid="wait-context"></p>
   </div>
 </header>
 

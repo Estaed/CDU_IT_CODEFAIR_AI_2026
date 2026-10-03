@@ -42,6 +42,8 @@ button:disabled { cursor: default; }
 /* ---------- case bar: file, counters, the one next action ---------- */
 .casebar { position: sticky; top: 0; z-index: 20; background: var(--canvas); border-bottom: 1px solid var(--hairline); }
 .casebar-in { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--space-xl); align-items: center; padding-top: 12px; padding-bottom: 12px; }
+.context { grid-column: 1 / -1; margin: -16px 0 0; font-size: 13px; color: var(--ink-muted); }
+.context a { color: inherit; }
 h1 { font: 700 28px/1.1 var(--font-display); letter-spacing: -0.5px; margin: 4px 0 0; }
 .counters { display: grid; gap: 8px; width: 260px; }
 .counter { display: grid; gap: 4px; font-size: 14px; color: var(--ink-muted); }

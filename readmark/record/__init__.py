@@ -104,12 +104,15 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
     return {
         "record_id": record_id,
         "case_id": view["case"]["case_id"],
-        "case_sha256": view["case"]["sha256"],
-        "view_sha256": view_sha,
+        "integrity": {
+            "case_sha256": view["case"]["sha256"],
+            "case_note": "SHA-256 of the synthetic case file used for these checks.",
+            "view_sha256": view_sha,
+            "view_note": "SHA-256 of the review view at signing, including checks and models.",
+        },
         "signed_at": signed_at,
         "officer": str(payload.get("officer") or "Delegated officer"),
         "decision": payload["decision"],
-        "decision_label": DECISIONS[payload["decision"]],
         "reason": str(payload["reason"]).strip(),
         "clause_outcomes": [
             {"clause_id": c["clause_id"], "title": c["title"],
@@ -126,7 +129,6 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
             }
             for p in payload.get("passages_opened") or []
         ],
-        "required_reading": required,
         # A dispute carries the claim's own words, so the record reads without the view.
         "disputes": [
             {"claim_id": d["claim_id"], "claim": claims[d["claim_id"]]["claim"],
@@ -215,12 +217,15 @@ def to_html(record: dict) -> str:
 <body class="doc"><main class="rec rec-doc">
 <div class="rec-head"><h2>Decision record, applicant file {e(record['case_id'])}</h2>
 <span class="tag done">Signed</span></div>
-<div class="rec-dec">{e(record['decision_label'])}</div>
+<div class="rec-dec">{e(DECISIONS[record['decision']])}</div>
 <dl class="rec-dl"><dt>Reason</dt><dd><div class="rec-reason">{e(record['reason'])}</div></dd>
 <dt>Signed</dt><dd><span class="mono">{e(when)}</span> by {e(record['officer'])}</dd>
 <dt>Times</dt><dd>All times on this record are in {zone}, the zone it was signed in.</dd>
-<dt>Record</dt><dd><span class="mono">{e(record['record_id'])}</span>; case file SHA-256
-<span class="mono">{e(record['case_sha256'][:16])}…</span></dd></dl>
+<dt>Record</dt><dd><span class="mono">{e(record['record_id'])}</span></dd>
+<dt>Integrity</dt><dd>{e(record['integrity']['case_note'])}
+<span class="mono">{e(record['integrity']['case_sha256'][:16])}…</span><br>
+{e(record['integrity']['view_note'])}
+<span class="mono">{e(record['integrity']['view_sha256'][:16])}…</span></dd></dl>
 <h4>Clause outcomes, set by the officer</h4>
 <table class="rec-t"><tbody>{outcomes}</tbody></table>
 <h4>Passages opened before signing</h4>

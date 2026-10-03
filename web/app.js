@@ -522,7 +522,7 @@ function recordView() {
   const disputes = record.disputes.map((d) => `<li><div class="c">${icon('flag')}${esc(d.clause || '')}</div>${recordQuotes(d.citations || [])}<span class="tag ai">AI claim</span> “${esc(d.claim || '')}”<div><b>Your reason:</b> ${esc(d.reason)}</div></li>`).join('');
   return `<section class="rec" data-testid="record">
     <div class="rec-head"><h2>${icon('lock')}Decision record</h2><span class="tag done">${icon('check')}Signed</span></div>
-    <div class="rec-dec">${esc(record.decision_label)}</div>
+    <div class="rec-dec">${esc(DECISION_LABEL[record.decision])}</div>
     <dl class="rec-dl"><dt>File</dt><dd>Applicant file ${esc(record.case_id)}</dd>
       <dt>Reason</dt><dd><div class="rec-reason">${esc(record.reason)}</div></dd>
       <dt>Signed</dt><dd>${num(esc(fmtStamp(record.signed_at)))} by ${esc(record.officer)}</dd></dl>
@@ -949,6 +949,7 @@ document.addEventListener('click', (e) => {
     case 'about-close': $('about').close(); break;
     case 'theme':
       document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      store('readmark-theme', document.documentElement.dataset.theme);
       renderJob();
       break;
     default: break;
@@ -975,6 +976,14 @@ setInterval(() => {
 // Loading state: skeleton rows shaped like the clause list and the clause.
 $('rail').innerHTML = Array.from({ length: 6 }, () => '<div class="skel rrow-skel"></div>').join('');
 $('detail').innerHTML = '<div class="skel skel-head"></div><div class="skel skel-body"></div>';
+
+// Context has its own request: an unavailable context file cannot block case review.
+fetch('/api/context').then((r) => {
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}).then((context) => {
+  $('waitContext').innerHTML = `${esc(context.label)} · <a href="${esc(context.source_url)}" target="_blank" rel="noopener">NT open data, Dec 2020</a> · historical, not priority-specific`;
+}).catch(() => { $('waitContext').textContent = 'Historical housing context unavailable.'; });
 
 Promise.all(['/api/view', '/api/case-pages'].map((url) => fetch(url)
   .then(async (r) => { if (!r.ok) throw new Error((await r.json()).detail || `HTTP ${r.status}`); return r.json(); })))

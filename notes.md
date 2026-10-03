@@ -451,7 +451,16 @@ In the survey's §5:
 - 2026-10-03: Chat with the document. It is not what the brief asks for.
 - 2026-10-03: A home screen to pick a case or upload one. Tarık: the review screen gives everything
   at once. v1 has one case, so a picker has nothing to pick; upload needs a live pipeline run.
-  Task-07's case bar and first-run panel aim at the same overload; judge them first.
+  Task-11's answer-key screen aims at the same overload; judge it first.
+- 2026-10-03: A question list per application type (priority, transfer, remote housing). Tarık
+  asked whether the questions can grow. v1 has one list of 8 decisive clauses in `clauses.yaml`;
+  adding one is a new entry with its verbatim policy sentence, and a person approves every list.
+- 2026-10-03: The AI suggests new questions from the policy text, and a person approves each before
+  use. If the AI chose which rules matter, the trust problem would move into the questions.
+- 2026-10-03: Jev's separate "supports" score as the unsure signal, instead of its verdict
+  confidence. Task-08 measured AUC 0.899 and balanced accuracy 0.857 at 0.3 (n=300).
+- 2026-10-03: Claude and Jev as two checkers, two votes. Task-08 measured Claude 0.85 and Jev 0.83
+  balanced accuracy on SummEdits (n=300); their errors were not compared.
 
 ## Sources
 - [Landscape survey, 2026-10-03](reports/2026-10-03-landscape-verified-summaries.md): products,

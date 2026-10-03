@@ -43,11 +43,17 @@ CLAIM_LABELS = {"supported": "Found in the file ✓", "contradicted": "says the 
 
 def flagged_clause_ids(view):
     claims = {c["claim_id"]: c for c in view["claims"]}
-    required = {cid for r in view["required_reading"] for cid in r["clause_ids"]}
     return {c["clause_id"] for c in view["clauses"]
             if c["contradictions"] or c["missing"] or c["coverage"] == "no_evidence_in_file"
-            or c["clause_id"] in required
             or any(claims[cid]["status"] != "supported" for cid in c["claim_ids"])}
+
+
+def question_tiers(view):
+    """Expected presentation from the replay, independent of required-reading selection."""
+    problems = flagged_clause_ids(view)
+    return {c["clause_id"]: "needs" if c["clause_id"] in problems
+            else "worth" if c["possibly_missed"] else "clean"
+            for c in view["clauses"] if c["clause_id"] != "other"}
 
 
 @pytest.fixture(params=["current", "one-flag-supported"])
@@ -86,6 +92,8 @@ FAST_OPEN = 0.3
 LABELLED_CASES = [path.parent.name for path in sorted((ROOT / "runs").glob("*/view.json"))
                   if load_question_list(case_question_list(path.parent.name)).get("labels")]
 DOMAIN_SHOTS = ROOT / ".tmp/shots/wave8b"
+REPLAY_CASES = [path.parent.name for path in sorted((ROOT / "runs").glob("*/view.json"))]
+TIER_SHOTS = ROOT / ".tmp/shots/wave8c"
 
 
 @contextmanager
@@ -482,8 +490,7 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
     records_dir = tmp_path / "records"
     required = [r["passage_id"] for r in view["required_reading"]]
     decisive = [c["clause_id"] for c in view["clauses"] if c["clause_id"] != "other"]
-    flagged = flagged_clause_ids(view)
-    clean_ids = [cid for cid in decisive if cid not in flagged]
+    clean_ids = [cid for cid, tier in question_tiers(view).items() if tier == "clean"]
     debts = next(c for c in view["clauses"] if c["clause_id"] == "elig-debts")
     disputed = next(c for c in view["claims"] if c["clause_id"] == debts["clause_id"]
                     and any(view["sources"][q["passage_id"]]["kind"] == "case"
@@ -1054,7 +1061,8 @@ def test_light_palette_text_pairs_have_wcag_contrast():
              ("header", "secondary-button"), ("flag", "paper"), ("flag", "viewer"),
              ("flag", "warning-bg"), ("primary", "warning-bg"), ("ink", "warning-bg"),
              ("success", "paper"), ("paper", "success"), ("paper", "success-edge"),
-             ("danger", "paper"), ("amber", "paper")]
+             ("danger", "paper"), ("amber", "paper"), ("worth", "paper"),
+             ("worth", "selected"), ("ink", "selected")]
     for foreground, background in pairs:
         light, dark = sorted((luminance(colours[foreground]), luminance(colours[background])),
                              reverse=True)
@@ -1347,6 +1355,139 @@ def test_plain_notes_sign_states_and_readable_exports(case_id, width, tmp_path):
                             full_page=True)
         browser.close()
     assert errors == []
+
+
+@pytest.mark.parametrize("case_id", REPLAY_CASES)
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_question_tiers_from_every_replay_keep_required_reading(case_id, width, tmp_path):
+    from playwright.sync_api import expect, sync_playwright
+
+    run = ROOT / "runs" / case_id
+    view = json.loads((run / "view.json").read_text(encoding="utf-8"))
+    tiers = question_tiers(view)
+    errors = []
+    with serving(case_id, run, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        page.goto(base)
+        expect(page.get_by_test_id("tier-explanation")).to_contain_text("Needs a look")
+        expect(page.get_by_test_id("tier-explanation")).to_contain_text("Worth a look")
+        expect(page.get_by_test_id("passage-counter")).to_have_text(
+            f"0 of {len(view['required_reading'])} required opened")
+        assert page.locator('[data-outcome]:checked').count() == 0
+        page.get_by_test_id("intro-dismiss").click()
+        if case_id in {"A-0142", "S-01"}:
+            TIER_SHOTS.mkdir(parents=True, exist_ok=True)
+            page.screenshot(path=str(TIER_SHOTS / f"{case_id}-case-list-{width}.png"),
+                            full_page=True)
+        if page.get_by_test_id("clean-questions").count():
+            expect(page.get_by_test_id("clean-toggle")).to_contain_text(
+                str(sum(tier == "clean" for tier in tiers.values())))
+            page.get_by_test_id("clean-toggle").click()
+        rows = page.get_by_test_id("clause-row").evaluate_all(
+            "els => els.map(e => [e.dataset.clause, e.dataset.tier])")
+        assert {cid: tier for cid, tier in rows if cid != "other"} == tiers
+        order = [{"needs": 0, "worth": 1, "clean": 2}[tier]
+                 for cid, tier in rows if cid != "other"]
+        assert order == sorted(order)
+        if case_id == "S-01":
+            assert sum(tier == "needs" for tier in tiers.values()) <= 2
+        if case_id == "A-0142":
+            assert tiers["elig-debts"] == tiers["elig-residency"] == "needs"
+        photographed_worth = False
+        for clause in view["clauses"]:
+            cid = clause["clause_id"]
+            if cid == "other":
+                continue
+            tier = tiers[cid]
+            row = page.locator(f'[data-testid="clause-row"][data-clause="{cid}"]')
+            expect(row).to_contain_text({"needs": "Needs a look", "worth": "Worth a look",
+                                       "clean": "Looks clean"}[tier])
+            expect(row.locator(".task-icon")).to_have_text(
+                {"needs": "!", "worth": "○", "clean": ""}[tier])
+            row.click()
+            required = [r["passage_id"] for r in view["required_reading"] if cid in r["clause_ids"]]
+            assert page.get_by_test_id("flagged-item").evaluate_all(
+                "els => els.map(e => e.dataset.pid)") == required
+            if tier == "worth":
+                pages = len({(view["sources"][r["passage_id"]]["kind"],
+                              view["sources"][r["passage_id"]]["page"])
+                             for r in clause["possibly_missed"]})
+                noun = "page" if pages == 1 else "pages"
+                expect(row).to_contain_text(f"Worth a look · {pages} {noun} the AI did not use")
+                warning = page.get_by_test_id("question-warning")
+                expect(warning).to_contain_text(f"Worth a look ({pages} {noun})")
+                assert warning.locator(".task-icon.flag").count() == 0
+                if required:
+                    expect(page.get_by_test_id("flagged")).to_contain_text(
+                        "Must open: a page the AI did not use")
+                if case_id in {"A-0142", "S-01"} and required and not photographed_worth:
+                    page.screenshot(path=str(TIER_SHOTS / f"{case_id}-worth-a-look-{width}.png"),
+                                    full_page=True)
+                    photographed_worth = True
+            elif tier == "clean":
+                expect(page.get_by_test_id("question-warning")).to_have_count(0)
+            assert page.locator('[data-outcome]:checked').count() == 0
+            assert_plain(page)
+            assert_no_overflow(page)
+        # The calmer marker never removes a passage from the sign-off lock or its counter.
+        for item in view["required_reading"]:
+            page.evaluate("cid => selectClause(cid)", item["clause_ids"][0])
+            page.evaluate("pid => openPassage(pid)", item["passage_id"])
+            wait_until_opened(page)
+        expect(page.get_by_test_id("passage-counter")).to_have_text(
+            f"{len(view['required_reading'])} of {len(view['required_reading'])} required opened")
+        assert page.evaluate("ready()") is False
+        expect(page.get_by_test_id("outcome-counter")).to_have_text(f"0 of {len(tiers)} decided")
+        browser.close()
+    assert errors == []
+
+
+@pytest.mark.parametrize("case_id", REPLAY_CASES)
+def test_required_passage_rows_distinguish_paragraphs_on_every_replay(case_id, tmp_path):
+    from playwright.sync_api import expect, sync_playwright
+
+    run = ROOT / "runs" / case_id
+    view = json.loads((run / "view.json").read_text(encoding="utf-8"))
+    with serving(case_id, run, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1440, "height": 1000})
+        page.goto(base)
+        page.get_by_test_id("intro-dismiss").click()
+        for clause in view["clauses"]:
+            cid = clause["clause_id"]
+            if cid == "other":
+                continue
+            page.evaluate("cid => selectClause(cid)", cid)
+            required = [r["passage_id"] for r in view["required_reading"]
+                        if cid in r["clause_ids"]]
+            rows = page.get_by_test_id("flagged-item")
+            labels = rows.locator(".ploc").all_text_contents()
+            assert len(labels) == len(set(labels)), (case_id, cid, labels)
+            texts = rows.all_text_contents()
+            assert len(texts) == len(set(texts)), (case_id, cid, texts)
+            for pid in required:
+                source = view["sources"][pid]
+                if source["kind"] != "case":
+                    continue
+                same_page = sum(view["sources"][other]["kind"] == "case"
+                                and view["sources"][other]["page"] == source["page"]
+                                for other in required)
+                label = f"Page {source['page']}"
+                if same_page > 1:
+                    label += f", paragraph {pid.split(':')[-1]}"
+                # Select by passage id, so identical page labels cannot mask a wrong target.
+                row = page.locator(f'[data-testid="flagged-item"][data-pid="{pid}"]')
+                expect(row.locator(".ploc")).to_have_text(label)
+                row.click()
+                expect(page.get_by_test_id("source")).to_have_attribute("data-pid", pid)
+                assert_scrolled_to(page, pid)
+                tab = page.locator(f'[data-testid="page-tab"][data-page="{source["page"]}"]')
+                expect(tab).to_have_count(1)
+                expect(tab).to_have_attribute("aria-selected", "true")
+                assert "paragraph" not in tab.inner_text()
+        browser.close()
 
 
 @pytest.mark.parametrize("width", [1280, 1440])

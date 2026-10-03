@@ -169,23 +169,29 @@ const flaggedFor = (cid) => required().filter((r) => r.clause_ids.includes(cid))
 // "Other facts" joins the list only when it holds something; it never takes an outcome.
 const railClauses = () => S.view.clauses.filter((c) => c.clause_id !== 'other'
   || c.claim_ids.length || c.missing.length || flaggedFor('other').length).sort((a, b) => {
+  const tiers = { needs: 0, worth: 1, clean: 2 };
   const rank = (c) => flaggedFor(c.clause_id)[0]?.rank ?? (questionFlag(c) ? 100 : 200);
-  return rank(a) - rank(b);
+  return tiers[questionTier(a)] - tiers[questionTier(b)] || rank(a) - rank(b);
 });
 
 const shortName = (cl) => cl.clause_id === 'other' ? 'Background facts (no decision needed)' : cl.title;
 
-function questionFlag(cl) {
+function questionProblem(cl) {
   if (cl.contradictions.length) return 'Two pages disagree';
   const claims = cl.claim_ids.map(claimById).filter(Boolean);
   if (claims.some((c) => c.status === 'quote_not_found')) return 'Quote not found';
+  if (claims.some((c) => c.status === 'contradicted')) return 'Two pages disagree';
   if (cl.missing.length || cl.coverage === 'no_evidence_in_file') {
     return cl.clause_id === 'elig-income' ? 'Income evidence not found' : 'Evidence not found';
   }
   if (claims.some((c) => c.status !== 'supported')) return 'Checker disagrees';
-  if (flaggedFor(cl.clause_id).length) return 'Possibly missed evidence';
   return '';
 }
+
+const questionTier = (cl) => questionProblem(cl) ? 'needs' : cl.possibly_missed.length ? 'worth' : 'clean';
+const missedPages = (cl) => new Set(cl.possibly_missed.map((p) => pageKey(src(p.passage_id)))).size;
+const questionFlag = (cl) => questionProblem(cl) || (questionTier(cl) === 'worth'
+  ? `Worth a look (${missedPages(cl)} ${missedPages(cl) === 1 ? 'page' : 'pages'})` : '');
 
 function fmtDate(d) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || '');
@@ -261,13 +267,14 @@ function noteResult(claim) {
   if (claim.status === 'supported') return 'Found in the file ✓';
   return 'Nothing to check';
 }
-function passageRow(pid, { task = false, testid = 'passage-item' } = {}) {
+function passageRow(pid, { task = false, testid = 'passage-item', showParagraph = false } = {}) {
   const o = hasOpened(pid);
   const cur = S.current && S.current.pid === pid;
   let state = o ? 'Opened' : task ? 'Must open' : 'Open';
   if (cur && !o) state = 'In view';
   const s = src(pid);
-  const label = s?.kind === 'case' ? `Page ${s.page}` : cap(loc(pid));
+  const label = s?.kind === 'case'
+    ? `Page ${s.page}${showParagraph ? `, paragraph ${pid.split(':').pop()}` : ''}` : cap(loc(pid));
   return `<li><button class="prow ${o ? 'opened' : ''} ${cur ? 'is-cur' : ''} ${task ? 'task' : ''}" data-act="open" data-arg="${esc(pid)}" data-testid="${testid}" data-pid="${esc(pid)}"${S.signed ? ' disabled' : ''}>
     <span class="pst">${icon(o ? 'check' : task ? 'ring' : 'file')}</span>
     <span class="pmain"><span class="ploc">${esc(label)}</span></span>
@@ -302,7 +309,7 @@ function renderBar() {
 
 function renderJob() {
   const v = S.view;
-  $('job').innerHTML = `<b>Your job:</b> decide this application. Open each flagged passage, set all ${num(decisive().length)} question outcomes, then sign.`;
+  $('job').innerHTML = `<b>Your job:</b> decide this application. Open each required passage, set all ${num(decisive().length)} question outcomes, then sign.`;
   document.title = `Readmark · ${caseNoun()} ${v.case.case_id}`;
 }
 
@@ -314,23 +321,28 @@ function renderIntro() {
     <div class="intro-head"><div><div class="eyebrow">How this works</div>
       <h2>Follow the highlights. <span class="accent">You</span> decide.</h2></div>
       <button class="btn-secondary" data-act="intro-close" data-testid="intro-dismiss">Got it</button></div>
+    <p data-testid="tier-explanation">“Needs a look” means a problem in the AI's notes or missing or conflicting evidence in the file. “Worth a look” means relevant pages the AI did not use.</p>
     <ol class="intro-steps">
       <li><b>What the AI did</b><span>Matched evidence to the questions. Its notes are behind “What the AI noted”.</span></li>
-      <li><b>What the checks flagged</b><span>Highlighted words sit in the real file. Each of the ${num(required().length)} required passages counts as opened after ${S.openedSeconds} seconds in view, accumulated across visits; other highlights are optional.</span></li>
+      <li><b>What you open</b><span>Highlighted words sit in the real file. Each of the ${num(required().length)} required passages counts as opened after ${S.openedSeconds} seconds in view, accumulated across visits; other highlights are optional.</span></li>
       <li><b>What you decide</b><span>Set all ${num(decisive().length)} outcomes, then sign. Missing evidence never means “not met”.</span></li>
     </ol></div>` : '';
 }
 
-// Required flags lead; optional scan hits stay available without expanding the clean questions.
+// Problems lead, unused relevant pages follow, and clean questions stay folded.
 function renderRail() {
   const row = (cl) => {
     const st = clauseState(cl);
     const id = cl.clause_id;
     const sel = S.sel === id;
-    const status = st.outcome ? `Decided: ${OUTCOME_LABEL[st.outcome]}` : id === 'other' ? 'No outcome needed' : questionFlag(cl) || 'Looks clean · not decided';
+    const tier = questionTier(cl);
+    const pages = missedPages(cl);
+    const status = st.outcome ? `Decided: ${OUTCOME_LABEL[st.outcome]}` : id === 'other' ? 'No outcome needed'
+      : tier === 'needs' ? `Needs a look · ${questionProblem(cl)}`
+      : tier === 'worth' ? `Worth a look · ${pages} ${pages === 1 ? 'page' : 'pages'} the AI did not use` : 'Looks clean · not decided';
     return `<button class="rrow ${sel ? 'is-sel' : ''}"
-      data-act="clause" data-arg="${esc(id)}" data-testid="clause-row" data-clause="${esc(id)}" aria-current="${sel}">
-      <span class="task-icon ${st.outcome ? `outcome-${st.outcome}` : questionFlag(cl) ? 'flag' : ''}">${st.outcome ? {met: '✓', not_met: '✗', cannot_decide: '⏸'}[st.outcome] : questionFlag(cl) ? '!' : id === 'other' ? '–' : ''}</span>
+      data-act="clause" data-arg="${esc(id)}" data-testid="clause-row" data-clause="${esc(id)}" data-tier="${tier}" aria-current="${sel}">
+      <span class="task-icon ${st.outcome ? `outcome-${st.outcome}` : tier === 'needs' ? 'flag' : tier === 'worth' ? 'worth' : ''}">${st.outcome ? {met: '✓', not_met: '✗', cannot_decide: '⏸'}[st.outcome] : tier === 'needs' ? '!' : tier === 'worth' ? '○' : id === 'other' ? '–' : ''}</span>
       <span><span class="rname">${esc(shortName(cl))}</span>
       <span class="rstat">${esc(status)}${st.flagged.length ? ` · ${st.opened} of ${st.flagged.length} opened` : ''}</span></span></button>`;
   };
@@ -389,7 +401,12 @@ function clauseView(cl) {
     || (cl.coverage === 'no_evidence_in_file' ? '<p>No evidence in file.</p>' : '');
   const flagged = st.flagged.length ? `<section class="must" data-testid="flagged">
     <b>Open before you sign</b>
-    <ul class="plist">${st.flagged.map((r) => passageRow(r.passage_id, { task: true, testid: 'flagged-item' })).join('')}</ul></section>` : '';
+    ${questionTier(cl) === 'worth' ? '<p class="note">Must open: a page the AI did not use</p>' : ''}
+    <ul class="plist">${st.flagged.map((r) => passageRow(r.passage_id, {
+      task: true, testid: 'flagged-item',
+      showParagraph: st.flagged.some((other) => other.passage_id !== r.passage_id
+        && pageKey(src(other.passage_id)) === pageKey(src(r.passage_id))),
+    })).join('')}</ul></section>` : '';
   // Several conflicting paragraphs can share a page pair; offer that comparison once.
   const uniquePairs = new Map();
   cl.contradictions.forEach((p) => {
@@ -402,6 +419,7 @@ function clauseView(cl) {
     </div>` : '';
   const o = st.outcome;
   const flag = questionFlag(cl);
+  const worth = questionTier(cl) === 'worth';
   const disagreeingPages = [...new Map(cl.contradictions.flatMap((p) => [p.a, p.b])
     .map((pid) => [src(pid).page, pid])).values()];
   const pageNames = disagreeingPages.map((pid, i) => `${i ? 'page' : 'Page'} ${src(pid).page}${whenOf(pid)}`);
@@ -409,6 +427,7 @@ function clauseView(cl) {
     : flag.includes('evidence not found') || flag === 'Evidence not found' ? 'Missing evidence does not mean “not met”; decide whether the file lets you answer this question.'
     : flag === 'Checker disagrees' ? 'The quote is in the file, but the second checker could not confirm the claim; open the passage and judge.'
     : flag === 'Quote not found' ? 'An AI note has no verified quote; open “What the AI noted” to see what could not be checked.'
+    : flag === 'Two pages disagree' ? 'An AI note conflicts with another passage in the file; open the evidence and judge.'
     : flag ? 'The scan found a relevant passage that no claim uses; open it and judge whether it changes this question.' : '';
   const list = railClauses().filter((c) => c.clause_id !== 'other');
   const number = list.findIndex((c) => c.clause_id === id) + 1;
@@ -416,7 +435,7 @@ function clauseView(cl) {
     <div class="d-head"><h2 data-testid="clause-title">${esc(shortName(cl))}</h2>
       <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
-    ${warning ? `<section class="warning-box" data-testid="question-warning"><span class="task-icon flag">!</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
+    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'note' : 'notes'}. <button class="act" data-act="claims">Show AI notes</button></section>` : ''}
     <div class="question-split"><section class="reader" id="reader" aria-label="${esc(caseNoun())} pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">

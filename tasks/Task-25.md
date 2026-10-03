@@ -1,4 +1,5 @@
 # Task-25: A calmer tier for "possibly missed": flags for problems, "worth a look" for unused pages
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* the easy example S-01 showed 5 of 5 questions flagged where 2 had a real issue. Counting on
 > the stored runs (`reports/2026-10-03-easy-example.md` → *Follow-up*) shows the scan is not wrong,
@@ -40,9 +41,9 @@ The officer's attention goes first to what is wrong, and the easy example become
 gate rule or frozen number changes.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] The A-0142, E-*, H-01 and S-01 replays and `runs/eval/` are unchanged (no `runs/` diff).
-- [ ] Headless: for every question of every case in `runs/`, the tier shown matches this rule,
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] The A-0142, E-*, H-01 and S-01 replays and `runs/eval/` are unchanged (no `runs/` diff).
+- [x] Headless: for every question of every case in `runs/`, the tier shown matches this rule,
   computed from `view.json` in the test rather than from a pinned list. **Needs a look** applies when
   any of these holds:
   - a claim of the question is not `supported`;
@@ -61,11 +62,11 @@ gate rule or frozen number changes.
   | E-03 | 4 | 1 | 3 |
   | H-01 | 6 | 1 | 1 |
   | S-01 | 2 | 3 | 0 |
-- [ ] Headless on S-01: at most 2 questions show "needs a look", and the others show "worth a look"
+- [x] Headless on S-01: at most 2 questions show "needs a look", and the others show "worth a look"
   or clean.
-- [ ] Headless on A-0142: Debts, Residency, and every question with a contradicted or
+- [x] Headless on A-0142: Debts, Residency, and every question with a contradicted or
   checker-disagrees note still show "needs a look". Required reading and counters are unchanged.
-- [ ] Screenshots of S-01 and A-0142 (case list and home) at 1280 and 1440 in
+- [x] Screenshots of S-01 and A-0142 (case list and home) at 1280 and 1440 in
   `reports/screens/2026-10-03-wave8c/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık sees S-01 with most questions calm, and the real problems standing out.

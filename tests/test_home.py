@@ -6,7 +6,10 @@ import shutil
 
 import pytest
 from playwright.sync_api import expect, sync_playwright
-from test_screen import A0142, DOMAIN_SHOTS, FAST_OPEN, LABELLED_CASES, serving, wait_until_opened
+from test_screen import (
+    A0142, DOMAIN_SHOTS, FAST_OPEN, LABELLED_CASES, TIER_SHOTS, question_tiers, serving,
+    wait_until_opened,
+)
 
 from readmark import ROOT
 from readmark import record as rec
@@ -47,6 +50,38 @@ def test_home_discovers_cases_with_or_without_optional_examples(include_examples
         expect(page.get_by_role("heading", name="All cases", exact=True)).to_be_visible()
         assert set(page.get_by_test_id("home-case").evaluate_all(
             "rows => rows.map(row => row.dataset.case)")) == expected
+        browser.close()
+
+
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_home_counts_both_tiers_from_each_replay(width, home_runs):
+    with serving(None, None, None, runs_root=home_runs) as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        page.goto(base)
+        expect(page.get_by_test_id("home-case").first).to_be_visible()
+        cases = page.request.get(base + "/api/cases").json()["cases"]
+        for case in cases:
+            cid = case["case_id"]
+            view = json.loads((home_runs / cid / "view.json").read_text(encoding="utf-8"))
+            tiers = question_tiers(view)
+            needs = [c["title"] for c in view["clauses"] if tiers.get(c["clause_id"]) == "needs"]
+            worth = [c["title"] for c in view["clauses"] if tiers.get(c["clause_id"]) == "worth"]
+            assert case["flags"] == needs
+            assert case["worth_a_look"] == worth
+            assert case["required_count"] == len(view["required_reading"])
+            page.locator(f'[data-testid="home-case"][data-case="{cid}"]').click()
+            expect(page.get_by_test_id("home-tiers")).to_have_text(
+                f"{len(needs)} need a look · {len(worth)} worth a look")
+            summary = page.get_by_test_id("case-summary")
+            expect(summary).to_contain_text(f"{len(view['required_reading'])} required passages")
+            flags = summary.locator(".home-flags")
+            expect(flags.locator(".task-icon.flag")).to_have_count(len(needs))
+            expect(flags.locator(".task-icon.worth")).to_have_count(len(worth))
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            if cid in {"A-0142", "S-01"}:
+                TIER_SHOTS.mkdir(parents=True, exist_ok=True)
+                page.screenshot(path=str(TIER_SHOTS / f"{cid}-home-{width}.png"), full_page=True)
         browser.close()
 
 

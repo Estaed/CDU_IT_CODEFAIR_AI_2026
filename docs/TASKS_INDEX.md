@@ -48,4 +48,4 @@ Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 
 - [ ] Task-22: Scanned pages: Claude reads the page image, and the image stays beside the text (ultracode)
 - [ ] Task-23: Search within a case: its documents and its policies (ultracode)
 - [x] Task-24: The case screen speaks its question list's language (codex)
-- [ ] Task-25: A calmer tier for "possibly missed": flags for problems, "worth a look" for unused pages (codex)
+- [x] Task-25: A calmer tier for "possibly missed": flags for problems, "worth a look" for unused pages (codex)

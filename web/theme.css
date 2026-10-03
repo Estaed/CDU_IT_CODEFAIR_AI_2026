@@ -11,6 +11,7 @@
   --button-edge: #003c52;
   --flag: #b54800;
   --warning-bg: #fdf1e9;
+  --worth: #4b6475;
   --highlight: #fff3b0;
   --highlight-edge: #b58a00;
   --line: #bbbbbb;
@@ -112,6 +113,7 @@ h1 { font-size: 22px; margin: 0; white-space: nowrap; }
 .rstat { display: block; color: var(--secondary); font-size: 13px; line-height: 1.3; }
 .task-icon { display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border: 2px solid var(--primary); border-radius: 50%; color: var(--primary); font-size: 13px; font-weight: bold; }
 .task-icon.flag { color: var(--flag); border-color: var(--flag); }
+.task-icon.worth { color: var(--worth); border-color: transparent; font-size: 22px; }
 .signrow .rname { color: var(--ink); text-decoration: none; }
 .signrow .task-icon { border-color: var(--secondary); color: var(--secondary); border-style: dashed; }
 .task-icon.outcome-met, .signrow.is-signed .task-icon { color: var(--success); border-color: var(--success); border-style: solid; }
@@ -128,6 +130,7 @@ h1 { font-size: 22px; margin: 0; white-space: nowrap; }
 .policy-inset { border-left: 8px solid var(--line); margin: 10px 0 12px; padding: 6px 14px; }
 .warning-box { display: flex; gap: 10px; background: var(--warning-bg); border-left: 6px solid var(--flag); padding: 8px 14px; margin-bottom: 12px; font-size: 15px; }
 .warning-box p { margin: 0; }
+.worth-box { background: var(--selected); border-left-color: var(--worth); }
 .warning-copy { flex: 1; min-width: 0; }
 .warning-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .comparison-links { display: flex; flex-direction: column; align-items: flex-start; }

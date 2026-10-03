@@ -58,9 +58,11 @@ async function showHome() {
           <dt>File</dt><dd>${c.pages} pages · ${documents.length} documents</dd></dl>
         <a class="btn-primary" data-testid="open-case" href="${c.signed ? esc(c.signed.html_url) : `/?case=${encodeURIComponent(c.case_id)}`}">${c.signed ? 'View record' : 'Open case'} ${icon('arrow')}</a>
         <section class="home-flags"><h3>Flags at a glance</h3>
-          <p>${c.flags.length ? `! ${c.flags.length} questions need a look` : '✓ No questions flagged'} · ${c.required_count} required passages to open</p>
-          ${c.flags.length ? `<ul>${c.flags.map((title) => `<li>${esc(title)}</li>`).join('')}</ul>` : ''}
-          <p class="note">Flags guide your reading. You decide every outcome.</p></section>
+          <p data-testid="home-tiers">${c.flags.length} need a look · ${c.worth_a_look.length} worth a look</p>
+          <p>${c.required_count} required passages to open</p>
+          ${c.flags.length ? `<ul>${c.flags.map((title) => `<li><span class="task-icon flag" aria-hidden="true">!</span> ${esc(title)} · Needs a look</li>`).join('')}</ul>` : ''}
+          ${c.worth_a_look.length ? `<ul>${c.worth_a_look.map((title) => `<li><span class="task-icon worth" aria-hidden="true">○</span> ${esc(title)} · Worth a look</li>`).join('')}</ul>` : ''}
+          <p class="note">Needs a look: a problem in the notes or the file. Worth a look: pages the AI did not use. You decide every outcome.</p></section>
         <section class="home-documents"><h3>Documents (${documents.length})</h3>
           <ul>${documents.slice(0, 4).join('')}</ul>
           ${documents.length > 4 ? `<details><summary>Show all ${documents.length} documents</summary><ul>${documents.slice(4).join('')}</ul></details>` : ''}</section>`;

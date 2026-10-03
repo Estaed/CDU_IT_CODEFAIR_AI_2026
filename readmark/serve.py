@@ -89,11 +89,13 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
             words = rec.wording(spec)
             clauses = [c for c in v["clauses"] if c["clause_id"] != "other"]
             claims = {c["claim_id"]: c for c in v["claims"]}
-            required = {cid for r in v["required_reading"] for cid in r["clause_ids"]}
-            flags = [c["title"] for c in clauses
-                     if c["contradictions"] or c["missing"]
-                     or c["coverage"] == "no_evidence_in_file" or c["clause_id"] in required
-                     or any(claims[q]["status"] != "supported" for q in c["claim_ids"])]
+            problems = {c["clause_id"] for c in clauses
+                        if c["contradictions"] or c["missing"]
+                        or c["coverage"] == "no_evidence_in_file"
+                        or any(claims[q]["status"] != "supported" for q in c["claim_ids"])}
+            flags = [c["title"] for c in clauses if c["clause_id"] in problems]
+            worth = [c["title"] for c in clauses
+                     if c["clause_id"] not in problems and c["possibly_missed"]]
             result.append({"case_id": cid,
                            "name": v["case"].get("title") or f"{words['labels']['case_noun']} {cid}",
                            **words,
@@ -101,7 +103,8 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                            "documents": v["case"].get("documents", []),
                            "question_list": {"id": spec["id"], "title": spec["title"]},
                            "question_ids": [c["clause_id"] for c in clauses],
-                           "flags": flags, "required_count": len(v["required_reading"]),
+                           "flags": flags, "worth_a_look": worth,
+                           "required_count": len(v["required_reading"]),
                            "draft_key": draft_key(v), "signed": signed(cid),
                            "evaluation": cid in {"E-01", "E-02", "E-03", "H-01"}})
         return {"cases": result, "question_lists": list_question_lists()}

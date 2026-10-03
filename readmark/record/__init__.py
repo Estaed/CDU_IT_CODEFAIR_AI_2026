@@ -66,7 +66,7 @@ def clause_label(clause: dict) -> str:
     return f"{clause['title']}, {clause['source']}" if clause.get("source") else clause["title"]
 
 
-def validate(payload: dict, view: dict) -> None:
+def validate(payload: dict, view: dict, opened_seconds: float = OPENED_SECONDS) -> None:
     problems = []
     if payload.get("decision") not in DECISIONS:
         problems.append("Choose a decision.")
@@ -83,9 +83,9 @@ def validate(payload: dict, view: dict) -> None:
         elif (not isinstance(p.get("seconds_in_view"), int | float)
               or isinstance(p.get("seconds_in_view"), bool)
               or not math.isfinite(p["seconds_in_view"])
-              or p["seconds_in_view"] < OPENED_SECONDS or not p.get("opened_at")):
+              or p["seconds_in_view"] < opened_seconds or not p.get("opened_at")):
             problems.append(f"Open {source_label(view['sources'][pid])} for at least "
-                            f"{OPENED_SECONDS} seconds in view.")
+                            f"{opened_seconds:g} seconds in view.")
     for item in view["required_reading"]:
         if item["passage_id"] not in opened:
             label = source_label(view["sources"][item["passage_id"]]).lower()
@@ -98,8 +98,9 @@ def validate(payload: dict, view: dict) -> None:
         raise RecordError(problems)
 
 
-def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
-    validate(payload, view)
+def build(payload: dict, view: dict, now: datetime | None = None,
+          opened_seconds: float = OPENED_SECONDS) -> dict:
+    validate(payload, view, opened_seconds)
     signed_at = (now or datetime.now().astimezone()).isoformat(timespec="seconds")
     view_sha = hashlib.sha256(dumps(view).encode("utf-8")).hexdigest()
     required = [i["passage_id"] for i in view["required_reading"]]

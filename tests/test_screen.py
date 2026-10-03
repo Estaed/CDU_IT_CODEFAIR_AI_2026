@@ -75,11 +75,17 @@ def _free_port() -> int:
         return s.getsockname()[1]
 
 
+# Screen flows run on a short opening clock so the gate stays fast. The shipped 3-second rule is
+# proven once, on the real clock, in test_opening_accumulates_three_visible_seconds_across_visits.
+FAST_OPEN = 0.3
+
+
 @contextmanager
-def serving(case_id, run_dir, records_dir):
+def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN):
     """The app on a free port (no shared-device lock needed)."""
     port = _free_port()
-    config = uvicorn.Config(create_app(case_id, run_dir=run_dir, records_dir=records_dir),
+    config = uvicorn.Config(create_app(case_id, run_dir=run_dir, records_dir=records_dir,
+                                       opened_seconds=opened_seconds),
                             host="127.0.0.1", port=port, log_level="warning")
     srv = uvicorn.Server(config)
     thread = threading.Thread(target=srv.run, daemon=True)
@@ -229,7 +235,7 @@ def assert_scrolled_to(page, pid):
 
 
 def wait_until_opened(page):
-    # Use the shipped clock; a passage must really accrue the record's three seconds.
+    # A passage must really accrue the served threshold (short in tests, 3 s when shipped).
     page.get_by_test_id("source").scroll_into_view_if_needed()
     page.wait_for_function("S.current && hasOpened(S.current.pid)")
 
@@ -563,10 +569,10 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
     by_pid = {p["passage_id"]: p for p in record["passages_opened"]}
     assert set(required) <= set(by_pid)
     for pid in required:
-        assert by_pid[pid]["opened_at"] and isinstance(by_pid[pid]["seconds_in_view"], float)
+        assert by_pid[pid]["opened_at"] and isinstance(by_pid[pid]["seconds_in_view"], int | float)
         assert by_pid[pid]["seconds_in_view"] > 0
     for passage in by_pid.values():
-        assert passage["opened_at"] and isinstance(passage["seconds_in_view"], float)
+        assert passage["opened_at"] and isinstance(passage["seconds_in_view"], int | float)
         assert passage["required"] == (passage["passage_id"] in required)
     assert "decision_label" not in record and "required_reading" not in record
     assert "integrity" in record
@@ -783,7 +789,9 @@ def test_polish_question_words_identity_more_pages_and_warning_pairs(case_id, wi
     run = ROOT / "runs" / case_id
     view = json.loads((run / "view.json").read_text(encoding="utf-8"))
     errors = []
-    with serving(case_id, run, tmp_path / "records") as base, sync_playwright() as p:
+    # Counts pages opened while moving between questions, so it needs the shipped clock.
+    with serving(case_id, run, tmp_path / "records",
+                 opened_seconds=rec.OPENED_SECONDS) as base, sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": width, "height": 900})
         page.on("pageerror", lambda e: errors.append(str(e)))
@@ -1017,7 +1025,8 @@ def test_audit_is_not_shown_and_bad_quotes_are_never_highlighted(audit, tmp_path
 def test_opening_accumulates_three_visible_seconds_across_visits(tmp_path):
     from playwright.sync_api import expect, sync_playwright
 
-    with serving("A-0142", A0142_RUN, tmp_path / "records") as base, sync_playwright() as p:
+    with serving("A-0142", A0142_RUN, tmp_path / "records",
+                 opened_seconds=rec.OPENED_SECONDS) as base, sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1280, "height": 900})
         page.goto(base)
@@ -1160,7 +1169,7 @@ def test_plain_notes_sign_states_and_readable_exports(case_id, width, tmp_path):
         expect(page.get_by_test_id("signoff-row")).to_contain_text("Signed · record locked")
         expect(page.get_by_test_id("signoff-row").locator(".task-icon")).to_have_text("✓")
         record = page.evaluate("S.signed.record")
-        assert all(p["seconds_in_view"] >= 3 and p["opened_at"] for p in record["passages_opened"])
+        assert all(p["seconds_in_view"] >= FAST_OPEN and p["opened_at"] for p in record["passages_opened"])
         assert record["disputes"][0]["claim"] == disputed["claim"]
         expect(page.get_by_test_id("record")).to_contain_text("Please check the other page.")
         expect(page.get_by_test_id("record")).to_contain_text("3 seconds in view")

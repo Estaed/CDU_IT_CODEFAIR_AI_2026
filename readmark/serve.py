@@ -27,7 +27,10 @@ def _policy_text() -> dict[str, str]:
 
 
 def create_app(case_id: str, run_dir: Path | None = None,
-               records_dir: Path | None = None) -> FastAPI:
+               records_dir: Path | None = None,
+               opened_seconds: float = rec.OPENED_SECONDS) -> FastAPI:
+    # opened_seconds is a parameter only so tests can run on a short clock; the CLI never sets it,
+    # so the shipped screen and record always use rec.OPENED_SECONDS.
     run_dir = run_dir or case_run_dir(case_id)
     records_dir = records_dir or run_dir / "records"
     app = FastAPI(title="Readmark", docs_url=None, redoc_url=None, openapi_url=None)
@@ -46,7 +49,7 @@ def create_app(case_id: str, run_dir: Path | None = None,
     @app.get("/api/settings")
     def get_settings():
         # One threshold, shared by browser timing, record validation and the footnote.
-        return {"opened_seconds": rec.OPENED_SECONDS}
+        return {"opened_seconds": opened_seconds}
 
     @app.get("/api/context")
     def get_context():
@@ -96,7 +99,7 @@ def create_app(case_id: str, run_dir: Path | None = None,
     @app.post("/api/records")
     def post_record(payload: Annotated[dict, Body()]):
         try:
-            record = rec.build(payload, view())
+            record = rec.build(payload, view(), opened_seconds=opened_seconds)
         except rec.RecordError as exc:
             return JSONResponse({"problems": exc.problems}, status_code=422)
         rec.save(record, records_dir)

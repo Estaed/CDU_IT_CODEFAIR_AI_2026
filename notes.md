@@ -431,6 +431,16 @@ In the survey's §5:
 | Two-way hover links (claim ↔ passage) | v1 if time allows | Cheap in HTML; this is how Traceable Text measured its gain |
 
 ## After v1
+**2026-10-03, Tarık: there is no development after submission.** These lines below moved into v1 and
+ship by 8 Oct (Blueprint → *Added before submission*):
+- search across documents, OCR and multi-file upload;
+- the home screen, which now lists cases and lets the officer upload one;
+- question lists per application type.
+
+The easy example (the CDU extension rule) was added too. Local models stay out until Tarık asks.
+Chat with the documents stays out; the home screen only borrows the look of Claude's or Codex's
+session list.
+
 - 2026-10-03: Search across many documents (RAG). v1 is one case file plus the five-policy bundle.
 - 2026-10-03: OCR for scanned PDFs. Claude cannot cite scans; say in the pitch that real files contain them.
 - 2026-10-03: Multi-file upload. v1 ships the demo case; passage ids still carry a document id.
@@ -438,7 +448,8 @@ In the survey's §5:
   models do not fall for it. If a judge asks, the precedent is a Connecticut court filing in 3-point
   white font (Aug 2026).
 - 2026-10-03: Local models: Bespoke-MiniCheck as a third vote, and a local writer. v1 runs on Claude
-  plus Jev. Tarık: v1.2 at the earliest, the very last item.
+  plus Jev. Tarık (2026-10-03): not added until he asks, because they would not be as good as
+  frontier models.
 - 2026-10-03: A draft request to the applicant for items marked "not in file", citing the policy
   clause. Cheap, but not needed for v1.
 - 2026-10-03: A plain-language decision letter to the applicant built from the decision record.

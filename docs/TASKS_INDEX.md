@@ -37,3 +37,13 @@ Wave 6 (2026-10-03). Width 1: one feature, the final look.
 - [x] Task-15: The final look: a government question page with the file inside it (codex)
 
 - [x] Task-16: Polish the final look: four small screen fixes (codex)
+
+Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 2; wave 8 width 2; waves 9, 10 width 1.
+
+- [ ] Task-17: Plain AI notes, and the usability fixes (codex)
+- [ ] Task-18: Question lists: each list brings its own policies and questions (codex)
+- [ ] Task-19: Case home screen: cases in progress and completed (ultracode)
+- [ ] Task-20: New case: upload several documents and run the checks live (ultracode)
+- [ ] Task-21: The easy example: a student's assessment extension under the real CDU rule (main-loop)
+- [ ] Task-22: Scanned pages: Claude reads the page image, and the image stays beside the text (ultracode)
+- [ ] Task-23: Search within a case: its documents and its policies (ultracode)

@@ -59,16 +59,44 @@ and `notes.md` keeps a one-line link.
   HTML or JSON.
 
 **Done means:**
-- the demo case runs end to end offline from the replay cache;
+- the demo case runs end to end offline from the replay cache, and so does the easy example;
 - the evaluation numbers are frozen by **7 Oct** for the teammate's report;
 - the ZIP (report, Python with remarks, README) is emailed by **8 Oct**;
 - the pitch is on 15 Oct.
 
 Unweighted rubric: datasets, creativity, technical, context and practicality, ethics, presentation.
 
+### Added before submission (Tarık, 2026-10-03: "teslim sonrası geliştirme yok, hepsi yapılacak")
+Everything below ships in the 8 Oct ZIP. There is no development after submission.
+- **Plain AI notes and the usability fixes:** `reports/2026-10-03-usability-notes.md`. A page counts
+  as opened after 3 s in view.
+- **Question lists:**
+  - each list holds its own policy bundle and its approved questions;
+  - a case names its list;
+  - the NT priority-housing list stays the default.
+- **Case home screen:**
+  - cases listed as in progress or completed;
+  - each case keeps its own record;
+  - the layout looks like Claude's or Codex's session list (look only, no chat).
+- **New case:**
+  - a case is a folder of several documents (PDF or text), uploaded together;
+  - the officer picks a question list;
+  - the pipeline runs live with visible progress;
+  - the case then joins the list.
+- **The easy example:**
+  - the real CDU "Higher Education Assessment (Coursework) Policy and Procedure" (assessment
+    extensions);
+  - a synthetic student's extension file, where about half the questions are clean;
+  - it is for understanding the system, and it is also an internal test against a real rule.
+- **Scanned pages:**
+  - Claude transcribes page images to text (OCR by vision);
+  - quotes are verified against that transcription;
+  - the page image is shown beside it.
+- **Search within a case:** across its documents and its policies.
+
 ### Not in v1
-- Local models: MiniCheck as a third vote, and a local writer.
-- OCR or scanned PDFs, multi-file upload, multi-document search, and chat.
+- Local models (MiniCheck, a local writer): only when Tarık asks.
+- Chat with the documents or an agent.
 - Drafts addressed to the applicant: a request for information, and a decision letter.
 - A backlog queue, a supervisor view, and a check of the officer's reason.
 - Prompt-injection defence, and a formatted PDF record.

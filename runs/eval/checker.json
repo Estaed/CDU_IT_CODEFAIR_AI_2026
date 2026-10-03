@@ -1,0 +1,712 @@
+{
+ "checkers": {
+  "claude": {
+   "calibration": [
+    {
+     "accuracy": null,
+     "bin": "0.0-0.1",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": null,
+     "bin": "0.1-0.2",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": null,
+     "bin": "0.2-0.3",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": null,
+     "bin": "0.3-0.4",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": null,
+     "bin": "0.4-0.5",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": 0.5263,
+     "bin": "0.5-0.6",
+     "mean_probability": 0.5421,
+     "n": 19
+    },
+    {
+     "accuracy": 0.7931,
+     "bin": "0.6-0.7",
+     "mean_probability": 0.6162,
+     "n": 29
+    },
+    {
+     "accuracy": 0.7059,
+     "bin": "0.7-0.8",
+     "mean_probability": 0.7271,
+     "n": 34
+    },
+    {
+     "accuracy": 0.8795,
+     "bin": "0.8-0.9",
+     "mean_probability": 0.8427,
+     "n": 83
+    },
+    {
+     "accuracy": 0.9259,
+     "bin": "0.9-1.0",
+     "mean_probability": 0.9277,
+     "n": 135
+    }
+   ],
+   "model": "claude-opus-5-5",
+   "overall": {
+    "accuracy": 0.85,
+    "balanced_accuracy": 0.85,
+    "consistent_recall": 0.88,
+    "fn": 18,
+    "fp": 27,
+    "inconsistent_recall": 0.82,
+    "n": 300,
+    "tn": 123,
+    "tp": 132
+   },
+   "per_domain": {
+    "billsum": {
+     "accuracy": 0.7667,
+     "balanced_accuracy": 0.7667,
+     "consistent_recall": 0.8667,
+     "fn": 2,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 13
+    },
+    "ectsum": {
+     "accuracy": 0.7,
+     "balanced_accuracy": 0.7,
+     "consistent_recall": 0.6667,
+     "fn": 5,
+     "fp": 4,
+     "inconsistent_recall": 0.7333,
+     "n": 30,
+     "tn": 11,
+     "tp": 10
+    },
+    "news": {
+     "accuracy": 0.7667,
+     "balanced_accuracy": 0.7667,
+     "consistent_recall": 0.6667,
+     "fn": 5,
+     "fp": 2,
+     "inconsistent_recall": 0.8667,
+     "n": 30,
+     "tn": 13,
+     "tp": 10
+    },
+    "podcast": {
+     "accuracy": 0.9333,
+     "balanced_accuracy": 0.9333,
+     "consistent_recall": 0.9333,
+     "fn": 1,
+     "fp": 1,
+     "inconsistent_recall": 0.9333,
+     "n": 30,
+     "tn": 14,
+     "tp": 14
+    },
+    "qmsumm": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 0.8667,
+     "fn": 2,
+     "fp": 3,
+     "inconsistent_recall": 0.8,
+     "n": 30,
+     "tn": 12,
+     "tp": 13
+    },
+    "sales_call": {
+     "accuracy": 0.9667,
+     "balanced_accuracy": 0.9667,
+     "consistent_recall": 0.9333,
+     "fn": 1,
+     "fp": 0,
+     "inconsistent_recall": 1.0,
+     "n": 30,
+     "tn": 15,
+     "tp": 14
+    },
+    "sales_email": {
+     "accuracy": 0.8667,
+     "balanced_accuracy": 0.8667,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 4,
+     "inconsistent_recall": 0.7333,
+     "n": 30,
+     "tn": 11,
+     "tp": 15
+    },
+    "samsum": {
+     "accuracy": 0.8667,
+     "balanced_accuracy": 0.8667,
+     "consistent_recall": 0.8667,
+     "fn": 2,
+     "fp": 2,
+     "inconsistent_recall": 0.8667,
+     "n": 30,
+     "tn": 13,
+     "tp": 13
+    },
+    "scitldr": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 15
+    },
+    "shakespeare": {
+     "accuracy": 0.9667,
+     "balanced_accuracy": 0.9667,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 1,
+     "inconsistent_recall": 0.9333,
+     "n": 30,
+     "tn": 14,
+     "tp": 15
+    }
+   },
+   "verdicts": {
+    "contradicts": 132,
+    "n": 300,
+    "not_enough_information": 9,
+    "supports": 159
+   }
+  },
+  "jev": {
+   "calibration": [
+    {
+     "accuracy": null,
+     "bin": "0.0-0.1",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": null,
+     "bin": "0.1-0.2",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": 0.8571,
+     "bin": "0.2-0.3",
+     "mean_probability": 0.2514,
+     "n": 7
+    },
+    {
+     "accuracy": 0.2222,
+     "bin": "0.3-0.4",
+     "mean_probability": 0.3422,
+     "n": 9
+    },
+    {
+     "accuracy": 0.6667,
+     "bin": "0.4-0.5",
+     "mean_probability": 0.4622,
+     "n": 9
+    },
+    {
+     "accuracy": 0.6667,
+     "bin": "0.5-0.6",
+     "mean_probability": 0.54,
+     "n": 9
+    },
+    {
+     "accuracy": 0.8,
+     "bin": "0.6-0.7",
+     "mean_probability": 0.644,
+     "n": 10
+    },
+    {
+     "accuracy": 0.7273,
+     "bin": "0.7-0.8",
+     "mean_probability": 0.7555,
+     "n": 11
+    },
+    {
+     "accuracy": 0.8571,
+     "bin": "0.8-0.9",
+     "mean_probability": 0.8567,
+     "n": 21
+    },
+    {
+     "accuracy": 0.8661,
+     "bin": "0.9-1.0",
+     "mean_probability": 0.9841,
+     "n": 224
+    }
+   ],
+   "model": "jev-1.13.0",
+   "overall": {
+    "accuracy": 0.8267,
+    "balanced_accuracy": 0.8267,
+    "consistent_recall": 0.9667,
+    "fn": 5,
+    "fp": 47,
+    "inconsistent_recall": 0.6867,
+    "n": 300,
+    "tn": 103,
+    "tp": 145
+   },
+   "per_domain": {
+    "billsum": {
+     "accuracy": 0.6667,
+     "balanced_accuracy": 0.6667,
+     "consistent_recall": 0.9333,
+     "fn": 1,
+     "fp": 9,
+     "inconsistent_recall": 0.4,
+     "n": 30,
+     "tn": 6,
+     "tp": 14
+    },
+    "ectsum": {
+     "accuracy": 0.8,
+     "balanced_accuracy": 0.8,
+     "consistent_recall": 0.8667,
+     "fn": 2,
+     "fp": 4,
+     "inconsistent_recall": 0.7333,
+     "n": 30,
+     "tn": 11,
+     "tp": 13
+    },
+    "news": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 0.8667,
+     "fn": 2,
+     "fp": 3,
+     "inconsistent_recall": 0.8,
+     "n": 30,
+     "tn": 12,
+     "tp": 13
+    },
+    "podcast": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 15
+    },
+    "qmsumm": {
+     "accuracy": 0.8667,
+     "balanced_accuracy": 0.8667,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 4,
+     "inconsistent_recall": 0.7333,
+     "n": 30,
+     "tn": 11,
+     "tp": 15
+    },
+    "sales_call": {
+     "accuracy": 0.9333,
+     "balanced_accuracy": 0.9333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 2,
+     "inconsistent_recall": 0.8667,
+     "n": 30,
+     "tn": 13,
+     "tp": 15
+    },
+    "sales_email": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 15
+    },
+    "samsum": {
+     "accuracy": 0.9333,
+     "balanced_accuracy": 0.9333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 2,
+     "inconsistent_recall": 0.8667,
+     "n": 30,
+     "tn": 13,
+     "tp": 15
+    },
+    "scitldr": {
+     "accuracy": 0.7333,
+     "balanced_accuracy": 0.7333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 8,
+     "inconsistent_recall": 0.4667,
+     "n": 30,
+     "tn": 7,
+     "tp": 15
+    },
+    "shakespeare": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 15
+    }
+   },
+   "unsure_band": {
+    "band": "probability below 0.8",
+    "below": 0.8,
+    "cutoffs": [
+     {
+      "below": 0.1,
+      "n": 300,
+      "sure_accuracy": 0.8267,
+      "sure_n": 300,
+      "unsure_accuracy": null,
+      "unsure_n": 0
+     },
+     {
+      "below": 0.2,
+      "n": 300,
+      "sure_accuracy": 0.8267,
+      "sure_n": 300,
+      "unsure_accuracy": null,
+      "unsure_n": 0
+     },
+     {
+      "below": 0.3,
+      "n": 300,
+      "sure_accuracy": 0.8259,
+      "sure_n": 293,
+      "unsure_accuracy": 0.8571,
+      "unsure_n": 7
+     },
+     {
+      "below": 0.4,
+      "n": 300,
+      "sure_accuracy": 0.8451,
+      "sure_n": 284,
+      "unsure_accuracy": 0.5,
+      "unsure_n": 16
+     },
+     {
+      "below": 0.5,
+      "n": 300,
+      "sure_accuracy": 0.8509,
+      "sure_n": 275,
+      "unsure_accuracy": 0.56,
+      "unsure_n": 25
+     },
+     {
+      "below": 0.6,
+      "n": 300,
+      "sure_accuracy": 0.8571,
+      "sure_n": 266,
+      "unsure_accuracy": 0.5882,
+      "unsure_n": 34
+     },
+     {
+      "below": 0.7,
+      "n": 300,
+      "sure_accuracy": 0.8594,
+      "sure_n": 256,
+      "unsure_accuracy": 0.6364,
+      "unsure_n": 44
+     },
+     {
+      "below": 0.8,
+      "n": 300,
+      "sure_accuracy": 0.8653,
+      "sure_n": 245,
+      "unsure_accuracy": 0.6545,
+      "unsure_n": 55
+     },
+     {
+      "below": 0.9,
+      "n": 300,
+      "sure_accuracy": 0.8661,
+      "sure_n": 224,
+      "unsure_accuracy": 0.7105,
+      "unsure_n": 76
+     }
+    ],
+    "found": true,
+    "n": 300,
+    "rule": "highest bin edge t where the calls below t (n >= 30) are right less than 70% of the time; set after the first live run, because the rule fixed before it (calls at >= t right >= 80 %) gave an empty band; recorded only, not in the gate",
+    "sure_accuracy": 0.8653,
+    "sure_n": 245,
+    "unsure_accuracy": 0.6545,
+    "unsure_n": 55
+   },
+   "verdicts": {
+    "contradicts": 107,
+    "n": 300,
+    "not_enough_information": 1,
+    "supports": 192
+   }
+  },
+  "jev_run2": {
+   "calibration": [
+    {
+     "accuracy": null,
+     "bin": "0.0-0.1",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": null,
+     "bin": "0.1-0.2",
+     "mean_probability": null,
+     "n": 0
+    },
+    {
+     "accuracy": 0.625,
+     "bin": "0.2-0.3",
+     "mean_probability": 0.2625,
+     "n": 8
+    },
+    {
+     "accuracy": 0.2857,
+     "bin": "0.3-0.4",
+     "mean_probability": 0.3386,
+     "n": 7
+    },
+    {
+     "accuracy": 0.7143,
+     "bin": "0.4-0.5",
+     "mean_probability": 0.4386,
+     "n": 7
+    },
+    {
+     "accuracy": 0.6364,
+     "bin": "0.5-0.6",
+     "mean_probability": 0.5382,
+     "n": 11
+    },
+    {
+     "accuracy": 0.8182,
+     "bin": "0.6-0.7",
+     "mean_probability": 0.6345,
+     "n": 11
+    },
+    {
+     "accuracy": 0.75,
+     "bin": "0.7-0.8",
+     "mean_probability": 0.7475,
+     "n": 12
+    },
+    {
+     "accuracy": 0.8421,
+     "bin": "0.8-0.9",
+     "mean_probability": 0.8589,
+     "n": 19
+    },
+    {
+     "accuracy": 0.8667,
+     "bin": "0.9-1.0",
+     "mean_probability": 0.9837,
+     "n": 225
+    }
+   ],
+   "model": "jev-1.13.0",
+   "overall": {
+    "accuracy": 0.8267,
+    "balanced_accuracy": 0.8267,
+    "consistent_recall": 0.9667,
+    "fn": 5,
+    "fp": 47,
+    "inconsistent_recall": 0.6867,
+    "n": 300,
+    "tn": 103,
+    "tp": 145
+   },
+   "per_domain": {
+    "billsum": {
+     "accuracy": 0.6667,
+     "balanced_accuracy": 0.6667,
+     "consistent_recall": 0.9333,
+     "fn": 1,
+     "fp": 9,
+     "inconsistent_recall": 0.4,
+     "n": 30,
+     "tn": 6,
+     "tp": 14
+    },
+    "ectsum": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 0.9333,
+     "fn": 1,
+     "fp": 4,
+     "inconsistent_recall": 0.7333,
+     "n": 30,
+     "tn": 11,
+     "tp": 14
+    },
+    "news": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 0.8667,
+     "fn": 2,
+     "fp": 3,
+     "inconsistent_recall": 0.8,
+     "n": 30,
+     "tn": 12,
+     "tp": 13
+    },
+    "podcast": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 15
+    },
+    "qmsumm": {
+     "accuracy": 0.8667,
+     "balanced_accuracy": 0.8667,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 4,
+     "inconsistent_recall": 0.7333,
+     "n": 30,
+     "tn": 11,
+     "tp": 15
+    },
+    "sales_call": {
+     "accuracy": 0.9333,
+     "balanced_accuracy": 0.9333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 2,
+     "inconsistent_recall": 0.8667,
+     "n": 30,
+     "tn": 13,
+     "tp": 15
+    },
+    "sales_email": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 15
+    },
+    "samsum": {
+     "accuracy": 0.9333,
+     "balanced_accuracy": 0.9333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 2,
+     "inconsistent_recall": 0.8667,
+     "n": 30,
+     "tn": 13,
+     "tp": 15
+    },
+    "scitldr": {
+     "accuracy": 0.7,
+     "balanced_accuracy": 0.7,
+     "consistent_recall": 0.9333,
+     "fn": 1,
+     "fp": 8,
+     "inconsistent_recall": 0.4667,
+     "n": 30,
+     "tn": 7,
+     "tp": 14
+    },
+    "shakespeare": {
+     "accuracy": 0.8333,
+     "balanced_accuracy": 0.8333,
+     "consistent_recall": 1.0,
+     "fn": 0,
+     "fp": 5,
+     "inconsistent_recall": 0.6667,
+     "n": 30,
+     "tn": 10,
+     "tp": 15
+    }
+   },
+   "verdicts": {
+    "contradicts": 107,
+    "n": 300,
+    "not_enough_information": 1,
+    "supports": 192
+   }
+  }
+ },
+ "claude_batching": {
+  "calls": 30,
+  "max_doc_words_per_call": 12000,
+  "max_pairs_per_call": 10,
+  "n": 300
+ },
+ "cost": {
+  "claude_calls": 30,
+  "jev_calls": 300,
+  "jev_input_tokens": 359235,
+  "jev_output_tokens": 17917,
+  "jev_run2_calls": 300,
+  "jev_run2_input_tokens": 359235,
+  "jev_run2_output_tokens": 17917,
+  "n": 300
+ },
+ "jev_agreement": {
+  "max_abs_probability_difference": 0.26,
+  "mean_abs_probability_difference": 0.0116,
+  "n": 300,
+  "probability_compared_n": 300,
+  "same_call": 296,
+  "same_call_rate": 0.9867,
+  "same_verdict": 296,
+  "same_verdict_rate": 0.9867
+ },
+ "part": "checker",
+ "rule": "A 'supports' verdict counts as consistent; contradicts, not_enough_information or no verdict counts as inconsistent. Positive class = consistent (SummEdits label 1).",
+ "sample": {
+  "consistent": 150,
+  "doc_word_limit": 15000,
+  "domains": 10,
+  "inconsistent": 150,
+  "licence": "CC BY 4.0",
+  "max_doc_words": 2090,
+  "n": 300,
+  "per_domain_per_label": 15,
+  "seed": 20261003,
+  "source": "https://huggingface.co/datasets/Salesforce/summedits/resolve/ce0c479aaf59259abb6b67e42248b2f49004b7d5/summedits.json",
+  "source_sha256": "21e34593330020d02b7d92f4651fdcc550f7d79a2f899392f106fd816c215a89"
+ }
+}

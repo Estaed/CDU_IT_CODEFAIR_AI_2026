@@ -15,4 +15,4 @@ Task-05 (both build on its schema-2 `view.json` and the A-0142 run), then run to
 - [x] Task-05: Cross-passage checks on the real demo file: contradiction pairs, relevance scan, possibly missed (ultracode)
 - [ ] Task-06: Summary under audit on the demo file (ultracode)
 - [ ] Task-07: Guided review screen, layout B (ultracode)
-- [ ] Task-08: Checker evaluation: Jev against Claude on SummEdits (ultracode)
+- [x] Task-08: Checker evaluation: Jev against Claude on SummEdits (ultracode)

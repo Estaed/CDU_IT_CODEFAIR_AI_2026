@@ -1,0 +1,61 @@
+{
+ "key": "3200c06083d5085360106c45b96f1b8287fd9895f68d5e28708207c6e79c9213",
+ "kind": "claude-check",
+ "response": {
+  "model": "claude-opus-5-5",
+  "output": {
+   "verdicts": [
+    {
+     "claim_id": "s021",
+     "probability": 0.75,
+     "verdict": "supports"
+    },
+    {
+     "claim_id": "s022",
+     "probability": 0.9,
+     "verdict": "contradicts"
+    },
+    {
+     "claim_id": "s023",
+     "probability": 0.6,
+     "verdict": "supports"
+    },
+    {
+     "claim_id": "s024",
+     "probability": 0.9,
+     "verdict": "contradicts"
+    },
+    {
+     "claim_id": "s025",
+     "probability": 0.85,
+     "verdict": "contradicts"
+    },
+    {
+     "claim_id": "s026",
+     "probability": 0.85,
+     "verdict": "supports"
+    },
+    {
+     "claim_id": "s027",
+     "probability": 0.55,
+     "verdict": "supports"
+    },
+    {
+     "claim_id": "s029",
+     "probability": 0.8,
+     "verdict": "supports"
+    },
+    {
+     "claim_id": "s030",
+     "probability": 0.95,
+     "verdict": "contradicts"
+    },
+    {
+     "claim_id": "s031",
+     "probability": 0.9,
+     "verdict": "contradicts"
+    }
+   ]
+  }
+ }
+}

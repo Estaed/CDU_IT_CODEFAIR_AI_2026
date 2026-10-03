@@ -20,8 +20,13 @@ def main(argv: list[str] | None = None) -> int:
     serve.add_argument("--case", default="stub")
     serve.add_argument("--port", type=int, default=8765)
 
-    ev = sub.add_parser("eval", help="evaluation (wave 2)")
+    ev = sub.add_parser("eval", help="evaluation parts -> runs/eval/<part>.json and summary.json")
     ev.add_argument("--case")
+    ev.add_argument("--part", choices=["checker"],
+                    help="checker: Jev against Claude-as-checker on the SummEdits sample; "
+                         "without --part, only summary.json is rebuilt from the parts present")
+    ev.add_argument("--replay", action="store_true",
+                    help="read every model response from runs/eval/cache/; no keys, no network")
 
     args = parser.parse_args(argv)
     if args.verb == "run":
@@ -40,9 +45,22 @@ def main(argv: list[str] | None = None) -> int:
 
         serve(args.case, args.port)
         return 0
-    print("eval is not built yet: it arrives in wave 2 (mutation set, held-out file, checker "
-          "evaluation).", file=sys.stderr)
-    return 2
+    if args.case:
+        print("case-level evaluation (mutation set, held-out file, ablation) is not built yet: "
+              "it arrives in wave 3.", file=sys.stderr)
+        return 2
+    from readmark.eval import assemble_summary, eval_dir
+
+    if args.part == "checker":
+        from readmark.eval.checker import evaluate
+
+        result = evaluate(replay=args.replay)
+        for name in ("jev", "claude"):
+            o = result["checkers"][name]["overall"]
+            print(f"{name}: balanced accuracy {o['balanced_accuracy']} (n={o['n']})")
+        print(f"-> {eval_dir() / 'checker.json'}")
+    print(f"-> {assemble_summary()}")
+    return 0
 
 
 if __name__ == "__main__":

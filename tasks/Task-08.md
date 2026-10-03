@@ -1,4 +1,5 @@
 # Task-08: Checker evaluation: Jev against Claude on SummEdits
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `ultracode` · effort `high`
 > *Why:* "flags where it's unsure" must rest on a measured threshold, and Jev as the v1 checker
 > needs an external number (Blueprint → Decisions: several hundred SummEdits pairs, with
@@ -37,15 +38,15 @@ table, "the checker disagrees" and "unsure" are just the model's word. This part
 from the rest of the wave, so it runs while the pipeline grows.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] The checker part's replay twice gives byte-identical `runs/eval/checker.json`, with
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] The checker part's replay twice gives byte-identical `runs/eval/checker.json`, with
   `TYPESAFE_API_KEY` unset and `claude` not on PATH.
-- [ ] A test: balanced accuracy and the calibration bins on a hand-made 10-item set match values
+- [x] A test: balanced accuracy and the calibration bins on a hand-made 10-item set match values
   computed by hand.
-- [ ] A test walks `runs/eval/summary.json`: every number sits beside its n.
-- [ ] The sample holds at least 300 pairs, both labels, every domain sampled; its licence and
+- [x] A test walks `runs/eval/summary.json`: every number sits beside its n.
+- [x] The sample holds at least 300 pairs, both labels, every domain sampled; its licence and
   citation are written next to it.
-- [ ] The builder's report gives both checkers' balanced accuracy with n, the Jev unsure band, and
+- [x] The builder's report gives both checkers' balanced accuracy with n, the Jev unsure band, and
   the two-run agreement, in plain words.
 
 ## Out of scope

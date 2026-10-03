@@ -1,0 +1,530 @@
+{
+ "facts": [
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p4:2",
+     "quote": "The current Australian passport was sighted and the applicant's Darwin residence was confirmed from the accommodation record."
+    }
+   ],
+   "claim": "Intake staff sighted the applicant's current Australian passport in person.",
+   "claim_id": "c01",
+   "clause_id": "elig-residency",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p4:1",
+     "quote": "No document number was copied into this note or the application bundle."
+    },
+    {
+     "passage_id": "H-01:p4:4",
+     "quote": "The identity document was sighted, not retained"
+    }
+   ],
+   "claim": "No passport number or copy was kept on file, so the citizenship evidence rests on the intake worker's note.",
+   "claim_id": "c02",
+   "clause_id": "elig-residency",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p3:3",
+     "quote": "I do not own or partly own residential property in Australia."
+    }
+   ],
+   "claim": "The applicant declares that she does not own or partly own residential property in Australia.",
+   "claim_id": "c03",
+   "clause_id": "elig-property",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "Apart from her own declaration, the file has no independent check of property ownership, such as a title search.",
+   "claim_id": "c04",
+   "clause_id": "elig-property",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p3:3",
+     "quote": "I have no land, business interest, farm or investment property."
+    }
+   ],
+   "claim": "The policy's domestic or family violence exemption is not needed, because no property interest is declared.",
+   "claim_id": "c05",
+   "clause_id": "elig-property",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p3:2",
+     "quote": "My present casual shifts vary and I have not enclosed a current earnings statement."
+    },
+    {
+     "passage_id": "H-01:p17:4",
+     "quote": "I will request a current earnings statement and provide it when received."
+    }
+   ],
+   "claim": "The applicant has not enclosed a current earnings statement for her present casual work.",
+   "claim_id": "c06",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p5:1",
+     "quote": "Pay period: 21 February to 27 February 2026."
+    },
+    {
+     "passage_id": "H-01:p6:2",
+     "quote": "Elena Verran's casual employment with Quayline Events ended on 17 July 2026."
+    }
+   ],
+   "claim": "The only payslip in the file is out of date: it covers a week in February 2026 from an employer whose engagement ended on 17 July 2026.",
+   "claim_id": "c07",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p5:2",
+     "quote": "Gross pay for this week: $492.00."
+    }
+   ],
+   "claim": "That old payslip shows gross pay of $492.00 for one week, so it does not reflect current income.",
+   "claim_id": "c08",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p11:2",
+     "quote": "She had completed two casual shifts with a new venue coordinator, but could not yet predict the next roster."
+    }
+   ],
+   "claim": "The applicant has worked two casual shifts with a new venue coordinator, but there is no pay record for that work.",
+   "claim_id": "c09",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p3:3",
+     "quote": "I can provide an account statement if one is required to complete the assessment."
+    }
+   ],
+   "claim": "The file has no bank or transaction account statement for her assets, although she offered to provide one.",
+   "claim_id": "c10",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The Income and Assets policy that sets the urban income thresholds is not in the file, so the thresholds cannot be tested.",
+   "claim_id": "c11",
+   "clause_id": "elig-income",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p14:2",
+     "quote": "Balance owing at close: $865.40."
+    }
+   ],
+   "claim": "The applicant owes a former social housing provider, Marigold Housing Cooperative, a closing balance of $865.40.",
+   "claim_id": "c12",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p14:2",
+     "quote": "Cleaning charge entered after the exit inspection: $615.40."
+    },
+    {
+     "passage_id": "H-01:p14:2",
+     "quote": "The cleaning charge remains under review following Elena's request for the inspection photographs and itemised contractor account."
+    }
+   ],
+   "claim": "She disputes the $615.40 cleaning charge, and that charge is still under review.",
+   "claim_id": "c13",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "eligibility:p6:9",
+     "quote": "Recovery of debt owed to other social housing providers will be managed in line with the specific provider’s policies and may differ."
+    }
+   ],
+   "claim": "The policy says debts owed to other social housing providers are recovered under that provider's own policies, so the Marigold debt is not a debt to the CEO (Housing).",
+   "claim_id": "c14",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p3:4",
+     "quote": "No other housing provider has sent me a debt notice."
+    }
+   ],
+   "claim": "The file does not show any debt owed to the CEO (Housing).",
+   "claim_id": "c15",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p14:3",
+     "quote": "The cooperative has not arranged automatic deductions or referred the account to a collection agency."
+    }
+   ],
+   "claim": "Marigold has not sent the account to a collection agency or set up automatic deductions.",
+   "claim_id": "c16",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p2:3",
+     "quote": "Previously held a social housing tenancy: No."
+    },
+    {
+     "passage_id": "H-01:p12:1",
+     "quote": "Property: social housing unit in Darwin, address withheld from this extract at the former tenant's request."
+    },
+    {
+     "passage_id": "H-01:p17:3",
+     "quote": "I previously held a tenancy with Marigold Housing Cooperative."
+    }
+   ],
+   "claim": "The application form says she has never held a social housing tenancy, which contradicts the Marigold records and her own declaration.",
+   "claim_id": "c17",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p12:1",
+     "quote": "Tenancy commenced 4 March 2024 and ended 19 December 2025."
+    }
+   ],
+   "claim": "Her Marigold social housing tenancy ended on 19 December 2025, which is within the last 2 years.",
+   "claim_id": "c18",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p12:2",
+     "quote": "End reason: agreed surrender of tenancy; no termination for breach was recorded."
+    },
+    {
+     "passage_id": "H-01:p12:2",
+     "quote": "The cooperative did not issue a termination notice or apply for an order ending the tenancy."
+    }
+   ],
+   "claim": "The Marigold tenancy ended by agreed surrender, with no termination for breach and no termination notice.",
+   "claim_id": "c19",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p13:2",
+     "quote": "No breach finding was entered on the tenancy record."
+    },
+    {
+     "passage_id": "H-01:p13:1",
+     "quote": "The room inventory recorded ordinary wear to floor finishes and a cleaning item in the kitchen."
+    }
+   ],
+   "claim": "The exit inspection made no breach finding and found only a cleaning item and ordinary wear.",
+   "claim_id": "c20",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p12:3",
+     "quote": "The inspection and ledger remain separate records because their review processes are still open."
+    }
+   ],
+   "claim": "Marigold's extract does not certify that the closing charges are agreed, and its inspection and ledger reviews are still open.",
+   "claim_id": "c21",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p2:3",
+     "quote": "Previously applied for social housing: No."
+    }
+   ],
+   "claim": "The application form also says she never applied for social housing, which does not fit her having held a Marigold social housing tenancy.",
+   "claim_id": "c22",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p1:3",
+     "quote": "Priority consideration requested: domestic or family violence and risk of homelessness."
+    }
+   ],
+   "claim": "She asks for priority on two grounds: domestic or family violence, and risk of homelessness.",
+   "claim_id": "c23",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p15:2",
+     "quote": "Elena described intimidation and repeated uninvited visits by her former partner after separation."
+    },
+    {
+     "passage_id": "H-01:p9:2",
+     "quote": "including Jonah waiting near her workplace on two occasions"
+    }
+   ],
+   "claim": "Larkhaven records her account of intimidation and repeated uninvited visits by her former partner after they separated.",
+   "claim_id": "c24",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p17:2",
+     "quote": "I have not obtained a domestic violence order."
+    },
+    {
+     "passage_id": "H-01:p9:2",
+     "quote": "declined a police referral at that time"
+    }
+   ],
+   "claim": "She has no domestic violence order and declined a police referral.",
+   "claim_id": "c25",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p15:3",
+     "quote": "In our assessment, a settled address separate from the former partner is needed for Elena's safety and continuity of care."
+    }
+   ],
+   "claim": "Larkhaven assesses that she needs a settled address separate from her former partner for her safety.",
+   "claim_id": "c26",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p8:2",
+     "quote": "The booked room is available through 9 October 2026 only; no extension is currently available."
+    }
+   ],
+   "claim": "Her temporary room runs only through 9 October 2026, and no extension is available.",
+   "claim_id": "c27",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p15:1",
+     "quote": "we have no confirmed replacement room for her"
+    }
+   ],
+   "claim": "Larkhaven has no replacement room confirmed for her after the booking ends.",
+   "claim_id": "c28",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p11:3",
+     "quote": "Elena said her cousin could keep bags but could not house her."
+    }
+   ],
+   "claim": "Her cousin can store bags but cannot give her somewhere to stay overnight.",
+   "claim_id": "c29",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p2:4",
+     "quote": "two private rental inspections did not lead to an application because the advertised rents exceeded the amount Elena could reliably pay"
+    }
+   ],
+   "claim": "She could not afford the private rentals she looked at.",
+   "claim_id": "c30",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p16:1",
+     "quote": "Elena attended a planned review for sleep disruption and anxiety symptoms following a recent change in living circumstances."
+    },
+    {
+     "passage_id": "H-01:p16:2",
+     "quote": "The clinic has not assessed a need for a modified dwelling or physical access features."
+    }
+   ],
+   "claim": "A clinic note records sleep disruption and anxiety and says stable housing would help her care, but it does not claim a serious medical problem or the need for a modified dwelling.",
+   "claim_id": "c31",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p8:4",
+     "quote": "Issued by: Asha Fen, bookings manager, Tidebend Lodge."
+    }
+   ],
+   "claim": "An independent booking confirmation from the lodge documents the end of her temporary accommodation.",
+   "claim_id": "c32",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p9:4",
+     "quote": "The record is for Larkhaven casework and contains the client's account as reported at intake."
+    }
+   ],
+   "claim": "The family violence evidence is the support service's record of what she reported, not an independent finding.",
+   "claim_id": "c33",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p17:4",
+     "quote": "Declared by Elena Verran on 2 October 2026 before Talia Wren, authorised witness, Darwin."
+    }
+   ],
+   "claim": "She has made a statutory declaration about her circumstances before an authorised witness.",
+   "claim_id": "c34",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The Identification and Documentation policy, which lists the documents needed to prove urgent need, is not in the file.",
+   "claim_id": "c35",
+   "clause_id": "prio-documentation",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "priority:p4:18",
+     "quote": "although the CEO (Housing) has some discretion for extreme situations"
+    }
+   ],
+   "claim": "The policy lets the CEO (Housing) use some discretion in extreme situations for priority applicants who do not meet eligibility.",
+   "claim_id": "c36",
+   "clause_id": "prio-discretion",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p8:2",
+     "quote": "Departure is due by the ordinary morning checkout time on 10 October."
+    }
+   ],
+   "claim": "The urgency is short-term because she must leave the lodge by the morning of 10 October.",
+   "claim_id": "c37",
+   "clause_id": "prio-discretion",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The Discretionary Decision Making policy is not in the file, so the test for an extreme situation is not available.",
+   "claim_id": "c38",
+   "clause_id": "prio-discretion",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p7:2",
+     "quote": "No change has been made to the lease parties by this letter alone."
+    }
+   ],
+   "claim": "She may still be a party to the private shared lease with her former partner, because the lease parties have not been changed.",
+   "claim_id": "c39",
+   "clause_id": "other",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p4:2",
+     "quote": "The applicant also showed the original short stay booking in her own name"
+    },
+    {
+     "passage_id": "H-01:p2:2",
+     "quote": "The applicant is not named on the short stay room booking as a tenant"
+    }
+   ],
+   "claim": "The verification note says the booking was in her own name, while the application says she is not named on the booking as a tenant.",
+   "claim_id": "c40",
+   "clause_id": "other",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "H-01:p1:1",
+     "quote": "Elena asks that no correspondence be sent to her former shared address."
+    },
+    {
+     "passage_id": "H-01:p17:2",
+     "quote": "I do not consent to my former partner being told the location of the room or my safe collection point for letters."
+    }
+   ],
+   "claim": "She asks that her location not be disclosed and that nothing be sent to the former shared address, which affects how the office contacts her.",
+   "claim_id": "c41",
+   "clause_id": "other",
+   "found": true
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "name": "claude"
+}

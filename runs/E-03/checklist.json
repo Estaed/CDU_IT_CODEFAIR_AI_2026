@@ -1,0 +1,47 @@
+[
+ {
+  "clause_id": "elig-residency",
+  "item_passage_ids": [],
+  "passage_id": "eligibility:p5:12"
+ },
+ {
+  "clause_id": "elig-property",
+  "item_passage_ids": [],
+  "passage_id": "eligibility:p5:4"
+ },
+ {
+  "clause_id": "elig-income",
+  "item_passage_ids": [],
+  "passage_id": "eligibility:p4:16"
+ },
+ {
+  "clause_id": "elig-debts",
+  "item_passage_ids": [],
+  "passage_id": "eligibility:p6:9"
+ },
+ {
+  "clause_id": "elig-former-tenancy",
+  "item_passage_ids": [],
+  "passage_id": "eligibility:p6:11"
+ },
+ {
+  "clause_id": "prio-category",
+  "item_passage_ids": [
+   "priority:p4:10",
+   "priority:p4:11",
+   "priority:p4:12",
+   "priority:p4:13"
+  ],
+  "passage_id": "priority:p4:9"
+ },
+ {
+  "clause_id": "prio-documentation",
+  "item_passage_ids": [],
+  "passage_id": "priority:p4:19"
+ },
+ {
+  "clause_id": "prio-discretion",
+  "item_passage_ids": [],
+  "passage_id": "priority:p4:18"
+ }
+]

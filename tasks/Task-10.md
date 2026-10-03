@@ -1,4 +1,5 @@
 # Task-10: The evaluation: mutation set, held-out file, ablation, benchmark release
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `codex` · effort `high`
 > *Why:* the evaluation numbers freeze on 7 Oct for the teammate's report, and the riskiest
 > assumption (Readmark finds real errors while required reading stays at 8 or fewer) has not met
@@ -48,16 +49,16 @@ These are the numbers the report and the pitch stand on. The held-out file is th
 no prompt or threshold was tuned against.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] Each new part's replay runs twice with `TYPESAFE_API_KEY` unset and `claude` off PATH, and
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] Each new part's replay runs twice with `TYPESAFE_API_KEY` unset and `claude` off PATH, and
   gives byte-identical output. The A-0142 and stub runs stay byte-identical to main.
-- [ ] A test: catch rate and false-alarm rate on a hand-made 6-claim set match values computed by
+- [x] A test: catch rate and false-alarm rate on a hand-made 6-claim set match values computed by
   hand.
-- [ ] A test walks `runs/eval/summary.json`: every number sits beside its n.
-- [ ] `runs/H-01/view.json` exists, and the report states its required-reading size and gold page
+- [x] A test walks `runs/eval/summary.json`: every number sits beside its n.
+- [x] `runs/H-01/view.json` exists, and the report states its required-reading size and gold page
   coverage with n. The builder's notes say when H-01 ran relative to the last code change.
-- [ ] `data/benchmark/` holds the CSVs and an updated `DATASHEET.md`.
-- [ ] The builder's report gives every headline number in plain words with n, and lists the live
+- [x] `data/benchmark/` holds the CSVs and an updated `DATASHEET.md`.
+- [x] The builder's report gives every headline number in plain words with n, and lists the live
   calls made (Claude, Jev).
 
 ## Out of scope

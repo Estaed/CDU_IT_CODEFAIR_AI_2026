@@ -1,0 +1,21 @@
+{
+ "key": "90d41334c393b9f19146cc3317c48d5b87fe2a53ef712356ca647e30fc44b532",
+ "kind": "jev-dedup-confirm",
+ "response": {
+  "answers": {
+   "P020": {
+    "noul": 0.55,
+    "type": "noul"
+   },
+   "P021": {
+    "noul": 0.42,
+    "type": "noul"
+   }
+  },
+  "model": "jev-1.13.0",
+  "usage": {
+   "input_tokens": 2059,
+   "output_tokens": 42
+  }
+ }
+}

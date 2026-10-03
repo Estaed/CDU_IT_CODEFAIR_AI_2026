@@ -1,0 +1,64 @@
+case_id,fact_id,clause_id,statement,value,page,quote,role,trap,decisive
+A-0142,A01,elig-debts,January ledger records former-tenancy debt,$2400,8,"Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight.",stale,stale_value,yes
+A-0142,A02,elig-debts,Support agency discharged the debt,$0,23,Lump-sum payment received from a support agency on behalf of the former tenant. Arrears cleared in full. Balance $0.00.,contradicts,contradiction,yes
+A-0142,A03,elig-former-tenancy,Former tenancy ended by agreement without breach,agreement,30,Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023. A rent debt remained outstanding at exit. No breach of the tenancy agreement recorded.,supports,policy_misread,yes
+A-0142,A04,prio-category,Applicant and children are fleeing family violence,DFV,51,Ms K. and her two children are fleeing family violence and cannot safely return to their current address. Police attended the property on 2 February 2026.,supports,omission,yes
+A-0142,A05,prio-documentation,Support agency documented urgent safety need,letter,51,Our service has worked with Ms K. since February and can confirm that the family needs a safe address away from the former home.,supports,omission,yes
+A-0142,A06,elig-residency,Applicant states Australian citizenship and NT residence,citizen,16,I am an Australian citizen and have lived in the Northern Territory continuously since 2021.,supports,none,yes
+A-0142,A07,elig-residency,Identity document confirms Australian citizenship,citizen,12,Australian passport sighted for Ms K.; name and date of birth matched the application. No identifier was copied into this file.,supports,none,yes
+A-0142,A08,elig-property,Applicant declares no residential property,none,6,I do not own or partly own any residential property in Australia.,supports,none,yes
+A-0142,A09,elig-property,Property search returned no match,none,19,Search against the applicant's declared names returned no residential property interest in the Northern Territory register.,supports,none,yes
+A-0142,A10,elig-income,Current income statement is absent,,,,missing,omission,yes
+A-0142,A11,prio-category,GP reports anxiety following unsafe housing,anxiety,44,Ms K. reports anxiety and disrupted sleep following the family violence incident; a stable and safe home would support treatment.,supports,none,no
+A-0142,A12,prio-documentation,Support agency reports police attendance,2026-02-02,51,Police attended the property on 2 February 2026.,supports,none,yes
+A-0142,A13,prio-discretion,No discretionary exception is requested,,,,missing,none,no
+A-0142,A14,elig-income,Intake requested current income evidence,outstanding,58,Current income evidence is still outstanding; the intake team has not received an income statement or employer remittance advice.,supports,none,yes
+A-0142,A15,prio-category,Two dependent children are included,2,3,"The household includes two dependent children, Niko K. and Elia K.",supports,none,no
+E-01,E01F01,elig-former-tenancy,Previous tenancy was terminated for breach,breach,7,The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy.,against,exclusion_2yr,yes
+E-01,E01F02,elig-former-tenancy,New application was lodged within two years,2026-06-18,1,Application received on 18 June 2026 for urban priority housing in Darwin.,against,exclusion_2yr,yes
+E-01,E01F03,elig-debts,Former-tenancy debt exists,$680,8,Former-tenancy balance at exit was $680.00; a repayment arrangement remains active.,supports,policy_misread,no
+E-01,E01F04,prio-category,Applicant is at risk of homelessness,homelessness,5,The temporary room ends on 30 June 2026 and no replacement tenancy has been secured.,supports,none,yes
+E-01,E01F05,prio-documentation,Support service confirms room expiry,letter,5,We inspected the temporary room booking and confirm it ends on 30 June 2026.,supports,none,yes
+E-01,E01F06,elig-residency,Applicant is an Australian citizen living in NT,citizen,3,Australian citizenship document sighted; the applicant states continuous residence in Darwin since 2020.,supports,none,yes
+E-01,E01F07,elig-property,Applicant owns no residential property,none,4,I do not own or partly own residential property in Australia.,supports,none,yes
+E-01,E01F08,elig-income,Recent income evidence is included,present,9,"Income statement for Talen Vey, issued on 16 June 2026 by Windward Assistance Office; gross support payment $565.00 per fortnight.",supports,none,yes
+E-01,E01F09,prio-discretion,No extreme circumstance beyond ordinary priority grounds is documented,,,,missing,none,no
+E-02,E02F01,prio-category,Applicant claims imminent homelessness,claim,2,I expect to lose the room I rent on 21 August 2026 and need priority housing.,supports,missing_doc,yes
+E-02,E02F02,prio-documentation,No room notice or support letter accompanies the claim,,,,missing,missing_doc,yes
+E-02,E02F03,prio-documentation,Intake requested independent supporting documentation,request,6,Please provide a room termination notice or a letter from a support service that confirms the date and circumstances of the move.,supports,missing_doc,yes
+E-02,E02F04,elig-residency,Applicant is an Australian citizen living in NT,citizen,3,Australian citizenship document sighted; current Darwin residence was confirmed from the utility account.,supports,none,yes
+E-02,E02F05,elig-property,Applicant declares no residential property,none,4,I do not own or partly own residential property in Australia.,supports,none,yes
+E-02,E02F06,elig-income,Current income evidence is present,present,5,"Income statement for Sera Len, issued on 3 August 2026 by Windward Assistance Office; gross support payment $610.00 per fortnight.",supports,none,yes
+E-02,E02F07,elig-debts,No CEO Housing debt is recorded,none,7,The account search returned no debt owed to the CEO (Housing) for this applicant.,supports,none,no
+E-02,E02F08,elig-former-tenancy,No former social housing tenancy is recorded,none,8,No former public or community housing tenancy was identified for this applicant.,supports,none,no
+E-02,E02F09,prio-discretion,No extreme circumstance is described,,,,missing,none,no
+E-02,E02F10,prio-documentation,Applicant has no written notice,absent,9,I have not received a notice to vacate.,supports,missing_doc,yes
+E-02,E02F11,prio-category,Application is for one adult,1,1,The application seeks urban housing in Darwin for one adult and asks for priority on the basis of a room tenancy expected to end.,supports,none,no
+E-03,E03F01,elig-property,Applicant jointly owns an inaccessible dwelling,half-interest,4,"Title search shows a half interest in a residential dwelling at Marlow Creek, outside Darwin.",against,discretion,yes
+E-03,E03F02,elig-property,Dwelling cannot currently be occupied,uninhabitable,7,The dwelling is unsafe to occupy because the entrance and wet areas cannot be used with the applicant's current mobility needs.,supports,discretion,yes
+E-03,E03F03,prio-category,GP documents serious medical need,medical,6,The applicant now uses a wheelchair and needs step-free access to sleeping and bathing areas.,supports,none,yes
+E-03,E03F04,prio-documentation,Medical letter supports the urgent housing request,letter,6,Delay in accessible accommodation would increase the risk of injury during transfers.,supports,none,yes
+E-03,E03F05,prio-discretion,Applicant asks for an extreme-situation assessment,request,9,Please refer this unusual property and medical situation to a manager for a documented discretionary decision.,supports,discretion,yes
+E-03,E03F06,prio-discretion,No authorised discretionary decision is in the file,absent,12,No authorised discretionary decision is attached.,supports,discretion,yes
+E-03,E03F07,elig-residency,Applicant is an Australian citizen resident in NT,citizen,3,Australian citizenship document sighted; Darwin residence confirmed by a current utility account.,supports,none,yes
+E-03,E03F08,elig-income,Current income evidence is in the file,present,5,"Income statement for Oren Vale, issued on 8 July 2026 by Windward Assistance Office; gross support payment $590.00 per fortnight.",supports,none,yes
+E-03,E03F09,elig-debts,No CEO Housing debt is recorded,none,10,Account search found no debt owed to the CEO (Housing).,supports,none,no
+E-03,E03F10,elig-former-tenancy,No former social housing tenancy is recorded,none,11,No previous social housing tenancy was identified for this applicant.,supports,none,no
+E-03,E03F11,prio-category,Temporary room originally available through 12 July,2026-07-12,8,We have arranged a temporary accessible room for Oren Vale through 12 July 2026.,stale,stale_value,no
+E-03,E03F12,prio-category,Temporary room was extended through 24 July,2026-07-24,12,"The temporary room was extended through 24 July 2026, but no permanent accessible accommodation exists.",contradicts,contradiction,no
+H-01,F01,elig-residency,Applicant is an Australian citizen and currently lives in Darwin,Australian citizen; Darwin resident,4,The current Australian passport was sighted and the applicant's Darwin residence was confirmed from the accommodation record.,supports,none,yes
+H-01,F02,elig-property,Applicant declares no residential property interest,none,3,I do not own or partly own residential property in Australia.,supports,none,yes
+H-01,F03,elig-income,February payslip records an old weekly gross amount,$492 gross weekly in February 2026,5,Gross pay for this week: $492.00.,stale,stale_value,yes
+H-01,F04,elig-income,Former employer confirms that employment ended in July 2026,employment ended 2026-07-17,6,Elena Verran's casual employment with Quayline Events ended on 17 July 2026.,against,stale_value,yes
+H-01,F05,elig-income,Applicant reports irregular current earnings without a current statement,irregular earnings,3,My present casual shifts vary and I have not enclosed a current earnings statement.,supports,none,yes
+H-01,F06,elig-income,Current official income and asset evidence is absent,missing current income and asset proof,,,missing,none,yes
+H-01,F07,elig-debts,Former housing ledger shows an outstanding balance,$865.40,14,Balance owing at close: $865.40.,supports,none,yes
+H-01,F08,elig-former-tenancy,Application says applicant has not previously held social housing,declared no,2,Previously held a social housing tenancy: No.,contradicts,contradiction,yes
+H-01,F09,elig-former-tenancy,Former provider records a social housing tenancy,tenancy 2024-03-04 to 2025-12-19,12,Tenancy commenced 4 March 2024 and ended 19 December 2025.,supports,contradiction,yes
+H-01,F10,elig-former-tenancy,Former tenancy ended by agreed surrender and was not terminated for breach,agreed surrender; no breach termination,12,End reason: agreed surrender of tenancy; no termination for breach was recorded.,supports,exclusion_2yr,yes
+H-01,F11,elig-former-tenancy,Exit inspection did not establish a breach,fair wear; no breach finding,13,No breach finding was entered on the tenancy record.,supports,exclusion_2yr,yes
+H-01,F12,prio-category,Specialist service records domestic and family violence by former partner,domestic and family violence,15,Elena described intimidation and repeated uninvited visits by her former partner after separation.,supports,none,yes
+H-01,F13,prio-category,Short stay accommodation ends soon,departure 2026-10-09,8,The booked room is available through 9 October 2026 only; no extension is currently available.,supports,none,yes
+H-01,F14,prio-documentation,Specialist DFV service documents safety and housing need,service letter,15,"In our assessment, a settled address separate from the former partner is needed for Elena's safety and continuity of care.",supports,none,yes
+H-01,F15,prio-documentation,No domestic violence order was available to the applicant,no order,17,I have not obtained a domestic violence order.,supports,missing_doc,yes
+H-01,F16,prio-discretion,Applicant makes no request for a discretionary exception,no exception request,,,missing,none,no

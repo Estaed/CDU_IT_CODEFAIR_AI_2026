@@ -1,0 +1,718 @@
+{
+ "candidates": {
+  "elig-debts": [
+   "E-01:p8:2",
+   "E-01:p8:3",
+   "E-01:p2:3",
+   "E-01:p2:1"
+  ],
+  "elig-former-tenancy": [
+   "E-01:p7:1",
+   "E-01:p10:4",
+   "E-01:p12:1",
+   "E-01:p2:1",
+   "E-01:p11:1"
+  ],
+  "elig-income": [
+   "E-01:p11:1",
+   "E-01:p9:2",
+   "E-01:p9:4",
+   "E-01:p9:3",
+   "E-01:p9:5"
+  ],
+  "elig-property": [
+   "E-01:p4:1",
+   "E-01:p4:3",
+   "E-01:p4:6"
+  ],
+  "elig-residency": [
+   "E-01:p3:1",
+   "E-01:p3:3"
+  ],
+  "prio-category": [
+   "E-01:p6:1",
+   "E-01:p5:1",
+   "E-01:p6:3",
+   "E-01:p5:2",
+   "E-01:p12:1"
+  ],
+  "prio-discretion": [
+   "E-01:p12:1",
+   "E-01:p7:1",
+   "E-01:p7:3",
+   "E-01:p6:1",
+   "E-01:p5:1"
+  ],
+  "prio-documentation": [
+   "E-01:p5:2",
+   "E-01:p5:6",
+   "E-01:p11:1",
+   "E-01:p5:3",
+   "E-01:p5:1"
+  ]
+ },
+ "model": "jev-1.13.0",
+ "top": 5,
+ "verdicts": [
+  {
+   "a": "E-01:p3:1",
+   "b": "E-01:p3:3",
+   "clause_id": "elig-residency",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p4:1",
+   "b": "E-01:p4:3",
+   "clause_id": "elig-property",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p4:1",
+   "b": "E-01:p4:6",
+   "clause_id": "elig-property",
+   "probabilities": {
+    "agree": 0.98,
+    "contradict": 0.0,
+    "unrelated": 0.02
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p4:3",
+   "b": "E-01:p4:6",
+   "clause_id": "elig-property",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.0,
+    "unrelated": 0.01
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:2",
+   "b": "E-01:p9:3",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:2",
+   "b": "E-01:p9:4",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:2",
+   "b": "E-01:p9:5",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:2",
+   "b": "E-01:p11:1",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:3",
+   "b": "E-01:p9:4",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:3",
+   "b": "E-01:p9:5",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:3",
+   "b": "E-01:p11:1",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.01,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:4",
+   "b": "E-01:p9:5",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:4",
+   "b": "E-01:p11:1",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.01,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p9:5",
+   "b": "E-01:p11:1",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p2:1",
+   "b": "E-01:p2:3",
+   "clause_id": "elig-debts",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.01,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p8:2",
+   "b": "E-01:p2:1",
+   "clause_id": "elig-debts",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p8:2",
+   "b": "E-01:p2:3",
+   "clause_id": "elig-debts",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p8:2",
+   "b": "E-01:p8:3",
+   "clause_id": "elig-debts",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.01,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p8:3",
+   "b": "E-01:p2:1",
+   "clause_id": "elig-debts",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p8:3",
+   "b": "E-01:p2:3",
+   "clause_id": "elig-debts",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p2:1",
+   "b": "E-01:p10:4",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 0.34,
+    "contradict": 0.66,
+    "unrelated": 0.0
+   },
+   "verdict": "contradict"
+  },
+  {
+   "a": "E-01:p2:1",
+   "b": "E-01:p11:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p2:1",
+   "b": "E-01:p12:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 0.87,
+    "contradict": 0.13,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p2:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 0.75,
+    "contradict": 0.24,
+    "unrelated": 0.01
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p10:4",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p11:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 0.97,
+    "contradict": 0.03,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p12:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p10:4",
+   "b": "E-01:p11:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.0,
+    "unrelated": 0.01
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p10:4",
+   "b": "E-01:p12:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p11:1",
+   "b": "E-01:p12:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p5:2",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p6:1",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p6:3",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.01,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 0.97,
+    "contradict": 0.01,
+    "unrelated": 0.02
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:2",
+   "b": "E-01:p6:1",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:2",
+   "b": "E-01:p6:3",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:2",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 0.97,
+    "contradict": 0.01,
+    "unrelated": 0.02
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p6:1",
+   "b": "E-01:p6:3",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p6:1",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p6:3",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 0.99,
+    "contradict": 0.01,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p5:2",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p5:3",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 0.98,
+    "contradict": 0.0,
+    "unrelated": 0.02
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p5:6",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p11:1",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 0.98,
+    "contradict": 0.02,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:2",
+   "b": "E-01:p5:3",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 0.97,
+    "contradict": 0.0,
+    "unrelated": 0.03
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:2",
+   "b": "E-01:p5:6",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:2",
+   "b": "E-01:p11:1",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 0.94,
+    "contradict": 0.01,
+    "unrelated": 0.05
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:3",
+   "b": "E-01:p5:6",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:3",
+   "b": "E-01:p11:1",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 0.98,
+    "contradict": 0.02,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:6",
+   "b": "E-01:p11:1",
+   "clause_id": "prio-documentation",
+   "probabilities": {
+    "agree": 0.91,
+    "contradict": 0.01,
+    "unrelated": 0.08
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p6:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p5:1",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 0.98,
+    "contradict": 0.01,
+    "unrelated": 0.01
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p6:1",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p5:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 0.86,
+    "contradict": 0.01,
+    "unrelated": 0.13
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p6:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 0.95,
+    "contradict": 0.0,
+    "unrelated": 0.05
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p7:3",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:3",
+   "b": "E-01:p5:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 0.86,
+    "contradict": 0.02,
+    "unrelated": 0.12
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:3",
+   "b": "E-01:p6:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 0.91,
+    "contradict": 0.0,
+    "unrelated": 0.09
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:3",
+   "b": "E-01:p12:1",
+   "clause_id": "prio-discretion",
+   "probabilities": {
+    "agree": 1.0,
+    "contradict": 0.0,
+    "unrelated": 0.0
+   },
+   "verdict": "agree"
+  }
+ ]
+}

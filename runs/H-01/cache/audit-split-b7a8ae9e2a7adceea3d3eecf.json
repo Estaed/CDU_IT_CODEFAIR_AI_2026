@@ -1,0 +1,397 @@
+{
+ "key": "b7a8ae9e2a7adceea3d3eecf23a7e7a8792ae737df113b51f75cd1023cc7a504",
+ "kind": "audit-split",
+ "response": {
+  "cost_usd": 0.11320799999999999,
+  "input_tokens": 4602,
+  "model": "claude-opus-5-5",
+  "output": {
+   "sentences": [
+    {
+     "claims": [
+      "Elena Verran made a social housing application.",
+      "Elena Verran's social housing application is with the Northbank Housing Access Office.",
+      "Elena Verran's social housing application is dated 2 October 2026."
+     ],
+     "sentence_id": "s01"
+    },
+    {
+     "claims": [
+      "Elena Verran's application file is a 17-page bundle."
+     ],
+     "sentence_id": "s02"
+    },
+    {
+     "claims": [
+      "The bundle contains the application.",
+      "The bundle contains the identity check.",
+      "The bundle contains employment records.",
+      "The bundle contains tenancy records.",
+      "The bundle contains debt records.",
+      "The bundle contains support-service letters.",
+      "The bundle contains a clinic note.",
+      "The bundle contains a statutory declaration."
+     ],
+     "sentence_id": "s03"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s04"
+    },
+    {
+     "claims": [
+      "Elena Verran was born 18 June 1990.",
+      "Elena Verran is a single adult.",
+      "Elena Verran has no dependants."
+     ],
+     "sentence_id": "s05"
+    },
+    {
+     "claims": [
+      "Elena Verran wants housing in urban Darwin.",
+      "Elena Verran wants housing near the central bus routes.",
+      "Elena Verran wants housing near Coralbank Clinic."
+     ],
+     "sentence_id": "s06"
+    },
+    {
+     "claims": [
+      "Elena Verran asks for priority on two grounds.",
+      "Elena Verran asks for priority on the ground of domestic or family violence.",
+      "Elena Verran asks for priority on the ground of risk of homelessness."
+     ],
+     "sentence_id": "s07"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s08"
+    },
+    {
+     "claims": [
+      "In August 2026 Elena Verran left a shared private tenancy.",
+      "Elena Verran's shared private tenancy was with Willowbend Rentals.",
+      "Elena Verran shared the private tenancy with her former partner, Jonah Verran."
+     ],
+     "sentence_id": "s09"
+    },
+    {
+     "claims": [
+      "Elena Verran returned her keys to the shared private tenancy on 19 August.",
+      "Elena Verran does not intend to go back to the shared private tenancy."
+     ],
+     "sentence_id": "s10"
+    },
+    {
+     "claims": [
+      "Since 22 August Elena Verran has stayed at Tidebend Lodge.",
+      "Tidebend Lodge is a short-stay room.",
+      "Elena Verran's room at Tidebend Lodge was arranged by Larkhaven Family Service.",
+      "Elena Verran's room at Tidebend Lodge is paid for by Larkhaven Family Service."
+     ],
+     "sentence_id": "s11"
+    },
+    {
+     "claims": [
+      "Elena Verran's Tidebend Lodge booking ends 9 October.",
+      "Elena Verran must check out of Tidebend Lodge by the morning of 10 October."
+     ],
+     "sentence_id": "s12"
+    },
+    {
+     "claims": [
+      "Elena Verran's Tidebend Lodge booking cannot be extended.",
+      "No replacement for Elena Verran's Tidebend Lodge booking has been found."
+     ],
+     "sentence_id": "s13"
+    },
+    {
+     "claims": [
+      "Elena Verran's other housing options have failed."
+     ],
+     "sentence_id": "s14"
+    },
+    {
+     "claims": [
+      "A room share for Elena Verran was withdrawn.",
+      "The room share was withdrawn after Elena Verran's former partner learned the address."
+     ],
+     "sentence_id": "s15"
+    },
+    {
+     "claims": [
+      "Two private rentals were unaffordable for Elena Verran."
+     ],
+     "sentence_id": "s16"
+    },
+    {
+     "claims": [
+      "Priya Mellen is Elena Verran's cousin.",
+      "Priya Mellen can store Elena Verran's bags.",
+      "Priya Mellen cannot house Elena Verran."
+     ],
+     "sentence_id": "s17"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s18"
+    },
+    {
+     "claims": [
+      "Larkhaven's intake of Elena Verran took place on 22 August.",
+      "Larkhaven's intake recorded unwanted visits after the separation.",
+      "Larkhaven's intake recorded unwanted messages after the separation.",
+      "Larkhaven's intake recorded the former partner waiting near Elena Verran's workplace twice."
+     ],
+     "sentence_id": "s19"
+    },
+    {
+     "claims": [
+      "Elena Verran has no domestic violence order.",
+      "Elena Verran declined a police referral at Larkhaven's intake."
+     ],
+     "sentence_id": "s20"
+    },
+    {
+     "claims": [
+      "Larkhaven wrote a letter dated 1 October.",
+      "Larkhaven's letter of 1 October says Elena Verran needs a settled address separate from the former partner for her safety.",
+      "Larkhaven's letter of 1 October says Elena Verran needs a settled address separate from the former partner for continuity of care."
+     ],
+     "sentence_id": "s21"
+    },
+    {
+     "claims": [
+      "Elena Verran's file has contact restrictions."
+     ],
+     "sentence_id": "s22"
+    },
+    {
+     "claims": [
+      "Correspondence to Elena Verran must be sent via Larkhaven only.",
+      "Correspondence to Elena Verran must never be sent to the former shared address."
+     ],
+     "sentence_id": "s23"
+    },
+    {
+     "claims": [
+      "Elena Verran's location must not be disclosed.",
+      "The Tidebend Lodge details must not be disclosed."
+     ],
+     "sentence_id": "s24"
+    },
+    {
+     "claims": [
+      "Staff must check with Elena Verran before leaving voicemails that name services."
+     ],
+     "sentence_id": "s25"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s26"
+    },
+    {
+     "claims": [
+      "On 2 October, intake worker Sera Nolin sighted Elena Verran's passport in person.",
+      "Elena Verran's passport is a current Australian passport."
+     ],
+     "sentence_id": "s27"
+    },
+    {
+     "claims": [
+      "Elena Verran's Darwin residence was confirmed."
+     ],
+     "sentence_id": "s28"
+    },
+    {
+     "claims": [
+      "No document number was recorded for Elena Verran's passport."
+     ],
+     "sentence_id": "s29"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s30"
+    },
+    {
+     "claims": [
+      "Elena Verran's casual work with Quayline Events ended 17 July 2026.",
+      "Elena Verran's casual work with Quayline Events ended with no disciplinary issue."
+     ],
+     "sentence_id": "s31"
+    },
+    {
+     "claims": [
+      "The only payslip supplied by Elena Verran is from Quayline.",
+      "The Quayline payslip is for the week of 21–27 February 2026.",
+      "The Quayline payslip shows 20 hours.",
+      "The Quayline payslip shows $492 gross.",
+      "The Quayline payslip shows $454 net."
+     ],
+     "sentence_id": "s32"
+    },
+    {
+     "claims": [
+      "The Quayline payslip does not reflect Elena Verran's current income."
+     ],
+     "sentence_id": "s33"
+    },
+    {
+     "claims": [
+      "Elena Verran now works irregular casual event shifts."
+     ],
+     "sentence_id": "s34"
+    },
+    {
+     "claims": [
+      "No current earnings statement has been provided yet by Elena Verran.",
+      "Elena Verran says she will request a current earnings statement."
+     ],
+     "sentence_id": "s35"
+    },
+    {
+     "claims": [
+      "Elena Verran's assets are personal items and a small bank balance."
+     ],
+     "sentence_id": "s36"
+    },
+    {
+     "claims": [
+      "Elena Verran owns no property."
+     ],
+     "sentence_id": "s37"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s38"
+    },
+    {
+     "claims": [
+      "Elena Verran held a social housing tenancy with Marigold Housing Cooperative.",
+      "Elena Verran's Marigold Housing Cooperative tenancy ran from 4 March 2024 to 19 December 2025."
+     ],
+     "sentence_id": "s39"
+    },
+    {
+     "claims": [
+      "Elena Verran's Marigold tenancy ended by agreed surrender.",
+      "No breach was recorded for Elena Verran's Marigold tenancy.",
+      "No termination was recorded for Elena Verran's Marigold tenancy.",
+      "No antisocial behaviour was recorded for Elena Verran's Marigold tenancy."
+     ],
+     "sentence_id": "s40"
+    },
+    {
+     "claims": [
+      "Elena Verran's Marigold closing balance is $865.40."
+     ],
+     "sentence_id": "s41"
+    },
+    {
+     "claims": [
+      "$615.40 of Elena Verran's Marigold closing balance is a cleaning charge.",
+      "Elena Verran disputes the $615.40 cleaning charge.",
+      "The $615.40 cleaning charge is under review."
+     ],
+     "sentence_id": "s42"
+    },
+    {
+     "claims": [
+      "Elena Verran has requested photographs for the cleaning charge.",
+      "Elena Verran has requested an itemised account for the cleaning charge."
+     ],
+     "sentence_id": "s43"
+    },
+    {
+     "claims": [
+      "$250.00 of Elena Verran's Marigold closing balance is an earlier carried-forward charge."
+     ],
+     "sentence_id": "s44"
+    },
+    {
+     "claims": [
+      "Elena Verran's Marigold account is not with a collection agency."
+     ],
+     "sentence_id": "s45"
+    },
+    {
+     "claims": [
+      "Elena Verran wants a written breakdown of the Marigold balance before agreeing to any repayment."
+     ],
+     "sentence_id": "s46"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s47"
+    },
+    {
+     "claims": [
+      "Coralbank Clinic wrote a note dated 28 September.",
+      "Coralbank Clinic's note says Elena Verran is being treated for sleep disruption.",
+      "Coralbank Clinic's note says Elena Verran is being treated for anxiety.",
+      "Coralbank Clinic's note says Elena Verran has a follow-up appointment in mid-October."
+     ],
+     "sentence_id": "s48"
+    },
+    {
+     "claims": [
+      "Stable housing would help Elena Verran keep appointments.",
+      "Stable housing would help Elena Verran store medication safely."
+     ],
+     "sentence_id": "s49"
+    },
+    {
+     "claims": [
+      "Elena Verran requires no modified dwelling."
+     ],
+     "sentence_id": "s50"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s51"
+    },
+    {
+     "claims": [
+      "Page 2 of the application answers \"Previously held a social housing tenancy: No.\"",
+      "The Marigold records on page 12 confirm Elena Verran held a prior social housing tenancy.",
+      "Elena Verran's own declaration on page 17 confirms she held a prior social housing tenancy.",
+      "Page 2's answer about a previous social housing tenancy is inconsistent with the Marigold records and Elena Verran's declaration."
+     ],
+     "sentence_id": "s52"
+    },
+    {
+     "claims": [
+      "The application answers \"Previously applied for social housing: No.\"",
+      "The answer \"Previously applied for social housing: No\" may need checking."
+     ],
+     "sentence_id": "s53"
+    },
+    {
+     "claims": [
+      "There is no proof of Elena Verran's current income in the file."
+     ],
+     "sentence_id": "s54"
+    },
+    {
+     "claims": [
+      "The payslip in the file comes from Elena Verran's former employer."
+     ],
+     "sentence_id": "s55"
+    },
+    {
+     "claims": [
+      "Elena Verran's accommodation runs out in about a week."
+     ],
+     "sentence_id": "s56"
+    },
+    {
+     "claims": [
+      "Larkhaven's next review with Elena Verran is 6 October."
+     ],
+     "sentence_id": "s57"
+    }
+   ]
+  },
+  "output_tokens": 3820,
+  "seconds": 30.5
+ }
+}

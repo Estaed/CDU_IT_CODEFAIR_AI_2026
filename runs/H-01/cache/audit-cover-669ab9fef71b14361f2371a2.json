@@ -1,0 +1,119 @@
+{
+ "key": "669ab9fef71b14361f2371a23452d503fa030ca19f8dc318f615b3f433f8e12f",
+ "kind": "audit-cover",
+ "response": {
+  "cost_usd": 0.062076000000000006,
+  "input_tokens": 5133,
+  "model": "claude-opus-5-5",
+  "output": {
+   "facts": [
+    {
+     "fact_id": "c01",
+     "stated": true
+    },
+    {
+     "fact_id": "c02",
+     "stated": true
+    },
+    {
+     "fact_id": "c03",
+     "stated": true
+    },
+    {
+     "fact_id": "c05",
+     "stated": false
+    },
+    {
+     "fact_id": "c06",
+     "stated": true
+    },
+    {
+     "fact_id": "c07",
+     "stated": true
+    },
+    {
+     "fact_id": "c08",
+     "stated": true
+    },
+    {
+     "fact_id": "c10",
+     "stated": false
+    },
+    {
+     "fact_id": "c13",
+     "stated": true
+    },
+    {
+     "fact_id": "c16",
+     "stated": false
+    },
+    {
+     "fact_id": "c17",
+     "stated": true
+    },
+    {
+     "fact_id": "c19",
+     "stated": true
+    },
+    {
+     "fact_id": "c20",
+     "stated": false
+    },
+    {
+     "fact_id": "c21",
+     "stated": false
+    },
+    {
+     "fact_id": "c23",
+     "stated": true
+    },
+    {
+     "fact_id": "c24",
+     "stated": true
+    },
+    {
+     "fact_id": "c25",
+     "stated": true
+    },
+    {
+     "fact_id": "c26",
+     "stated": true
+    },
+    {
+     "fact_id": "c27",
+     "stated": true
+    },
+    {
+     "fact_id": "c28",
+     "stated": true
+    },
+    {
+     "fact_id": "c29",
+     "stated": true
+    },
+    {
+     "fact_id": "c30",
+     "stated": true
+    },
+    {
+     "fact_id": "c31",
+     "stated": true
+    },
+    {
+     "fact_id": "c33",
+     "stated": false
+    },
+    {
+     "fact_id": "c34",
+     "stated": true
+    },
+    {
+     "fact_id": "c37",
+     "stated": true
+    }
+   ]
+  },
+  "output_tokens": 1051,
+  "seconds": 14.1
+ }
+}

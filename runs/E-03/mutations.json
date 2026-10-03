@@ -1,0 +1,516 @@
+{
+ "case_id": "E-03",
+ "claims": [
+  {
+   "checker": {
+    "claim_id": "m01",
+    "probability": 1.0,
+    "supports": 0.98,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "Title search shows a half interest in a residential dwelling at Marlow Creek, outside Darwin.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p1:3",
+     "quote": "A half interest in another dwelling is declared.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Oren Vale has a half interest in a residential dwelling.",
+   "claim_id": "m01",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m02",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:1",
+     "quote": "The dwelling is unsafe to occupy because the entrance and wet areas cannot be used with the applicant's current mobility needs.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:4",
+     "quote": "A wheelchair cannot pass into the bathing area as it stands.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The dwelling cannot be used safely with the applicant's current mobility needs.",
+   "claim_id": "m02",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m03",
+    "probability": 0.76,
+    "supports": 0.08,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p6:1",
+     "quote": "The applicant now uses a wheelchair and needs step-free access to sleeping and bathing areas.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A GP says the applicant now uses a wheelchair.",
+   "claim_id": "m03",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": false,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m04",
+    "probability": 0.25,
+    "supports": 0.24,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p6:2",
+     "quote": "Delay in accessible accommodation would increase the risk of injury during transfers.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The GP says delay in accessible accommodation would increase injury risk.",
+   "claim_id": "m04",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m05",
+    "probability": 0.94,
+    "supports": 0.82,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p9:1",
+     "quote": "Please refer this unusual property and medical situation to a manager for a documented discretionary decision.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p9:4",
+     "quote": "Oren asks a manager to consider the property interest alongside the medical and access reports and to provide the decision in writing.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant asked for a manager's documented discretionary decision.",
+   "claim_id": "m05",
+   "clause_id": "prio-discretion",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m06",
+    "probability": 1.0,
+    "supports": 0.99,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:1",
+     "quote": "No authorised discretionary decision is attached.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:3",
+     "quote": "authorised decision field blank",
+     "quote_found": true
+    }
+   ],
+   "claim": "No authorised discretionary decision is attached to the file.",
+   "claim_id": "m06",
+   "clause_id": "prio-discretion",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m07",
+    "probability": 0.54,
+    "supports": 0.22,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p5:2",
+     "quote": "Income statement for Oren Vale, issued on 8 July 2026 by Windward Assistance Office; gross support payment $590.00 per fortnight.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Current income evidence was received.",
+   "claim_id": "m07",
+   "clause_id": "elig-income",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m08",
+    "probability": 1.0,
+    "supports": 0.98,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p11:1",
+     "quote": "No previous social housing tenancy was identified for this applicant.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p11:3",
+     "quote": "The housing-history register returned no former public or community tenancy under Oren's declared name.",
+     "quote_found": true
+    }
+   ],
+   "claim": "No former social housing tenancy was identified.",
+   "claim_id": "m08",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m09",
+    "probability": 1.0,
+    "supports": 0.01,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "Title search shows a half interest in a residential dwelling at Marlow Creek, outside Darwin.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "Co-owner interest: remaining half.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Oren Vale has a quarter interest in the residential dwelling.",
+   "claim_id": "m09",
+   "clause_id": "elig-property",
+   "contradicted_by": [
+    "E-03:p7:1",
+    "E-03:p7:4"
+   ],
+   "required": true,
+   "status": "contradicted",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m10",
+    "probability": 0.68,
+    "supports": 0.03,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p6:3",
+     "quote": "Paperbark Community Practice | Clinical correspondence E03-06 | Consultation 2026-07-08",
+     "quote_found": true
+    }
+   ],
+   "claim": "The GP mobility note was issued on 8 July 2025.",
+   "claim_id": "m10",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": false,
+   "status": "quote_not_found",
+   "values_missing": [
+    "8 July 2025"
+   ]
+  },
+  {
+   "checker": {
+    "claim_id": "m11",
+    "probability": 1.0,
+    "supports": 0.01,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:1",
+     "quote": "The dwelling is unsafe to occupy because the entrance and wet areas cannot be used with the applicant's current mobility needs.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The dwelling is safe to occupy with the applicant's current mobility needs.",
+   "claim_id": "m11",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m12",
+    "probability": 0.99,
+    "supports": 0.09,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p8:1",
+     "quote": "We have arranged a temporary accessible room for Oren Vale through 12 July 2026.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:1",
+     "quote": "The temporary room was extended through 24 July 2026, but no permanent accessible accommodation exists.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The temporary accessible room still ends on 12 July 2026.",
+   "claim_id": "m12",
+   "clause_id": "prio-category",
+   "contradicted_by": [],
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m13",
+    "probability": 0.95,
+    "supports": 0.03,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p9:4",
+     "quote": "Oren asks a manager to consider the property interest alongside the medical and access reports and to provide the decision in writing.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p9:7",
+     "quote": "Yours sincerely, Oren Vale.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The GP, rather than the applicant, asked for a manager's discretionary decision.",
+   "claim_id": "m13",
+   "clause_id": "prio-discretion",
+   "contradicted_by": [],
+   "required": false,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m14",
+    "probability": 1.0,
+    "supports": 0.01,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "Title search shows a half interest in a residential dwelling at Marlow Creek, outside Darwin.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p1:1",
+     "quote": "The application declares a half interest in a dwelling that Oren cannot use with current mobility needs and requests consideration of the medical circumstances.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The file does not mention any residential property interest.",
+   "claim_id": "m14",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m15",
+    "probability": 0.65,
+    "supports": 0.01,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:1",
+     "quote": "No authorised discretionary decision is attached.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The presence of a medical note automatically waives all income and property requirements.",
+   "claim_id": "m15",
+   "clause_id": "other",
+   "contradicted_by": [],
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  }
+ ],
+ "labels": [
+  {
+   "claim": "Oren Vale has a half interest in a residential dwelling.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F01",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The dwelling cannot be used safely with the applicant's current mobility needs.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F02",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "A GP says the applicant now uses a wheelchair.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F03",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The GP says delay in accessible accommodation would increase injury risk.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F04",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The applicant asked for a manager's documented discretionary decision.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F05",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "No authorised discretionary decision is attached to the file.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F06",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "Current income evidence was received.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F08",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "No former social housing tenancy was identified.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E03F10",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "Oren Vale has a quarter interest in the residential dwelling.",
+   "label": "contradicted",
+   "mutation_type": "number_swap",
+   "source_fact_id": "E03F01",
+   "summary_id": "e03-number"
+  },
+  {
+   "claim": "The GP mobility note was issued on 8 July 2025.",
+   "label": "contradicted",
+   "mutation_type": "date_swap",
+   "source_fact_id": "E03F03",
+   "summary_id": "e03-date"
+  },
+  {
+   "claim": "The dwelling is safe to occupy with the applicant's current mobility needs.",
+   "label": "contradicted",
+   "mutation_type": "negation",
+   "source_fact_id": "E03F02",
+   "summary_id": "e03-negation"
+  },
+  {
+   "claim": "The temporary accessible room still ends on 12 July 2026.",
+   "label": "contradicted",
+   "mutation_type": "stale_value",
+   "source_fact_id": "E03F11",
+   "summary_id": "e03-stale"
+  },
+  {
+   "claim": "The GP, rather than the applicant, asked for a manager's discretionary decision.",
+   "label": "contradicted",
+   "mutation_type": "entity_swap",
+   "source_fact_id": "E03F05",
+   "summary_id": "e03-entity"
+  },
+  {
+   "claim": "The file does not mention any residential property interest.",
+   "label": "contradicted",
+   "mutation_type": "omission",
+   "source_fact_id": "E03F01",
+   "summary_id": "e03-omission"
+  },
+  {
+   "claim": "The presence of a medical note automatically waives all income and property requirements.",
+   "label": "contradicted",
+   "mutation_type": "policy_misread",
+   "source_fact_id": "E03F04",
+   "summary_id": "e03-policy"
+  }
+ ]
+}

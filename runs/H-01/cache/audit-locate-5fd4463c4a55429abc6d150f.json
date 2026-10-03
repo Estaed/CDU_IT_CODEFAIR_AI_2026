@@ -1,0 +1,1292 @@
+{
+ "key": "5fd4463c4a55429abc6d150f4ceb05affbffa43f65c450ada85d83ed95ce36bf",
+ "kind": "audit-locate",
+ "response": {
+  "cost_usd": 0.41157440000000006,
+  "input_tokens": 15690,
+  "model": "claude-opus-5-5",
+  "output": {
+   "claims": [
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Northbank Housing Access Office — application received 2 October 2026."
+      }
+     ],
+     "claim_id": "a01",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Northbank Housing Access Office — application received 2 October 2026."
+      }
+     ],
+     "claim_id": "a02",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Northbank Housing Access Office — application received 2 October 2026."
+      },
+      {
+       "passage_id": "H-01:p1:3",
+       "quote": "Signed on 2 October 2026."
+      }
+     ],
+     "claim_id": "a03",
+     "clause_id": "other"
+    },
+    {
+     "citations": [],
+     "claim_id": "a04",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Northbank Housing Access Office — application received 2 October 2026."
+      }
+     ],
+     "claim_id": "a05",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p4:1",
+       "quote": "Verification completed in person at the service counter."
+      }
+     ],
+     "claim_id": "a06",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p5:1",
+       "quote": "Pay period: 21 February to 27 February 2026."
+      },
+      {
+       "passage_id": "H-01:p6:2",
+       "quote": "Elena Verran's casual employment with Quayline Events ended on 17 July 2026."
+      }
+     ],
+     "claim_id": "a07",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:1",
+       "quote": "Tenancy commenced 4 March 2024 and ended 19 December 2025."
+      },
+      {
+       "passage_id": "H-01:p13:1",
+       "quote": "Inspection followed the agreed surrender recorded on 19 December 2025."
+      },
+      {
+       "passage_id": "H-01:p7:1",
+       "quote": "Re: shared tenancy in Darwin."
+      }
+     ],
+     "claim_id": "a08",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:2",
+       "quote": "Balance owing at close: $865.40."
+      }
+     ],
+     "claim_id": "a09",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p15:1",
+       "quote": "Elena has consented to this letter being included with her housing application."
+      },
+      {
+       "passage_id": "H-01:p15:4",
+       "quote": "Signed: Nadia Fenn, family safety worker, Larkhaven Family Service. Dated 1 October 2026."
+      }
+     ],
+     "claim_id": "a10",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:4",
+       "quote": "Signed: Dr Mira Pell, treating practitioner, Coralbank Clinic. Issued 28 September 2026."
+      }
+     ],
+     "claim_id": "a11",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p17:4",
+       "quote": "Declared by Elena Verran on 2 October 2026 before Talia Wren, authorised witness, Darwin."
+      }
+     ],
+     "claim_id": "a12",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Date of birth: 18 June 1990."
+      }
+     ],
+     "claim_id": "a13",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:2",
+       "quote": "Current household: one adult."
+      },
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Household members seeking accommodation: Elena Verran only."
+      }
+     ],
+     "claim_id": "a14",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:2",
+       "quote": "No dependent children or other proposed occupiers."
+      }
+     ],
+     "claim_id": "a15",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Requested area: urban Darwin, with access to the central bus routes and Coralbank Clinic."
+      }
+     ],
+     "claim_id": "a16",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Requested area: urban Darwin, with access to the central bus routes and Coralbank Clinic."
+      }
+     ],
+     "claim_id": "a17",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Requested area: urban Darwin, with access to the central bus routes and Coralbank Clinic."
+      }
+     ],
+     "claim_id": "a18",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:3",
+       "quote": "Priority consideration requested: domestic or family violence and risk of homelessness."
+      }
+     ],
+     "claim_id": "a19",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:3",
+       "quote": "Priority consideration requested: domestic or family violence and risk of homelessness."
+      }
+     ],
+     "claim_id": "a20",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:3",
+       "quote": "Priority consideration requested: domestic or family violence and risk of homelessness."
+      }
+     ],
+     "claim_id": "a21",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:2",
+       "quote": "The applicant left that address in August 2026 and does not seek to resume occupation there."
+      },
+      {
+       "passage_id": "H-01:p17:1",
+       "quote": "I left the shared private residence in August 2026 after repeated unwanted contact by my former partner."
+      }
+     ],
+     "claim_id": "a22",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p7:1",
+       "quote": "Willowbend Rentals. To Elena Verran and Jonah Verran. Re: shared tenancy in Darwin."
+      }
+     ],
+     "claim_id": "a23",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p7:1",
+       "quote": "Willowbend Rentals. To Elena Verran and Jonah Verran. Re: shared tenancy in Darwin."
+      },
+      {
+       "passage_id": "H-01:p9:2",
+       "quote": "Elena described a pattern of unwanted visits and messages after separation, including Jonah waiting near her workplace on two occasions."
+      }
+     ],
+     "claim_id": "a24",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p7:3",
+       "quote": "The agency has returned Elena's keys as received on 19 August 2026."
+      }
+     ],
+     "claim_id": "a25",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p7:2",
+       "quote": "We acknowledge Elena's written notice that she has left the premises and does not intend to resume occupation."
+      },
+      {
+       "passage_id": "H-01:p1:2",
+       "quote": "I cannot return to that household."
+      }
+     ],
+     "claim_id": "a26",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p8:1",
+       "quote": "Check-in recorded on 22 August 2026."
+      },
+      {
+       "passage_id": "H-01:p9:3",
+       "quote": "Immediate accommodation response: a short stay room was arranged at Tidebend Lodge from 22 August."
+      }
+     ],
+     "claim_id": "a27",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p8:3",
+       "quote": "This booking is short stay accommodation."
+      }
+     ],
+     "claim_id": "a28",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p8:1",
+       "quote": "Booking arranged and paid by Larkhaven Family Service."
+      },
+      {
+       "passage_id": "H-01:p15:1",
+       "quote": "We arranged and have paid for her short stay room at Tidebend Lodge."
+      }
+     ],
+     "claim_id": "a29",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p8:1",
+       "quote": "Booking arranged and paid by Larkhaven Family Service."
+      },
+      {
+       "passage_id": "H-01:p15:1",
+       "quote": "We arranged and have paid for her short stay room at Tidebend Lodge."
+      }
+     ],
+     "claim_id": "a30",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p8:2",
+       "quote": "The booked room is available through 9 October 2026 only; no extension is currently available."
+      },
+      {
+       "passage_id": "H-01:p17:1",
+       "quote": "I understand that the booking ends after 9 October 2026."
+      }
+     ],
+     "claim_id": "a31",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p8:2",
+       "quote": "Departure is due by the ordinary morning checkout time on 10 October."
+      }
+     ],
+     "claim_id": "a32",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p8:2",
+       "quote": "The booked room is available through 9 October 2026 only; no extension is currently available."
+      },
+      {
+       "passage_id": "H-01:p1:2",
+       "quote": "The room booking ends next week and the service has advised it cannot extend the booking."
+      },
+      {
+       "passage_id": "H-01:p11:3",
+       "quote": "The lodge advised that the booking could run through 9 October, with no further vacancy then showing."
+      }
+     ],
+     "claim_id": "a33",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p15:1",
+       "quote": "Our own booking records confirm that this arrangement ends after 9 October and that we have no confirmed replacement room for her."
+      },
+      {
+       "passage_id": "H-01:p17:1",
+       "quote": "I have no agreement for another room after that date."
+      },
+      {
+       "passage_id": "H-01:p1:2",
+       "quote": "I have not secured another place to stay after the booking ends."
+      }
+     ],
+     "claim_id": "a34",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:4",
+       "quote": "an enquiry about a room share was withdrawn when the address became known to the former partner"
+      },
+      {
+       "passage_id": "H-01:p1:2",
+       "quote": "I have approached two private rentals but could not meet the rent and bond requested."
+      },
+      {
+       "passage_id": "H-01:p2:4",
+       "quote": "A cousin has offered daytime storage for two bags but has no room for an overnight guest."
+      }
+     ],
+     "claim_id": "a35",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:4",
+       "quote": "an enquiry about a room share was withdrawn when the address became known to the former partner"
+      }
+     ],
+     "claim_id": "a36",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:4",
+       "quote": "an enquiry about a room share was withdrawn when the address became known to the former partner"
+      }
+     ],
+     "claim_id": "a37",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:4",
+       "quote": "two private rental inspections did not lead to an application because the advertised rents exceeded the amount Elena could reliably pay"
+      },
+      {
+       "passage_id": "H-01:p1:2",
+       "quote": "I have approached two private rentals but could not meet the rent and bond requested."
+      }
+     ],
+     "claim_id": "a38",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p10:2",
+       "quote": "Elena has asked her cousin Priya Mellen to hold spare clothing; Priya cannot provide overnight accommodation."
+      }
+     ],
+     "claim_id": "a39",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p10:2",
+       "quote": "Elena has asked her cousin Priya Mellen to hold spare clothing; Priya cannot provide overnight accommodation."
+      },
+      {
+       "passage_id": "H-01:p11:3",
+       "quote": "Elena said her cousin could keep bags but could not house her."
+      },
+      {
+       "passage_id": "H-01:p2:4",
+       "quote": "A cousin has offered daytime storage for two bags but has no room for an overnight guest."
+      }
+     ],
+     "claim_id": "a40",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p10:2",
+       "quote": "Elena has asked her cousin Priya Mellen to hold spare clothing; Priya cannot provide overnight accommodation."
+      },
+      {
+       "passage_id": "H-01:p11:3",
+       "quote": "Elena said her cousin could keep bags but could not house her."
+      },
+      {
+       "passage_id": "H-01:p15:3",
+       "quote": "The cousin named in our contact plan can hold a small amount of property but cannot provide a room."
+      }
+     ],
+     "claim_id": "a41",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p9:4",
+       "quote": "Date recorded: 22 August 2026."
+      }
+     ],
+     "claim_id": "a42",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p9:2",
+       "quote": "Elena described a pattern of unwanted visits and messages after separation, including Jonah waiting near her workplace on two occasions."
+      }
+     ],
+     "claim_id": "a43",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p9:2",
+       "quote": "Elena described a pattern of unwanted visits and messages after separation, including Jonah waiting near her workplace on two occasions."
+      }
+     ],
+     "claim_id": "a44",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p9:2",
+       "quote": "Elena described a pattern of unwanted visits and messages after separation, including Jonah waiting near her workplace on two occasions."
+      }
+     ],
+     "claim_id": "a45",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p17:2",
+       "quote": "I have not obtained a domestic violence order."
+      }
+     ],
+     "claim_id": "a46",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p9:2",
+       "quote": "She reported no injury requiring emergency care at intake and declined a police referral at that time."
+      }
+     ],
+     "claim_id": "a47",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p15:4",
+       "quote": "Signed: Nadia Fenn, family safety worker, Larkhaven Family Service. Dated 1 October 2026."
+      }
+     ],
+     "claim_id": "a48",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p15:3",
+       "quote": "In our assessment, a settled address separate from the former partner is needed for Elena's safety and continuity of care."
+      }
+     ],
+     "claim_id": "a49",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p15:3",
+       "quote": "In our assessment, a settled address separate from the former partner is needed for Elena's safety and continuity of care."
+      }
+     ],
+     "claim_id": "a50",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Elena asks that no correspondence be sent to her former shared address."
+      },
+      {
+       "passage_id": "H-01:p10:2",
+       "quote": "Workers should check with Elena before naming a service, accommodation site or appointment in a voicemail."
+      },
+      {
+       "passage_id": "H-01:p3:5",
+       "quote": "I authorise contact with the services named in the documents I supplied, subject to the contact safety directions on page one."
+      }
+     ],
+     "claim_id": "a51",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Preferred contact method: through Larkhaven Family Service while temporary accommodation continues."
+      },
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Postal correspondence may be held by that service for collection."
+      }
+     ],
+     "claim_id": "a52",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:1",
+       "quote": "Elena asks that no correspondence be sent to her former shared address."
+      },
+      {
+       "passage_id": "H-01:p4:3",
+       "quote": "The applicant requested that the former shared address not be used for correspondence."
+      }
+     ],
+     "claim_id": "a53",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p17:2",
+       "quote": "I do not consent to my former partner being told the location of the room or my safe collection point for letters."
+      },
+      {
+       "passage_id": "H-01:p7:3",
+       "quote": "The agency has been advised that disclosure of her current location would be unsafe."
+      },
+      {
+       "passage_id": "H-01:p1:3",
+       "quote": "I seek a place where I can maintain my work and clinic appointments without giving my location to my former partner."
+      }
+     ],
+     "claim_id": "a54",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p10:2",
+       "quote": "The lodge name and room details are not to be released to the former partner."
+      },
+      {
+       "passage_id": "H-01:p9:3",
+       "quote": "She did not authorise release of the lodge's room details to Jonah or his contacts."
+      },
+      {
+       "passage_id": "H-01:p15:2",
+       "quote": "She has asked us to avoid disclosing the room details beyond those needed to confirm the booking."
+      }
+     ],
+     "claim_id": "a55",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p10:2",
+       "quote": "Workers should check with Elena before naming a service, accommodation site or appointment in a voicemail."
+      }
+     ],
+     "claim_id": "a56",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p4:2",
+       "quote": "The current Australian passport was sighted and the applicant's Darwin residence was confirmed from the accommodation record."
+      },
+      {
+       "passage_id": "H-01:p4:4",
+       "quote": "Verified by: Sera Nolin, intake worker. Verification date: 2 October 2026."
+      },
+      {
+       "passage_id": "H-01:p4:1",
+       "quote": "Verification completed in person at the service counter."
+      }
+     ],
+     "claim_id": "a57",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p4:2",
+       "quote": "The current Australian passport was sighted and the applicant's Darwin residence was confirmed from the accommodation record."
+      }
+     ],
+     "claim_id": "a58",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p4:2",
+       "quote": "The current Australian passport was sighted and the applicant's Darwin residence was confirmed from the accommodation record."
+      },
+      {
+       "passage_id": "H-01:p4:3",
+       "quote": "She confirmed that she is presently sleeping in Darwin and intends to remain in Darwin while her application is considered."
+      }
+     ],
+     "claim_id": "a59",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p4:1",
+       "quote": "No document number was copied into this note or the application bundle."
+      }
+     ],
+     "claim_id": "a60",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p6:2",
+       "quote": "Elena Verran's casual employment with Quayline Events ended on 17 July 2026."
+      }
+     ],
+     "claim_id": "a61",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p6:2",
+       "quote": "The engagement ended after the winter event roster closed; this letter does not record any disciplinary matter."
+      }
+     ],
+     "claim_id": "a62",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:2",
+       "quote": "I have attached the last payslip I retained from that employer so that the employment history is clear."
+      },
+      {
+       "passage_id": "H-01:p5:1",
+       "quote": "Quayline Events. Employee: Elena Verran."
+      }
+     ],
+     "claim_id": "a63",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p5:1",
+       "quote": "Pay period: 21 February to 27 February 2026."
+      }
+     ],
+     "claim_id": "a64",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p5:2",
+       "quote": "Total paid hours: 20.00."
+      }
+     ],
+     "claim_id": "a65",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p5:2",
+       "quote": "Gross pay for this week: $492.00."
+      }
+     ],
+     "claim_id": "a66",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p5:2",
+       "quote": "Net pay: $454.00."
+      }
+     ],
+     "claim_id": "a67",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p6:3",
+       "quote": "No shifts were offered or paid after 17 July."
+      },
+      {
+       "passage_id": "H-01:p3:2",
+       "quote": "My previous employer ended its casual roster for me in July."
+      },
+      {
+       "passage_id": "H-01:p17:4",
+       "quote": "I no longer work for Quayline Events; my last shift there was in July."
+      }
+     ],
+     "claim_id": "a68",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:2",
+       "quote": "Current work: occasional shifts in events service."
+      },
+      {
+       "passage_id": "H-01:p17:4",
+       "quote": "My current work is casual and the shifts are irregular."
+      },
+      {
+       "passage_id": "H-01:p11:2",
+       "quote": "She had completed two casual shifts with a new venue coordinator, but could not yet predict the next roster."
+      }
+     ],
+     "claim_id": "a69",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:2",
+       "quote": "My present casual shifts vary and I have not enclosed a current earnings statement."
+      },
+      {
+       "passage_id": "H-01:p17:4",
+       "quote": "I will request a current earnings statement and provide it when received."
+      }
+     ],
+     "claim_id": "a70",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p17:4",
+       "quote": "I will request a current earnings statement and provide it when received."
+      },
+      {
+       "passage_id": "H-01:p3:2",
+       "quote": "I will ask the current roster coordinator for a statement of the shifts paid since August."
+      }
+     ],
+     "claim_id": "a71",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:3",
+       "quote": "Assets: ordinary clothing, personal items and a small balance in a transaction account."
+      }
+     ],
+     "claim_id": "a72",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:3",
+       "quote": "I do not own or partly own residential property in Australia."
+      },
+      {
+       "passage_id": "H-01:p3:3",
+       "quote": "I have no land, business interest, farm or investment property."
+      }
+     ],
+     "claim_id": "a73",
+     "clause_id": "elig-property"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:1",
+       "quote": "Property: social housing unit in Darwin, address withheld from this extract at the former tenant's request."
+      },
+      {
+       "passage_id": "H-01:p17:3",
+       "quote": "I previously held a tenancy with Marigold Housing Cooperative."
+      }
+     ],
+     "claim_id": "a74",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:1",
+       "quote": "Tenancy commenced 4 March 2024 and ended 19 December 2025."
+      }
+     ],
+     "claim_id": "a75",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:2",
+       "quote": "End reason: agreed surrender of tenancy; no termination for breach was recorded."
+      },
+      {
+       "passage_id": "H-01:p17:3",
+       "quote": "I surrendered it by agreement when I moved to a private shared tenancy."
+      }
+     ],
+     "claim_id": "a76",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:2",
+       "quote": "End reason: agreed surrender of tenancy; no termination for breach was recorded."
+      },
+      {
+       "passage_id": "H-01:p13:2",
+       "quote": "No breach finding was entered on the tenancy record."
+      }
+     ],
+     "claim_id": "a77",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:2",
+       "quote": "The cooperative did not issue a termination notice or apply for an order ending the tenancy."
+      }
+     ],
+     "claim_id": "a78",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:2",
+       "quote": "No allegation of antisocial behaviour appears in the closure form."
+      }
+     ],
+     "claim_id": "a79",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:2",
+       "quote": "Balance owing at close: $865.40."
+      }
+     ],
+     "claim_id": "a80",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:2",
+       "quote": "Cleaning charge entered after the exit inspection: $615.40."
+      }
+     ],
+     "claim_id": "a81",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:4",
+       "quote": "I dispute part of the cleaning charge and have asked for the inspection record."
+      },
+      {
+       "passage_id": "H-01:p13:2",
+       "quote": "The cleaning item was referred to accounts for pricing; the tenant later disputed the amount and requested photographs."
+      }
+     ],
+     "claim_id": "a82",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:2",
+       "quote": "The cleaning charge remains under review following Elena's request for the inspection photographs and itemised contractor account."
+      }
+     ],
+     "claim_id": "a83",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:2",
+       "quote": "The cleaning charge remains under review following Elena's request for the inspection photographs and itemised contractor account."
+      },
+      {
+       "passage_id": "H-01:p13:2",
+       "quote": "The cleaning item was referred to accounts for pricing; the tenant later disputed the amount and requested photographs."
+      }
+     ],
+     "claim_id": "a84",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:2",
+       "quote": "The cleaning charge remains under review following Elena's request for the inspection photographs and itemised contractor account."
+      },
+      {
+       "passage_id": "H-01:p13:2",
+       "quote": "Accounts acknowledged her request for an itemised charge."
+      }
+     ],
+     "claim_id": "a85",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:2",
+       "quote": "Earlier tenant charge carried forward: $250.00."
+      }
+     ],
+     "claim_id": "a86",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p14:3",
+       "quote": "The cooperative has not arranged automatic deductions or referred the account to a collection agency."
+      }
+     ],
+     "claim_id": "a87",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:3",
+       "quote": "She asks for a written account breakdown before agreeing to any repayment arrangement."
+      }
+     ],
+     "claim_id": "a88",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:4",
+       "quote": "Signed: Dr Mira Pell, treating practitioner, Coralbank Clinic. Issued 28 September 2026."
+      }
+     ],
+     "claim_id": "a89",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:1",
+       "quote": "Elena attended a planned review for sleep disruption and anxiety symptoms following a recent change in living circumstances."
+      }
+     ],
+     "claim_id": "a90",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:1",
+       "quote": "Elena attended a planned review for sleep disruption and anxiety symptoms following a recent change in living circumstances."
+      }
+     ],
+     "claim_id": "a91",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:3",
+       "quote": "Her next appointment is planned for mid October, with an earlier review if sleep or anxiety symptoms worsen."
+      },
+      {
+       "passage_id": "H-01:p16:1",
+       "quote": "The treating practitioner reviewed her existing medication and agreed a further appointment in October."
+      }
+     ],
+     "claim_id": "a92",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:2",
+       "quote": "A stable place to stay would assist her to keep the agreed review schedule and store medication safely."
+      }
+     ],
+     "claim_id": "a93",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:2",
+       "quote": "A stable place to stay would assist her to keep the agreed review schedule and store medication safely."
+      }
+     ],
+     "claim_id": "a94",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p16:2",
+       "quote": "The clinic has not assessed a need for a modified dwelling or physical access features."
+      }
+     ],
+     "claim_id": "a95",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:3",
+       "quote": "Previously held a social housing tenancy: No."
+      }
+     ],
+     "claim_id": "a96",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p12:1",
+       "quote": "Property: social housing unit in Darwin, address withheld from this extract at the former tenant's request."
+      },
+      {
+       "passage_id": "H-01:p12:1",
+       "quote": "Tenancy commenced 4 March 2024 and ended 19 December 2025."
+      }
+     ],
+     "claim_id": "a97",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p17:3",
+       "quote": "I previously held a tenancy with Marigold Housing Cooperative."
+      }
+     ],
+     "claim_id": "a98",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:3",
+       "quote": "Previously held a social housing tenancy: No."
+      },
+      {
+       "passage_id": "H-01:p12:1",
+       "quote": "Property: social housing unit in Darwin, address withheld from this extract at the former tenant's request."
+      },
+      {
+       "passage_id": "H-01:p17:3",
+       "quote": "I previously held a tenancy with Marigold Housing Cooperative."
+      }
+     ],
+     "claim_id": "a99",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:3",
+       "quote": "Previously applied for social housing: No."
+      }
+     ],
+     "claim_id": "a100",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p2:3",
+       "quote": "Previously applied for social housing: No."
+      },
+      {
+       "passage_id": "H-01:p12:1",
+       "quote": "Property: social housing unit in Darwin, address withheld from this extract at the former tenant's request."
+      }
+     ],
+     "claim_id": "a101",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:2",
+       "quote": "My present casual shifts vary and I have not enclosed a current earnings statement."
+      },
+      {
+       "passage_id": "H-01:p17:4",
+       "quote": "I will request a current earnings statement and provide it when received."
+      }
+     ],
+     "claim_id": "a102",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p3:2",
+       "quote": "I have attached the last payslip I retained from that employer so that the employment history is clear."
+      },
+      {
+       "passage_id": "H-01:p6:2",
+       "quote": "Elena Verran's casual employment with Quayline Events ended on 17 July 2026."
+      }
+     ],
+     "claim_id": "a103",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p1:2",
+       "quote": "The room booking ends next week and the service has advised it cannot extend the booking."
+      },
+      {
+       "passage_id": "H-01:p8:2",
+       "quote": "The booked room is available through 9 October 2026 only; no extension is currently available."
+      }
+     ],
+     "claim_id": "a104",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "H-01:p10:4",
+       "quote": "Review due: 6 October 2026."
+      },
+      {
+       "passage_id": "H-01:p15:4",
+       "quote": "Our next appointment with Elena is scheduled for 6 October."
+      }
+     ],
+     "claim_id": "a105",
+     "clause_id": "other"
+    }
+   ]
+  },
+  "output_tokens": 14768,
+  "seconds": 103.3
+ }
+}

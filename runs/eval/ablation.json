@@ -1,0 +1,2290 @@
+{
+ "additional_model_calls": {
+  "count": 0,
+  "n": 0
+ },
+ "cases": {
+  "E-01": [
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "layer": "claude_alone",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "layer": "code_checks",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "layer": "second_key",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "layer": "contradiction_pairs",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 2,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 2,
+     "covered": [
+      "p5",
+      "p7"
+     ],
+     "missed": [
+      "p1",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "gold_page_coverage": {
+     "count": 2,
+     "covered": [
+      "p5",
+      "p7"
+     ],
+     "missed": [
+      "p1",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "layer": "scan",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 2,
+     "n": 4,
+     "pages": [
+      "p5",
+      "p7"
+     ]
+    },
+    "required_reading": {
+     "count": 8,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p1",
+      "p5",
+      "p7",
+      "p8"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   }
+  ],
+  "E-02": [
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "layer": "claude_alone",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "layer": "code_checks",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.0
+    },
+    "layer": "second_key",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 2,
+     "covered": [
+      "p2",
+      "p9"
+     ],
+     "missed": [
+      "p6",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "gold_page_coverage": {
+     "count": 2,
+     "covered": [
+      "p2",
+      "p9"
+     ],
+     "missed": [
+      "p6",
+      "p10"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "layer": "contradiction_pairs",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 2,
+     "n": 4,
+     "pages": [
+      "p2",
+      "p9"
+     ]
+    },
+    "required_reading": {
+     "count": 4,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 3,
+     "covered": [
+      "p2",
+      "p9",
+      "p10"
+     ],
+     "missed": [
+      "p6"
+     ],
+     "n": 4,
+     "rate": 0.75
+    },
+    "gold_page_coverage": {
+     "count": 3,
+     "covered": [
+      "p2",
+      "p9",
+      "p10"
+     ],
+     "missed": [
+      "p6"
+     ],
+     "n": 4,
+     "rate": 0.75
+    },
+    "layer": "scan",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 4,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 1,
+     "n": 4,
+     "pages": [
+      "p10"
+     ]
+    },
+    "required_reading": {
+     "count": 8,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p2",
+      "p6",
+      "p9",
+      "p10"
+     ],
+     "missed": [],
+     "n": 4,
+     "rate": 1.0
+    }
+   }
+  ],
+  "E-03": [
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "n": 5,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "n": 5,
+     "rate": 0.0
+    },
+    "layer": "claude_alone",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 5,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 5,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "n": 5,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "n": 5,
+     "rate": 0.0
+    },
+    "layer": "code_checks",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 5,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 5,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [
+      "p4"
+     ],
+     "n": 5,
+     "rate": 0.8
+    },
+    "gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [
+      "p4"
+     ],
+     "n": 5,
+     "rate": 0.8
+    },
+    "layer": "second_key",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 5,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 4,
+     "n": 5,
+     "pages": [
+      "p12",
+      "p6",
+      "p7",
+      "p9"
+     ]
+    },
+    "required_reading": {
+     "count": 6,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    },
+    "gold_page_coverage": {
+     "count": 3,
+     "covered": [
+      "p4",
+      "p7",
+      "p12"
+     ],
+     "missed": [
+      "p6",
+      "p9"
+     ],
+     "n": 5,
+     "rate": 0.6
+    },
+    "layer": "contradiction_pairs",
+    "lost_gold_pages": {
+     "count": 2,
+     "n": 5,
+     "pages": [
+      "p6",
+      "p9"
+     ]
+    },
+    "new_gold_pages": {
+     "count": 1,
+     "n": 5,
+     "pages": [
+      "p4"
+     ]
+    },
+    "required_reading": {
+     "count": 8,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    },
+    "gold_page_coverage": {
+     "count": 3,
+     "covered": [
+      "p4",
+      "p7",
+      "p12"
+     ],
+     "missed": [
+      "p6",
+      "p9"
+     ],
+     "n": 5,
+     "rate": 0.6
+    },
+    "layer": "scan",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 5,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 5,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 8,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    }
+   }
+  ],
+  "H-01": [
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "n": 8,
+     "rate": 0.0
+    },
+    "gold_page_coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "claude_alone",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 8,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 8,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 0,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 8,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "missed": [],
+     "n": 8,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 1,
+     "covered": [
+      "p12"
+     ],
+     "missed": [
+      "p3",
+      "p5",
+      "p6",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "n": 8,
+     "rate": 0.125
+    },
+    "gold_page_coverage": {
+     "count": 1,
+     "covered": [
+      "p12"
+     ],
+     "missed": [
+      "p3",
+      "p5",
+      "p6",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "n": 8,
+     "rate": 0.125
+    },
+    "layer": "code_checks",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 8,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 1,
+     "n": 8,
+     "pages": [
+      "p12"
+     ]
+    },
+    "required_reading": {
+     "count": 1,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 8,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "missed": [],
+     "n": 8,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p3",
+      "p6",
+      "p12",
+      "p14"
+     ],
+     "missed": [
+      "p5",
+      "p13",
+      "p15",
+      "p17"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p3",
+      "p6",
+      "p12",
+      "p14"
+     ],
+     "missed": [
+      "p5",
+      "p13",
+      "p15",
+      "p17"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "layer": "second_key",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 8,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 3,
+     "n": 8,
+     "pages": [
+      "p14",
+      "p3",
+      "p6"
+     ]
+    },
+    "required_reading": {
+     "count": 7,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 8,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "missed": [],
+     "n": 8,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 6,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p14",
+      "p17"
+     ],
+     "missed": [
+      "p13",
+      "p15"
+     ],
+     "n": 8,
+     "rate": 0.75
+    },
+    "gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p3",
+      "p5",
+      "p12",
+      "p17"
+     ],
+     "missed": [
+      "p6",
+      "p13",
+      "p14",
+      "p15"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "layer": "contradiction_pairs",
+    "lost_gold_pages": {
+     "count": 2,
+     "n": 8,
+     "pages": [
+      "p14",
+      "p6"
+     ]
+    },
+    "new_gold_pages": {
+     "count": 2,
+     "n": 8,
+     "pages": [
+      "p17",
+      "p5"
+     ]
+    },
+    "required_reading": {
+     "count": 8,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 8,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "missed": [],
+     "n": 8,
+     "rate": 1.0
+    }
+   },
+   {
+    "all_flagged_gold_page_coverage": {
+     "count": 8,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "missed": [],
+     "n": 8,
+     "rate": 1.0
+    },
+    "gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p3",
+      "p5",
+      "p12",
+      "p17"
+     ],
+     "missed": [
+      "p6",
+      "p13",
+      "p14",
+      "p15"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "layer": "scan",
+    "lost_gold_pages": {
+     "count": 0,
+     "n": 8,
+     "pages": []
+    },
+    "new_gold_pages": {
+     "count": 0,
+     "n": 8,
+     "pages": []
+    },
+    "required_reading": {
+     "count": 8,
+     "n": 8
+    },
+    "writer_cited_gold_page_coverage": {
+     "count": 8,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "missed": [],
+     "n": 8,
+     "rate": 1.0
+    }
+   }
+  ]
+ },
+ "method": "Cumulative layers, rebuilt from saved stages. Claude alone means accepting the proposed claims with no validation; it is not a separate Claude-as-checker measurement. Writer-cited gold coverage is shown separately from flagged required reading. The scan adds reading leads, not mutation claim verdicts. The full scan layer includes the frozen dedup rule. A capped gate can lose a gold page as stronger flags displace it.",
+ "mutation_overall": [
+  {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "entity_swap": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "negation": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "number_swap": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "omission": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "policy_misread": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "stale_value": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    }
+   },
+   "catch_rate": {
+    "count": 0,
+    "n": 21,
+    "rate": 0.0
+   },
+   "false_alarm_rate": {
+    "count": 0,
+    "n": 24,
+    "rate": 0.0
+   },
+   "layer": "claude_alone",
+   "new_errors_caught": {
+    "count": 0,
+    "n": 21
+   }
+  },
+  {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "entity_swap": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "negation": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "number_swap": {
+     "count": 1,
+     "n": 3,
+     "rate": 0.3333
+    },
+    "omission": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    },
+    "policy_misread": {
+     "count": 1,
+     "n": 3,
+     "rate": 0.3333
+    },
+    "stale_value": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    }
+   },
+   "catch_rate": {
+    "count": 5,
+    "n": 21,
+    "rate": 0.2381
+   },
+   "false_alarm_rate": {
+    "count": 0,
+    "n": 24,
+    "rate": 0.0
+   },
+   "layer": "code_checks",
+   "new_errors_caught": {
+    "count": 5,
+    "n": 21
+   }
+  },
+  {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "entity_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "negation": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "number_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "omission": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "policy_misread": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "stale_value": {
+     "count": 2,
+     "n": 3,
+     "rate": 0.6667
+    }
+   },
+   "catch_rate": {
+    "count": 20,
+    "n": 21,
+    "rate": 0.9524
+   },
+   "false_alarm_rate": {
+    "count": 1,
+    "n": 24,
+    "rate": 0.0417
+   },
+   "layer": "second_key",
+   "new_errors_caught": {
+    "count": 15,
+    "n": 21
+   }
+  },
+  {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "entity_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "negation": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "number_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "omission": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "policy_misread": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "stale_value": {
+     "count": 2,
+     "n": 3,
+     "rate": 0.6667
+    }
+   },
+   "catch_rate": {
+    "count": 20,
+    "n": 21,
+    "rate": 0.9524
+   },
+   "false_alarm_rate": {
+    "count": 1,
+    "n": 24,
+    "rate": 0.0417
+   },
+   "layer": "contradiction_pairs",
+   "new_errors_caught": {
+    "count": 0,
+    "n": 21
+   }
+  },
+  {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "entity_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "negation": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "number_swap": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "omission": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "policy_misread": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    },
+    "stale_value": {
+     "count": 2,
+     "n": 3,
+     "rate": 0.6667
+    }
+   },
+   "catch_rate": {
+    "count": 20,
+    "n": 21,
+    "rate": 0.9524
+   },
+   "false_alarm_rate": {
+    "count": 1,
+    "n": 24,
+    "rate": 0.0417
+   },
+   "layer": "scan",
+   "new_errors_caught": {
+    "count": 0,
+    "n": 21
+   }
+  }
+ ],
+ "mutations": {
+  "E-01": [
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "entity_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "negation": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "number_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "omission": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "policy_misread": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 0,
+     "n": 7,
+     "rate": 0.0
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "claude_alone",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "negation": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "policy_misread": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 2,
+     "n": 7,
+     "rate": 0.2857
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "code_checks",
+    "new_errors_caught": {
+     "count": 2,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 6,
+     "n": 7,
+     "rate": 0.8571
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "second_key",
+    "new_errors_caught": {
+     "count": 4,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 6,
+     "n": 7,
+     "rate": 0.8571
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "contradiction_pairs",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 6,
+     "n": 7,
+     "rate": 0.8571
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "scan",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   }
+  ],
+  "E-02": [
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "entity_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "negation": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "number_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "omission": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "policy_misread": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 0,
+     "n": 7,
+     "rate": 0.0
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "claude_alone",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "negation": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "number_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "omission": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 2,
+     "n": 7,
+     "rate": 0.2857
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "code_checks",
+    "new_errors_caught": {
+     "count": 2,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     }
+    },
+    "catch_rate": {
+     "count": 7,
+     "n": 7,
+     "rate": 1.0
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "second_key",
+    "new_errors_caught": {
+     "count": 5,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     }
+    },
+    "catch_rate": {
+     "count": 7,
+     "n": 7,
+     "rate": 1.0
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "contradiction_pairs",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     }
+    },
+    "catch_rate": {
+     "count": 7,
+     "n": 7,
+     "rate": 1.0
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "scan",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   }
+  ],
+  "E-03": [
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "entity_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "negation": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "number_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "omission": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "policy_misread": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 0,
+     "n": 7,
+     "rate": 0.0
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "claude_alone",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "negation": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "number_swap": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "omission": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "policy_misread": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     },
+     "stale_value": {
+      "count": 0,
+      "n": 1,
+      "rate": 0.0
+     }
+    },
+    "catch_rate": {
+     "count": 1,
+     "n": 7,
+     "rate": 0.1429
+    },
+    "false_alarm_rate": {
+     "count": 0,
+     "n": 8,
+     "rate": 0.0
+    },
+    "layer": "code_checks",
+    "new_errors_caught": {
+     "count": 1,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     }
+    },
+    "catch_rate": {
+     "count": 7,
+     "n": 7,
+     "rate": 1.0
+    },
+    "false_alarm_rate": {
+     "count": 1,
+     "n": 8,
+     "rate": 0.125
+    },
+    "layer": "second_key",
+    "new_errors_caught": {
+     "count": 6,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     }
+    },
+    "catch_rate": {
+     "count": 7,
+     "n": 7,
+     "rate": 1.0
+    },
+    "false_alarm_rate": {
+     "count": 1,
+     "n": 8,
+     "rate": 0.125
+    },
+    "layer": "contradiction_pairs",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   },
+   {
+    "by_mutation_type": {
+     "date_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "entity_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "negation": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "number_swap": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "omission": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "policy_misread": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     },
+     "stale_value": {
+      "count": 1,
+      "n": 1,
+      "rate": 1.0
+     }
+    },
+    "catch_rate": {
+     "count": 7,
+     "n": 7,
+     "rate": 1.0
+    },
+    "false_alarm_rate": {
+     "count": 1,
+     "n": 8,
+     "rate": 0.125
+    },
+    "layer": "scan",
+    "new_errors_caught": {
+     "count": 0,
+     "n": 7
+    }
+   }
+  ]
+ },
+ "part": "ablation"
+}

@@ -1,0 +1,27 @@
+{
+ "key": "9a10ed42d4041da293b55ee6c2f756e36e9e499534022755372d1a123845c5c6",
+ "kind": "jev",
+ "response": {
+  "answers": {
+   "relation": {
+    "choice": "supports",
+    "confidence": 0.7,
+    "probabilities": {
+     "contradicts": 0.04,
+     "not_enough_information": 0.16,
+     "supports": 0.8
+    },
+    "type": "choice"
+   },
+   "supports": {
+    "noul": 0.18,
+    "type": "noul"
+   }
+  },
+  "model": "jev-1.13.0",
+  "usage": {
+   "input_tokens": 444,
+   "output_tokens": 59
+  }
+ }
+}

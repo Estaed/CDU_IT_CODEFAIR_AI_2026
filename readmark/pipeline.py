@@ -210,8 +210,13 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     and only on a real run: a run with a fixed writer or checker has no real map to audit the
     summary against, and must never reach Claude for it, so it audits only when asked."""
     if audit is None:
-        audit = case_id in AUDIT_CASES and writer is None and checker_impl is None
+        audit = case_id in (*AUDIT_CASES, "H-01") and writer is None and checker_impl is None
     out = out_dir or case_run_dir(case_id)
+    heldout_live = case_id == "H-01" and not replay and writer is None and checker_impl is None
+    if heldout_live:
+        from readmark.eval.discipline import start_heldout
+
+        start_heldout(out)
     cache = Cache(out / "cache", replay=replay)
 
     # 1. Ingest: pins first, then passages.
@@ -226,6 +231,10 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     case_by_id = {p["passage_id"]: p for p in case}
 
     # 3. Writer.
+    if writer is None and case_id in ("E-01", "E-02", "E-03", "H-01"):
+        from readmark.eval.discipline import EvaluationWriter
+
+        writer = EvaluationWriter(cache)
     writer = writer or ClaudeWriter(cache)
     raw = writer.write(case_meta, case, clauses, policy_by_id)
     facts = [{**f, "claim_id": f"c{n:02d}"} for n, f in enumerate(raw["facts"], start=1)]
@@ -380,4 +389,8 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     for name, data in stages.items():
         # LF on every platform, so a replay matches the committed files byte for byte.
         (out / f"{name}.json").write_text(dumps(data), encoding="utf-8", newline="\n")
+    if heldout_live:
+        from readmark.eval.discipline import finish_heldout
+
+        finish_heldout(out)
     return view

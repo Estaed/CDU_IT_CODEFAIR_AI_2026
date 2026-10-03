@@ -22,11 +22,13 @@ def main(argv: list[str] | None = None) -> int:
 
     ev = sub.add_parser("eval", help="evaluation parts -> runs/eval/<part>.json and summary.json")
     ev.add_argument("--case")
-    ev.add_argument("--part", choices=["checker"],
-                    help="checker: Jev against Claude-as-checker on the SummEdits sample; "
+    ev.add_argument("--part", choices=["checker", "cases", "mutations", "ablation", "benchmark"],
+                    help="checker: SummEdits; cases: end-to-end files; mutations: audit claims; "
+                         "ablation: cumulative layers; benchmark: release synthetic CSVs; "
                          "without --part, only summary.json is rebuilt from the parts present")
     ev.add_argument("--replay", action="store_true",
-                    help="read every model response from runs/eval/cache/; no keys, no network")
+                    help="read model responses from the part's replay cache; no keys, no network")
+    ev.add_argument("--checker", choices=["jev", "claude"], default="jev")
 
     args = parser.parse_args(argv)
     if args.verb == "run":
@@ -45,12 +47,12 @@ def main(argv: list[str] | None = None) -> int:
 
         serve(args.case, args.port)
         return 0
-    if args.case:
-        print("case-level evaluation (mutation set, held-out file, ablation) is not built yet: "
-              "it arrives in wave 3.", file=sys.stderr)
-        return 2
     from readmark.eval import assemble_summary, eval_dir
 
+    if args.case and args.part not in ("cases", "mutations"):
+        parser.error("--case applies to --part cases or --part mutations")
+    if args.part in ("cases", "mutations") and args.checker != "jev":
+        parser.error("case evaluation freezes the existing Jev checker; use --checker jev")
     if args.part == "checker":
         from readmark.eval.checker import evaluate
 
@@ -59,6 +61,30 @@ def main(argv: list[str] | None = None) -> int:
             o = result["checkers"][name]["overall"]
             print(f"{name}: balanced accuracy {o['balanced_accuracy']} (n={o['n']})")
         print(f"-> {eval_dir() / 'checker.json'}")
+    elif args.part:
+        from readmark.eval.cases import (
+            evaluate_ablation,
+            evaluate_cases,
+            evaluate_mutations,
+            release_benchmark,
+        )
+
+        if args.part == "cases":
+            result = evaluate_cases(args.replay, args.case)
+            for cid, score in result["cases"].items():
+                reading, gold = score["required_reading"], score["gold_page_coverage"]
+                print(f"{cid}: required passages {reading['count']} (cap n={reading['n']}), "
+                      f"gold pages covered {gold['count']} (n={gold['n']})")
+        elif args.part == "mutations":
+            result = evaluate_mutations(args.replay, args.case)
+            for name in ("catch_rate", "false_alarm_rate"):
+                metric = result["overall"][name]
+                print(f"{name}: {metric['rate']} (n={metric['n']})")
+        elif args.part == "ablation":
+            evaluate_ablation()
+        elif args.part == "benchmark":
+            release_benchmark()
+        print(f"-> {eval_dir() / (args.part + '.json')}")
     print(f"-> {assemble_summary()}")
     return 0
 

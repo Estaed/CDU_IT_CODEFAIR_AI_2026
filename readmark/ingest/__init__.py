@@ -15,7 +15,7 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-from readmark import CASES_DIR, POLICIES_DIR
+from readmark import CASES_DIR, DATA, POLICIES_DIR
 
 # pypdf warns about a symbol font it cannot fully decode; the text it extracts is still exact.
 logging.getLogger("pypdf").setLevel(logging.ERROR)
@@ -171,6 +171,9 @@ _DOC_HEAD = re.compile(r"^## Document:\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(\d{4}-\d{2}-
 
 
 def case_path(case_id: str) -> Path:
+    # Only the reserved held-out id uses the sealed directory. Its labels are never ingested.
+    if case_id == "H-01":
+        return DATA / "heldout" / case_id / "case.md"
     return CASES_DIR / case_id / "case.md"
 
 

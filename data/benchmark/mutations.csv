@@ -1,0 +1,46 @@
+case_id,summary_id,claim,mutation_type,source_fact_id,label
+E-01,correct,Talen Vey applied for urban priority housing in Darwin on 18 June 2026.,none,E01F02,supported
+E-01,correct,The temporary room ends on 30 June 2026.,none,E01F04,supported
+E-01,correct,A support service independently confirmed the room booking's end date.,none,E01F05,supported
+E-01,correct,The former public tenancy was terminated for breach on 14 November 2025.,none,E01F01,supported
+E-01,correct,The former tenancy had a $680 balance at exit.,none,E01F03,supported
+E-01,correct,The applicant declared no residential property interest.,none,E01F07,supported
+E-01,correct,Recent income evidence was sighted.,none,E01F08,supported
+E-01,correct,The breach termination occurred less than two years before the new application.,none,E01F01,supported
+E-01,e01-number,The former tenancy had a $860 balance at exit.,number_swap,E01F03,contradicted
+E-01,e01-date,The former tenancy was terminated for breach on 14 November 2023.,date_swap,E01F01,contradicted
+E-01,e01-negation,The former tenancy was not terminated for breach.,negation,E01F01,contradicted
+E-01,e01-stale,The applicant currently owes exactly $680 on the former-tenancy account.,stale_value,E01F03,unsupported
+E-01,e01-entity,Banksia Reach Support terminated the applicant's former public tenancy for breach.,entity_swap,E01F01,unsupported
+E-01,e01-omission,The file contains no evidence of a breach termination.,omission,E01F01,contradicted
+E-01,e01-policy,The $680 debt itself makes this applicant ineligible for social housing.,policy_misread,E01F03,contradicted
+E-02,correct,Sera Len applied for urban priority housing in Darwin.,none,E02F01,supported
+E-02,correct,The applicant expects to lose a rented room on 21 August 2026.,none,E02F01,supported
+E-02,correct,The applicant has not received a written notice from the host.,none,E02F10,supported
+E-02,correct,The housing office requested a room notice or support-service letter.,none,E02F03,supported
+E-02,correct,Citizenship and current Darwin residence were sighted.,none,E02F04,supported
+E-02,correct,The applicant declared no residential property interest.,none,E02F05,supported
+E-02,correct,Current income evidence was received.,none,E02F06,supported
+E-02,correct,No former social housing tenancy was found.,none,E02F08,supported
+E-02,e02-number,The application is for two adults.,number_swap,E02F11,contradicted
+E-02,e02-date,The applicant expects to lose the room on 21 September 2026.,date_swap,E02F01,contradicted
+E-02,e02-negation,The applicant does not expect to lose the rented room.,negation,E02F01,contradicted
+E-02,e02-stale,The room will definitely end on 21 August 2026 despite the host's later suggestion of an extension.,stale_value,E02F01,unsupported
+E-02,e02-entity,"A support service, rather than the applicant, reported a 21 August room end date.",entity_swap,E02F01,contradicted
+E-02,e02-omission,The file contains no request for supporting documentation.,omission,E02F03,contradicted
+E-02,e02-policy,An unsupported urgent-need claim must automatically be recorded as not met rather than held for information.,policy_misread,E02F02,contradicted
+E-03,correct,Oren Vale has a half interest in a residential dwelling.,none,E03F01,supported
+E-03,correct,The dwelling cannot be used safely with the applicant's current mobility needs.,none,E03F02,supported
+E-03,correct,A GP says the applicant now uses a wheelchair.,none,E03F03,supported
+E-03,correct,The GP says delay in accessible accommodation would increase injury risk.,none,E03F04,supported
+E-03,correct,The applicant asked for a manager's documented discretionary decision.,none,E03F05,supported
+E-03,correct,No authorised discretionary decision is attached to the file.,none,E03F06,supported
+E-03,correct,Current income evidence was received.,none,E03F08,supported
+E-03,correct,No former social housing tenancy was identified.,none,E03F10,supported
+E-03,e03-number,Oren Vale has a quarter interest in the residential dwelling.,number_swap,E03F01,contradicted
+E-03,e03-date,The GP mobility note was issued on 8 July 2025.,date_swap,E03F03,contradicted
+E-03,e03-negation,The dwelling is safe to occupy with the applicant's current mobility needs.,negation,E03F02,contradicted
+E-03,e03-stale,The temporary accessible room still ends on 12 July 2026.,stale_value,E03F11,contradicted
+E-03,e03-entity,"The GP, rather than the applicant, asked for a manager's discretionary decision.",entity_swap,E03F05,contradicted
+E-03,e03-omission,The file does not mention any residential property interest.,omission,E03F01,contradicted
+E-03,e03-policy,The presence of a medical note automatically waives all income and property requirements.,policy_misread,E03F04,contradicted

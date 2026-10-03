@@ -1,0 +1,561 @@
+{
+ "case_id": "E-01",
+ "claims": [
+  {
+   "checker": {
+    "claim_id": "m01",
+    "probability": 1.0,
+    "supports": 0.99,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p1:1",
+     "quote": "Application received on 18 June 2026 for urban priority housing in Darwin.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Talen Vey applied for urban priority housing in Darwin on 18 June 2026.",
+   "claim_id": "m01",
+   "clause_id": "other",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m02",
+    "probability": 0.92,
+    "supports": 0.94,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p5:1",
+     "quote": "The temporary room ends on 30 June 2026 and no replacement tenancy has been secured.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p1:3",
+     "quote": "The current room booking ends 30 June.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The temporary room ends on 30 June 2026.",
+   "claim_id": "m02",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m03",
+    "probability": 0.96,
+    "supports": 0.83,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p5:2",
+     "quote": "We inspected the temporary room booking and confirm it ends on 30 June 2026.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p5:5",
+     "quote": "Banksia Reach Support checked the room booking and the end date.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A support service independently confirmed the room booking's end date.",
+   "claim_id": "m03",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m04",
+    "probability": 1.0,
+    "supports": 0.98,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p7:1",
+     "quote": "The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p10:1",
+     "quote": "We located the signed termination entry and confirmed its date.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p12:1",
+     "quote": "I understand the archive entry records termination for breach.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The former public tenancy was terminated for breach on 14 November 2025.",
+   "claim_id": "m04",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m05",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p8:3",
+     "quote": "Former-tenancy balance at exit was $680.00; a repayment arrangement remains active.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p8:2",
+     "quote": "Opening amount transferred from the exit account: $680.00 debit.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The former tenancy had a $680 balance at exit.",
+   "claim_id": "m05",
+   "clause_id": "elig-debts",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m06",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p4:1",
+     "quote": "I do not own or partly own residential property in Australia.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p4:3",
+     "quote": "Talen declares no title, share or purchase contract for residential property.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant declared no residential property interest.",
+   "claim_id": "m06",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m07",
+    "probability": 0.97,
+    "supports": 0.77,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p9:2",
+     "quote": "Income statement for Talen Vey, issued on 16 June 2026 by Windward Assistance Office; gross support payment $565.00 per fortnight.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p11:3",
+     "quote": "Items checked: identity, residence, property, current income and support letter received; archive closure added.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Recent income evidence was sighted.",
+   "claim_id": "m07",
+   "clause_id": "elig-income",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m08",
+    "probability": 0.98,
+    "supports": 0.77,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p7:1",
+     "quote": "The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p1:1",
+     "quote": "Application received on 18 June 2026 for urban priority housing in Darwin.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The breach termination occurred less than two years before the new application.",
+   "claim_id": "m08",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m09",
+    "probability": 1.0,
+    "supports": 0.01,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p8:3",
+     "quote": "Former-tenancy balance at exit was $680.00; a repayment arrangement remains active.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p8:2",
+     "quote": "Opening amount transferred from the exit account: $680.00 debit.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The former tenancy had a $860 balance at exit.",
+   "claim_id": "m09",
+   "clause_id": "elig-debts",
+   "contradicted_by": [],
+   "required": false,
+   "status": "quote_not_found",
+   "values_missing": [
+    "860"
+   ]
+  },
+  {
+   "checker": {
+    "claim_id": "m10",
+    "probability": 1.0,
+    "supports": 0.02,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p7:1",
+     "quote": "The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p7:3",
+     "quote": "The tenancy was ended on 14 November 2025 after repeated unauthorised occupancy.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The former tenancy was terminated for breach on 14 November 2023.",
+   "claim_id": "m10",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
+   "required": true,
+   "status": "quote_not_found",
+   "values_missing": [
+    "14 November 2023"
+   ]
+  },
+  {
+   "checker": {
+    "claim_id": "m11",
+    "probability": 1.0,
+    "supports": 0.01,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p7:1",
+     "quote": "The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p10:4",
+     "quote": "The archive sent the signed termination entry and confirmed that no later closure agreement is indexed under the former tenancy.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p12:1",
+     "quote": "I have no correction to the termination record to enclose.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The former tenancy was not terminated for breach.",
+   "claim_id": "m11",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [
+    "E-01:p2:1"
+   ],
+   "required": true,
+   "status": "contradicted",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m12",
+    "probability": 0.96,
+    "supports": 0.84,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p8:2",
+     "quote": "Closing amount shown for the period: $680.00 debit.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p8:4",
+     "quote": "A proposed instalment does not appear as a credit until received and posted.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant currently owes exactly $680 on the former-tenancy account.",
+   "claim_id": "m12",
+   "clause_id": "elig-debts",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m13",
+    "probability": 0.58,
+    "supports": 0.02,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p7:2",
+     "quote": "Housing records unit | Tenancy register reference E01-07 | Entered 2025-11-14",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p5:5",
+     "quote": "Banksia Reach Support checked the room booking and the end date.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Banksia Reach Support terminated the applicant's former public tenancy for breach.",
+   "claim_id": "m13",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m14",
+    "probability": 1.0,
+    "supports": 0.01,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p7:1",
+     "quote": "The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p10:4",
+     "quote": "The archive sent the signed termination entry and confirmed that no later closure agreement is indexed under the former tenancy.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p12:1",
+     "quote": "I understand the archive entry records termination for breach.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The file contains no evidence of a breach termination.",
+   "claim_id": "m14",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [
+    "E-01:p2:1"
+   ],
+   "required": true,
+   "status": "contradicted",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "m15",
+    "probability": 0.53,
+    "supports": 0.03,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-01:p8:3",
+     "quote": "Former-tenancy balance at exit was $680.00; a repayment arrangement remains active.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The $680 debt itself makes this applicant ineligible for social housing.",
+   "claim_id": "m15",
+   "clause_id": "elig-debts",
+   "contradicted_by": [],
+   "required": false,
+   "status": "checker_disagrees",
+   "values_missing": []
+  }
+ ],
+ "labels": [
+  {
+   "claim": "Talen Vey applied for urban priority housing in Darwin on 18 June 2026.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F02",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The temporary room ends on 30 June 2026.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F04",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "A support service independently confirmed the room booking's end date.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F05",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The former public tenancy was terminated for breach on 14 November 2025.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F01",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The former tenancy had a $680 balance at exit.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F03",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The applicant declared no residential property interest.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F07",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "Recent income evidence was sighted.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F08",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The breach termination occurred less than two years before the new application.",
+   "label": "supported",
+   "mutation_type": "none",
+   "source_fact_id": "E01F01",
+   "summary_id": "correct"
+  },
+  {
+   "claim": "The former tenancy had a $860 balance at exit.",
+   "label": "contradicted",
+   "mutation_type": "number_swap",
+   "source_fact_id": "E01F03",
+   "summary_id": "e01-number"
+  },
+  {
+   "claim": "The former tenancy was terminated for breach on 14 November 2023.",
+   "label": "contradicted",
+   "mutation_type": "date_swap",
+   "source_fact_id": "E01F01",
+   "summary_id": "e01-date"
+  },
+  {
+   "claim": "The former tenancy was not terminated for breach.",
+   "label": "contradicted",
+   "mutation_type": "negation",
+   "source_fact_id": "E01F01",
+   "summary_id": "e01-negation"
+  },
+  {
+   "claim": "The applicant currently owes exactly $680 on the former-tenancy account.",
+   "label": "unsupported",
+   "mutation_type": "stale_value",
+   "source_fact_id": "E01F03",
+   "summary_id": "e01-stale"
+  },
+  {
+   "claim": "Banksia Reach Support terminated the applicant's former public tenancy for breach.",
+   "label": "unsupported",
+   "mutation_type": "entity_swap",
+   "source_fact_id": "E01F01",
+   "summary_id": "e01-entity"
+  },
+  {
+   "claim": "The file contains no evidence of a breach termination.",
+   "label": "contradicted",
+   "mutation_type": "omission",
+   "source_fact_id": "E01F01",
+   "summary_id": "e01-omission"
+  },
+  {
+   "claim": "The $680 debt itself makes this applicant ineligible for social housing.",
+   "label": "contradicted",
+   "mutation_type": "policy_misread",
+   "source_fact_id": "E01F03",
+   "summary_id": "e01-policy"
+  }
+ ]
+}

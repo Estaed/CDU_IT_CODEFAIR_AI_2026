@@ -1,0 +1,12 @@
+{
+ "duplicate_probability_minimum": 0.9,
+ "duplicates": {
+  "elig-income": {},
+  "elig-property": {},
+  "prio-category": {},
+  "prio-discretion": {},
+  "prio-documentation": {}
+ },
+ "method": "Keep the strongest distinct clause facts; discard only repetitions of a cited or stronger passage, with binary duplicate probability >= 0.9. Chosen after the demo audit; the held-out evaluation remains its honest test.",
+ "model": "jev-1.13.0"
+}

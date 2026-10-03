@@ -145,6 +145,24 @@ Blueprint, and it fits before 8 Oct. Two things are borrowed from 1: the plain-w
 each question name, and one primary "next" button. **Fallback: 2,** if time runs short: it is half a
 day and keeps today's layout.
 
+## Round 2: hybrids of 1 and 3 (Tarık, 2026-10-03)
+
+Tarık's verdict: he likes 1 (plain, few things on screen, the work goes click by click), but it
+hides the original document. 3 keeps the answer-key idea but looks generic and too empty. 2 is too
+complex. 4 is out. He asked for a mix of 1 and 3. Both hybrids keep 1's look (AgDS colours, task
+list, big radios, one primary button) and show the real page text from `runs/A-0142/passages.json`.
+Both also resolve 1's conflict with the Blueprint, because the file is the reading surface again.
+
+- **5, the file with the question in its margin** (`mock-5-gov-margin.png`): a file viewer in the
+  middle ("Previous / Next highlight", page 8 of 60, highlight 1 of 11), with the labelled
+  highlight on the page. The question card sits in the right margin, joined to its highlight. It
+  holds the policy sentence, why it is flagged, the radios and "Save and next question". This is 3's
+  answer key in 1's clothes. Cost: about 1 day (the card follows its highlight).
+- **6, a question page with the file open inside it** (`mock-6-gov-filepanel.png`): mock 1's
+  question page, but the evidence box is now a file viewer with a tab per cited page ("Page 8 ·
+  15 Jan ✓", "Page 23 · 4 Mar") and "Open in full file (60 pages)". The radios sit beside the
+  viewer. Cost: about 1 day, with no alignment code.
+
 ## After the pick
 - `design/DESIGN.md`: "This project does not use Tarik Base. Reference: <direction>, with the
   screenshots in `reports/screens/ui-references/`."

@@ -11,7 +11,7 @@ Plan: [otopilot-2026-10-03-plan.md](otopilot-2026-10-03-plan.md). BASE_SHA `5ac8
 | Task-01 | 1 | Codex bee `gpt-6-sol`/`high` | green, eye check pending: 1 (superseded by Task-04) | 1 | 10:44–11:04 | `python scripts/validate_cases.py` lane (0), main (0) | `b84e938` |
 | Task-02 | 2 | Codex bee `gpt-6-sol`/`high` | green | 1 | 11:07–11:16 | `python scripts/validate_cases.py data/heldout/H-01` lane (0), main (0) | `6f23392` |
 | Task-00 | 1 | ultracode Workflow `wf_d1625a98-101` | green, eye check pending: 2 | 1 (no fix round) | 10:47–11:25 (build ~95 min of agent time) | `uv run python scripts/gate.py` lane (0), main (0: ruff ok, 23 passed, replay smoke ok); `python scripts/validate_cases.py` on main with the stub (0) | `6e440c9` |
-| Task-04 | 3 | Codex bee `gpt-6-sol`/`high` | running | | from 11:22 | | |
+| Task-04 | 3 | Codex bee `gpt-6-sol`/`high` | green, eye check pending: 1 | 1 | 11:22–11:46 | `python scripts/validate_cases.py` lane (0), main (0); `uv run python scripts/gate.py` on main (0: ruff ok on the new validator, 24 passed) | `5a0965e` |
 
 Failure counts: none of the lanes had a red attempt.
 
@@ -27,8 +27,14 @@ Failure counts: none of the lanes had a red attempt.
   from the pinned PDF (ingest stops if a sentence is not found word for word). Spec lens note (40):
   `prio-discretion` rests only on Priority §3.1, while `docs/contracts.md` names "Priority §3.1 +
   Discretionary decision making".
-- **Task-01** (A-0142 pages 8, 23, 30, 51 and three filler pages): superseded by Task-04, which
-  rewrites these files; look after Task-04 lands.
+- **Task-04** (replaces Task-01's eye item): skim `data/cases/A-0142/case.md` pages 8, 23, 30, 51
+  and three random filler pages; they should read like real NT housing paperwork. Orchestrator's
+  checks (`.tmp/check_task04.py`, `.tmp/page_density.py`): words per page A-0142 mean 225, min 158
+  (was 60); E-files mean 215–219, min 183+ (were about 50); the four `design/ab-brief.md` passages
+  verbatim on pp. 8, 23, 30, 51; `gold.json` and `mutations.jsonl` unchanged in all four files; a
+  20-word page and a "This synthetic file is for testing." line each make the validator exit 1
+  naming the file; no meta-commentary phrase left. The bee rewrote two `facts.csv` files (E-02,
+  E-03) to keep their quotes verbatim on the denser pages.
 
 ## Review panel (Task-00)
 Lenses: spec and screen (`opus`/`high`), one round. No finding reached 80, so no fix round ran
@@ -113,5 +119,15 @@ validator passes, as the brief's seam asked. Live run cost: one `claude -p` opus
 | 10:59 | — | 79% | 6% | — |
 | 11:26 after Task-00 | 12% | 80% | 14% | — |
 
+| 11:48 close | 19% | 81% | 30% | 5% |
+
 Task-00's whole Workflow (builder `opus`/`xhigh` ~95 min, two `opus`/`high` lenses, 518k sub-agent
-tokens) moved the Claude weekly window by about 1 point; the plan estimated 10–16.
+tokens) moved the Claude weekly window by about 1 point; the plan estimated 10–16. The whole run,
+orchestrator and main-loop fixes included, took the Claude weekly window from 79% to 81%.
+
+## Cleanup
+All five run-owned worktrees removed (no junctions in any; `data/policies/` intact with its five
+PDFs and `policies.lock.json`). Briefs, logs and the detached launcher stay in `../readmark-lanes/`
+outside the repo. Wake lock released by its stop file.
+
+Run closed: tasks consumed

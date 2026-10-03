@@ -1,0 +1,10 @@
+fact_id,clause_id,statement,value,page,quote,role,trap,decisive
+E01F01,elig-former-tenancy,Previous tenancy was terminated for breach,breach,7,"The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy.",against,exclusion_2yr,yes
+E01F02,elig-former-tenancy,New application was lodged within two years,2026-06-18,1,"Application received on 18 June 2026 for urban priority housing in Darwin.",against,exclusion_2yr,yes
+E01F03,elig-debts,Former-tenancy debt exists,$680,8,"Former-tenancy balance at exit was $680.00; a repayment arrangement remains active.",supports,policy_misread,no
+E01F04,prio-category,Applicant is at risk of homelessness,homelessness,5,"The temporary room ends on 30 June 2026 and no replacement tenancy has been secured.",supports,none,yes
+E01F05,prio-documentation,Support service confirms room expiry,letter,5,"We inspected the temporary room booking and confirm it ends on 30 June 2026.",supports,none,yes
+E01F06,elig-residency,Applicant is an Australian citizen living in NT,citizen,3,"Australian citizenship document sighted; the applicant states continuous residence in Darwin since 2020.",supports,none,yes
+E01F07,elig-property,Applicant owns no residential property,none,4,"I do not own or partly own residential property in Australia.",supports,none,yes
+E01F08,elig-income,Recent income evidence is included,present,9,"Income statement for Talen Vey, issued on 16 June 2026 by Windward Assistance Office; gross support payment $565.00 per fortnight.",supports,none,yes
+E01F09,prio-discretion,No extreme circumstance beyond ordinary priority grounds is documented,,,"",missing,none,no

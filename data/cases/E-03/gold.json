@@ -1,0 +1,25 @@
+{
+  "case_id": "E-03",
+  "outcomes": {
+    "elig-residency": "met",
+    "elig-property": "cannot_decide",
+    "elig-income": "met",
+    "elig-debts": "met",
+    "elig-former-tenancy": "met",
+    "prio-category": "met",
+    "prio-documentation": "met",
+    "prio-discretion": "met"
+  },
+  "correct_decision": "request_information",
+  "required_reading": ["p4", "p6", "p7", "p9", "p12"],
+  "rationale": {
+    "elig-residency": "Eligibility §3.2 says 'Applicants must be an Australian citizen or have permanent residency status.'; p.3 records citizenship and Darwin residence.",
+    "elig-property": "Eligibility §3.1.1 says 'If an applicant owns property but can also establish an exceptional need (severe medical or social issues) for social housing, the Delegate may use their discretion to exempt the property from the assessment of the applicant’s eligibility.'; pp.4, 6, 7 and 12 require an authorised decision before this can be resolved.",
+    "elig-income": "Identification and Documentation §3.2 says 'The CEO (Housing) requires evidence of income and assets to determine eligibility for social housing, private rental bond assistance, and to calculate rent.'; p.5 records a current statement and no income-limit waiver.",
+    "elig-debts": "Eligibility §3.4 says 'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).'; p.10 records no debt.",
+    "elig-former-tenancy": "Eligibility §3.5 refers to 'Former social housing tenants'; p.11 identifies none, so the exclusion does not arise.",
+    "prio-category": "Priority §3 lists 'Serious medical or social problems;' as urgent need; p.6 documents the applicant's new mobility needs.",
+    "prio-documentation": "Priority §3.1 says 'Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.'; pp.6 and 7 supply medical and access evidence.",
+    "prio-discretion": "Priority §3.1 allows 'some discretion for extreme situations'; pp.4, 6, 7 and 9 show a plausible extreme case, but p.12 shows no authorised decision yet."
+  }
+}

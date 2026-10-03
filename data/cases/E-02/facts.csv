@@ -1,0 +1,12 @@
+fact_id,clause_id,statement,value,page,quote,role,trap,decisive
+E02F01,prio-category,Applicant claims imminent homelessness,claim,2,"I expect to lose the room I rent on 21 August 2026 and need priority housing.",supports,missing_doc,yes
+E02F02,prio-documentation,No room notice or support letter accompanies the claim,,,"",missing,missing_doc,yes
+E02F03,prio-documentation,Intake requested independent supporting documentation,request,6,"Please provide a room termination notice or a letter from a support service that confirms the date and circumstances of the move.",supports,missing_doc,yes
+E02F04,elig-residency,Applicant is an Australian citizen living in NT,citizen,3,"Australian citizenship document sighted; current Darwin residence was confirmed from the utility account.",supports,none,yes
+E02F05,elig-property,Applicant declares no residential property,none,4,"I do not own or partly own residential property in Australia.",supports,none,yes
+E02F06,elig-income,Current income evidence is present,present,5,"Income statement for Sera Len, issued on 3 August 2026 by Windward Assistance Office; gross support payment $610.00 per fortnight.",supports,none,yes
+E02F07,elig-debts,No CEO Housing debt is recorded,none,7,"The account search returned no debt owed to the CEO (Housing) for this applicant.",supports,none,no
+E02F08,elig-former-tenancy,No former social housing tenancy is recorded,none,8,"No former public or community housing tenancy was identified for this applicant.",supports,none,no
+E02F09,prio-discretion,No extreme circumstance is described,,,"",missing,none,no
+E02F10,prio-documentation,Applicant has no written notice,absent,9,"She has not received a notice to vacate.",supports,missing_doc,yes
+E02F11,prio-category,Application is for one adult,1,1,"The application seeks urban housing in Darwin for one adult and asks for priority on the basis of a room tenancy expected to end.",supports,none,no

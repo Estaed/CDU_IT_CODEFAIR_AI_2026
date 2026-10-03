@@ -1,4 +1,5 @@
 # Task-01: Grounded synthetic case files: demo A-0142 plus three short evaluation files
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* the file the pipeline reads must be written by a different model family from the one that
 > reads it (Tarık, 2026-10-03), and the data is the weakest judging criterion.
@@ -69,11 +70,11 @@ gives exact gold labels. A different model family writing them blunts "you plant
 model finds".
 
 ## Acceptance
-- [ ] `python scripts/validate_cases.py` exits 0 and prints a per-case summary: pages, facts, traps
+- [x] `python scripts/validate_cases.py` exits 0 and prints a per-case summary: pages, facts, traps
   by type, mutations by type.
-- [ ] A-0142 gold matches the scenario above exactly (decision `request_information`, `elig-income`
+- [x] A-0142 gold matches the scenario above exactly (decision `request_information`, `elig-income`
   cannot_decide).
-- [ ] Every person and organisation is invented, and the validator's PII regex finds nothing.
+- [x] Every person and organisation is invented, and the validator's PII regex finds nothing.
 - [ ] (eye) Tarık skims pages 8, 23, 30, 51 and three random filler pages of A-0142. They read like
   real NT housing paperwork, not like a test. Reference: the scenario in `notes.md`.
 

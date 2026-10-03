@@ -1,0 +1,15 @@
+{"summary_id":"correct","claim":"Talen Vey applied for urban priority housing in Darwin on 18 June 2026.","mutation_type":"none","source_fact_id":"E01F02","label":"supported"}
+{"summary_id":"correct","claim":"The temporary room ends on 30 June 2026.","mutation_type":"none","source_fact_id":"E01F04","label":"supported"}
+{"summary_id":"correct","claim":"A support service independently confirmed the room booking's end date.","mutation_type":"none","source_fact_id":"E01F05","label":"supported"}
+{"summary_id":"correct","claim":"The former public tenancy was terminated for breach on 14 November 2025.","mutation_type":"none","source_fact_id":"E01F01","label":"supported"}
+{"summary_id":"correct","claim":"The former tenancy had a $680 balance at exit.","mutation_type":"none","source_fact_id":"E01F03","label":"supported"}
+{"summary_id":"correct","claim":"The applicant declared no residential property interest.","mutation_type":"none","source_fact_id":"E01F07","label":"supported"}
+{"summary_id":"correct","claim":"Recent income evidence was sighted.","mutation_type":"none","source_fact_id":"E01F08","label":"supported"}
+{"summary_id":"correct","claim":"The breach termination occurred less than two years before the new application.","mutation_type":"none","source_fact_id":"E01F01","label":"supported"}
+{"summary_id":"e01-number","claim":"The former tenancy had a $860 balance at exit.","mutation_type":"number_swap","source_fact_id":"E01F03","label":"contradicted"}
+{"summary_id":"e01-date","claim":"The former tenancy was terminated for breach on 14 November 2023.","mutation_type":"date_swap","source_fact_id":"E01F01","label":"contradicted"}
+{"summary_id":"e01-negation","claim":"The former tenancy was not terminated for breach.","mutation_type":"negation","source_fact_id":"E01F01","label":"contradicted"}
+{"summary_id":"e01-stale","claim":"The applicant currently owes exactly $680 on the former-tenancy account.","mutation_type":"stale_value","source_fact_id":"E01F03","label":"unsupported"}
+{"summary_id":"e01-entity","claim":"Banksia Reach Support terminated the applicant's former public tenancy for breach.","mutation_type":"entity_swap","source_fact_id":"E01F01","label":"unsupported"}
+{"summary_id":"e01-omission","claim":"The file contains no evidence of a breach termination.","mutation_type":"omission","source_fact_id":"E01F01","label":"contradicted"}
+{"summary_id":"e01-policy","claim":"The $680 debt itself makes this applicant ineligible for social housing.","mutation_type":"policy_misread","source_fact_id":"E01F03","label":"contradicted"}

@@ -1,0 +1,16 @@
+fact_id,clause_id,statement,value,page,quote,role,trap,decisive
+A01,elig-debts,January ledger records former-tenancy debt,$2400,8,"Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight.",stale,stale_value,yes
+A02,elig-debts,Support agency discharged the debt,$0,23,"Lump-sum payment received from a support agency on behalf of the former tenant. Arrears cleared in full. Balance $0.00.",contradicts,contradiction,yes
+A03,elig-former-tenancy,Former tenancy ended by agreement without breach,agreement,30,"Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023. A rent debt remained outstanding at exit. No breach of the tenancy agreement recorded.",supports,policy_misread,yes
+A04,prio-category,Applicant and children are fleeing family violence,DFV,51,"Ms K. and her two children are fleeing family violence and cannot safely return to their current address. Police attended the property on 2 February 2026.",supports,omission,yes
+A05,prio-documentation,Support agency documented urgent safety need,letter,51,"Our service has worked with Ms K. since February and can confirm that the family needs a safe address away from the former home.",supports,omission,yes
+A06,elig-residency,Applicant states Australian citizenship and NT residence,citizen,16,"I am an Australian citizen and have lived in the Northern Territory continuously since 2021.",supports,none,yes
+A07,elig-residency,Identity document confirms Australian citizenship,citizen,12,"Australian passport sighted for Ms K.; name and date of birth matched the application. No identifier was copied into this file.",supports,none,yes
+A08,elig-property,Applicant declares no residential property,none,6,"I do not own or partly own any residential property in Australia.",supports,none,yes
+A09,elig-property,Property search returned no match,none,19,"Search against the applicant's declared names returned no residential property interest in the Northern Territory register.",supports,none,yes
+A10,elig-income,Current income statement is absent,,,"",missing,omission,yes
+A11,prio-category,GP reports anxiety following unsafe housing,anxiety,44,"Ms K. reports anxiety and disrupted sleep following the family violence incident; a stable and safe home would support treatment.",supports,none,no
+A12,prio-documentation,Support agency reports police attendance,2026-02-02,51,"Police attended the property on 2 February 2026.",supports,none,yes
+A13,prio-discretion,No discretionary exception is requested,,,"",missing,none,no
+A14,elig-income,Intake requested current income evidence,outstanding,58,"Current income evidence is still outstanding; the intake team has not received an income statement or employer remittance advice.",supports,none,yes
+A15,prio-category,Two dependent children are included,2,3,"The household includes two dependent children, Niko K. and Elia K.",supports,none,no

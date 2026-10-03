@@ -1,0 +1,15 @@
+{"summary_id":"correct","claim":"Sera Len applied for urban priority housing in Darwin.","mutation_type":"none","source_fact_id":"E02F01","label":"supported"}
+{"summary_id":"correct","claim":"The applicant expects to lose a rented room on 21 August 2026.","mutation_type":"none","source_fact_id":"E02F01","label":"supported"}
+{"summary_id":"correct","claim":"The applicant has not received a written notice from the host.","mutation_type":"none","source_fact_id":"E02F10","label":"supported"}
+{"summary_id":"correct","claim":"The housing office requested a room notice or support-service letter.","mutation_type":"none","source_fact_id":"E02F03","label":"supported"}
+{"summary_id":"correct","claim":"Citizenship and current Darwin residence were sighted.","mutation_type":"none","source_fact_id":"E02F04","label":"supported"}
+{"summary_id":"correct","claim":"The applicant declared no residential property interest.","mutation_type":"none","source_fact_id":"E02F05","label":"supported"}
+{"summary_id":"correct","claim":"Current income evidence was received.","mutation_type":"none","source_fact_id":"E02F06","label":"supported"}
+{"summary_id":"correct","claim":"No former social housing tenancy was found.","mutation_type":"none","source_fact_id":"E02F08","label":"supported"}
+{"summary_id":"e02-number","claim":"The application is for two adults.","mutation_type":"number_swap","source_fact_id":"E02F11","label":"contradicted"}
+{"summary_id":"e02-date","claim":"The applicant expects to lose the room on 21 September 2026.","mutation_type":"date_swap","source_fact_id":"E02F01","label":"contradicted"}
+{"summary_id":"e02-negation","claim":"The applicant does not expect to lose the rented room.","mutation_type":"negation","source_fact_id":"E02F01","label":"contradicted"}
+{"summary_id":"e02-stale","claim":"The room will definitely end on 21 August 2026 despite the host's later suggestion of an extension.","mutation_type":"stale_value","source_fact_id":"E02F01","label":"unsupported"}
+{"summary_id":"e02-entity","claim":"A support service, rather than the applicant, reported a 21 August room end date.","mutation_type":"entity_swap","source_fact_id":"E02F01","label":"contradicted"}
+{"summary_id":"e02-omission","claim":"The file contains no request for supporting documentation.","mutation_type":"omission","source_fact_id":"E02F03","label":"contradicted"}
+{"summary_id":"e02-policy","claim":"An unsupported urgent-need claim must automatically be recorded as not met rather than held for information.","mutation_type":"policy_misread","source_fact_id":"E02F02","label":"contradicted"}

@@ -1,0 +1,15 @@
+{"summary_id":"correct","claim":"Oren Vale has a half interest in a residential dwelling.","mutation_type":"none","source_fact_id":"E03F01","label":"supported"}
+{"summary_id":"correct","claim":"The dwelling cannot be used safely with the applicant's current mobility needs.","mutation_type":"none","source_fact_id":"E03F02","label":"supported"}
+{"summary_id":"correct","claim":"A GP says the applicant now uses a wheelchair.","mutation_type":"none","source_fact_id":"E03F03","label":"supported"}
+{"summary_id":"correct","claim":"The GP says delay in accessible accommodation would increase injury risk.","mutation_type":"none","source_fact_id":"E03F04","label":"supported"}
+{"summary_id":"correct","claim":"The applicant asked for a manager's documented discretionary decision.","mutation_type":"none","source_fact_id":"E03F05","label":"supported"}
+{"summary_id":"correct","claim":"No authorised discretionary decision is attached to the file.","mutation_type":"none","source_fact_id":"E03F06","label":"supported"}
+{"summary_id":"correct","claim":"Current income evidence was received.","mutation_type":"none","source_fact_id":"E03F08","label":"supported"}
+{"summary_id":"correct","claim":"No former social housing tenancy was identified.","mutation_type":"none","source_fact_id":"E03F10","label":"supported"}
+{"summary_id":"e03-number","claim":"Oren Vale has a quarter interest in the residential dwelling.","mutation_type":"number_swap","source_fact_id":"E03F01","label":"contradicted"}
+{"summary_id":"e03-date","claim":"The GP mobility note was issued on 8 July 2025.","mutation_type":"date_swap","source_fact_id":"E03F03","label":"contradicted"}
+{"summary_id":"e03-negation","claim":"The dwelling is safe to occupy with the applicant's current mobility needs.","mutation_type":"negation","source_fact_id":"E03F02","label":"contradicted"}
+{"summary_id":"e03-stale","claim":"The temporary accessible room still ends on 12 July 2026.","mutation_type":"stale_value","source_fact_id":"E03F11","label":"contradicted"}
+{"summary_id":"e03-entity","claim":"The GP, rather than the applicant, asked for a manager's discretionary decision.","mutation_type":"entity_swap","source_fact_id":"E03F05","label":"contradicted"}
+{"summary_id":"e03-omission","claim":"The file does not mention any residential property interest.","mutation_type":"omission","source_fact_id":"E03F01","label":"contradicted"}
+{"summary_id":"e03-policy","claim":"The presence of a medical note automatically waives all income and property requirements.","mutation_type":"policy_misread","source_fact_id":"E03F04","label":"contradicted"}

@@ -1,0 +1,25 @@
+{
+  "case_id": "E-01",
+  "outcomes": {
+    "elig-residency": "met",
+    "elig-property": "met",
+    "elig-income": "met",
+    "elig-debts": "met",
+    "elig-former-tenancy": "not_met",
+    "prio-category": "met",
+    "prio-documentation": "met",
+    "prio-discretion": "not_applicable"
+  },
+  "correct_decision": "decline",
+  "required_reading": ["p1", "p5", "p7", "p8"],
+  "rationale": {
+    "elig-residency": "Eligibility §3.2 says 'Applicants must be an Australian citizen or have permanent residency status.'; p.3 confirms citizenship and Darwin residence.",
+    "elig-property": "Eligibility §3.1.1 says 'applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing.'; p.4 declares no such interest.",
+    "elig-income": "Identification and Documentation §3.2 says 'The CEO (Housing) requires evidence of income and assets to determine eligibility for social housing, private rental bond assistance, and to calculate rent.'; p.9 records current evidence received.",
+    "elig-debts": "Eligibility §3.4 says 'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).'; p.8's debt does not cause the decline.",
+    "elig-former-tenancy": "Eligibility §3.5 says 'An application will not be accepted until the 2-year period has expired.'; pp.1 and 7 show a breach termination only seven months before application.",
+    "prio-category": "Priority §3 lists 'At risk of homelessness;' as urgent need; p.5 confirms that the temporary room is ending.",
+    "prio-documentation": "Priority §3.1 says 'Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.'; p.5 supplies independent support.",
+    "prio-discretion": "Priority §3.1 allows 'some discretion for extreme situations'; pp.5 and 7 show ordinary homelessness with a recent breach termination, without an extreme-situation request."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "case_id": "E-02",
+  "outcomes": {
+    "elig-residency": "met",
+    "elig-property": "met",
+    "elig-income": "met",
+    "elig-debts": "met",
+    "elig-former-tenancy": "met",
+    "prio-category": "cannot_decide",
+    "prio-documentation": "cannot_decide",
+    "prio-discretion": "not_applicable"
+  },
+  "correct_decision": "request_information",
+  "required_reading": ["p2", "p6", "p9", "p10"],
+  "rationale": {
+    "elig-residency": "Eligibility §3.2 says 'Applicants must be an Australian citizen or have permanent residency status.'; p.3 records citizenship and Darwin residence.",
+    "elig-property": "Eligibility §3.1.1 says 'applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing.'; p.4 declares no interest.",
+    "elig-income": "Identification and Documentation §3.2 says 'The CEO (Housing) requires evidence of income and assets to determine eligibility for social housing, private rental bond assistance, and to calculate rent.'; p.5 records the statement received.",
+    "elig-debts": "Eligibility §3.4 says 'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).'; p.7 records no debt.",
+    "elig-former-tenancy": "Eligibility §3.5 refers to 'Former social housing tenants'; p.8 finds no former tenancy, so the exclusion does not arise.",
+    "prio-category": "Priority §3 lists 'At risk of homelessness;' as urgent need; pp.2 and 9 contain only the applicant's unconfirmed claim, so the category remains undecided.",
+    "prio-documentation": "Priority §3.1 says 'Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.'; pp.6 and 10 show the requested support is still absent.",
+    "prio-discretion": "Priority §3.1 allows 'some discretion for extreme situations'; pp.2 and 9 provide no extreme-situation basis for a referral."
+  }
+}

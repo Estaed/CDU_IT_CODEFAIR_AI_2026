@@ -22,3 +22,8 @@ Wave 3 (2026-10-03). Width 2: Task-10 and Task-11 run together (disjoint OWNS, n
 
 - [x] Task-10: The evaluation: mutation set, held-out file, ablation, benchmark release (codex)
 - [x] Task-11: Review screen as an answer key: the file itself, highlighted by question (codex)
+
+Wave 4 (2026-10-03). Width 2: Task-12 and Task-13 run together (disjoint OWNS). Codex `gpt-6.1-sol`.
+
+- [ ] Task-12: False alarms, round 2: values in the passage, date ranges, suggestions; H-01 after changes (codex)
+- [ ] Task-13: Light by default, wait-time context on the case header, a cleaner record (codex)

@@ -38,7 +38,9 @@ and `notes.md` keeps a one-line link.
 - **Input:**
   - one applicant file, synthetic, about 60 pages;
   - five real NT public-housing policies: Priority housing, Eligibility, Identification and
-    documentation, DFV, and Discretionary decision making.
+    documentation, DFV, and Discretionary decision making;
+  - one real open dataset for context on the case header: NT urban public housing wait times
+    (CC BY, data to 31 Dec 2020).
 - **Evidence map, per decisive policy clause:**
   - verbatim quotes first, then Claude's claims;
   - claim checks: quote not found / checker disagrees / contradicted by another passage / supported;
@@ -77,8 +79,13 @@ Readmark finds real errors in a summary we did not write, while keeping required
 fewer on the demo file.
 - **How it will be tested:** the frozen summary under audit plus a held-out file that Codex writes
   before the first pipeline run, which no Claude stage sees in advance.
-- **Result:** due after wave 3 (2026-10-03: first signal on the demo summary, 2 real errors among
-  22 flags, n=95 claims; the held-out run is in wave 3).
+- **Result (2026-10-03, wave 3):**
+  - required reading stayed at 8 or fewer on every file;
+  - the mutation set: 20 of 21 planted errors caught, 1 false alarm in 24 correct claims;
+  - the held-out file H-01: every gold page is flagged or cited, 4 of 8 are forced;
+  - its summary audit: 1 real error and 4 real file-inconsistency flags among 14 (9 false alarms);
+  - the summary audit's precision is weak, so Task-12 improves it, and a new held-out file comes
+    later.
 
 ### Stack
 Provisional until Task-00 writes `uv.lock`.
@@ -104,7 +111,8 @@ Provisional until Task-00 writes `uv.lock`.
   - `ingest/`: PDF or text to numbered passages, and SHA-256 pins;
   - `checklist/`: approved decisive clauses as YAML;
   - `writer/`;
-  - `checks/`: quote present; numbers and dates appear in a cited quote;
+  - `checks/`: quote present; numbers and dates appear in a cited quote, its passage, or its
+    document's header (title and date);
   - `jev/`;
   - `audit/`: summary under audit to claims to checks;
   - `gate/`;
@@ -154,6 +162,10 @@ Provisional until Task-00 writes `uv.lock`.
 | Eye-check reference: once Tarık approves the Task-07 screen, its screenshots in `design/screens/` replace the planned `design/screens.html` (2026-10-03) | A separate static prototype: a second copy of the same screen to keep in step |
 | Review screen, after the wave 2 look (2026-10-03): the case file is the reading surface, with code-verified quotes highlighted on their page and labelled with their question (Tarık's idea, from IELTS answer keys); flagged questions first, clean ones folded to one line; "next flag" jumps between highlights; boxes and space instead of dense text | Evidence rows with the AI's sentence as the main surface: too much text, Tarık could not follow it. The rest of layout B stays |
 | The summary under audit leaves the screen and stays an evaluation number (2026-10-03) | A summary tab on screen: it shows that models err, but it does not help the officer decide |
+| The number and date check also accepts a value in the cited passage or its document's header, not only in the quote (2026-10-03, after labelling H-01's audit: 5 of 9 false alarms had the value there) | Quote only: the locator's short quotes left true dates and amounts unverified |
+| H-01 is no longer held-out once the checks change after its run. Its first-run numbers stay frozen and reported as such; later numbers on it are labelled "after changes". A new held-out file is written another time (2026-10-03) | Freezing the code for good after H-01: the system is still being settled |
+| Context data: the NT "Urban Public Housing Wait Times" open dataset (CC BY, data to 31 Dec 2020) shows one line on the case header, labelled with its source and age (2026-10-03, for the datasets criterion) | Leaving it out: the only real open dataset in v1 besides the policies |
+| Light mode is the default. The final look will follow comparable caseworker tools rather than Tarik Base, and the interface is the last job of v1 (2026-10-03) | Dark Tarik Base as the default |
 
 ### Constraints
 - No real person's data in any document. No AustLII material as model input.

@@ -86,6 +86,7 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         for cid in sorted(ids - {"stub", "eval"}):
             v = view(cid)
             spec = load_question_list(case_question_list(cid))
+            words = rec.wording(spec)
             clauses = [c for c in v["clauses"] if c["clause_id"] != "other"]
             claims = {c["claim_id"]: c for c in v["claims"]}
             required = {cid for r in v["required_reading"] for cid in r["clause_ids"]}
@@ -93,7 +94,9 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                      if c["contradictions"] or c["missing"]
                      or c["coverage"] == "no_evidence_in_file" or c["clause_id"] in required
                      or any(claims[q]["status"] != "supported" for q in c["claim_ids"])]
-            result.append({"case_id": cid, "name": v["case"].get("title") or f"Applicant file {cid}",
+            result.append({"case_id": cid,
+                           "name": v["case"].get("title") or f"{words['labels']['case_noun']} {cid}",
+                           **words,
                            "pages": v["case"]["pages"],
                            "documents": v["case"].get("documents", []),
                            "question_list": {"id": spec["id"], "title": spec["title"]},
@@ -108,7 +111,8 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         cid = selected(request)
         view(cid)
         spec = load_question_list(case_question_list(cid))
-        return {"id": spec["id"], "title": spec["title"], "policies": spec["policies"]}
+        return {"id": spec["id"], "title": spec["title"], "policies": spec["policies"],
+                **rec.wording(spec)}
 
     @app.get("/api/view")
     def get_view(request: Request):
@@ -123,8 +127,11 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                 "signed": signed(cid) if cid else None}
 
     @app.get("/api/context")
-    def get_context():
+    def get_context(request: Request):
         # This historical context stays separate from the view, checks and decision record.
+        cid = selected(request)
+        if case_question_list(cid) != "nt-priority-housing":
+            return None
         with (DATA / "context" / "urban-public-housing-2020-12.csv").open(
                 encoding="utf-8-sig", newline="") as file:
             rows = [row for row in csv.reader(file) if row and any(row)]
@@ -175,7 +182,8 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         if signed(cid):
             raise HTTPException(409, "This case already has a signed decision record.")
         try:
-            record = rec.build(payload, view(cid), opened_seconds=opened_seconds)
+            record = rec.build(payload, view(cid), opened_seconds=opened_seconds,
+                               question_list=load_question_list(case_question_list(cid)))
         except rec.RecordError as exc:
             return JSONResponse({"problems": exc.problems}, status_code=422)
         rec.save(record, record_folder(cid))

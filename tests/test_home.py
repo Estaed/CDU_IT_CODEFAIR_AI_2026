@@ -6,9 +6,10 @@ import shutil
 
 import pytest
 from playwright.sync_api import expect, sync_playwright
-from test_screen import A0142, FAST_OPEN, serving, wait_until_opened
+from test_screen import A0142, DOMAIN_SHOTS, FAST_OPEN, LABELLED_CASES, serving, wait_until_opened
 
 from readmark import ROOT
+from readmark import record as rec
 from readmark.__main__ import main
 from readmark.checklist import case_question_list, load_question_list
 
@@ -24,6 +25,83 @@ def home_runs(tmp_path):
         target.mkdir(parents=True)
         shutil.copyfile(source, target / "view.json")
     return runs
+
+
+@pytest.mark.parametrize("include_examples", [False, True])
+def test_home_discovers_cases_with_or_without_optional_examples(include_examples, home_runs,
+                                                               tmp_path):
+    subset = tmp_path / "subset"
+    subset.mkdir()
+    for source in home_runs.glob("*/view.json"):
+        spec = load_question_list(case_question_list(source.parent.name))
+        if not include_examples and spec.get("labels"):
+            continue
+        target = subset / source.parent.name
+        target.mkdir()
+        shutil.copyfile(source, target / "view.json")
+    expected = {p.parent.name for p in subset.glob("*/view.json")} - {"stub", "eval"}
+    with serving(None, None, None, runs_root=subset) as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        page.goto(base)
+        expect(page.get_by_role("heading", name="All cases", exact=True)).to_be_visible()
+        assert set(page.get_by_test_id("home-case").evaluate_all(
+            "rows => rows.map(row => row.dataset.case)")) == expected
+        browser.close()
+
+
+@pytest.mark.parametrize("case_id", LABELLED_CASES)
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_home_selected_case_and_completed_decision_use_list_words(case_id, width, home_runs):
+    spec = load_question_list(case_question_list(case_id))
+    words = rec.wording(spec)
+    labels, decisions = words["labels"], words["decisions"]
+    name = f"{labels['case_noun']} {case_id}"
+    with serving(None, None, None, runs_root=home_runs) as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        page.goto(base)
+        row = page.locator(f'[data-testid="home-case"][data-case="{case_id}"]')
+        row.click()
+        expect(row).to_contain_text(name)
+        expect(page.get_by_test_id("case-summary")).to_contain_text(name)
+        expect(page.locator("#serviceDescription")).to_have_text(labels["service"])
+        expect(page.locator("#officerLabel")).to_have_text(labels["officer"])
+        for surface in (row, page.get_by_test_id("case-summary"), page.get_by_test_id("service-band")):
+            assert not any(word.lower() in surface.inner_text().lower() for word in (
+                "Applicant file", "Priority housing", "Delegated officer", "Darwin urban"))
+        DOMAIN_SHOTS.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(DOMAIN_SHOTS / f"{case_id}-home-{width}.png"), full_page=True)
+        page.get_by_test_id("open-case").click()
+        expect(page.locator("h1")).to_have_text(name)
+        expect(page.get_by_test_id("wait-context")).to_be_hidden()
+        # Exercise each saved decision, using only temporary records and the real record builder.
+        view = json.loads((home_runs / case_id / "view.json").read_text(encoding="utf-8"))
+        for decision, label in decisions.items():
+            payload = {
+                "decision": decision, "reason": "Review completed against the selected questions.",
+                "clause_outcomes": {c["clause_id"]: "cannot_decide" for c in view["clauses"]
+                                   if c["clause_id"] != "other"},
+                "passages_opened": [{"passage_id": r["passage_id"],
+                                     "opened_at": "2026-10-03T04:30:00Z", "seconds_in_view": 3}
+                                    for r in view["required_reading"]],
+            }
+            record = rec.build(payload, view)
+            directory = home_runs / case_id / "records"
+            for path in directory.glob("*"):
+                path.unlink()
+            rec.save(record, directory)
+            page.goto(base + "/?home=1")
+            row = page.get_by_role("region", name="Completed").locator(
+                f'[data-case="{case_id}"]')
+            expect(row).to_contain_text(name)
+            expect(row).to_contain_text(label)
+            row.click()
+            expect(page.get_by_test_id("case-summary")).to_contain_text(label)
+            page.get_by_test_id("open-case").click()
+            expect(page.locator("body")).to_contain_text(label)
+            expect(page.locator("body")).to_contain_text(name)
+        browser.close()
 
 
 def test_cli_home_default_and_direct_case(monkeypatch):
@@ -207,6 +285,11 @@ def test_policy_dialog_and_passage_cache_follow_each_cases_question_list(
             page = browser.new_page()
             page.goto(base + "/?case=A-0142")
             page.get_by_test_id("intro-dismiss").click()
+            # A non-housing list without optional wording still uses the original labels.
+            expect(page.locator("#caseNoun")).to_have_text(rec.LABELS["case_noun"])
+            expect(page.locator("#serviceDescription")).to_have_text(rec.LABELS["service"])
+            expect(page.locator("#officerLabel")).to_have_text(rec.LABELS["officer"])
+            expect(page.get_by_test_id("wait-context")).to_be_hidden()
             page.get_by_test_id("about-btn").click()
             policies = page.get_by_test_id("about").locator(".pol")
             expect(policies).to_have_text("Assessment policy, version 1, approved 3 Oct 2026")
@@ -223,6 +306,16 @@ def test_policy_dialog_and_passage_cache_follow_each_cases_question_list(
             lists = page.request.get(base + "/api/cases").json()["cases"]
             assert next(c for c in lists if c["case_id"] == "A-0142")["question_list"] == {
                 "id": "extension-test", "title": "Assessment extensions"}
+            page.evaluate("""() => {
+                S.view.required_reading = [];
+                S.outcomes = Object.fromEntries(decisive().map(c => [c.clause_id, 'met']));
+                S.sel = 'signoff'; render();
+            }""")
+            expect(page.get_by_test_id("form-helper")).to_have_text(
+                "Write it so the applicant could read and challenge it.")
+            for key, label in rec.DECISIONS.items():
+                expect(page.locator("label").filter(has=page.get_by_test_id(
+                    f"decision-{key}"))).to_have_text(label)
             browser.close()
     finally:
         server._policy_text.cache_clear()

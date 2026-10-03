@@ -18,11 +18,17 @@ from datetime import datetime, tzinfo
 from pathlib import Path
 
 from readmark import WEB_DIR, dumps
+from readmark.checklist import case_question_list, load_question_list
 
 DECISIONS = {
     "approve": "Approve priority housing",
     "decline": "Decline",
     "request_information": "Request more information",
+}
+LABELS = {
+    "service": "Priority housing review · Darwin urban",
+    "case_noun": "Applicant file",
+    "officer": "Delegated officer",
 }
 OUTCOMES = {"met": "Met", "not_met": "Not met", "cannot_decide": "Cannot decide yet"}
 RECORD_ID = re.compile(r"^[0-9A-Za-z-]{1,64}$")
@@ -31,6 +37,12 @@ OPENED_NOTE = (f"A passage counts as opened after {OPENED_SECONDS} seconds in vi
                "across visits. Opening a passage is recorded; it does not prove it was read.")
 # The same light-only government look as the screen; no separate export stylesheet.
 STYLE_FILES = ("theme.css",)
+
+
+def wording(question_list: dict) -> dict:
+    """Merge optional list wording with the existing housing labels, key by key."""
+    return {"labels": LABELS | question_list.get("labels", {}),
+            "decisions": DECISIONS | question_list.get("decisions", {})}
 
 
 class RecordError(ValueError):
@@ -99,8 +111,11 @@ def validate(payload: dict, view: dict, opened_seconds: float = OPENED_SECONDS) 
 
 
 def build(payload: dict, view: dict, now: datetime | None = None,
-          opened_seconds: float = OPENED_SECONDS) -> dict:
+          opened_seconds: float = OPENED_SECONDS, question_list: dict | None = None) -> dict:
     validate(payload, view, opened_seconds)
+    spec = question_list if question_list is not None else load_question_list(
+        case_question_list(view["case"]["case_id"]))
+    words = wording(spec)
     signed_at = (now or datetime.now().astimezone()).isoformat(timespec="seconds")
     view_sha = hashlib.sha256(dumps(view).encode("utf-8")).hexdigest()
     required = [i["passage_id"] for i in view["required_reading"]]
@@ -112,6 +127,8 @@ def build(payload: dict, view: dict, now: datetime | None = None,
     return {
         "record_id": record_id,
         "case_id": view["case"]["case_id"],
+        # Freeze the trusted list wording at signing, so later list edits cannot relabel a record.
+        **words,
         "integrity": {
             "case_sha256": view["case"]["sha256"],
             "case_note": "SHA-256 of the synthetic case file used for these checks.",
@@ -119,7 +136,7 @@ def build(payload: dict, view: dict, now: datetime | None = None,
             "view_note": "SHA-256 of the review view at signing, including checks and models.",
         },
         "signed_at": signed_at,
-        "officer": str(payload.get("officer") or "Delegated officer"),
+        "officer": str(payload.get("officer") or words["labels"]["officer"]),
         "decision": payload["decision"],
         "reason": str(payload["reason"]).strip(),
         "clause_outcomes": [
@@ -178,7 +195,8 @@ def for_export(record: dict) -> dict:
     return {
         **{k: v for k, v in record.items()
            if k not in ("clause_outcomes", "passages_opened", "disputes", "decision")},
-        "decision": DECISIONS[record["decision"]],
+        "case_name": f"{record.get('labels', LABELS)['case_noun']} {record['case_id']}",
+        "decision": record.get("decisions", DECISIONS)[record["decision"]],
         "answers_label": "Your answers to the questions",
         "question_answers": [{"question": o["title"], "answer": OUTCOMES[o["outcome"]]}
                              for o in record["clause_outcomes"]],
@@ -230,6 +248,11 @@ def _record_quotes(citations: list[dict]) -> str:
 
 def to_html(record: dict) -> str:
     e = html.escape
+    labels = record.get("labels", LABELS)
+    service = ("Priority housing review" if labels["service"] == LABELS["service"]
+               else labels["service"])
+    noun = ("applicant file" if labels["case_noun"] == LABELS["case_noun"]
+            else labels["case_noun"])
     signed = datetime.fromisoformat(record["signed_at"])
     if signed.tzinfo is None:
         signed = signed.astimezone()
@@ -266,10 +289,10 @@ def to_html(record: dict) -> str:
 {styles()}
 </style></head>
 <body class="doc"><header class="service-band"><div><b>Readmark</b>
-<div>Priority housing review · Decision record</div></div></header><main class="rec rec-doc">
-<div class="rec-head"><h2>Decision record, applicant file {e(record['case_id'])}</h2>
+<div>{e(service)} · Decision record</div></div></header><main class="rec rec-doc">
+<div class="rec-head"><h2>Decision record, {e(noun)} {e(record['case_id'])}</h2>
 <span class="tag done">Signed</span></div>
-<div class="rec-dec">{e(DECISIONS[record['decision']])}</div>
+<div class="rec-dec">{e(record.get('decisions', DECISIONS)[record['decision']])}</div>
 <dl class="rec-dl"><dt>Reason</dt><dd><div class="rec-reason">{e(record['reason'])}</div></dd>
 <dt>Signed</dt><dd><span class="mono">{e(when)}</span> by {e(record['officer'])}</dd>
 <dt>Times</dt><dd>All times on this record are in {zone}, the zone it was signed in.</dd>

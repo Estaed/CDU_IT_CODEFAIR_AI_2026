@@ -39,8 +39,8 @@ const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 // is a word with its own icon, so colour is never the only signal.
 const OUTCOMES = [['met', 'Met', 'check'], ['not_met', 'Not met', 'x'], ['cannot_decide', 'Cannot decide yet', 'pause']];
 const OUTCOME_LABEL = Object.fromEntries(OUTCOMES.map(([v, l]) => [v, l]));
-const DECISIONS = [['approve', 'Approve priority housing'], ['decline', 'Decline'], ['request_information', 'Request more information']];
-const DECISION_LABEL = Object.fromEntries(DECISIONS);
+const decisionLabel = (value) => S.questionList.decisions[value];
+const caseNoun = () => S.questionList.labels.case_noun;
 const POLICY_SHORT = { eligibility: 'Eligibility', priority: 'Priority', identification: 'Identification', dfv: 'Domestic and family violence', discretion: 'Discretionary decisions' };
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const INTRO_KEY = 'readmark-intro-dismissed';
@@ -285,7 +285,7 @@ function quoteHtml(claim, c, testid = 'quote') {
 function renderBar() {
   const v = S.view;
   $('caseId').textContent = v.case.case_id;
-  $('caseFacts').textContent = `${v.case.pages} pages · ${v.case.synthetic ? 'synthetic case' : 'applicant file'}`;
+  $('caseFacts').textContent = `${v.case.pages} pages · ${v.case.synthetic ? 'synthetic case' : caseNoun().toLowerCase()}`;
   const n = nextAction();
   let label;
   let hint;
@@ -303,7 +303,7 @@ function renderBar() {
 function renderJob() {
   const v = S.view;
   $('job').innerHTML = `<b>Your job:</b> decide this application. Open each flagged passage, set all ${num(decisive().length)} question outcomes, then sign.`;
-  document.title = `Readmark · Applicant file ${v.case.case_id}`;
+  document.title = `Readmark · ${caseNoun()} ${v.case.case_id}`;
 }
 
 // ---- First-run panel, recallable with "How this works" ----
@@ -418,7 +418,7 @@ function clauseView(cl) {
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
     ${warning ? `<section class="warning-box" data-testid="question-warning"><span class="task-icon flag">!</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'note' : 'notes'}. <button class="act" data-act="claims">Show AI notes</button></section>` : ''}
-    <div class="question-split"><section class="reader" id="reader" aria-label="Applicant file pages"></section>
+    <div class="question-split"><section class="reader" id="reader" aria-label="${esc(caseNoun())} pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
         <fieldset><legend>Is this question met?</legend><div class="opts">${OUTCOMES.map(([val, lab]) => `<label class="outcome-radio"><input type="radio" name="outcome" value="${val}" data-act="outcome" data-arg="${esc(id)}" data-val="${val}" data-outcome="${val}" data-testid="outcome-${esc(id)}-${val}"${o === val ? ' checked' : ''}${S.signed ? ' disabled' : ''}>${lab}</label>`).join('')}</div></fieldset>
         <span class="sr" data-testid="outcome-state">${o ? esc(OUTCOME_LABEL[o]) : 'not set'}</span>
@@ -477,10 +477,10 @@ function signoffView() {
     <div class="eyebrow">Sign off</div>
     <h2>Your decision</h2>
     <p class="lead">Every flagged passage is opened and all ${num(decisive().length)} outcomes are set. The decision and the reason are yours: Readmark makes no recommendation.</p>
-    <fieldset><legend>Decision</legend><div class="opts">${DECISIONS.map(([val, lab]) => `<label class="opt"><input type="radio" name="decision" value="${val}" data-testid="decision-${val}"${S.decision === val ? ' checked' : ''}>${lab}</label>`).join('')}</div></fieldset>
+    <fieldset><legend>Decision</legend><div class="opts">${Object.entries(S.questionList.decisions).map(([val, lab]) => `<label class="opt"><input type="radio" name="decision" value="${val}" data-testid="decision-${val}"${S.decision === val ? ' checked' : ''}>${esc(lab)}</label>`).join('')}</div></fieldset>
     <label class="flabel" for="reason">Reason <span class="rq">Required</span></label>
     <textarea id="reason" data-testid="reason" placeholder="Why this decision, in your words. Name the questions and pages you relied on.">${esc(S.reason)}</textarea>
-    <div class="helper ${S.formErr ? 'err' : ''}" data-testid="form-helper">${S.formErr ? `${icon('alert')}${esc(S.formErr)}` : 'Write it so the applicant could read and challenge it.'}</div>
+    <div class="helper ${S.formErr ? 'err' : ''}" data-testid="form-helper">${S.formErr ? `${icon('alert')}${esc(S.formErr)}` : caseNoun() === 'Applicant file' ? 'Write it so the applicant could read and challenge it.' : 'Write it so the person requesting a decision could read and challenge it.'}</div>
     <div class="dlg-actions"><button class="btn-primary" data-act="continue" data-testid="continue-btn">Check your answers${icon('arrow')}</button></div>
   </section>`;
 }
@@ -498,7 +498,7 @@ function checkView() {
     <h2>Check your answers before signing</h2>
     <p class="lead">Signing locks the record. Change anything below first.</p>
     <dl class="cya">
-      <div class="cya-row"><dt>Decision</dt><dd data-testid="cya-decision">${esc(DECISION_LABEL[S.decision])}</dd><dd class="cya-act">${change('change-decision', '', 'decision')}</dd></div>
+      <div class="cya-row"><dt>Decision</dt><dd data-testid="cya-decision">${esc(decisionLabel(S.decision))}</dd><dd class="cya-act">${change('change-decision', '', 'decision')}</dd></div>
       <div class="cya-row"><dt>Reason</dt><dd>${esc(S.reason)}</dd><dd class="cya-act">${change('change-decision', '', 'reason')}</dd></div>
     </dl>
     <div class="sec-h"><span>Your answers to the questions</span></div><dl class="cya">${outcomes}</dl>
@@ -523,8 +523,8 @@ function recordView() {
   const disputes = record.disputes.map((d) => `<li><div class="c">${icon('flag')}${esc(d.clause || '')}</div><span class="tag ai">AI note</span> “${esc(d.claim || '')}”${recordQuotes(d.citations || [])}<p>${esc(d.check_result || '')}</p><div><b>Your reason:</b> ${esc(d.reason)}</div></li>`).join('');
   return `<section class="rec" data-testid="record">
     <div class="rec-head"><h2>${icon('lock')}Decision record</h2><span class="tag done">${icon('check')}Signed</span></div>
-    <div class="rec-dec">${esc(DECISION_LABEL[record.decision])}</div>
-    <dl class="rec-dl"><dt>File</dt><dd>Applicant file ${esc(record.case_id)}</dd>
+    <div class="rec-dec">${esc(record.decisions?.[record.decision] || decisionLabel(record.decision))}</div>
+    <dl class="rec-dl"><dt>File</dt><dd>${esc(record.labels?.case_noun || caseNoun())} ${esc(record.case_id)}</dd>
       <dt>Reason</dt><dd><div class="rec-reason">${esc(record.reason)}</div></dd>
       <dt>Signed</dt><dd>${num(esc(fmtStamp(record.signed_at)))} by ${esc(record.officer)}</dd></dl>
     <h4>Your answers to the questions</h4>
@@ -689,7 +689,7 @@ function renderReader() {
   if (S.fullFile) content = S.pages.map(pageHtml).join('');
   else if (!active) content = '<p class="empty-file">Evidence not found. No page is cited for this question. Missing evidence does not mean “not met”.</p>';
   else content = pageHtml(S.pages.find((p) => p.page === active.page));
-  if (S.fullFile && inlineReader) inlineReader.innerHTML = '<p class="empty-file">The full applicant file is open.</p>';
+  if (S.fullFile && inlineReader) inlineReader.innerHTML = `<p class="empty-file">The full ${esc(caseNoun().toLowerCase())} is open.</p>`;
   reader.innerHTML = `${S.fullFile ? `<div class="reader-head"><span id="fileContext">Exact quotes marked by question</span></div>
     <div class="file-controls"><button class="act" data-act="previous-flag" data-testid="previous-flag"${S.signed || !flags.length ? ' disabled' : ''}>Previous flag</button>
       <span class="flag-position" data-testid="flag-position">${index < 0 ? `${flags.length} highlights to check` : `Flag ${index + 1} of ${flags.length}`}</span>
@@ -942,7 +942,7 @@ function doNext() {
 async function confirmSign() {
   pause();
   const payload = {
-    officer: 'Delegated officer',
+    officer: S.questionList.labels.officer,
     decision: S.decision,
     reason: S.reason.trim(),
     clause_outcomes: S.outcomes,
@@ -1099,13 +1099,6 @@ $('detail').innerHTML = '<div class="skel skel-head"></div><div class="skel skel
 
 // Context has its own request: an unavailable context file cannot block case review.
 function loadCase() {
-fetch('/api/context').then((r) => {
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return r.json();
-}).then((context) => {
-  $('waitContext').innerHTML = `${esc(context.label)} · <a href="${esc(context.source_url)}" target="_blank" rel="noopener">NT open data, Dec 2020</a> · historical, not priority-specific`;
-}).catch(() => { $('waitContext').textContent = 'Historical housing context unavailable.'; });
-
 Promise.all(['/api/view', '/api/case-pages', '/api/settings', '/api/question-list'].map((url) => fetch(caseApi(url))
   .then(async (r) => { if (!r.ok) throw new Error((await r.json()).detail || `HTTP ${r.status}`); return r.json(); })))
   .then(([v, file, settings, questionList]) => {
@@ -1113,10 +1106,24 @@ Promise.all(['/api/view', '/api/case-pages', '/api/settings', '/api/question-lis
     activeCase = v.case.case_id;
     S.draftKey = settings.draft_key;
     S.questionList = questionList;
-    if (questionList.id !== 'nt-priority-housing') {
+    $('caseNoun').textContent = caseNoun();
+    $('officerLabel').textContent = questionList.labels.officer;
+    $('serviceDescription').textContent = questionList.labels.service;
+    if (questionList.labels.service !== 'Priority housing review · Darwin urban') {
       $('serviceContext').innerHTML = 'Case review<br>Demonstration service';
-      $('serviceDescription').textContent = questionList.title;
-      $('waitContext').hidden = true;
+    }
+    $('fullFile').setAttribute('aria-label', `Full ${caseNoun().toLowerCase()}`);
+    $('fullFileTitle').textContent = `${caseNoun()} · all pages`;
+    $('waitContext').hidden = questionList.id !== 'nt-priority-housing';
+    if (!$('waitContext').hidden) {
+      fetch(caseApi('/api/context')).then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      }).then((context) => {
+        $('waitContext').innerHTML = `${esc(context.label)} · <a href="${esc(context.source_url)}" target="_blank" rel="noopener">NT open data, Dec 2020</a> · historical, not priority-specific`;
+      }).catch(() => { $('waitContext').textContent = 'Historical housing context unavailable.'; });
+    }
+    if (questionList.id !== 'nt-priority-housing') {
       $('reviewFooter').textContent = 'Synthetic case file. Policy text from the selected question list, read from pinned files. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it never sets a question outcome or recommends a decision.';
     }
     const draft = readCaseDraft(S.draftKey);

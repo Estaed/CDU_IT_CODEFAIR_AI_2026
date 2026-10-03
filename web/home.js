@@ -13,6 +13,7 @@ async function showHome() {
   document.title = 'Readmark · All cases';
   $('serviceContext').innerHTML = 'Case review<br>Demonstration service';
   $('serviceDescription').textContent = 'Evidence and decisions';
+  $('officerLabel').textContent = 'Officer';
   $('home').innerHTML = '<p role="status">Loading cases…</p>';
   try {
     const response = await fetch('/api/cases');
@@ -48,6 +49,8 @@ async function showHome() {
         return;
       }
       const c = selected;
+      $('serviceDescription').textContent = c.labels.service;
+      $('officerLabel').textContent = c.labels.officer;
       const documents = c.documents.map((d) => `<li><span>${esc(d.doc_title)}</span><span class="sub">Page ${d.page} · ${esc(fmtDate(d.doc_date))}</span></li>`);
       $('caseSummary').innerHTML = `<div class="eyebrow">${c.evaluation ? 'Evaluation file' : c.signed ? 'Completed' : 'In progress'}</div>
         <h2>${esc(c.name)}</h2><p class="home-progress">${esc(status(c))}</p>

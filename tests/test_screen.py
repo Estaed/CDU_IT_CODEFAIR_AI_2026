@@ -4,12 +4,14 @@ import csv
 import hashlib
 import html
 import json
+import os
 import re
 import socket
 import threading
 import time
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
 import pytest
 import uvicorn
@@ -17,6 +19,7 @@ from conftest import needs_pdfs
 
 from readmark import ROOT, dumps
 from readmark import record as rec
+from readmark.checklist import case_question_list, load_question_list
 from readmark.serve import create_app
 from readmark.ingest import case_passages
 
@@ -79,6 +82,11 @@ def _free_port() -> int:
 # proven once, on the real clock, in test_opening_accumulates_three_visible_seconds_across_visits.
 FAST_OPEN = 0.3
 
+# Discover optional examples from replay views; the gate also runs before S-01 is integrated.
+LABELLED_CASES = [path.parent.name for path in sorted((ROOT / "runs").glob("*/view.json"))
+                  if load_question_list(case_question_list(path.parent.name)).get("labels")]
+DOMAIN_SHOTS = ROOT / ".tmp/shots/wave8b"
+
 
 @contextmanager
 def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN, runs_root=None):
@@ -95,10 +103,151 @@ def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN, runs_root=N
         time.sleep(0.05)
     assert srv.started, "server did not start"
     try:
-        yield f"http://127.0.0.1:{port}"
+        # Chromium on Windows can otherwise write debug.log into the repository root.
+        shots = ROOT / ".tmp/shots"
+        shots.mkdir(parents=True, exist_ok=True)
+        with patch.dict(os.environ, {"CHROME_LOG_FILE": str(shots / "chromium-debug.log")}):
+            yield f"http://127.0.0.1:{port}"
     finally:
         srv.should_exit = True
         thread.join(timeout=10)
+
+
+def test_list_wording_defaults_partial_overrides_and_frozen_record():
+    assert rec.wording({}) == {"labels": rec.LABELS, "decisions": rec.DECISIONS}
+    spec = {"labels": {"case_noun": "Review request", "officer": "Reviewer"},
+            "decisions": {"approve": "Accept request"}}
+    words = rec.wording(spec)
+    assert words["labels"] == rec.LABELS | spec["labels"]
+    assert words["decisions"] == rec.DECISIONS | spec["decisions"]
+    payload = {
+        "decision": "approve", "reason": "Evidence checked against the questions.",
+        "clause_outcomes": {c["clause_id"]: "met" for c in A0142["clauses"]
+                           if c["clause_id"] != "other"},
+        "passages_opened": [{"passage_id": r["passage_id"],
+                             "opened_at": "2026-10-03T04:30:00Z", "seconds_in_view": 3}
+                            for r in A0142["required_reading"]],
+    }
+    record = rec.build(payload, A0142, question_list=spec)
+    spec["labels"]["case_noun"] = "Changed after signing"
+    spec["decisions"]["approve"] = "Changed after signing"
+    assert record["decision"] == "approve"
+    assert record["officer"] == "Reviewer"
+    assert rec.for_export(record)["case_name"] == "Review request A-0142"
+    assert rec.for_export(record)["decision"] == "Accept request"
+    assert "Review request A-0142" in rec.to_html(record)
+    assert "Accept request" in rec.to_html(record)
+    # Records from before list labels were added still export with the original wording.
+    legacy = {k: v for k, v in record.items() if k not in {"labels", "decisions"}}
+    assert rec.for_export(legacy)["decision"] == rec.DECISIONS["approve"]
+    assert "Decision record, applicant file A-0142" in rec.to_html(legacy)
+
+
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_housing_case_keeps_its_header_identity_and_decisions(width, tmp_path):
+    from playwright.sync_api import expect, sync_playwright
+
+    with serving("A-0142", A0142_RUN, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        page.goto(base)
+        expect(page.locator("#caseNoun")).to_have_text(rec.LABELS["case_noun"])
+        expect(page.locator("#officerLabel")).to_have_text(rec.LABELS["officer"])
+        expect(page.locator("#serviceDescription")).to_have_text(rec.LABELS["service"])
+        expect(page.locator("#serviceContext")).to_have_text("NT priority housingDemonstration service")
+        expect(page.get_by_test_id("wait-context")).to_be_visible()
+        page.evaluate("""() => {
+            S.view.required_reading = [];
+            S.outcomes = Object.fromEntries(decisive().map(c => [c.clause_id, 'met']));
+            S.sel = 'signoff'; render();
+        }""")
+        assert page.locator('input[name="decision"]:checked').count() == 0
+        for key, label in rec.DECISIONS.items():
+            expect(page.locator("label").filter(has=page.get_by_test_id(
+                f"decision-{key}"))).to_have_text(label)
+        browser.close()
+
+
+@pytest.mark.parametrize("case_id", LABELLED_CASES)
+@pytest.mark.parametrize("decision", list(rec.DECISIONS))
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_case_uses_list_words_through_signing_and_exports(case_id, decision, width, tmp_path):
+    from playwright.sync_api import expect, sync_playwright
+
+    spec = load_question_list(case_question_list(case_id))
+    words = rec.wording(spec)
+    labels, decisions = words["labels"], words["decisions"]
+    run = tmp_path / "run"
+    run.mkdir()
+    view = json.loads((ROOT / "runs" / case_id / "view.json").read_text(encoding="utf-8"))
+    (run / "view.json").write_text(dumps(view), encoding="utf-8", newline="\n")
+    forbidden = ["Applicant file", "Priority housing", "Delegated officer", "Darwin urban"]
+    with serving(case_id, run, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        errors = []
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        page.goto(base)
+        expect(page.locator("h1")).to_have_text(f"{labels['case_noun']} {case_id}")
+        expect(page.locator("#serviceDescription")).to_have_text(labels["service"])
+        expect(page.locator("#officerLabel")).to_have_text(labels["officer"])
+        expect(page.get_by_test_id("wait-context")).to_be_hidden()
+        assert page.request.get(base + "/api/context").json() is None
+        assert not any(word.lower() in page.locator("body").inner_text().lower()
+                       for word in forbidden)
+        assert page.locator('input[data-outcome]:checked').count() == 0
+        page.get_by_test_id("intro-dismiss").click()
+        if decision == "request_information":
+            DOMAIN_SHOTS.mkdir(parents=True, exist_ok=True)
+            page.screenshot(path=str(DOMAIN_SHOTS / f"{case_id}-case-{width}.png"), full_page=True)
+        page.get_by_test_id("open-full-file").click()
+        expect(page.get_by_role("dialog", name=f"Full {labels['case_noun'].lower()}"))\
+            .to_contain_text(f"{labels['case_noun']} · all pages")
+        page.get_by_role("button", name="Back to question", exact=True).click()
+        for item in view["required_reading"]:
+            page.evaluate("cid => selectClause(cid)", item["clause_ids"][0])
+            page.evaluate("pid => openPassage(pid)", item["passage_id"])
+            wait_until_opened(page)
+        for clause in view["clauses"]:
+            if clause["clause_id"] == "other":
+                continue
+            page.evaluate("cid => selectClause(cid)", clause["clause_id"])
+            page.get_by_test_id(f"outcome-{clause['clause_id']}-cannot_decide").check()
+        page.get_by_test_id("sign-btn").click()
+        assert page.locator('input[name="decision"]:checked').count() == 0
+        for key, label in decisions.items():
+            expect(page.locator("label").filter(has=page.get_by_test_id(
+                f"decision-{key}"))).to_have_text(label)
+        page.get_by_test_id(f"decision-{decision}").check()
+        page.get_by_test_id("reason").fill("Further evidence checked against the selected questions.")
+        page.get_by_test_id("continue-btn").click()
+        expect(page.get_by_test_id("cya-decision")).to_have_text(decisions[decision])
+        if decision == "request_information":
+            page.screenshot(path=str(DOMAIN_SHOTS / f"{case_id}-check-{width}.png"), full_page=True)
+        page.get_by_test_id("confirm-sign").click()
+        expect(page.get_by_test_id("record")).to_be_visible()
+        record = page.evaluate("S.signed.record")
+        assert record["decision"] == decision
+        assert record["labels"] == labels and record["decisions"] == decisions
+        expect(page.get_by_test_id("record")).to_contain_text(f"{labels['case_noun']} {case_id}")
+        expect(page.get_by_test_id("record")).to_contain_text(labels["officer"])
+        expect(page.get_by_test_id("record")).to_contain_text(decisions[decision])
+        export = page.request.get(base + page.get_by_test_id("export-json").get_attribute("href"))
+        assert export.json()["decision"] == decisions[decision]
+        assert export.json()["case_name"] == f"{labels['case_noun']} {case_id}"
+        assert export.json()["officer"] == labels["officer"]
+        assert not any(word.lower() in export.text().lower() for word in forbidden)
+        exported = browser.new_page(viewport={"width": width, "height": 1000})
+        exported.goto(base + page.get_by_test_id("export-html").get_attribute("href"))
+        for label in (labels["service"], labels["officer"],
+                      f"{labels['case_noun']} {case_id}", decisions[decision]):
+            expect(exported.locator("body")).to_contain_text(label)
+        assert not any(word.lower() in exported.locator("body").inner_text().lower()
+                       for word in forbidden)
+        assert_no_overflow(page)
+        assert_no_overflow(exported)
+        browser.close()
+    assert errors == []
 
 
 def test_record_cannot_be_signed_past_the_lock():
@@ -789,9 +938,9 @@ def test_polish_question_words_identity_more_pages_and_warning_pairs(case_id, wi
     run = ROOT / "runs" / case_id
     view = json.loads((run / "view.json").read_text(encoding="utf-8"))
     errors = []
-    # Counts pages opened while moving between questions, so it needs the shipped clock.
-    with serving(case_id, run, tmp_path / "records",
-                 opened_seconds=rec.OPENED_SECONDS) as base, sync_playwright() as p:
+    # Test the same opening/count behaviour on the short clock; the dedicated test below
+    # proves the shipped three-second rule.
+    with serving(case_id, run, tmp_path / "records") as base, sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": width, "height": 900})
         page.on("pageerror", lambda e: errors.append(str(e)))
@@ -848,6 +997,9 @@ def test_polish_question_words_identity_more_pages_and_warning_pairs(case_id, wi
                 assert {int(n) for n in re.findall(r"\bpage (\d+)", sentence, re.I)} == {
                     n for pair in expected for n in pair}
                 polish_screenshot(page, width, "warning-pairs")
+                # Stop the previously opened passage before measuring the comparison. On the
+                # short clock it can otherwise cross its threshold between the count and click.
+                page.evaluate("() => { closePassage(); render(); }")
                 for i, pair in enumerate(actual):
                     before = page.locator("#passageCount").inner_text()
                     links.nth(i).click()
@@ -1178,11 +1330,16 @@ def test_plain_notes_sign_states_and_readable_exports(case_id, width, tmp_path):
         shot("signed-record")
         export = page.request.get(base + page.get_by_test_id("export-json").get_attribute("href"))
         assert export.json() == rec.for_export(record)
-        assert not re.search(r"clause|claim.id|\bc\d+\b", export.text(), re.I)
+        # A record's opaque digest can itself be c + digits; it is a legitimate record id,
+        # not an internal AI note id. Keep checking every other exported word and field.
+        assert not re.search(r"clause|claim.id|\bc\d+\b",
+                             export.text().replace(record["record_id"], ""), re.I)
         assert export.json()["disputes"][0]["check_result"] == rec.note_result(disputed, view)
         exported = browser.new_page(viewport={"width": width, "height": 900})
         exported.goto(base + page.get_by_test_id("export-html").get_attribute("href"))
-        assert not re.search(r"clause|claim id|\bc\d+\b", exported.locator("body").inner_text(), re.I)
+        assert not re.search(r"clause|claim id|\bc\d+\b",
+                             exported.locator("body").inner_text().replace(record["record_id"], ""),
+                             re.I)
         expect(exported.locator("body")).to_contain_text("Your answers to the questions")
         expect(exported.locator("body")).to_contain_text(rec.note_result(disputed, view))
         assert_no_overflow(exported)

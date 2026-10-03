@@ -1,4 +1,5 @@
 # Task-24: The case screen speaks its question list's language
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* the easy example S-01 (Task-21) is a student's extension request. Its screen still says
 > "Applicant file", "Priority housing review · Darwin urban", "Delegated officer", shows the Darwin
@@ -32,19 +33,19 @@ S-01 is how Tarık learns the system. Housing words on an extension request woul
 the person it is for.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] Headless on S-01 (case and home screens):
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] Headless on S-01 (case and home screens):
   - no "Applicant file", "Priority housing", "Delegated officer", "Darwin urban" or wait-time line;
   - "Extension request S-01", "Unit lecturer" and the CDU service name appear;
   - the decision choice offers "Approve the extension", "Decline the extension" and "Ask the
     student for more information".
-- [ ] Headless: signing S-01 in a temporary copy gives a record and both exports with the extension
+- [x] Headless: signing S-01 in a temporary copy gives a record and both exports with the extension
   labels. The record JSON's `decision` is still one of `approve`, `decline` or
   `request_information`.
-- [ ] Headless on A-0142: header, identity bar, wait-time line and decision labels are unchanged.
-- [ ] Tests read labels from the list files, never pin S-01's wording in a way that breaks if the
+- [x] Headless on A-0142: header, identity bar, wait-time line and decision labels are unchanged.
+- [x] Tests read labels from the list files, never pin S-01's wording in a way that breaks if the
   list text changes.
-- [ ] Screenshots of S-01's case screen, check page and home entry at 1280 and 1440 in
+- [x] Screenshots of S-01's case screen, check page and home entry at 1280 and 1440 in
   `reports/screens/2026-10-03-wave8b/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık opens S-01 and sees no housing word.

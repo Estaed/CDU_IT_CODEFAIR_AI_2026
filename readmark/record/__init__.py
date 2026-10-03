@@ -3,20 +3,16 @@
 The server checks the same lock the screen shows (every required passage opened, every clause
 outcome set by the officer) so a record can never claim a sign-off the gate did not allow. The
 record says "opened", never "read": opening a passage does not prove it was read.
-
-The HTML export is styled only by the review screen's own files (``web/tokens.css`` and
-``web/theme.css``, the Blueprint's single styling file), inlined so the export stands alone, and
-it shows every time in one zone: the one the record was signed in.
 """
 
 import hashlib
 import html
 import json
 import re
-from datetime import datetime, tzinfo
+from datetime import datetime
 from pathlib import Path
 
-from readmark import WEB_DIR, dumps
+from readmark import dumps
 
 DECISIONS = {
     "approve": "Approve priority housing",
@@ -26,41 +22,12 @@ DECISIONS = {
 OUTCOMES = {"met": "Met", "not_met": "Not met", "cannot_decide": "Cannot decide yet"}
 RECORD_ID = re.compile(r"^[0-9A-Za-z-]{1,64}$")
 OPENED_NOTE = "Opening a passage is recorded; it does not prove the passage was read."
-# The screen's styling files, in load order: the copied Tarik Base tokens, then the theme.
-STYLE_FILES = ("tokens.css", "theme.css")
 
 
 class RecordError(ValueError):
     def __init__(self, problems: list[str]):
         super().__init__("; ".join(problems))
         self.problems = problems
-
-
-def _date(iso: str) -> str:
-    """'2026-01-15' -> '15 Jan 2026'; anything else unchanged."""
-    try:
-        d = datetime.strptime(iso, "%Y-%m-%d")
-    except (TypeError, ValueError):
-        return str(iso or "")
-    return f"{d.day} {d:%b %Y}"
-
-
-def source_label(source: dict) -> str:
-    """A passage in plain words: 'Page 8, paragraph 3 · <document> (15 Jan 2026)'."""
-    if not source.get("exists"):
-        return "A passage that is not in the file"
-    if source["kind"] == "policy":
-        section = (source.get("section") or "").strip()
-        return f"{source['doc_title']}{' ' + section if section else ''}, page {source['page']}"
-    paragraph = source["passage_id"].rsplit(":", 1)[-1]
-    return (f"Page {source['page']}, paragraph {paragraph} · {source['doc_title']} "
-            f"({_date(source['doc_date'])})")
-
-
-def clause_label(clause: dict) -> str:
-    if clause["clause_id"] == "other":
-        return "Other facts"
-    return f"{clause['title']}, {clause['source']}" if clause.get("source") else clause["title"]
 
 
 def validate(payload: dict, view: dict) -> None:
@@ -81,14 +48,23 @@ def validate(payload: dict, view: dict) -> None:
             problems.append(f"Passage {pid} needs opened_at and seconds_in_view.")
     for item in view["required_reading"]:
         if item["passage_id"] not in opened:
-            label = source_label(view["sources"][item["passage_id"]]).lower()
-            problems.append(f"Open required passage {label}.")
+            problems.append(f"Open required passage {item['passage_id']}.")
     claims = {c["claim_id"] for c in view["claims"]}
     for d in payload.get("disputes") or []:
         if d.get("claim_id") not in claims or not str(d.get("reason") or "").strip():
             problems.append("Each dispute needs a known claim and a reason.")
     if problems:
         raise RecordError(problems)
+
+
+def source_label(source: dict) -> str:
+    if not source.get("exists"):
+        return f"{source['passage_id']} (not in the file)"
+    if source["kind"] == "policy":
+        return f"{source['doc_title']} {source.get('section') or ''}, p. {source['page']}".replace(
+            "  ", " ")
+    paragraph = source["passage_id"].rsplit(":", 1)[-1]
+    return f"{source['doc_title']} ({source['doc_date']}), p. {source['page']} ¶{paragraph}"
 
 
 def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
@@ -99,8 +75,6 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
     stamp = re.sub(r"[^0-9]", "", signed_at)[:14]
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
     record_id = f"{view['case']['case_id']}-{stamp}-{digest[:6]}"
-    claims = {c["claim_id"]: c for c in view["claims"]}
-    clauses = {c["clause_id"]: c for c in view["clauses"]}
     return {
         "record_id": record_id,
         "case_id": view["case"]["case_id"],
@@ -127,12 +101,9 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
             for p in payload.get("passages_opened") or []
         ],
         "required_reading": required,
-        # A dispute carries the claim's own words, so the record reads without the view.
         "disputes": [
-            {"claim_id": d["claim_id"], "claim": claims[d["claim_id"]]["claim"],
-             "clause_id": claims[d["claim_id"]]["clause_id"],
-             "clause": clause_label(clauses[claims[d["claim_id"]]["clause_id"]]),
-             "reason": str(d["reason"]).strip(), "at": str(d.get("at") or "")}
+            {"claim_id": d["claim_id"], "reason": str(d["reason"]).strip(),
+             "at": str(d.get("at") or "")}
             for d in payload.get("disputes") or []
         ],
         "models": view["models"],
@@ -140,87 +111,40 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
     }
 
 
-def _zone_name(tz: tzinfo, at: datetime) -> str:
-    offset = tz.utcoffset(at)
-    minutes = int(offset.total_seconds() // 60) if offset is not None else 0
-    sign = "+" if minutes >= 0 else "-"
-    return f"UTC{sign}{abs(minutes) // 60:02d}:{abs(minutes) % 60:02d}"
-
-
-def _in_zone(stamp: str, tz: tzinfo, day: datetime) -> str:
-    """A timestamp from the browser (UTC, 'Z') or the server, shown in the signing zone; the
-    date is added only when it differs from the signing day."""
-    try:
-        t = datetime.fromisoformat(str(stamp))
-    except ValueError:
-        return str(stamp or "")
-    t = (t if t.tzinfo else t.replace(tzinfo=tz)).astimezone(tz)
-    clock = f"{t:%H:%M:%S}"
-    return clock if t.date() == day.date() else f"{t.day} {t:%b %Y}, {clock}"
-
-
-def styles() -> str:
-    """The review screen's styling files, verbatim: the export carries no CSS of its own."""
-    return "\n".join((WEB_DIR / name).read_text(encoding="utf-8") for name in STYLE_FILES)
-
-
 def to_html(record: dict) -> str:
     e = html.escape
-    signed = datetime.fromisoformat(record["signed_at"])
-    if signed.tzinfo is None:
-        signed = signed.astimezone()
-    tz = signed.tzinfo
-    zone = _zone_name(tz, signed)
     outcomes = "".join(
-        f"<tr><td>{e(o['title'])}</td><td class=\"r\">{e(OUTCOMES[o['outcome']])}</td></tr>"
+        f"<tr><td>{e(o['title'])}</td><td>{e(OUTCOMES[o['outcome']])}</td></tr>"
         for o in record["clause_outcomes"]
     )
     opened = "".join(
-        f"<tr><td>{e(p['label'])}<div class=\"sub\">{'Required' if p['required'] else 'Optional'}"
-        f"</div></td><td class=\"r mono\">{e(_in_zone(p['opened_at'], tz, signed))}</td>"
-        f"<td class=\"r mono\">{p['seconds_in_view']:.1f} s</td></tr>"
+        f"<tr><td>{e(p['label'])}{' (required)' if p['required'] else ''}</td>"
+        f"<td>{e(p['opened_at'])}</td><td>{p['seconds_in_view']:.1f} s</td></tr>"
         for p in record["passages_opened"]
-    ) or "<tr><td colspan=\"3\">None</td></tr>"
+    ) or "<tr><td colspan=3>None</td></tr>"
     disputes = "".join(
-        f"<li><div class=\"c\">{e(d.get('clause') or '')} · disputed at "
-        f"<span class=\"mono\">{e(_in_zone(d['at'], tz, signed))}</span></div>"
-        f"<span class=\"tag ai\">AI claim</span> “{e(d.get('claim') or '')}”"
-        f"<div><b>Reason:</b> {e(d['reason'])}</div></li>"
-        for d in record["disputes"]
-    )
-    disputes = (f"<ul class=\"rec-disp\">{disputes}</ul>" if disputes
-                else "<p class=\"note\">The officer disputed no AI claim.</p>")
+        f"<li>{e(d['claim_id'])}: {e(d['reason'])}</li>" for d in record["disputes"]
+    ) or "<li>None</li>"
     m = record["models"]
-    when = f"{signed.day} {signed:%b %Y}, {signed:%H:%M:%S}"
     return f"""<!doctype html>
-<html lang="en" data-theme="light"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Decision record {e(record['record_id'])}</title>
-<style>
-{styles()}
-</style></head>
-<body class="doc"><main class="rec rec-doc">
-<div class="rec-head"><h2>Decision record, applicant file {e(record['case_id'])}</h2>
-<span class="tag done">Signed</span></div>
-<div class="rec-dec">{e(record['decision_label'])}</div>
-<dl class="rec-dl"><dt>Reason</dt><dd><div class="rec-reason">{e(record['reason'])}</div></dd>
-<dt>Signed</dt><dd><span class="mono">{e(when)}</span> by {e(record['officer'])}</dd>
-<dt>Times</dt><dd>All times on this record are in {zone}, the zone it was signed in.</dd>
-<dt>Record</dt><dd><span class="mono">{e(record['record_id'])}</span>; case file SHA-256
-<span class="mono">{e(record['case_sha256'][:16])}…</span></dd></dl>
-<h4>Clause outcomes, set by the officer</h4>
-<table class="rec-t"><tbody>{outcomes}</tbody></table>
-<h4>Passages opened before signing</h4>
-<table class="rec-t"><thead><tr><th>Passage</th><th class="r">Opened ({zone})</th>
-<th class="r">Time in view</th></tr></thead><tbody>{opened}</tbody></table>
-<p class="rec-note">{e(record['note'])}</p>
-<h4>Disputed claims</h4>
-{disputes}
-<h4>About these checks</h4>
-<p class="note">Claims drafted by {e(m['writer']['name'])} ({e(str(m['writer']['model']))}),
-re-checked by {e(m['checker']['name'])} ({e(str(m['checker']['model']))}). The officer set every
-clause outcome and the decision; the tool recommends neither.</p>
-</main></body></html>
+<html lang="en"><head><meta charset="utf-8"><title>Decision record {e(record['record_id'])}</title>
+<style>body{{font:15px/1.5 system-ui,sans-serif;max-width:760px;margin:32px auto;padding:0 16px}}
+table{{border-collapse:collapse;width:100%}}td,th{{border-top:1px solid #ccc;padding:6px 8px;
+text-align:left;vertical-align:top}}h1{{font-size:22px}}h2{{font-size:16px;margin-top:24px}}
+.muted{{color:#555}}</style></head><body>
+<h1>Decision record, case {e(record['case_id'])}</h1>
+<p><strong>{e(record['decision_label'])}</strong></p>
+<p>Reason: {e(record['reason'])}</p>
+<p class="muted">Signed {e(record['signed_at'])} by {e(record['officer'])}. Record
+{e(record['record_id'])}; case file SHA-256 {e(record['case_sha256'][:16])}…</p>
+<h2>Clause outcomes, set by the officer</h2><table>{outcomes}</table>
+<h2>Passages opened before signing</h2>
+<table><tr><th>Passage</th><th>Opened at</th><th>Time in view</th></tr>{opened}</table>
+<p class="muted">{e(record['note'])}</p>
+<h2>Disputed claims</h2><ul>{disputes}</ul>
+<h2>Models</h2><p>Writer: {e(m['writer']['name'])} ({e(str(m['writer']['model']))}).
+Checker: {e(m['checker']['name'])} ({e(str(m['checker']['model']))}).</p>
+</body></html>
 """
 
 

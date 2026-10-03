@@ -9,40 +9,56 @@
 <link rel="stylesheet" href="theme.css">
 </head>
 <body>
-<header class="casebar" id="casebar" aria-label="Case">
-  <div class="wrap casebar-in">
-    <div class="case-id">
+<div class="wrap">
+  <header class="top">
+    <div>
       <div class="eyebrow">Priority housing review · Darwin</div>
       <h1>Applicant file <span class="accent" id="caseId">…</span></h1>
+      <div class="sub" id="caseSub"></div>
+      <div class="tags" id="tags"></div>
     </div>
-    <div class="counters" id="counters" aria-live="polite"></div>
-    <div class="next" id="next"></div>
-  </div>
-</header>
+    <div class="actions">
+      <div class="gate" aria-live="polite">
+        <span class="eyebrow">Required reading <span class="mono" id="gateCount">0/0</span></span>
+        <div class="segs" id="segs"></div>
+      </div>
+      <button class="btn-primary" id="signBtn" data-testid="sign-btn">Sign decision</button>
+    </div>
+  </header>
+  <div id="banner" aria-live="polite"></div>
 
-<div class="wrap">
-  <div class="jobline">
-    <p class="job" id="job">Loading the case…</p>
-    <div class="job-actions">
-      <button class="act" type="button" data-act="intro-open" data-testid="help-btn" aria-label="How this works">
-        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>How this works</button>
-      <button class="act" type="button" data-act="about-open" data-testid="about-btn">About these checks</button>
-      <button class="act muted" type="button" data-act="theme" id="themeBtn">Light mode</button>
-    </div>
+  <div class="grid">
+    <main id="left">
+      <section class="group" id="reqSection"></section>
+      <div id="clauses"></div>
+    </main>
+    <aside class="pane card" id="pane" aria-live="polite"></aside>
   </div>
-  <div class="work" id="work">
-    <nav class="rail" id="rail" aria-label="Clauses"></nav>
-    <section id="intro" aria-label="How this works"></section>
-    <div class="tabs-row"><div class="seg" role="tablist" aria-label="View" id="tabs"></div></div>
-    <main class="detail" id="detail"></main>
-    <aside class="pane" id="pane" aria-label="Source passage"></aside>
-  </div>
+
   <footer>Synthetic case file. Policy text from NT public housing policies, read from the pinned
     PDFs. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it
     never sets a clause outcome or recommends a decision.</footer>
 </div>
 
-<dialog id="about" aria-labelledby="aboutTitle" data-testid="about"></dialog>
+<div class="scrim" id="scrim">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle" data-testid="dialog">
+    <h2 id="dlgTitle">Sign the decision</h2>
+    <div class="sub">The decision is yours. The record keeps your reason, your clause outcomes,
+      your disputes and the passages you opened.</div>
+    <div class="opts" role="radiogroup" aria-label="Decision">
+      <label><input type="radio" name="decision" value="approve" data-testid="decision-approve"> Approve priority housing</label>
+      <label><input type="radio" name="decision" value="decline" data-testid="decision-decline"> Decline</label>
+      <label><input type="radio" name="decision" value="request_information" data-testid="decision-request_information"> Request more information</label>
+    </div>
+    <label class="field-label" for="reason">Reason</label>
+    <textarea id="reason" data-testid="reason" placeholder="Cite the clause and the pages you relied on."></textarea>
+    <div class="helper" id="helper">Write it so the applicant could read and challenge it.</div>
+    <div class="dialog-actions">
+      <button class="btn-secondary" id="cancel">Cancel</button>
+      <button class="btn-primary" id="confirm" data-testid="confirm-sign">Sign decision</button>
+    </div>
+  </div>
+</div>
 <script src="app.js"></script>
 </body>
 </html>

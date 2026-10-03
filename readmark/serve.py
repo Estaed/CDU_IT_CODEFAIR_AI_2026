@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 
 from readmark import WEB_DIR, case_run_dir
 from readmark import record as rec
-from readmark.ingest import IngestError, case_passages, policy_passages
+from readmark.ingest import IngestError, policy_passages
 
 
 @cache
@@ -41,20 +41,6 @@ def create_app(case_id: str, run_dir: Path | None = None,
     @app.get("/api/view")
     def get_view():
         return view()
-
-    @app.get("/api/case-pages")
-    def get_case_pages():
-        # Read only this app's synthetic case. No request parameter becomes a file path.
-        try:
-            meta, passages = case_passages(case_id)
-        except IngestError as exc:
-            raise HTTPException(503, str(exc)) from None
-        if meta["sha256"] != view()["case"]["sha256"]:
-            raise HTTPException(409, "The case file has changed since these checks were made.")
-        pages = [{"page": n, "passages": []} for n in range(1, meta["pages"] + 1)]
-        for passage in passages:
-            pages[passage["page"] - 1]["passages"].append(passage)
-        return {"case_id": case_id, "sha256": meta["sha256"], "pages": pages}
 
     @app.get("/api/passages/{passage_id}")
     def get_passage(passage_id: str):

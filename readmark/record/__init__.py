@@ -132,8 +132,6 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
             {"claim_id": d["claim_id"], "claim": claims[d["claim_id"]]["claim"],
              "clause_id": claims[d["claim_id"]]["clause_id"],
              "clause": clause_label(clauses[claims[d["claim_id"]]["clause_id"]]),
-             "citations": [dict(q, label=source_label(view["sources"][q["passage_id"]]))
-                           for q in claims[d["claim_id"]]["citations"]],
              "reason": str(d["reason"]).strip(), "at": str(d.get("at") or "")}
             for d in payload.get("disputes") or []
         ],
@@ -166,16 +164,6 @@ def styles() -> str:
     return "\n".join((WEB_DIR / name).read_text(encoding="utf-8") for name in STYLE_FILES)
 
 
-def _record_quotes(citations: list[dict]) -> str:
-    # A disputed claim keeps its evidence alongside it in a standalone export.
-    return "".join(
-        f'<blockquote class="record-quote">“{html.escape(q["quote"])}”'
-        f'<div class="sub">{html.escape(q["label"])}'
-        f'{"" if q["quote_found"] else " · Quote not found"}</div></blockquote>'
-        for q in citations
-    ) or '<p class="note">Quote not found: no quote given.</p>'
-
-
 def to_html(record: dict) -> str:
     e = html.escape
     signed = datetime.fromisoformat(record["signed_at"])
@@ -196,7 +184,6 @@ def to_html(record: dict) -> str:
     disputes = "".join(
         f"<li><div class=\"c\">{e(d.get('clause') or '')} · disputed at "
         f"<span class=\"mono\">{e(_in_zone(d['at'], tz, signed))}</span></div>"
-        f"{_record_quotes(d.get('citations', []))}"
         f"<span class=\"tag ai\">AI claim</span> “{e(d.get('claim') or '')}”"
         f"<div><b>Reason:</b> {e(d['reason'])}</div></li>"
         for d in record["disputes"]

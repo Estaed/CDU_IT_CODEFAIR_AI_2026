@@ -330,3 +330,20 @@ footer { margin-top: 16px; padding: 16px 0 28px; border-top: 1px solid var(--lin
 .upload-steps li::marker { font-weight: bold; }
 .upload-steps li[aria-current] { font-weight: bold; }
 .upload-step-state { float: right; color: var(--secondary); margin-left: 16px; }
+
+.case-search { margin: 20px 0 24px; max-width: 900px; }
+.case-search label { display: block; font-weight: bold; margin-bottom: 6px; }
+.search-controls { display: flex; gap: 12px; align-items: center; }
+.search-controls input { min-width: 0; flex: 1; padding: 10px; border: 2px solid var(--secondary); background: var(--paper); }
+.case-search .note { margin: 6px 0; }
+.search-results { max-height: 340px; overflow-y: auto; border: 1px solid var(--line); padding: 0 16px; }
+.search-document h2 { font-size: 16px; margin: 16px 0 4px; }
+.search-document h2 .note { font-weight: normal; margin-left: 8px; }
+.search-document ul { list-style: none; padding: 0; margin: 0; }
+.search-result { display: block; text-align: left; width: 100%; padding: 12px 0; border: 0; border-bottom: 1px solid var(--line); background: var(--paper); overflow-wrap: anywhere; }
+.search-location { display: block; color: var(--primary); font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.search-match { background: var(--highlight); color: var(--ink); border-bottom: 2px solid var(--highlight-edge); }
+@media (max-width: 700px) {
+  .search-controls { flex-wrap: wrap; }
+  .search-controls input { flex-basis: 100%; }
+}

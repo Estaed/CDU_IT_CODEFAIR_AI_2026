@@ -27,6 +27,18 @@
 <main class="wrap home" id="home" hidden aria-label="Case home"></main>
 <div class="wrap" id="review">
   <p class="sr" id="job">Loading the case…</p>
+  <section class="case-search" aria-label="Search this case">
+    <form id="caseSearchForm" role="search">
+      <label for="caseSearch">Search this case and its policies</label>
+      <div class="search-controls">
+        <input id="caseSearch" type="search" maxlength="200" autocomplete="off" placeholder="Search words or a phrase" data-testid="case-search" aria-describedby="searchHelp searchStatus">
+        <button class="btn-secondary" type="submit" data-testid="meaning-search">Search by meaning</button>
+      </div>
+      <p class="note" id="searchHelp">Words appear as you type. Press Enter to search the case documents by meaning when online.</p>
+    </form>
+    <p class="note" id="searchStatus" role="status" data-testid="search-status"></p>
+    <div id="searchResults" class="search-results" data-testid="search-results" hidden></div>
+  </section>
   <div class="work" id="work">
     <nav class="rail" id="rail" aria-label="Questions"></nav>
     <section id="intro" aria-label="How this works" hidden></section>
@@ -48,5 +60,6 @@
 <script src="home.js"></script>
 <script src="upload.js"></script>
 <script src="app.js"></script>
+<script src="search.js"></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 # Task-23: Search within a case: words always, meaning through Jev when online
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık asked for search across documents (2026-10-03). An officer who remembers "the March
 > statement" should find it without paging through 60 pages. On 2026-10-04 he also chose search by
@@ -40,21 +41,22 @@ Real files are long, and search is the first thing a caseworker reaches for. Mea
 what Jev adds beyond keywords, without putting the offline demo at risk.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs. The
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs. The
   gate has no key, so it proves the offline fallback.
-- [ ] Headless on A-0142, word search:
+- [x] Headless on A-0142, word search:
   - "arrears" finds pages 8 and 23 among its results;
   - clicking page 23 opens it with the match marked;
   - after 3 s in view, it counts as opened.
-- [ ] Headless: a search on S-01 returns only S-01's pages.
-- [ ] Headless: a policy word ("withheld") returns the Eligibility policy passage and opens it in the
+- [x] Headless: a search on S-01 returns only S-01's pages.
+- [x] Headless: a policy word ("withheld") returns the Eligibility policy passage and opens it in the
   policy dialog.
-- [ ] A test with a fake Jev shows meaning results merged, labelled and de-duplicated. A test with no
+- [x] A test with a fake Jev shows meaning results merged, labelled and de-duplicated. A test with no
   key shows "word search (offline)" and no error.
-- [ ] Once, by hand (orchestrator, live key): on A-0142, "March statement" by meaning puts page 23
+- [x] Once, by hand (orchestrator, live key): on A-0142, "March statement" by meaning puts page 23
   among the top 3. Record the call count and time in the wave report.
-- [ ] No policy text is written under `runs/` (`git status` clean after the tests).
-- [ ] Screenshots of word and meaning results at 1280 and 1440 in
+  *(Done 2026-10-04 04:05 on A-0142, query "March statement": word search found only p.24 (the literal phrase, 0.9 s); meaning search put p.23, the March statement, at rank 1 with Jev score 3.85, in 2.3 s.)*
+- [x] No policy text is written under `runs/` (`git status` clean after the tests).
+- [x] Screenshots of word and meaning results at 1280 and 1440 in
   `reports/screens/2026-10-05-wave10b/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık finds "the March statement" in A-0142 in under 10 s.

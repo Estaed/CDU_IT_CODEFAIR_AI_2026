@@ -85,6 +85,8 @@ const S = {
   signErr: '',
   signed: null,
   policyText: {},    // passage_id -> text, or false when the server could not read it
+  searchSources: {}, // search metadata stays separate from the frozen case view
+  searchHit: null,
   intro: !stored(INTRO_KEY),
 };
 
@@ -134,11 +136,12 @@ function closePassage() {
   S.current = null;
 }
 
-function openPassage(pid, claimIds = [], inline = false) {
+function openPassage(pid, claimIds = [], inline = false, searchHit = null) {
   if (S.signed) return;
   pause();
   if ($('policy').open) $('policy').close();
   if ($('comparison').open) $('comparison').close();
+  S.searchHit = searchHit;
   const s = src(pid);
   if (!s || !s.exists) { S.current = null; render(); return; }
   if (!S.opened[pid]) S.opened[pid] = { opened_at: null, seconds: 0 };
@@ -159,7 +162,7 @@ function openPassage(pid, claimIds = [], inline = false) {
 }
 
 // ---- The view, read in plain words ----
-const src = (pid) => S.view.sources[pid];
+const src = (pid) => S.view.sources[pid] || S.searchSources[pid];
 const claimById = (id) => S.view.claims.find((c) => c.claim_id === id);
 const clauseById = (id) => S.view.clauses.find((c) => c.clause_id === id);
 const decisive = () => S.view.clauses.filter((c) => c.clause_id !== 'other');
@@ -612,13 +615,15 @@ function pageParagraph(p, previous = []) {
     const start = p.text.indexOf(a.quote);
     return start < 0 ? [] : [{ start, end: start + a.quote.length, a }];
   });
+  const searchRanges = S.searchHit?.passage_id === p.passage_id ? S.searchHit.match_ranges : [];
   // Split overlaps at every boundary, retaining each quote's labels and claim association.
-  const bounds = [...new Set([0, p.text.length, ...ranges.flatMap((r) => [r.start, r.end])])].sort((a, b) => a - b);
+  const bounds = [...new Set([0, p.text.length, ...ranges.flatMap((r) => [r.start, r.end]), ...searchRanges.flat()])].sort((a, b) => a - b);
   let text = '';
   for (let i = 0; i < bounds.length - 1; i += 1) {
     const start = bounds[i], end = bounds[i + 1];
     const here = ranges.filter((r) => r.start <= start && r.end >= end).map((r) => r.a);
-    const words = esc(p.text.slice(start, end));
+    let words = esc(p.text.slice(start, end));
+    if (searchRanges.some(([a, b]) => a <= start && b >= end)) words = `<mark class="search-match" data-testid="search-match">${words}</mark>`;
     text += here.length ? `<mark class="${here.some((a) => a.flagged) ? 'flag-mark' : 'clean-mark'}" data-testid="verified-highlight"
       data-evidence="${here.map((a) => a.id).join(' ')}" data-claims="${[...new Set(here.flatMap((a) => a.claimIds))].join(' ')}"
       data-clauses="${[...new Set(here.map((a) => a.cid))].join(' ')}">${words}</mark>` : words;
@@ -633,7 +638,7 @@ function pageParagraph(p, previous = []) {
   const active = S.current?.pid === p.passage_id;
   return `<div class="file-paragraph ${active ? 'active-passage' : ''} ${annotations.some((a) => !a.quote) ? 'scan-passage' : ''}"
     data-testid="${active ? 'source' : 'file-paragraph'}" data-pid="${esc(p.passage_id)}">
-    ${labels ? `<div class="evidence-labels">${labels}</div>` : ''}<p>${text}</p></div>`;
+    ${S.searchHit?.passage_id === p.passage_id ? `<div class="search-location" data-testid="search-target">Search result · ${esc(S.searchHit.label)}</div>` : ''}${labels ? `<div class="evidence-labels">${labels}</div>` : ''}<p>${text}</p></div>`;
 }
 
 function pageHtml(page) {
@@ -823,7 +828,8 @@ function renderPane() {
   $('pane').innerHTML = `<div class="dlg"><div class="dlg-head"><h2>${esc(s.doc_title)}</h2>
     <button class="icon-btn" data-act="close-pane" aria-label="Close policy passage">${icon('x')}</button></div>
     <div class="sub">${esc(cap(loc(pid)))}</div><div class="v-page" data-testid="source" data-pid="${esc(pid)}">
-    ${text ? highlight(text, quotes) : text === false ? 'The pinned policy file could not be read on this machine.' : 'Reading the pinned policy file…'}</div>
+    ${S.searchHit?.passage_id === pid ? `<div class="search-location" data-testid="search-target">Search result · ${esc(S.searchHit.label)}</div>` : ''}
+    ${text ? S.searchHit?.passage_id === pid ? searchMarked(text, S.searchHit.match_ranges) : highlight(text, quotes) : text === false ? 'The pinned policy file could not be read on this machine.' : 'Reading the pinned policy file…'}</div>
     <p class="note">${esc(S.questionList.title)} · policy text read from the pinned file on demand.</p></div>`;
 }
 

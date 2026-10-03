@@ -1,4 +1,5 @@
 # Task-11: Review screen as an answer key: the file itself, highlighted by question
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık still could not follow the wave 2 screen: too much text, all of it run together.
 > His idea (2026-10-03, from IELTS answer keys) is to make the case file itself the reading
@@ -45,17 +46,17 @@ The screen is what Tarık, the judges and an officer see. A view an officer cann
 sight defeats the point of a reading gate.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] Headless Playwright on A-0142, at 1280 and 1440 wide: no console errors and no horizontal
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] Headless Playwright on A-0142, at 1280 and 1440 wide: no console errors and no horizontal
   overflow; the whole flow passes (open each required passage, set all 8 outcomes, locked before and
   unlocked after, sign, the record holds `opened_at` and `seconds_in_view` per passage, export HTML
   and JSON).
-- [ ] Headless: every verified quote of a flagged claim is highlighted in its page with its question
+- [x] Headless: every verified quote of a flagged claim is highlighted in its page with its question
   label; picking a question scrolls to its first highlight; "next flag" reaches every flagged
   highlight in order.
-- [ ] Headless: questions with nothing flagged are folded into one line at first load, and their
+- [x] Headless: questions with nothing flagged are folded into one line at first load, and their
   outcomes can still be set.
-- [ ] Headless: no summary-under-audit tab; no claim ids, model ids or the pilcrow on the main
+- [x] Headless: no summary-under-audit tab; no claim ids, model ids or the pilcrow on the main
   screen.
 - [ ] (eye) Tarık opens `uv run python -m readmark serve --case A-0142`: a first-time viewer names
   the next step within 10 seconds, and the screen reads as calm, an answer key over the real file

@@ -1,6 +1,6 @@
 # otopilot plan, 2026-10-03: wave 2 (Task-05..08)
 
-Status: **approved by Tarık, 2026-10-03 12:31 ACST.** Eye reference decided at the same time: the
+Status: **approved by Tarık, 2026-10-03, just before the plan commit `f6fa15f` (12:24 ACST).** Eye reference decided at the same time: the
 approved Task-07 screen's screenshots in `design/screens/` (Blueprint → Verification and Decisions
 updated in the plan commit).
 
@@ -60,7 +60,9 @@ OWNS, MUST NOT TOUCH and DEPENDS ON exactly as in each task file. Excluded tasks
 - **Baseline gate at `6864332`:** `uv run python scripts/gate.py` exit 0 (ruff ok, 24 passed,
   replay smoke ok).
 - Delegate auth: `claude -p --model sonnet` ping → `is_error: false`, "pong".
-- Wake lock: `uyanik_tut.py`, started on approval, PID recorded here; released at closeout.
+- Wake lock: `uyanik_tut.py`, PID 32032, no `--until` (UNTIL done); released at closeout.
+- Preflight rerun on the plan commit `f6fa15f`: OVERALL OK. Final `BASE_SHA` for wave 2a:
+  `f6fa15f325fc4f2c61466c2ad23bad17d3b794c0`.
 
 ## Quota (measured 12:19 ACST with `limit.py`)
 | Pool | 5-hour | Weekly | Weekly resets |

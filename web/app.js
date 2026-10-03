@@ -323,7 +323,7 @@ function renderBar() {
 
 function renderJob() {
   const v = S.view;
-  $('job').innerHTML = `<b>Your job:</b> decide this application. Open each flagged passage, set all ${num(decisive().length)} clause outcomes, then sign.`;
+  $('job').innerHTML = `<b>Your job:</b> decide this application. Open each flagged passage, set all ${num(decisive().length)} question outcomes, then sign.`;
   document.title = `Readmark · Applicant file ${v.case.case_id}`;
 }
 
@@ -411,13 +411,22 @@ function clauseView(cl) {
   const flagged = st.flagged.length ? `<section class="must" data-testid="flagged">
     <b>Open before you sign</b>
     <ul class="plist">${st.flagged.map((r) => passageRow(r.passage_id, { task: true, testid: 'flagged-item' })).join('')}</ul></section>` : '';
-  const pairs = cl.contradictions.length ? `<div data-testid="pairs">
-    ${cl.contradictions.map((p) => `<button class="btn-secondary compare-btn" data-act="compare" data-arg="${esc(p.a)}" data-other="${esc(p.b)}" data-testid="compare-pages"${S.signed ? ' disabled' : ''}>Compare pages ${src(p.a).page} and ${src(p.b).page}${icon('arrows')}</button>`).join('')}
+  // Several conflicting paragraphs can share a page pair; offer that comparison once.
+  const uniquePairs = new Map();
+  cl.contradictions.forEach((p) => {
+    const key = [src(p.a).page, src(p.b).page].sort((a, b) => a - b).join(':');
+    if (!uniquePairs.has(key)) uniquePairs.set(key, p);
+  });
+  const pagePairs = [...uniquePairs.values()];
+  const pairs = pagePairs.length ? `<div class="comparison-links" data-testid="pairs">
+    ${pagePairs.map((p) => `<button class="btn-secondary compare-btn" data-act="compare" data-arg="${esc(p.a)}" data-other="${esc(p.b)}" data-testid="compare-pages"${S.signed ? ' disabled' : ''}>Compare pages ${src(p.a).page} and ${src(p.b).page}${icon('arrows')}</button>`).join('')}
     </div>` : '';
   const o = st.outcome;
   const flag = questionFlag(cl);
-  const pair = cl.contradictions[0];
-  const warning = pair ? `Page ${src(pair.a).page}${whenOf(pair.a)} and page ${src(pair.b).page}${whenOf(pair.b)} disagree; open both before you decide.`
+  const disagreeingPages = [...new Map(cl.contradictions.flatMap((p) => [p.a, p.b])
+    .map((pid) => [src(pid).page, pid])).values()];
+  const pageNames = disagreeingPages.map((pid, i) => `${i ? 'page' : 'Page'} ${src(pid).page}${whenOf(pid)}`);
+  const warning = pagePairs.length ? `${pageNames.slice(0, -1).join(', ')} and ${pageNames.at(-1)} disagree; open ${pageNames.length === 2 ? 'both' : 'each page'} before you decide.`
     : flag.includes('evidence not found') || flag === 'Evidence not found' ? 'Missing evidence does not mean “not met”; decide whether the file lets you answer this question.'
     : flag === 'Checker disagrees' ? 'The quote is in the file, but the second checker could not confirm the claim; open the passage and judge.'
     : flag === 'Quote not found' ? 'A claim has no verified quote; open its AI claims to see what could not be checked.'
@@ -428,7 +437,7 @@ function clauseView(cl) {
     <div class="d-head"><h2 data-testid="clause-title">${esc(shortName(cl))}</h2>
       <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
-    ${warning ? `<section class="warning-box" data-testid="question-warning"><span class="task-icon flag">!</span><div class="warning-copy"><div class="warning-heading"><b>${esc(flag)}</b>${pairs}</div><p>${warning}</p></div></section>` : ''}
+    ${warning ? `<section class="warning-box" data-testid="question-warning"><span class="task-icon flag">!</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'claim' : 'claims'}. <button class="act" data-act="claims">Show claims</button></section>` : ''}
     <div class="question-split"><section class="reader" id="reader" aria-label="Applicant file pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
@@ -479,7 +488,7 @@ function signoffView() {
     return `<section class="signoff" data-testid="signoff">
       <div class="eyebrow">Sign off</div>
       <h2>Not ready to sign yet</h2>
-      <p class="lead">Finish ${items.length === 1 ? 'this clause' : `these ${num(items.length)} clauses`} first. Each one opens when you select it.</p>
+      <p class="lead">Finish ${items.length === 1 ? 'this question' : `these ${num(items.length)} questions`} first. Each one opens when you select it.</p>
       <ul class="missing" data-testid="missing-list">${items.map((m) => `<li><button class="mrow" data-act="clause" data-arg="${esc(m.id)}" data-testid="missing-item" data-clause="${esc(m.id)}">
         <span><span class="mname">${esc(m.name)}</span><span class="mwhat">${esc(m.what)}</span></span>${icon('arrow')}</button></li>`).join('')}</ul>
     </section>`;
@@ -491,7 +500,7 @@ function signoffView() {
     <p class="lead">Every flagged passage is opened and all ${num(decisive().length)} outcomes are set. The decision and the reason are yours: Readmark makes no recommendation.</p>
     <fieldset><legend>Decision</legend><div class="opts">${DECISIONS.map(([val, lab]) => `<label class="opt"><input type="radio" name="decision" value="${val}" data-testid="decision-${val}"${S.decision === val ? ' checked' : ''}>${lab}</label>`).join('')}</div></fieldset>
     <label class="flabel" for="reason">Reason <span class="rq">Required</span></label>
-    <textarea id="reason" data-testid="reason" placeholder="Why this decision, in your words. Name the clauses and pages you relied on.">${esc(S.reason)}</textarea>
+    <textarea id="reason" data-testid="reason" placeholder="Why this decision, in your words. Name the questions and pages you relied on.">${esc(S.reason)}</textarea>
     <div class="helper ${S.formErr ? 'err' : ''}" data-testid="form-helper">${S.formErr ? `${icon('alert')}${esc(S.formErr)}` : 'Write it so the applicant could read and challenge it.'}</div>
     <div class="dlg-actions"><button class="btn-primary" data-act="continue" data-testid="continue-btn">Check your answers${icon('arrow')}</button></div>
   </section>`;
@@ -513,7 +522,7 @@ function checkView() {
       <div class="cya-row"><dt>Decision</dt><dd data-testid="cya-decision">${esc(DECISION_LABEL[S.decision])}</dd><dd class="cya-act">${change('change-decision', '', 'decision')}</dd></div>
       <div class="cya-row"><dt>Reason</dt><dd>${esc(S.reason)}</dd><dd class="cya-act">${change('change-decision', '', 'reason')}</dd></div>
     </dl>
-    <div class="sec-h"><span>Clause outcomes, set by you</span></div><dl class="cya">${outcomes}</dl>
+    <div class="sec-h"><span>Question outcomes, set by you</span></div><dl class="cya">${outcomes}</dl>
     <div class="sec-h"><span>Disputed claims</span><span>${num(Object.keys(S.disputes).length)}</span></div><dl class="cya">${disputes}</dl>
     <div class="sec-h"><span>Flagged passages</span></div>
     <p class="note">${nReq ? `All ${num(nReq)} opened.` : 'Nothing was flagged.'} Opening a passage is recorded; it does not prove it was read.</p>
@@ -539,7 +548,7 @@ function recordView() {
     <dl class="rec-dl"><dt>File</dt><dd>Applicant file ${esc(record.case_id)}</dd>
       <dt>Reason</dt><dd><div class="rec-reason">${esc(record.reason)}</div></dd>
       <dt>Signed</dt><dd>${num(esc(fmtStamp(record.signed_at)))} by ${esc(record.officer)}</dd></dl>
-    <h4>Clause outcomes, set by you</h4>
+    <h4>Question outcomes, set by you</h4>
     <table class="rec-t"><tbody>${record.clause_outcomes.map((o) => `<tr><td>${esc(o.title)}</td><td class="r">${esc(OUTCOME_LABEL[o.outcome])}</td></tr>`).join('')}</tbody></table>
     <h4>Passages opened before signing · ${num(record.passages_opened.length)}</h4>
     <table class="rec-t"><thead><tr><th>Passage</th><th class="r">Opened</th><th class="r">In view</th></tr></thead><tbody>${opened}</tbody></table>
@@ -863,7 +872,7 @@ function renderAbout() {
       ${key('arrows', 'warn', 'Contradicted by another passage', 'The claim rests on a passage that another passage disagrees with. The quote may be accurate; the two records conflict.')}
       ${key('neq', 'warn', 'Checker disagrees', 'The second checker could not confirm that the quoted passage says what the claim says.')}
       ${key('searchx', 'bad', 'Quote not found', 'A quote is not in its passage, a figure or date is in no quote, or the claim gives no quote.')}
-      ${key('help', 'warn', 'Possibly missed', 'The scan found a passage relevant to the clause that no claim uses.')}
+      ${key('help', 'warn', 'Possibly missed', 'The scan found a passage relevant to the question that no claim uses.')}
       ${key('slash', 'neutral', 'No evidence in file', 'The AI looked for something and found nothing. That is not “not met”.')}
     </ul>
     <div class="sec-h"><span>Flagged passages</span></div>

@@ -80,6 +80,7 @@ h1 { font-size: 22px; margin: 0; white-space: nowrap; }
 .warning-box p { margin: 0; }
 .warning-copy { flex: 1; min-width: 0; }
 .warning-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.comparison-links { display: flex; flex-direction: column; align-items: flex-start; }
 .compare-btn { font-size: 13px; padding: 3px 0; border: 0; box-shadow: none; background: transparent; color: var(--primary); text-decoration: underline; }
 .question-split { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 20px; align-items: start; }
 .reader { min-width: 0; border: 1px solid var(--line); background: var(--viewer); }
@@ -89,7 +90,7 @@ h1 { font-size: 22px; margin: 0; white-space: nowrap; }
 .page-tab[aria-selected="true"] { color: var(--ink); text-decoration: none; font-weight: bold; box-shadow: inset 0 -4px 0 var(--primary); }
 .tab-note { display: block; font-size: 13px; color: var(--secondary); font-weight: normal; }
 .more-pages { max-width: 140px; }
-.more-page-list { flex: 1 1 100%; margin: 0; padding: 0 14px; max-height: 240px; overflow: auto; border-top: 1px solid var(--line); }
+.more-page-list { flex: 1 1 100%; margin: 0; padding: 0 14px; border-top: 1px solid var(--line); }
 .more-page-list h3 { font-size: 16px; margin: 12px 0 0; }
 .more-page-list ul { margin: 0; padding: 0; list-style: none; }
 .more-page-list li + li { border-top: 1px solid var(--line); }
@@ -218,6 +219,14 @@ footer { margin-top: 16px; padding: 16px 0 28px; border-top: 1px solid var(--lin
 .rrow-skel { height: 50px; }
 .skel-head { height: 120px; margin-bottom: 12px; }
 .skel-body { height: 300px; }
+@media (min-width: 1051px) {
+  .casebar-in { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 2px 16px; }
+  .case-id { grid-column: 1; grid-row: 1; }
+  .case-facts { display: contents; }
+  #caseFacts { grid-column: 2; grid-row: 1; font-size: 14px; color: var(--secondary); }
+  .context { grid-column: 1 / span 2; grid-row: 2; margin: 0; color: var(--secondary); }
+  .next { grid-column: 3; grid-row: 1 / span 2; }
+}
 @media (max-width: 1350px) {
   .work { grid-template-columns: 280px minmax(0, 1fr); gap: 0 28px; }
   .question-split { grid-template-columns: minmax(0, 1fr) 230px; gap: 16px; }

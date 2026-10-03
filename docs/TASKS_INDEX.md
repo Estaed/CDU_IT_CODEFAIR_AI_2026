@@ -36,4 +36,4 @@ Wave 6 (2026-10-03). Width 1: one feature, the final look.
 
 - [x] Task-15: The final look: a government question page with the file inside it (codex)
 
-- [ ] Task-16: Polish the final look: four small screen fixes (codex)
+- [x] Task-16: Polish the final look: four small screen fixes (codex)

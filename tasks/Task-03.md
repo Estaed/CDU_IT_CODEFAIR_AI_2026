@@ -35,3 +35,16 @@ the look wave.
 
 ## Out of scope
 - Changing B, and any app code (`web/` belongs to Task-00).
+
+## Contract (main loop, 2026-10-03)
+- **Builder:** the orchestrator, in the main loop, while Task-00 and Task-01 run. One page, no
+  parallel partner, and design is eye work.
+- **`design/direction-A.html`:** one self-contained file (inline CSS and JS), Tarik Base values from
+  `tokens.css` inlined, dark and light. Same content and behaviour as B, from `design/ab-brief.md`.
+- **States:** the five B was shot in, same order for both: 1 start, 2 item open, 3 gate message,
+  4 decision record, 5 summary-under-audit tab. A in dark and light; B in the modes it has.
+- **`design/shots/shoot.py`:** Playwright at 1280×900 drives each direction to the five states,
+  exits non-zero on any console or page error, and writes `design/shots/<A|B>-<n>-<state>[-<mode>].png`.
+- **`design/ab.html`:** pairs of screenshots per state, one line under each pair on what differs,
+  and a neutral note at the top saying A followed the skill and Tarık picks.
+- **Open decisions:** none.

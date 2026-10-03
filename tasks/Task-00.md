@@ -101,4 +101,5 @@ Fixed:
 - The stage file names `runs/<case>/<stage>.json`.
 - The CLI verbs `run | serve | eval` and the flags `--case`, `--replay`, `--checker`.
 - The five PDFs must be in `data/policies/`; Tarık downloads them before the run. If they are
-  missing, stop with ⛔ rather than invent policy text.
+  missing, stop and report BLOCKED rather than invent policy text (all five were present on
+  2026-10-03).

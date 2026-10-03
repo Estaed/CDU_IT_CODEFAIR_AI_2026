@@ -142,7 +142,8 @@ Provisional until Task-00 writes `uv.lock`.
 | HTML/JS UI with a Python server; the name Readmark | Streamlit |
 | Required reading capped at 8, most decisive first; the receipt says "opened", never "read" | Forcing every passage: annoyance, the weakest effect in the research |
 | Evaluation inside v1: summary under audit; mutation set per error type; held-out file; Jev against Claude-as-checker on several hundred SummEdits pairs (CC BY 4.0), with calibration; an ablation by layer; the position test if time allows | A team timing test: no team dependency |
-| Design A/B: A = Tarik Base via `tasarim`, B = a blind agent. Tarık picks | — |
+| Design A/B: A = Tarik Base via `tasarim`, B = a blind agent. Tarık picked A (2026-10-03, "for now"; a polish pass later) | B: looked like slop to Tarık |
+| Review screen layout (2026-10-03, after `reports/2026-10-03-ux-guided-review.md`): clause list on the left with a status per clause and a sign-off row, the selected clause and its source on the right, a case bar with both counters and the next action, plain language with no internal ids, a linked "before you can sign" summary, a dismissible first-run panel. Check: a first-time viewer names the next step within 10 s | A task-list home with one page per clause: loses the whole-case overview staff tools need, the most rework. C the current long page plus guidance: the long scroll stays |
 
 ### Constraints
 - No real person's data in any document. No AustLII material as model input.

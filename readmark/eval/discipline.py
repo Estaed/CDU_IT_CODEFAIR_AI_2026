@@ -57,13 +57,21 @@ def implementation_pin() -> dict:
 # its numbers; otherwise the repo would stay frozen for good (orchestrator integration fix,
 # 2026-10-03, when the Task-11 screen landed after H-01). The H-01 view digest check below still
 # proves the scored output is the frozen run's output.
-NOT_RESULT_CODE = ("readmark/serve.py", "readmark/record/", "readmark/eval/discipline.py")
+NOT_RESULT_CODE = ("readmark/serve.py", "readmark/record/", "readmark/eval/discipline.py",
+                   # Question-list coverage (Task-26) only advises whoever maintains a list; no
+                   # case run reads it (orchestrator integration fix, 2026-10-04).
+                   "readmark/checklist/coverage.py", "readmark/jev/coverage.py")
+
+
+def is_coverage_file(path: str) -> bool:
+    """A list's stored coverage result or its Jev cache, under readmark/checklist/lists/<id>/."""
+    return path.endswith("/coverage.json") or "/coverage-cache/" in path
 
 
 def result_pin(pin: dict) -> dict:
     """The part of an implementation pin that can affect H-01's results."""
     return {path: digest for path, digest in pin.items()
-            if not path.startswith(NOT_RESULT_CODE)}
+            if not path.startswith(NOT_RESULT_CODE) and not is_coverage_file(path)}
 
 
 def save(path: Path, record: dict) -> None:

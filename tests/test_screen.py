@@ -1309,8 +1309,9 @@ def test_plain_notes_sign_states_and_readable_exports(case_id, width, tmp_path):
             expect(row).to_contain_text(label)
             expected_colour = {"met": "rgb(32, 99, 59)", "not_met": "rgb(177, 38, 38)",
                                "cannot_decide": "rgb(128, 86, 0)"}[outcome]
-            assert row.locator(".task-icon").evaluate(
-                "el => getComputedStyle(el).color") == expected_colour
+            # A retrying check: the row re-renders after the click, and a one-shot read can land on
+            # the detached node (seen once under load, 2026-10-04).
+            expect(row.locator(".task-icon")).to_have_css("color", expected_colour)
         assert disputed is not None
         expect(page.get_by_test_id("sign-btn")).to_have_text("Sign decision")
         expect(page.get_by_test_id("next-action")).to_have_count(0)

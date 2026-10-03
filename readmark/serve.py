@@ -43,6 +43,11 @@ def create_app(case_id: str, run_dir: Path | None = None,
     def get_view():
         return view()
 
+    @app.get("/api/settings")
+    def get_settings():
+        # One threshold, shared by browser timing, record validation and the footnote.
+        return {"opened_seconds": rec.OPENED_SECONDS}
+
     @app.get("/api/context")
     def get_context():
         # This historical context stays separate from the view, checks and decision record.

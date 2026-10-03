@@ -24,16 +24,18 @@ STUB_RUN = ROOT / "runs" / "stub"
 VIEW = json.loads((STUB_RUN / "view.json").read_text(encoding="utf-8"))
 A0142_RUN = ROOT / "runs" / "A-0142"
 A0142 = json.loads((A0142_RUN / "view.json").read_text(encoding="utf-8"))
-SCREENSHOTS = ROOT / ".tmp/shots/wave6b"
+SCREENSHOTS = ROOT / ".tmp/shots/wave7"
 
 # What the main screen must never show (acceptance): claim ids, model ids, the pilcrow, and raw
 # passage ids. "About these checks" is a closed dialog, so its text is not in innerText.
 NOT_ON_SCREEN = [re.compile(r"\bclauses?\b", re.I),
-                 re.compile(r"\bc\d{2}\b"), re.compile(r"claude-|jev-", re.I), re.compile("¶"),
+                 re.compile(r"\bc\d+\b"), re.compile(r"claim id", re.I),
+                 re.compile(r"claude-|jev-", re.I), re.compile("¶"),
                  re.compile(r"[\w-]+:p\d+:\d+")]
 
-CLAIM_LABELS = {"supported": "Supported", "contradicted": "Contradicted by another passage",
-                "checker_disagrees": "Checker disagrees", "quote_not_found": "Quote not found"}
+CLAIM_LABELS = {"supported": "Found in the file ✓", "contradicted": "says the opposite",
+                "checker_disagrees": "The second reader is not sure",
+                "quote_not_found": "Quote not found in the file"}
 
 
 def flagged_clause_ids(view):
@@ -102,6 +104,22 @@ def test_record_cannot_be_signed_past_the_lock():
     assert "Set an outcome for" in problems
     if VIEW["required_reading"]:
         assert "Open required passage" in problems
+
+
+@pytest.mark.parametrize("seconds", [0, 2.99, -1, float("nan"), float("inf"), True])
+def test_record_rejects_opening_under_threshold_or_invalid_time(seconds):
+    payload = {
+        "decision": "request_information", "reason": "Further evidence is needed.",
+        "clause_outcomes": {c["clause_id"]: "cannot_decide" for c in A0142["clauses"]
+                           if c["clause_id"] != "other"},
+        "passages_opened": [{"passage_id": r["passage_id"],
+                             "opened_at": "2026-10-03T04:30:00Z", "seconds_in_view": seconds}
+                            for r in A0142["required_reading"]],
+        "disputes": [],
+    }
+    assert rec.OPENED_SECONDS == 3
+    with pytest.raises(rec.RecordError, match="at least 3 seconds"):
+        rec.build(payload, A0142)
 
 
 def test_exported_record_uses_one_zone_shows_dispute_text_and_only_the_theme():
@@ -208,6 +226,12 @@ def assert_scrolled_to(page, pid):
     paragraph = page.locator(f'#fileScroll .file-paragraph[data-pid="{pid}"]').bounding_box()
     viewport = page.locator("#fileScroll").bounding_box()
     assert viewport["y"] <= paragraph["y"] < viewport["y"] + viewport["height"]
+
+
+def wait_until_opened(page):
+    # Use the shipped clock; a passage must really accrue the record's three seconds.
+    page.get_by_test_id("source").scroll_into_view_if_needed()
+    page.wait_for_function("S.current && hasOpened(S.current.pid)")
 
 
 def test_light_default_saved_theme_and_historical_context(tmp_path, a0142_screen):
@@ -447,7 +471,10 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
             assert_scrolled_to(page, pid)
             assert_plain(page)
             assert_no_overflow(page)
-            page.wait_for_timeout(250)
+            if pid in required:
+                wait_until_opened(page)
+            else:
+                page.wait_for_timeout(250)
         assert len({position for position, _ in seen}) == len(expected)
         assert set(visited) == {annotation for annotation, _ in expected}
         assert {pid for _, pid in seen} == {pid for _, pid in expected}
@@ -493,7 +520,7 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
         page.wait_for_timeout(700)
         assert abs(page.evaluate("secondsInView(S.current.pid)") - seconds) < 0.1
         page.locator('[data-act="full-close"]').click()
-        page.get_by_test_id("next-action").click()
+        page.get_by_test_id("sign-btn").click()
         expect(page.get_by_test_id("missing-list")).to_have_count(0)
         expect(page.locator("#reader")).to_have_count(0)
         page.get_by_test_id("continue-btn").click()
@@ -506,14 +533,16 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
         expect(answers.get_by_test_id("change")).to_have_count(len(decisive) + 3)
         screenshot(page, width, "check-answers")
         answers.locator('[data-arg="elig-income"]').click()
-        page.get_by_test_id("next-action").click()
+        page.get_by_test_id("sign-btn").click()
         page.wait_for_timeout(2500)
         page.get_by_test_id("confirm-sign").click()
         expect(page.get_by_test_id("record")).to_be_visible()
         assert_plain(page)
         assert_no_overflow(page)
         screenshot(page, width, "record")
-        record = page.request.get(base + page.get_by_test_id("export-json").get_attribute("href")).json()
+        exported_json = page.request.get(base + page.get_by_test_id("export-json").get_attribute("href")).json()
+        assert exported_json == rec.for_export(page.evaluate("S.signed.record"))
+        record = page.evaluate("S.signed.record")
         export = page.request.get(base + page.get_by_test_id("export-html").get_attribute("href"))
         assert export.ok and "Decision record" in export.text()
         assert html.escape(disputed["claim"]) in export.text()
@@ -682,6 +711,7 @@ def test_every_question_has_real_page_tabs_and_saves_to_next_undecided(width, tm
                     expect(page.get_by_test_id("more-pages")).to_contain_text(
                         f"Page {source['page']} selected")
                     expect(item).to_have_attribute("aria-current", "page")
+                    wait_until_opened(page)
                     expect(item).to_contain_text("✓ opened")
                     # Opening an overflow page does not promote it into the tab row.
                     assert tabs.evaluate_all("els => els.map(e => e.dataset.arg)") == tab_keys
@@ -689,6 +719,7 @@ def test_every_question_has_real_page_tabs_and_saves_to_next_undecided(width, tm
                     tab = page.locator(f'[data-testid="page-tab"][data-arg="{key}"]')
                     tab.click()
                     expect(tab).to_have_attribute("aria-selected", "true")
+                    wait_until_opened(page)
                     expect(tab).to_contain_text("✓ opened")
                 assert_tab_labels_fit(controls)
                 assert_wait_context_fits(page, width)
@@ -701,7 +732,7 @@ def test_every_question_has_real_page_tabs_and_saves_to_next_undecided(width, tm
                 expect(current).to_contain_text(source["text"])
                 # A wrapped strip can put the passage below the viewport; timing starts in view.
                 current.scroll_into_view_if_needed()
-                page.wait_for_timeout(150)
+                wait_until_opened(page)
                 opening = page.evaluate("S.opened[S.current.pid]")
                 assert datetime.fromisoformat(opening["opened_at"])
                 assert page.evaluate("secondsInView(S.current.pid)") > 0
@@ -734,7 +765,9 @@ def test_every_question_has_real_page_tabs_and_saves_to_next_undecided(width, tm
         page.get_by_test_id("continue-btn").click()
         page.get_by_test_id("confirm-sign").click()
         expect(page.get_by_test_id("record")).to_be_visible()
-        record = page.request.get(base + page.get_by_test_id("export-json").get_attribute("href")).json()
+        exported_json = page.request.get(base + page.get_by_test_id("export-json").get_attribute("href")).json()
+        assert exported_json == rec.for_export(page.evaluate("S.signed.record"))
+        record = page.evaluate("S.signed.record")
         assert all(p["opened_at"] and p["seconds_in_view"] > 0 for p in record["passages_opened"])
         assert {r["passage_id"] for r in view["required_reading"]} <= {
             p["passage_id"] for p in record["passages_opened"]}
@@ -818,6 +851,7 @@ def test_polish_question_words_identity_more_pages_and_warning_pairs(case_id, wi
                     comparison.locator('[data-act="compare-close"]').click()
             for passage in page.get_by_test_id("flagged-item").all():
                 passage.click()
+                wait_until_opened(page)
             assert_wait_context_fits(page, width)
             if cid != "other":
                 assert page.locator('[data-outcome]:checked').count() == 0
@@ -835,7 +869,7 @@ def test_polish_question_words_identity_more_pages_and_warning_pairs(case_id, wi
         page.get_by_test_id("decision-request_information").check()
         page.get_by_test_id("reason").fill("Further evidence is needed before deciding.")
         page.get_by_test_id("continue-btn").click()
-        expect(page.get_by_test_id("check-answers")).to_contain_text("Question outcomes")
+        expect(page.get_by_test_id("check-answers")).to_contain_text("Your answers to the questions")
         assert_plain(page)
         page.get_by_test_id("about-btn").click()
         assert not re.search(r"\bclauses?\b", page.locator("#about").inner_text(), re.I)
@@ -858,7 +892,9 @@ def test_light_palette_text_pairs_have_wcag_contrast():
              ("paper", "header"), ("paper", "primary"), ("paper", "button-edge"),
              ("primary", "paper"), ("primary", "viewer"), ("primary", "selected"),
              ("header", "secondary-button"), ("flag", "paper"), ("flag", "viewer"),
-             ("flag", "warning-bg"), ("primary", "warning-bg"), ("ink", "warning-bg")]
+             ("flag", "warning-bg"), ("primary", "warning-bg"), ("ink", "warning-bg"),
+             ("success", "paper"), ("paper", "success"), ("paper", "success-edge"),
+             ("danger", "paper"), ("amber", "paper")]
     for foreground, background in pairs:
         light, dark = sorted((luminance(colours[foreground]), luminance(colours[background])),
                              reverse=True)
@@ -976,3 +1012,201 @@ def test_audit_is_not_shown_and_bad_quotes_are_never_highlighted(audit, tmp_path
         assert_no_overflow(page)
         browser.close()
     assert errors == []
+
+
+def test_opening_accumulates_three_visible_seconds_across_visits(tmp_path):
+    from playwright.sync_api import expect, sync_playwright
+
+    with serving("A-0142", A0142_RUN, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1280, "height": 900})
+        page.goto(base)
+        page.get_by_test_id("intro-dismiss").click()
+        current = page.get_by_test_id("source")
+        current.scroll_into_view_if_needed()
+        pid = current.get_attribute("data-pid")
+        cid = page.get_by_test_id("clause-detail").get_attribute("data-clause")
+        assert page.request.get(base + "/api/settings").json()["opened_seconds"] == 3
+        page.wait_for_timeout(1000)
+        assert page.evaluate("hasOpened(S.current.pid)") is False
+        expect(page.locator("#passageCount")).to_have_text("0")
+        assert page.get_by_test_id("in-view").count() == 0
+        page.get_by_test_id("sign-btn").click()
+        before = page.evaluate("pid => secondsInView(pid)", pid)
+        assert 0 < before < 3
+        page.wait_for_timeout(3100)
+        assert page.evaluate("pid => secondsInView(pid)", pid) == before
+        assert page.evaluate("pid => hasOpened(pid)", pid) is False
+        page.locator(f'[data-testid="clause-row"][data-clause="{cid}"]').click()
+        wait_until_opened(page)
+        opening = page.evaluate("pid => S.opened[pid]", pid)
+        assert datetime.fromisoformat(opening["opened_at"])
+        assert page.evaluate("pid => secondsInView(pid)", pid) >= 3
+        expect(page.locator("#passageCount")).to_have_text("1")
+        page.get_by_test_id("about-btn").click()
+        paused = page.evaluate("pid => secondsInView(pid)", pid)
+        page.wait_for_timeout(300)
+        assert page.evaluate("pid => secondsInView(pid)", pid) == paused
+        browser.close()
+
+
+@pytest.mark.parametrize("case_id", ["A-0142", "E-02"])
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_plain_notes_sign_states_and_readable_exports(case_id, width, tmp_path):
+    from playwright.sync_api import expect, sync_playwright
+
+    run = ROOT / "runs" / case_id
+    view = json.loads((run / "view.json").read_text(encoding="utf-8"))
+    claims = {c["claim_id"]: c for c in view["claims"]}
+    errors = []
+
+    def shot(state):
+        SCREENSHOTS.mkdir(parents=True, exist_ok=True)
+        page.evaluate("window.scrollTo(0, 0)")
+        page.screenshot(path=str(SCREENSHOTS / f"task17-{case_id}-{state}-{width}.png"),
+                        full_page=True)
+
+    with serving(case_id, run, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 900})
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.goto(base)
+        expect(page.get_by_test_id("intro")).to_contain_text("3 seconds in view")
+        shot("how-it-works")
+        page.get_by_test_id("intro-dismiss").click()
+        sign = page.get_by_test_id("sign-btn")
+        count = sum(c["clause_id"] != "other" for c in view["clauses"])
+        expect(sign).to_have_text(f"Sign decision · {count} questions left")
+        assert sign.evaluate("el => getComputedStyle(el).borderTopStyle") == "solid"
+        assert sign.evaluate("el => getComputedStyle(el).backgroundColor") == "rgb(255, 255, 255)"
+        shot("outlined-sign")
+        if page.get_by_test_id("clean-questions").count():
+            page.get_by_test_id("clean-toggle").click()
+        disputed = None
+        for i, question in enumerate(c for c in view["clauses"] if c["clause_id"] != "other"):
+            cid = question["clause_id"]
+            page.locator(f'[data-testid="clause-row"][data-clause="{cid}"]').click()
+            details = page.get_by_test_id("claim-details")
+            expect(details).not_to_have_attribute("open", "")
+            expect(details.locator("summary")).to_have_text(
+                f"What the AI noted ({len(question['claim_ids'])})")
+            details.locator("summary").click()
+            cards = details.get_by_test_id("claim")
+            expect(cards).to_have_count(len(question["claim_ids"]))
+            for j, note_id in enumerate(question["claim_ids"]):
+                note = claims[note_id]
+                card = cards.nth(j)
+                expect(card.get_by_test_id("note-sentence")).to_have_text(note["claim"])
+                expect(card.get_by_test_id("note-result")).to_have_text(rec.note_result(note, view))
+                text = card.inner_text()
+                assert not re.search(r"\bc\d+\b|claim id|\bclause", text, re.I)
+                assert not re.search(r"supported|checker_disagrees|quote_not_found|contradicted", text)
+                for cite in note["citations"]:
+                    quote = card.get_by_test_id("quote").filter(has_text=cite["quote"])
+                    source = view["sources"][cite["passage_id"]]
+                    expect(quote.locator(".loc")).to_contain_text(
+                        re.compile(rf"page {source['page']}\b", re.I))
+                    expect(quote).to_contain_text(source["doc_title"])
+                    if disputed is None and source["kind"] == "case":
+                        quote.click()
+                        expect(page.get_by_test_id("file-page")).to_have_attribute(
+                            "data-page", str(source["page"]))
+                        card.get_by_role("button", name="This note is wrong").click()
+                        page.get_by_test_id("dispute-reason").fill("Please check the other page.")
+                        page.get_by_test_id("dispute-save").click()
+                        disputed = note
+            assert_plain(page)
+            assert page.get_by_test_id("in-view").count() == 0
+            if cid == "elig-debts" or (case_id == "E-02" and i == 0):
+                details.scroll_into_view_if_needed()
+                shot("plain-notes")
+            details.locator("summary").click()
+            for item in page.get_by_test_id("flagged-item").all():
+                source = view["sources"][item.get_attribute("data-pid")]
+                expect(item.locator(".ploc")).to_have_text(f"Page {source['page']}")
+                item.click()
+                wait_until_opened(page)
+                tab = page.locator(f'[data-testid="page-tab"][data-page="{source["page"]}"]')
+                if tab.count():
+                    expect(tab).to_contain_text(f"Page {source['page']}")
+            outcome, label, symbol = [("met", "Met", "✓"), ("not_met", "Not met", "✗"),
+                                      ("cannot_decide", "Cannot decide yet", "⏸")][i % 3]
+            page.get_by_test_id(f"outcome-{cid}-{outcome}").check()
+            row = page.locator(f'[data-testid="clause-row"][data-clause="{cid}"]')
+            expect(row.locator(".task-icon")).to_have_text(symbol)
+            expect(row).to_contain_text(label)
+            expected_colour = {"met": "rgb(32, 99, 59)", "not_met": "rgb(177, 38, 38)",
+                               "cannot_decide": "rgb(128, 86, 0)"}[outcome]
+            assert row.locator(".task-icon").evaluate(
+                "el => getComputedStyle(el).color") == expected_colour
+        assert disputed is not None
+        expect(page.get_by_test_id("sign-btn")).to_have_text("Sign decision")
+        expect(page.get_by_test_id("next-action")).to_have_count(0)
+        assert page.get_by_test_id("sign-btn").evaluate(
+            "el => getComputedStyle(el).backgroundColor") == "rgb(32, 99, 59)"
+        shot("ready-sign-outcomes")
+        page.get_by_test_id("sign-btn").click()
+        page.get_by_test_id("decision-request_information").check()
+        page.get_by_test_id("reason").fill("Further evidence is needed before deciding.")
+        page.get_by_test_id("continue-btn").click()
+        expect(page.get_by_role("button", name="Sign decision", exact=True)).to_have_count(1)
+        expect(page.get_by_test_id("check-answers")).to_contain_text("Your answers to the questions")
+        expect(page.get_by_test_id("check-answers")).to_contain_text(rec.note_result(disputed, view))
+        assert_plain(page)
+        shot("check-answers")
+        page.get_by_test_id("confirm-sign").click()
+        expect(page.get_by_test_id("record")).to_be_visible()
+        expect(page.get_by_test_id("sign-btn")).to_have_text("Signed ✓")
+        expect(page.get_by_test_id("signoff-row")).to_contain_text("Signed · record locked")
+        expect(page.get_by_test_id("signoff-row").locator(".task-icon")).to_have_text("✓")
+        record = page.evaluate("S.signed.record")
+        assert all(p["seconds_in_view"] >= 3 and p["opened_at"] for p in record["passages_opened"])
+        assert record["disputes"][0]["claim"] == disputed["claim"]
+        expect(page.get_by_test_id("record")).to_contain_text("Please check the other page.")
+        expect(page.get_by_test_id("record")).to_contain_text("3 seconds in view")
+        assert_plain(page)
+        assert_no_overflow(page)
+        shot("signed-record")
+        export = page.request.get(base + page.get_by_test_id("export-json").get_attribute("href"))
+        assert export.json() == rec.for_export(record)
+        assert not re.search(r"clause|claim.id|\bc\d+\b", export.text(), re.I)
+        assert export.json()["disputes"][0]["check_result"] == rec.note_result(disputed, view)
+        exported = browser.new_page(viewport={"width": width, "height": 900})
+        exported.goto(base + page.get_by_test_id("export-html").get_attribute("href"))
+        assert not re.search(r"clause|claim id|\bc\d+\b", exported.locator("body").inner_text(), re.I)
+        expect(exported.locator("body")).to_contain_text("Your answers to the questions")
+        expect(exported.locator("body")).to_contain_text(rec.note_result(disputed, view))
+        assert_no_overflow(exported)
+        exported.screenshot(path=str(SCREENSHOTS / f"task17-{case_id}-html-export-{width}.png"),
+                            full_page=True)
+        browser.close()
+    assert errors == []
+
+
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_repeated_paragraph_tags_keep_accessible_small_markers(width, tmp_path):
+    from playwright.sync_api import expect, sync_playwright
+
+    with serving("A-0142", A0142_RUN, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 900})
+        page.goto(base)
+        page.get_by_test_id("intro-dismiss").click()
+        page.get_by_test_id("open-full-file").click()
+        marker = page.locator("#fileScroll .evidence-marker").first
+        expect(marker).to_have_count(1)
+        marker.scroll_into_view_if_needed()
+        assert marker.inner_text() == ""
+        label = marker.get_attribute("aria-label")
+        assert label
+        assert marker.evaluate("""el => [...el.closest('.file-paragraph').previousElementSibling
+            .querySelectorAll('.evidence-label')].some(b => b.getAttribute('aria-label') ===
+            el.getAttribute('aria-label'))""")
+        assert marker.bounding_box()["width"] < 30
+        assert page.get_by_test_id("in-view").count() == 0
+        assert_plain(page)
+        SCREENSHOTS.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(SCREENSHOTS / f"task17-markers-{width}.png"), full_page=True)
+        marker.click()
+        expect(page.get_by_test_id("source")).to_have_attribute("data-pid", marker.get_attribute("data-pid"))
+        browser.close()

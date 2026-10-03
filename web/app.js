@@ -37,13 +37,6 @@ const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 // Three status lists, kept apart: claim checks, clause coverage, the officer's outcome. Each status
 // is a word with its own icon, so colour is never the only signal.
-const CLAIM_STATUS = {
-  supported: ['Supported', 'check', 'ok'],
-  contradicted: ['Contradicted by another passage', 'arrows', 'warn'],
-  checker_disagrees: ['Checker disagrees', 'neq', 'warn'],
-  quote_not_found: ['Quote not found', 'searchx', 'bad'],
-  none: ['Nothing to check', 'minus', 'neutral'],
-};
 const OUTCOMES = [['met', 'Met', 'check'], ['not_met', 'Not met', 'x'], ['cannot_decide', 'Cannot decide yet', 'pause']];
 const OUTCOME_LABEL = Object.fromEntries(OUTCOMES.map(([v, l]) => [v, l]));
 const DECISIONS = [['approve', 'Approve priority housing'], ['decline', 'Decline'], ['request_information', 'Request more information']];
@@ -64,6 +57,8 @@ function store(key, value) {
 
 const S = {
   view: null,
+  openedSeconds: null, // supplied by /api/settings: the record's single threshold
+  progressDirty: false,
   pages: [],         // full synthetic pages from the pinned case file, never the audit block
   annotations: [],  // verified quotes and scan hits, labelled by question
   cleanOpen: false,
@@ -95,6 +90,7 @@ const S = {
 function pause() {
   if (S.current && S.since !== null) S.opened[S.current.pid].seconds += (performance.now() - S.since) / 1000;
   S.since = null;
+  if (S.current) qualifyOpening(S.current.pid);
 }
 function resume() {
   if (S.since === null && passageVisible()) S.since = performance.now();
@@ -104,6 +100,16 @@ function secondsInView(pid) {
   if (!o) return 0;
   const live = S.current && S.current.pid === pid && S.since !== null ? (performance.now() - S.since) / 1000 : 0;
   return o.seconds + live;
+}
+const hasOpened = (pid) => !!S.opened[pid]?.opened_at;
+function qualifyOpening(pid) {
+  const o = S.opened[pid];
+  const seconds = secondsInView(pid);
+  if (!o || o.opened_at || seconds < S.openedSeconds) return false;
+  // Store when the threshold was crossed, rather than the next timer tick.
+  o.opened_at = new Date(Date.now() - (seconds - S.openedSeconds) * 1000).toISOString();
+  S.progressDirty = true;
+  return true;
 }
 document.addEventListener('visibilitychange', () => (document.hidden ? pause() : resume()));
 
@@ -119,7 +125,7 @@ function openPassage(pid, claimIds = [], inline = false) {
   if ($('comparison').open) $('comparison').close();
   const s = src(pid);
   if (!s || !s.exists) { S.current = null; render(); return; }
-  if (!S.opened[pid]) S.opened[pid] = { opened_at: new Date().toISOString(), seconds: 0 };
+  if (!S.opened[pid]) S.opened[pid] = { opened_at: null, seconds: 0 };
   S.current = { pid, claimIds };
   S.policyInline = inline && s.kind === 'policy';
   if (!S.fullFile && (s.kind === 'case' || inline)) S.tab = pageKey(s);
@@ -151,7 +157,7 @@ const railClauses = () => S.view.clauses.filter((c) => c.clause_id !== 'other'
   return rank(a) - rank(b);
 });
 
-const shortName = (cl) => cl.clause_id === 'other' ? 'Other facts' : cl.title;
+const shortName = (cl) => cl.clause_id === 'other' ? 'Background facts (no decision needed)' : cl.title;
 
 function questionFlag(cl) {
   if (cl.contradictions.length) return 'Two pages disagree';
@@ -193,16 +199,16 @@ function kindTag(pid) {
   if (!s || !s.exists) return '';
   return s.kind === 'policy' ? `<span class="tag">${icon('landmark')}Real NT policy</span>` : `<span class="tag">${icon('flask')}Synthetic file</span>`;
 }
-const clauseName = (cl) => (cl.clause_id === 'other' ? 'Other facts' : cl.source ? `${cl.title}, ${cl.source}` : cl.title);
+const clauseName = (cl) => (cl.clause_id === 'other' ? shortName(cl) : cl.source ? `${cl.title}, ${cl.source}` : cl.title);
 
 function clauseState(cl) {
   const flagged = flaggedFor(cl.clause_id);
-  const opened = flagged.filter((r) => S.opened[r.passage_id]).length;
+  const opened = flagged.filter((r) => hasOpened(r.passage_id)).length;
   const needsOutcome = cl.clause_id !== 'other';
   const outcome = S.outcomes[cl.clause_id] || null;
   return { flagged, opened, needsOutcome, outcome, done: opened === flagged.length && (!needsOutcome || !!outcome) };
 }
-const ready = () => required().every((r) => S.opened[r.passage_id]) && decisive().every((c) => S.outcomes[c.clause_id]);
+const ready = () => required().every((r) => hasOpened(r.passage_id)) && decisive().every((c) => S.outcomes[c.clause_id]);
 
 // The one next action: from the selected clause onward (wrapping), the first clause with work
 // left; inside it, its unopened flagged passages (most decisive first), then its outcome.
@@ -213,7 +219,7 @@ function nextAction() {
   for (let i = 0; i < list.length; i += 1) {
     const cl = list[(start + i) % list.length];
     const st = clauseState(cl);
-    const unopened = st.flagged.find((r) => !S.opened[r.passage_id]);
+    const unopened = st.flagged.find((r) => !hasOpened(r.passage_id));
     if (unopened) return { kind: 'passage', clause: cl, pid: unopened.passage_id };
     if (st.needsOutcome && !st.outcome) return { kind: 'outcome', clause: cl };
   }
@@ -221,75 +227,31 @@ function nextAction() {
 }
 
 // ---- Why, in one plain sentence ----
-function pairsWith(pid) {
-  return S.view.clauses.flatMap((c) => c.contradictions).filter((p) => p.a === pid || p.b === pid);
-}
-function relation(other, mine) {
-  const a = src(other) && src(other).doc_date;
-  const b = mine && src(mine) && src(mine).doc_date;
-  if (!a || !b || a === b) return 'another record';
-  return a > b ? 'a later record' : 'an earlier record';
-}
 function whenOf(pid) {
   const s = src(pid);
   return s && s.kind === 'case' && s.doc_date ? ` (${fmtDate(s.doc_date)})` : '';
-}
-function quoteProblem(claim) {
-  if (!claim.citations.length) return 'The claim gives no quote, so nothing in the file backs it.';
-  const parts = [];
-  if (claim.citations.some((c) => !c.passage_exists)) parts.push('It cites a passage that is not in the file.');
-  if (claim.citations.some((c) => c.passage_exists && !c.quote_found)) parts.push('A quote is not word for word in the passage it cites (marked on the quote).');
-  if (claim.values_missing.length) {
-    const vals = claim.values_missing.map((v) => num(esc(v))).join(', ');
-    parts.push(claim.citations.every((c) => c.quote_found)
-      ? `Its quotes are in the file, but none contains ${vals}.`
-      : `No quote contains ${vals}.`);
-  }
-  return parts.join(' ');
-}
-function contradictionReason(claim) {
-  const cited = new Set(claim.citations.map((c) => c.passage_id));
-  const parts = claim.contradicted_by.map((other) => {
-    const pair = pairsWith(other).find((p) => cited.has(p.a === other ? p.b : p.a));
-    const mine = pair ? (pair.a === other ? pair.b : pair.a) : null;
-    if (!mine) return `${esc(loc(other))}${whenOf(other)} disagrees with a passage this claim quotes`;
-    return `${esc(loc(mine))}, which this claim quotes, disagrees with ${esc(loc(other))}, ${relation(other, mine)}${whenOf(other)}`;
-  });
-  const clean = claim.citations.length && claim.citations.every((c) => c.quote_found) && !claim.values_missing.length;
-  const tail = clean ? 'The quote is word for word: the flag means two records disagree, not that this claim is false.' : quoteProblem(claim);
-  return `${cap(parts.join('; '))}. ${tail} Open both and decide which one holds.`;
-}
-function claimReason(claim) {
-  const ch = claim.checker;
-  if (claim.status === 'supported') {
-    return ch && ch.verdict
-      ? 'Quoted word for word, figures and dates included, and the second checker agrees.'
-      : 'Quoted word for word, figures and dates included. The second checker did not run.';
-  }
-  if (claim.status === 'checker_disagrees') {
-    return ch && ch.verdict === 'contradicts'
-      ? 'The quote is in the file, but the second checker reads the passage as saying something else. Open it and judge.'
-      : 'The quote is in the file, but the second checker could not confirm that the passage says this. Open it and judge.';
-  }
-  if (claim.status === 'contradicted') return contradictionReason(claim);
-  return `${quoteProblem(claim)} Open the passage and judge.`;
 }
 // ---- Pieces shared by several views ----
 function pill(kind, cls, label, testid = '') {
   return `<span class="pill ${cls}"${testid ? ` data-testid="${testid}"` : ''}>${icon(kind)}${esc(label)}</span>`;
 }
-function statusPill(status, testid = '') {
-  const [label, ic, cls] = CLAIM_STATUS[status];
-  return pill(ic, cls, label, testid);
+function noteResult(claim) {
+  if (claim.status === 'quote_not_found') return 'Quote not found in the file';
+  if (claim.status === 'contradicted') {
+    const pages = [...new Set(claim.contradicted_by.map((pid) => src(pid).page))];
+    return pages.length === 1 ? `Page ${pages[0]} says the opposite` : `Pages ${pages.join(', ')} say the opposite`;
+  }
+  if (claim.status === 'checker_disagrees') return 'The second reader is not sure';
+  if (claim.status === 'supported') return 'Found in the file ✓';
+  return 'Nothing to check';
 }
 function passageRow(pid, { task = false, testid = 'passage-item' } = {}) {
-  const o = S.opened[pid];
+  const o = hasOpened(pid);
   const cur = S.current && S.current.pid === pid;
   let state = o ? 'Opened' : task ? 'Must open' : 'Open';
-  if (cur) state = 'Opened · in view';
+  if (cur && !o) state = 'In view';
   const s = src(pid);
-  const samePage = s?.kind === 'case' && required().filter((r) => src(r.passage_id)?.kind === 'case' && src(r.passage_id).page === s.page).length;
-  const label = task && s?.kind === 'case' && samePage === 1 ? `Page ${s.page}` : cap(loc(pid));
+  const label = s?.kind === 'case' ? `Page ${s.page}` : cap(loc(pid));
   return `<li><button class="prow ${o ? 'opened' : ''} ${cur ? 'is-cur' : ''} ${task ? 'task' : ''}" data-act="open" data-arg="${esc(pid)}" data-testid="${testid}" data-pid="${esc(pid)}"${S.signed ? ' disabled' : ''}>
     <span class="pst">${icon(o ? 'check' : task ? 'ring' : 'file')}</span>
     <span class="pmain"><span class="ploc">${esc(label)}</span></span>
@@ -301,7 +263,7 @@ function quoteHtml(claim, c, testid = 'quote') {
     <span class="q">“${esc(c.quote)}”</span>
     <span class="cite"><span class="loc">${esc(cap(loc(c.passage_id)))}</span><span>${esc(docLine(c.passage_id))}</span>${kindTag(c.passage_id)}
       ${c.quote_found ? '' : `<span class="qflag">${icon('x')}Not word for word in this passage</span>`}
-      ${S.opened[c.passage_id] ? `<span class="tag done">${icon('check')}Opened</span>` : ''}</span></button>`;
+      ${hasOpened(c.passage_id) ? `<span class="tag done">${icon('check')}Opened</span>` : ''}</span><span class="act">Open this page${icon('arrow')}</span></button>`;
 }
 // ---- Case bar: the file, both counters, the one next action ----
 function renderBar() {
@@ -316,9 +278,10 @@ function renderBar() {
   else if (n.kind === 'sign') { label = 'Sign decision'; hint = 'Next step · everything is ready'; }
   else { label = 'View the record'; hint = 'Decision signed'; }
   const target = n.kind === 'passage' ? `passage:${n.pid}` : n.kind === 'outcome' ? `outcome:${n.clause.clause_id}` : n.kind;
+  const signLabel = S.signed ? 'Signed ✓' : ready() ? 'Sign decision' : `Sign decision · ${missingItems().length} questions left`;
   $('next').innerHTML = `<span class="sr" data-testid="next-hint">${esc(hint)}</span>
-      <button class="btn-primary" data-act="next" data-testid="next-action" data-next="${esc(target)}" title="${esc(hint)}">Next: ${esc(label[0].toLowerCase() + label.slice(1))}${icon('arrow')}</button>
-      <button class="btn-secondary" data-act="sign" data-testid="sign-btn">${S.signed ? 'Decision record' : 'Sign decision'}</button>`;
+      ${n.kind !== 'sign' && n.kind !== 'record' ? `<button class="btn-primary" data-act="next" data-testid="next-action" data-next="${esc(target)}" title="${esc(hint)}">Next: ${esc(label[0].toLowerCase() + label.slice(1))}${icon('arrow')}</button>` : ''}
+      ${S.sel === 'signoff' && S.step === 'check' && !S.signed ? '' : `<button class="${ready() || S.signed ? 'btn-primary sign-ready' : 'btn-secondary sign-pending'}" data-act="sign" data-testid="sign-btn">${signLabel}</button>`}`;
 }
 
 function renderJob() {
@@ -336,8 +299,8 @@ function renderIntro() {
       <h2>Follow the highlights. <span class="accent">You</span> decide.</h2></div>
       <button class="btn-secondary" data-act="intro-close" data-testid="intro-dismiss">Got it</button></div>
     <ol class="intro-steps">
-      <li><b>What the AI did</b><span>Matched evidence to the questions. Its claims are behind “AI claims”.</span></li>
-      <li><b>What the checks flagged</b><span>Highlighted words sit in the real file. Open the ${num(required().length)} required passages; other highlights are optional.</span></li>
+      <li><b>What the AI did</b><span>Matched evidence to the questions. Its notes are behind “What the AI noted”.</span></li>
+      <li><b>What the checks flagged</b><span>Highlighted words sit in the real file. Each of the ${num(required().length)} required passages counts as opened after ${S.openedSeconds} seconds in view, accumulated across visits; other highlights are optional.</span></li>
       <li><b>What you decide</b><span>Set all ${num(decisive().length)} outcomes, then sign. Missing evidence never means “not met”.</span></li>
     </ol></div>` : '';
 }
@@ -351,7 +314,7 @@ function renderRail() {
     const status = st.outcome ? `Decided: ${OUTCOME_LABEL[st.outcome]}` : id === 'other' ? 'No outcome needed' : questionFlag(cl) || 'Looks clean · not decided';
     return `<button class="rrow ${sel ? 'is-sel' : ''}"
       data-act="clause" data-arg="${esc(id)}" data-testid="clause-row" data-clause="${esc(id)}" aria-current="${sel}">
-      <span class="task-icon ${questionFlag(cl) && !st.outcome ? 'flag' : ''}">${st.outcome ? '✓' : questionFlag(cl) ? '!' : id === 'other' ? '–' : ''}</span>
+      <span class="task-icon ${st.outcome ? `outcome-${st.outcome}` : questionFlag(cl) ? 'flag' : ''}">${st.outcome ? {met: '✓', not_met: '✗', cannot_decide: '⏸'}[st.outcome] : questionFlag(cl) ? '!' : id === 'other' ? '–' : ''}</span>
       <span><span class="rname">${esc(shortName(cl))}</span>
       <span class="rstat">${esc(status)}${st.flagged.length ? ` · ${st.opened} of ${st.flagged.length} opened` : ''}</span></span></button>`;
   };
@@ -360,7 +323,7 @@ function renderRail() {
   const other = railClauses().filter((c) => c.clause_id === 'other');
   const sign = S.signed ? 'Signed · record locked' : ready() ? 'Ready to sign' : `${missingItems().length} questions to finish · cannot start yet`;
   const nSet = decisive().filter((c) => S.outcomes[c.clause_id]).length;
-  const nOpen = required().filter((r) => S.opened[r.passage_id]).length;
+  const nOpen = required().filter((r) => hasOpened(r.passage_id)).length;
   $('rail').innerHTML = `<h2>Decide these questions</h2><div class="counters" id="counters" aria-live="polite">
     <span data-testid="outcome-counter"><b id="outcomeCount">${nSet}</b> of ${decisive().length} decided</span> ·
     <span data-testid="passage-counter"><b id="passageCount">${nOpen}</b> of ${required().length} required opened</span></div>
@@ -369,8 +332,8 @@ function renderRail() {
       <summary data-testid="clean-toggle">${clean.length} ${clean.length === 1 ? 'question looks' : 'questions look'} clean
         <span class="sub"> · ${clean.filter((c) => S.outcomes[c.clause_id]).length} decided</span></summary>
       ${clean.map(row).join('')}</details>` : ''}
-    ${other.length ? `<details class="rail-list other-group"><summary>Other facts · no outcome needed</summary>${other.map(row).join('')}</details>` : ''}
-    <div class="rail-list"><button class="rrow signrow ${S.sel === 'signoff' ? 'is-sel' : ''}" data-act="signoff" data-testid="signoff-row">
+    ${other.length ? `<details class="rail-list other-group"><summary>Background facts (no decision needed)</summary>${other.map(row).join('')}</details>` : ''}
+    <div class="rail-list"><button class="rrow signrow ${S.signed ? 'is-signed' : ''} ${S.sel === 'signoff' ? 'is-sel' : ''}" data-act="signoff" data-testid="signoff-row">
       <span class="task-icon">${S.signed ? '✓' : '–'}</span><span><span class="rname">Sign decision</span><span class="rstat">${sign}</span></span></button></div>`;
 }
 
@@ -380,11 +343,11 @@ function claimItem(claim) {
   const d = S.disputes[id];
   const quotes = claim.citations.map((c) => quoteHtml(claim, c)).join('')
     || `<div class="noquote">${icon('searchx')}Quote not found: no quote given</div>`;
-  let action = S.signed ? '' : `<button class="act muted" data-act="dispute" data-arg="${esc(id)}" data-testid="dispute-btn">${icon('flag')}Dispute</button>`;
+  let action = S.signed ? '' : `<button class="act muted" data-act="dispute" data-arg="${esc(id)}" data-testid="dispute-btn">${icon('flag')}This note is wrong</button>`;
   let body = '';
   if (S.disputing === id && !S.signed) {
     action = '';
-    body = `<div class="dispute"><label for="dr-${esc(id)}">Why is this claim wrong? Your reason goes on the decision record.</label>
+    body = `<div class="dispute"><label for="dr-${esc(id)}">Why is this note wrong? Your reason goes on the decision record.</label>
       <textarea id="dr-${esc(id)}" data-testid="dispute-reason">${esc(d ? d.reason : '')}</textarea>
       ${S.disputeErr ? `<div class="helper err">${icon('alert')}Write a reason. A dispute without one cannot go on the record.</div>` : ''}
       <div class="dlg-actions"><button class="act muted" data-act="dispute-cancel" data-arg="${esc(id)}">Cancel</button>
@@ -395,10 +358,10 @@ function claimItem(claim) {
       ${S.signed ? '' : `<button class="act muted" data-act="dispute" data-arg="${esc(id)}">Edit</button><button class="act muted" data-act="dispute-withdraw" data-arg="${esc(id)}">Withdraw</button>`}</div>`;
   }
   return `<article class="item" data-testid="claim" data-status="${claim.status}">
+    <p class="note-sentence" data-testid="note-sentence">${esc(claim.claim)}</p>
     <div class="quotes">${quotes}</div>
-    <div class="claimline"><span class="tag ai">AI claim</span><span>${esc(claim.claim)}</span></div>
-    <div class="statusline"><span class="list-label">Claim check</span>${statusPill(claim.status)}<span class="spacer"></span>${action}</div>
-    <p class="why">${claimReason(claim)}</p>${body}</article>`;
+    <p class="note-result" data-testid="note-result">${esc(noteResult(claim))}</p>
+    ${action}${body}</article>`;
 }
 
 function clauseView(cl) {
@@ -429,7 +392,7 @@ function clauseView(cl) {
   const warning = pagePairs.length ? `${pageNames.slice(0, -1).join(', ')} and ${pageNames.at(-1)} disagree; open ${pageNames.length === 2 ? 'both' : 'each page'} before you decide.`
     : flag.includes('evidence not found') || flag === 'Evidence not found' ? 'Missing evidence does not mean “not met”; decide whether the file lets you answer this question.'
     : flag === 'Checker disagrees' ? 'The quote is in the file, but the second checker could not confirm the claim; open the passage and judge.'
-    : flag === 'Quote not found' ? 'A claim has no verified quote; open its AI claims to see what could not be checked.'
+    : flag === 'Quote not found' ? 'An AI note has no verified quote; open “What the AI noted” to see what could not be checked.'
     : flag ? 'The scan found a relevant passage that no claim uses; open it and judge whether it changes this question.' : '';
   const list = railClauses().filter((c) => c.clause_id !== 'other');
   const number = list.findIndex((c) => c.clause_id === id) + 1;
@@ -438,19 +401,19 @@ function clauseView(cl) {
       <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
     ${warning ? `<section class="warning-box" data-testid="question-warning"><span class="task-icon flag">!</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
-    ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'claim' : 'claims'}. <button class="act" data-act="claims">Show claims</button></section>` : ''}
+    ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'note' : 'notes'}. <button class="act" data-act="claims">Show AI notes</button></section>` : ''}
     <div class="question-split"><section class="reader" id="reader" aria-label="Applicant file pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
         <fieldset><legend>Is this question met?</legend><div class="opts">${OUTCOMES.map(([val, lab]) => `<label class="outcome-radio"><input type="radio" name="outcome" value="${val}" data-act="outcome" data-arg="${esc(id)}" data-val="${val}" data-outcome="${val}" data-testid="outcome-${esc(id)}-${val}"${o === val ? ' checked' : ''}${S.signed ? ' disabled' : ''}>${lab}</label>`).join('')}</div></fieldset>
         <span class="sr" data-testid="outcome-state">${o ? esc(OUTCOME_LABEL[o]) : 'not set'}</span>
         ${flagged}<button class="btn-primary" data-act="save-next" data-arg="${esc(id)}" data-testid="save-next"${S.signed ? ' disabled' : ''}>Save and next question</button>
-        ${S.formErr ? `<p class="helper err" role="alert">${esc(S.formErr)}</p>` : ''}</div>` : '<p class="note">Other facts · no outcome needed.</p>'}</aside></div>
+        ${S.formErr ? `<p class="helper err" role="alert">${esc(S.formErr)}</p>` : ''}</div>` : '<p class="note">Background facts (no decision needed).</p>'}</aside></div>
     ${gaps ? `<details class="question-block gaps" data-testid="gaps"><summary>Evidence not found · missing evidence does not mean “not met”</summary>${gaps}</details>` : ''}
     ${cl.policy_sentence ? `<details class="question-block"><summary>The policy question</summary><blockquote class="q">“${esc(cl.policy_sentence)}”</blockquote>
       ${cl.policy_items.length ? `<ul class="pitems">${cl.policy_items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>` : ''}
       <button class="act" data-act="open" data-arg="${esc(cl.policy_passage_id)}" data-testid="open-policy"${S.signed ? ' disabled' : ''}>Open policy passage${icon('arrow')}</button></details>` : ''}
     <details class="question-block claim-details" data-testid="claim-details"${S.claimOpen ? ' open' : ''}>
-      <summary>AI claims · ${num(claims.length)}</summary><div class="items">${claims.map(claimItem).join('') || '<p class="note">No claim given.</p>'}</div></details>
+      <summary>What the AI noted (${num(claims.length)})</summary><div class="items">${claims.map(claimItem).join('') || '<p class="note">No AI note given.</p>'}</div></details>
   </div>`;
 }
 
@@ -511,8 +474,8 @@ function checkView() {
   const disputes = Object.entries(S.disputes).map(([id, d]) => {
     const c = claimById(id);
     const cl = c && clauseById(c.clause_id);
-    return `<div class="cya-row"><dt>${esc(cl ? clauseName(cl) : 'Claim')}</dt><dd>${recordQuotes(c?.citations || [])}<span class="tag ai">AI claim</span> “${esc(c ? c.claim : '')}”<br><b>Your reason:</b> ${esc(d.reason)}</dd><dd class="cya-act">${cl ? change('clause', cl.clause_id, 'dispute') : ''}</dd></div>`;
-  }).join('') || '<div class="cya-row"><dt>None</dt><dd>You disputed no AI claim.</dd><dd></dd></div>';
+    return `<div class="cya-row"><dt>${esc(cl ? clauseName(cl) : 'AI note')}</dt><dd><span class="tag ai">AI note</span> “${esc(c ? c.claim : '')}”${recordQuotes(c?.citations || [])}<p>${esc(c ? noteResult(c) : '')}</p><b>Your reason:</b> ${esc(d.reason)}</dd><dd class="cya-act">${cl ? change('clause', cl.clause_id, 'dispute') : ''}</dd></div>`;
+  }).join('') || '<div class="cya-row"><dt>None</dt><dd>You disputed no AI note.</dd><dd></dd></div>';
   const nReq = required().length;
   return `<section class="signoff" data-testid="check-answers">
     <div class="eyebrow">Sign off</div>
@@ -522,13 +485,13 @@ function checkView() {
       <div class="cya-row"><dt>Decision</dt><dd data-testid="cya-decision">${esc(DECISION_LABEL[S.decision])}</dd><dd class="cya-act">${change('change-decision', '', 'decision')}</dd></div>
       <div class="cya-row"><dt>Reason</dt><dd>${esc(S.reason)}</dd><dd class="cya-act">${change('change-decision', '', 'reason')}</dd></div>
     </dl>
-    <div class="sec-h"><span>Question outcomes, set by you</span></div><dl class="cya">${outcomes}</dl>
-    <div class="sec-h"><span>Disputed claims</span><span>${num(Object.keys(S.disputes).length)}</span></div><dl class="cya">${disputes}</dl>
+    <div class="sec-h"><span>Your answers to the questions</span></div><dl class="cya">${outcomes}</dl>
+    <div class="sec-h"><span>Disputed AI notes</span><span>${num(Object.keys(S.disputes).length)}</span></div><dl class="cya">${disputes}</dl>
     <div class="sec-h"><span>Flagged passages</span></div>
     <p class="note">${nReq ? `All ${num(nReq)} opened.` : 'Nothing was flagged.'} Opening a passage is recorded; it does not prove it was read.</p>
     ${S.signErr ? `<div class="helper err" data-testid="sign-error">${icon('alert')}${esc(S.signErr)}</div>` : ''}
     <div class="dlg-actions"><button class="btn-secondary" data-act="change-decision">Back</button>
-      <button class="btn-primary" data-act="confirm" data-testid="confirm-sign">${icon('pen')}Sign decision</button></div>
+      <button class="btn-primary sign-ready" data-act="confirm" data-testid="confirm-sign">${icon('pen')}Sign decision</button></div>
   </section>`;
 }
 function recordQuotes(citations) {
@@ -541,19 +504,19 @@ function recordView() {
   const opened = record.passages_opened.map((p) => `<tr><td>${esc(p.label)}<div class="sub">${p.required ? 'Required' : 'Optional'}</div></td>
       <td class="r mono">${esc(fmtTime(p.opened_at))}</td><td class="r mono">${p.seconds_in_view.toFixed(1)} s</td></tr>`).join('')
     || '<tr><td colspan="3">None</td></tr>';
-  const disputes = record.disputes.map((d) => `<li><div class="c">${icon('flag')}${esc(d.clause || '')}</div>${recordQuotes(d.citations || [])}<span class="tag ai">AI claim</span> “${esc(d.claim || '')}”<div><b>Your reason:</b> ${esc(d.reason)}</div></li>`).join('');
+  const disputes = record.disputes.map((d) => `<li><div class="c">${icon('flag')}${esc(d.clause || '')}</div><span class="tag ai">AI note</span> “${esc(d.claim || '')}”${recordQuotes(d.citations || [])}<p>${esc(d.check_result || '')}</p><div><b>Your reason:</b> ${esc(d.reason)}</div></li>`).join('');
   return `<section class="rec" data-testid="record">
     <div class="rec-head"><h2>${icon('lock')}Decision record</h2><span class="tag done">${icon('check')}Signed</span></div>
     <div class="rec-dec">${esc(DECISION_LABEL[record.decision])}</div>
     <dl class="rec-dl"><dt>File</dt><dd>Applicant file ${esc(record.case_id)}</dd>
       <dt>Reason</dt><dd><div class="rec-reason">${esc(record.reason)}</div></dd>
       <dt>Signed</dt><dd>${num(esc(fmtStamp(record.signed_at)))} by ${esc(record.officer)}</dd></dl>
-    <h4>Question outcomes, set by you</h4>
+    <h4>Your answers to the questions</h4>
     <table class="rec-t"><tbody>${record.clause_outcomes.map((o) => `<tr><td>${esc(o.title)}</td><td class="r">${esc(OUTCOME_LABEL[o.outcome])}</td></tr>`).join('')}</tbody></table>
     <h4>Passages opened before signing · ${num(record.passages_opened.length)}</h4>
     <table class="rec-t"><thead><tr><th>Passage</th><th class="r">Opened</th><th class="r">In view</th></tr></thead><tbody>${opened}</tbody></table>
-    <h4>Disputed claims · ${num(record.disputes.length)}</h4>
-    ${disputes ? `<ul class="rec-disp">${disputes}</ul>` : '<p class="note">You disputed no AI claim.</p>'}
+    <h4>Disputed AI notes · ${num(record.disputes.length)}</h4>
+    ${disputes ? `<ul class="rec-disp">${disputes}</ul>` : '<p class="note">You disputed no AI note.</p>'}
     <p class="rec-note">${icon('info')}${esc(record.note)}</p>
     <div class="exports"><a class="btn-secondary" href="${esc(htmlUrl)}" target="_blank" rel="noopener" data-testid="export-html">Export HTML</a>
       <a class="btn-secondary" href="${esc(jsonUrl)}" download data-testid="export-json">Export JSON</a></div>
@@ -601,10 +564,14 @@ function buildAnnotations() {
 
 const flagHighlights = () => S.annotations.filter((a) => a.flagged);
 
-function pageParagraph(p) {
+function paragraphAnnotations(p) {
   const pageHasQuote = S.annotations.some((a) => a.cid === S.sel && src(a.pid).page === p.page && a.quote);
-  const annotations = S.annotations.filter((a) => a.pid === p.passage_id && (S.fullFile
+  return S.annotations.filter((a) => a.pid === p.passage_id && (S.fullFile
     || (a.cid === S.sel && (a.quote || isRequired(a.pid) || !pageHasQuote))));
+}
+const labelKey = (a) => `${a.cid}:${a.kind}:${a.flagged}`;
+function pageParagraph(p, previous = []) {
+  const annotations = paragraphAnnotations(p);
   const ranges = annotations.flatMap((a) => {
     if (!a.quote) return [];
     const start = p.text.indexOf(a.quote);
@@ -621,23 +588,24 @@ function pageParagraph(p) {
       data-evidence="${here.map((a) => a.id).join(' ')}" data-claims="${[...new Set(here.flatMap((a) => a.claimIds))].join(' ')}"
       data-clauses="${[...new Set(here.map((a) => a.cid))].join(' ')}">${words}</mark>` : words;
   }
-  const labels = annotations.map((a) => `<button class="evidence-label ${a.flagged ? 'flag-label' : ''} ${S.current?.annotation === a.id ? 'current-label' : ''}" id="${a.id}"
+  const labels = annotations.map((a) => {
+    const repeated = previous.some((b) => labelKey(b) === labelKey(a));
+    const label = `${shortName(clauseById(a.cid))}${a.kind === 'missed' ? ' · Possibly missed' : a.kind === 'pair' ? ' · Two pages disagree' : S.fullFile && a.flagged ? ' · Check' : ''}`;
+    return `<button class="evidence-label ${repeated ? 'evidence-marker' : ''} ${a.flagged ? 'flag-label' : ''} ${S.current?.annotation === a.id ? 'current-label' : ''}" id="${a.id}" aria-label="${esc(label)}"
     data-act="annotation" data-arg="${a.id}" data-testid="highlight-label" data-clause="${esc(a.cid)}" data-pid="${esc(a.pid)}"
-    data-flag="${a.flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${S.fullFile ? icon(a.flagged ? 'flag' : 'check') : ''}${esc(shortName(clauseById(a.cid)))}
-    ${a.kind === 'missed' ? ' · Possibly missed' : a.kind === 'pair' ? ' · Two pages disagree' : S.fullFile && a.flagged ? ' · Check' : ''}
-    ${S.fullFile && isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}</button>`).join('');
+    data-flag="${a.flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${repeated ? icon(a.flagged ? 'flag' : 'check') : `${S.fullFile ? icon(a.flagged ? 'flag' : 'check') : ''}${esc(label)}${S.fullFile && isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}`}</button>`;
+  }).join('');
   const active = S.current?.pid === p.passage_id;
   return `<div class="file-paragraph ${active ? 'active-passage' : ''} ${annotations.some((a) => !a.quote) ? 'scan-passage' : ''}"
     data-testid="${active ? 'source' : 'file-paragraph'}" data-pid="${esc(p.passage_id)}">
-    ${labels ? `<div class="evidence-labels">${labels}</div>` : ''}<p>${text}</p>
-    ${active ? `<div class="passage-time" data-testid="in-view">${icon('clock')}Opened · in view <span class="mono" id="inView">${Math.floor(secondsInView(p.passage_id))}</span> s</div>` : ''}</div>`;
+    ${labels ? `<div class="evidence-labels">${labels}</div>` : ''}<p>${text}</p></div>`;
 }
 
 function pageHtml(page) {
   const p = page.passages[0];
   return `<article class="file-page" data-testid="file-page" data-page="${page.page}">
     <header class="file-page-head">Page ${num(page.page)} · ${esc(p?.doc_title || 'Case file')} · ${esc(fmtDate(p?.doc_date))}</header>
-    ${page.passages.map(pageParagraph).join('')}</article>`;
+    ${page.passages.map((p, i) => pageParagraph(p, i ? paragraphAnnotations(page.passages[i - 1]) : [])).join('')}</article>`;
 }
 
 const pageKey = (s) => `${s.kind === 'case' ? 'case' : s.passage_id.split(':')[0]}:${s.page}`;
@@ -664,7 +632,7 @@ function questionPages(cl) {
 }
 
 function tabPassage(group) {
-  return group.pids.find((pid) => isRequired(pid) && !S.opened[pid])
+  return group.pids.find((pid) => isRequired(pid) && !hasOpened(pid))
     || group.pids.find(isRequired) || group.pids[0];
 }
 
@@ -693,14 +661,14 @@ function renderReader() {
   if (active) S.tab = active.key;
   const fullButton = `<button class="act full-link" data-act="full-open" data-testid="open-full-file">Open in full file (${S.pages.length} pages) ↗</button>`;
   const tabs = `<div class="viewer-top"><div class="page-tabs" role="tablist" aria-label="Pages for this question">${visible.map((g) => {
-    const opened = g.pids.some((pid) => S.opened[pid]);
+    const opened = g.pids.some(hasOpened);
     const solelyMissed = g.missed && !g.pids.some((pid) => S.annotations.some((a) => a.pid === pid && a.cid === S.sel && a.quote)) && !clauseById(S.sel).contradictions.some((p) => g.pids.includes(p.a) || g.pids.includes(p.b));
     return `<button role="tab" class="page-tab" aria-selected="${g.key === active?.key}" aria-controls="fileScroll" data-act="page-tab" data-arg="${esc(g.key)}" data-testid="page-tab" data-page="${g.page}" data-kind="${g.kind}"${S.signed ? ' disabled' : ''}>Page ${g.page}${opened ? ' ✓ opened' : ''}<span class="tab-note">${g.date ? esc(fmtDate(g.date).replace(/ \d{4}$/, '')) : 'Date not recorded'}</span>${solelyMissed ? '<span class="tab-note">Possibly missed</span>' : ''}</button>`;
   }).join('')}${more.length ? `<button class="page-tab more-pages" data-act="more-pages" data-testid="more-pages" aria-expanded="${S.morePages}" aria-controls="morePages"${S.signed ? ' disabled' : ''}>More pages (${more.length})${more.includes(active) ? `<span class="tab-note">Page ${active.page} selected</span>` : ''}</button>` : ''}</div>
     ${more.length ? `<div class="more-page-list" id="morePages"${S.morePages ? '' : ' hidden'}>${[
       ["Cited by the AI's claims", more.filter((g) => g.cited)],
       ['Possibly missed', more.filter((g) => !g.cited)],
-    ].filter(([, pages]) => pages.length).map(([label, pages]) => `<section><h3>${esc(label)}</h3><ul>${pages.map((g) => `<li><button class="act" data-act="page-tab" data-arg="${esc(g.key)}" data-testid="more-page" aria-current="${g.key === active?.key ? 'page' : 'false'}"${S.signed ? ' disabled' : ''}>Page ${g.page} · ${esc(fmtDate(g.date))} · ${esc(g.title)}${g.pids.some((pid) => S.opened[pid]) ? ' ✓ opened' : ''}</button></li>`).join('')}</ul></section>`).join('')}</div>` : ''}${fullButton}</div>`;
+    ].filter(([, pages]) => pages.length).map(([label, pages]) => `<section><h3>${esc(label)}</h3><ul>${pages.map((g) => `<li><button class="act" data-act="page-tab" data-arg="${esc(g.key)}" data-testid="more-page" aria-current="${g.key === active?.key ? 'page' : 'false'}"${S.signed ? ' disabled' : ''}>Page ${g.page} · ${esc(fmtDate(g.date))} · ${esc(g.title)}${g.pids.some(hasOpened) ? ' ✓ opened' : ''}</button></li>`).join('')}</ul></section>`).join('')}</div>` : ''}${fullButton}</div>`;
   let content;
   if (S.fullFile) content = S.pages.map(pageHtml).join('');
   else if (!active) content = '<p class="empty-file">Evidence not found. No page is cited for this question. Missing evidence does not mean “not met”.</p>';
@@ -823,6 +791,7 @@ let passageObserver = null;
 function passageVisible() {
   if (!S.current || document.hidden || S.signed || $('about').open || $('comparison').open) return false;
   const isPolicy = src(S.current.pid)?.kind === 'policy' && !S.policyInline;
+  if (src(S.current.pid)?.kind === 'policy' && !S.policyText[S.current.pid]) return false;
   if ($('policy').open !== isPolicy) return false;
   const el = document.querySelector('[data-testid="source"]');
   if (!el) return false;
@@ -959,7 +928,7 @@ async function confirmSign() {
     decision: S.decision,
     reason: S.reason.trim(),
     clause_outcomes: S.outcomes,
-    passages_opened: Object.entries(S.opened).map(([pid, o]) => ({ passage_id: pid, opened_at: o.opened_at, seconds_in_view: Math.round(o.seconds * 10) / 10 })),
+    passages_opened: Object.entries(S.opened).filter(([, o]) => o.opened_at).map(([pid, o]) => ({ passage_id: pid, opened_at: o.opened_at, seconds_in_view: Math.round(o.seconds * 10) / 10 })),
     disputes: Object.entries(S.disputes).map(([claimId, x]) => ({ claim_id: claimId, reason: x.reason, at: x.at })),
   };
   let res;
@@ -1088,9 +1057,21 @@ document.addEventListener('toggle', (e) => {
 }, true);
 
 setInterval(() => {
-  const el = $('inView');
-  if (el && S.current) el.textContent = Math.floor(secondsInView(S.current.pid));
-}, 1000);
+  updateReaderVisibility();
+  if (S.current) qualifyOpening(S.current.pid);
+  if (!S.progressDirty) return;
+  S.progressDirty = false;
+  // Update progress without replacing a note's reason box or moving the file scroll position.
+  renderBar();
+  renderRail();
+  const flagged = document.querySelector('[data-testid="flagged"] .plist');
+  if (flagged) flagged.innerHTML = flaggedFor(S.sel).map((r) => passageRow(r.passage_id, { task: true, testid: 'flagged-item' })).join('');
+  document.querySelectorAll('[data-testid="page-tab"], [data-testid="more-page"]').forEach((el) => {
+    const group = questionPages(clauseById(S.sel)).find((g) => g.key === el.dataset.arg);
+    if (group?.pids.some(hasOpened) && !el.textContent.includes('✓ opened')) el.firstChild.textContent += ' ✓ opened';
+  });
+  syncBarHeight();
+}, 100);
 
 // Loading state: skeleton rows shaped like the clause list and the clause.
 $('rail').innerHTML = Array.from({ length: 6 }, () => '<div class="skel rrow-skel"></div>').join('');
@@ -1104,17 +1085,18 @@ fetch('/api/context').then((r) => {
   $('waitContext').innerHTML = `${esc(context.label)} · <a href="${esc(context.source_url)}" target="_blank" rel="noopener">NT open data, Dec 2020</a> · historical, not priority-specific`;
 }).catch(() => { $('waitContext').textContent = 'Historical housing context unavailable.'; });
 
-Promise.all(['/api/view', '/api/case-pages'].map((url) => fetch(url)
+Promise.all(['/api/view', '/api/case-pages', '/api/settings'].map((url) => fetch(url)
   .then(async (r) => { if (!r.ok) throw new Error((await r.json()).detail || `HTTP ${r.status}`); return r.json(); })))
-  .then(([v, file]) => {
+  .then(([v, file, settings]) => {
     S.view = v;
+    S.openedSeconds = settings.opened_seconds;
     S.pages = file.pages;
     buildAnnotations();
     S.sel = railClauses().length ? railClauses()[0].clause_id : 'signoff';
     renderAbout();
     render();
-    const first = S.annotations.find((a) => a.cid === S.sel);
-    if (first) jumpToPassage(first.pid, first.claimIds, first.id);
+    const first = questionPages(clauseById(S.sel))[0];
+    if (first) openPageTab(first.key);
   })
   .catch((err) => {
     $('rail').innerHTML = '';

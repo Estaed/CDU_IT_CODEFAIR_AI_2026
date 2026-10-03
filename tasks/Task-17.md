@@ -1,4 +1,5 @@
 # Task-17: Plain AI notes, and the usability fixes
+**Status: DONE** — verified 2026-10-03, eye check pending: 2
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık could not follow "AI claims · N" when he opened it. He also asked for a usability pass
 > on the screen (2026-10-03: "sign olayı gri olması çık olmamış ... yeşile dönsün onaylanınca"). The
@@ -54,23 +55,23 @@ These are the last things standing between a first-time viewer and the next step
 the judge.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] The A-0142 replay is byte-identical: run `python -m readmark run --case A-0142 --replay`, and
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] The A-0142 replay is byte-identical: run `python -m readmark run --case A-0142 --replay`, and
   `runs/` shows no diff.
-- [ ] Headless on A-0142 and E-02:
+- [x] Headless on A-0142 and E-02:
   - "What the AI noted" is closed when a question opens;
   - opened, every card shows the sentence, the quote with its page, and the result in words;
   - no card shows an internal id or a raw verdict code;
   - "This note is wrong" saves a dispute that appears in the record.
-- [ ] Headless: the sign button is outlined with "N questions left" while not ready, green and
+- [x] Headless: the sign button is outlined with "N questions left" while not ready, green and
   single when ready, and "Signed ✓" after signing.
-- [ ] Headless: each outcome shows its own icon and its word in the question list.
-- [ ] Headless (U6): a page shown for under 3 s is not counted as opened. The same page shown for
+- [x] Headless: each outcome shows its own icon and its word in the question list.
+- [x] Headless (U6): a page shown for under 3 s is not counted as opened. The same page shown for
   3 s or more is counted, with `seconds_in_view` ≥ 3 in the record. Tests may shorten the clock
   through a test-only setting, but the shipped value is 3 s.
-- [ ] Headless: no officer-facing text on A-0142 or E-02, the check page, or either export contains
+- [x] Headless: no officer-facing text on A-0142 or E-02, the check page, or either export contains
   "clause", "claim id" or "c" followed by digits.
-- [ ] Screenshots of each fix at 1280 and 1440 in `reports/screens/2026-10-03-wave7/`. Tests
+- [x] Screenshots of each fix at 1280 and 1440 in `reports/screens/2026-10-03-wave7/`. Tests
   write to `.tmp/shots/`, and the delivered set is copied once.
 - [ ] (eye) Tarık opens "What the AI noted" on Debts and understands every card without help.
 - [ ] (eye) Tarık sees the sign button change from outlined, to green, to Signed.

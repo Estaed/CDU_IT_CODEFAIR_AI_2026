@@ -12,6 +12,7 @@ it shows every time in one zone: the one the record was signed in.
 import hashlib
 import html
 import json
+import math
 import re
 from datetime import datetime, tzinfo
 from pathlib import Path
@@ -25,7 +26,9 @@ DECISIONS = {
 }
 OUTCOMES = {"met": "Met", "not_met": "Not met", "cannot_decide": "Cannot decide yet"}
 RECORD_ID = re.compile(r"^[0-9A-Za-z-]{1,64}$")
-OPENED_NOTE = "Opening a passage is recorded; it does not prove the passage was read."
+OPENED_SECONDS = 3
+OPENED_NOTE = (f"A passage counts as opened after {OPENED_SECONDS} seconds in view, accumulated "
+               "across visits. Opening a passage is recorded; it does not prove it was read.")
 # The same light-only government look as the screen; no separate export stylesheet.
 STYLE_FILES = ("theme.css",)
 
@@ -59,7 +62,7 @@ def source_label(source: dict) -> str:
 
 def clause_label(clause: dict) -> str:
     if clause["clause_id"] == "other":
-        return "Other facts"
+        return "Background facts (no decision needed)"
     return f"{clause['title']}, {clause['source']}" if clause.get("source") else clause["title"]
 
 
@@ -77,8 +80,12 @@ def validate(payload: dict, view: dict) -> None:
     for pid, p in opened.items():
         if pid not in view["sources"]:
             problems.append(f"Unknown passage {pid}.")
-        elif not isinstance(p.get("seconds_in_view"), int | float) or not p.get("opened_at"):
-            problems.append(f"Passage {pid} needs opened_at and seconds_in_view.")
+        elif (not isinstance(p.get("seconds_in_view"), int | float)
+              or isinstance(p.get("seconds_in_view"), bool)
+              or not math.isfinite(p["seconds_in_view"])
+              or p["seconds_in_view"] < OPENED_SECONDS or not p.get("opened_at")):
+            problems.append(f"Open {source_label(view['sources'][pid])} for at least "
+                            f"{OPENED_SECONDS} seconds in view.")
     for item in view["required_reading"]:
         if item["passage_id"] not in opened:
             label = source_label(view["sources"][item["passage_id"]]).lower()
@@ -134,6 +141,7 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
             {"claim_id": d["claim_id"], "claim": claims[d["claim_id"]]["claim"],
              "clause_id": claims[d["claim_id"]]["clause_id"],
              "clause": clause_label(clauses[claims[d["claim_id"]]["clause_id"]]),
+             "check_result": note_result(claims[d["claim_id"]], view),
              "citations": [dict(q, label=source_label(view["sources"][q["passage_id"]]))
                            for q in claims[d["claim_id"]]["citations"]],
              "reason": str(d["reason"]).strip(), "at": str(d.get("at") or "")}
@@ -141,6 +149,47 @@ def build(payload: dict, view: dict, now: datetime | None = None) -> dict:
         ],
         "models": view["models"],
         "note": OPENED_NOTE,
+    }
+
+
+def note_result(claim: dict, view: dict) -> str:
+    """The same plain check result is used on a note and in its dispute record."""
+    if claim["status"] == "quote_not_found":
+        return "Quote not found in the file"
+    if claim["status"] == "contradicted":
+        pages = list(dict.fromkeys(view["sources"][pid]["page"]
+                                  for pid in claim["contradicted_by"]))
+        return (f"Page {pages[0]} says the opposite" if len(pages) == 1 else
+                f"Pages {', '.join(map(str, pages))} say the opposite")
+    if claim["status"] == "checker_disagrees":
+        return "The second reader is not sure"
+    if claim["status"] == "supported":
+        return "Found in the file ✓"
+    return "Nothing to check"
+
+
+def for_export(record: dict) -> dict:
+    """Officer-facing JSON uses question names and note text instead of internal identifiers.
+
+    The API response still carries the internal record for the screen; file exports carry the
+    same evidence, times, model provenance and integrity pins in readable terms.
+    """
+    return {
+        **{k: v for k, v in record.items()
+           if k not in ("clause_outcomes", "passages_opened", "disputes", "decision")},
+        "decision": DECISIONS[record["decision"]],
+        "answers_label": "Your answers to the questions",
+        "question_answers": [{"question": o["title"], "answer": OUTCOMES[o["outcome"]]}
+                             for o in record["clause_outcomes"]],
+        "passages_opened": [{k: v for k, v in p.items() if k != "passage_id"}
+                            for p in record["passages_opened"]],
+        "disputes": [{"note": d["claim"], "question": d["clause"],
+                      "check_result": d["check_result"], "reason": d["reason"], "at": d["at"],
+                      "quotes": [{"quote": q["quote"], "source": q["label"],
+                                  "check_result": ("Found in the file ✓" if q["quote_found"]
+                                                   else "Quote not found in the file")}
+                                 for q in d["citations"]]}
+                     for d in record["disputes"]],
     }
 
 
@@ -199,12 +248,13 @@ def to_html(record: dict) -> str:
         f"<li><div class=\"c\">{e(d.get('clause') or '')} · disputed at "
         f"<span class=\"mono\">{e(_in_zone(d['at'], tz, signed))}</span></div>"
         f"{_record_quotes(d.get('citations', []))}"
-        f"<span class=\"tag ai\">AI claim</span> “{e(d.get('claim') or '')}”"
+        f"<span class=\"tag ai\">AI note</span> “{e(d.get('claim') or '')}”"
+        f"<p>{e(d.get('check_result') or '')}</p>"
         f"<div><b>Reason:</b> {e(d['reason'])}</div></li>"
         for d in record["disputes"]
     )
     disputes = (f"<ul class=\"rec-disp\">{disputes}</ul>" if disputes
-                else "<p class=\"note\">The officer disputed no AI claim.</p>")
+                else "<p class=\"note\">The officer disputed no AI note.</p>")
     m = record["models"]
     when = f"{signed.day} {signed:%b %Y}, {signed:%H:%M:%S}"
     return f"""<!doctype html>
@@ -227,18 +277,18 @@ def to_html(record: dict) -> str:
 <span class="mono">{e(record['integrity']['case_sha256'][:16])}…</span><br>
 {e(record['integrity']['view_note'])}
 <span class="mono">{e(record['integrity']['view_sha256'][:16])}…</span></dd></dl>
-<h4>Clause outcomes, set by the officer</h4>
+<h4>Your answers to the questions</h4>
 <table class="rec-t"><tbody>{outcomes}</tbody></table>
 <h4>Passages opened before signing</h4>
 <table class="rec-t"><thead><tr><th>Passage</th><th class="r">Opened ({zone})</th>
 <th class="r">Time in view</th></tr></thead><tbody>{opened}</tbody></table>
 <p class="rec-note">{e(record['note'])}</p>
-<h4>Disputed claims</h4>
+<h4>Disputed AI notes</h4>
 {disputes}
 <h4>About these checks</h4>
 <p class="note">Claims drafted by {e(m['writer']['name'])} ({e(str(m['writer']['model']))}),
 re-checked by {e(m['checker']['name'])} ({e(str(m['checker']['model']))}). The officer set every
-clause outcome and the decision; the tool recommends neither.</p>
+question outcome and the decision; the tool recommends neither.</p>
 </main></body></html>
 """
 
@@ -247,6 +297,6 @@ def save(record: dict, directory: Path) -> tuple[Path, Path]:
     directory.mkdir(parents=True, exist_ok=True)
     json_path = directory / f"{record['record_id']}.json"
     html_path = directory / f"{record['record_id']}.html"
-    json_path.write_text(dumps(record), encoding="utf-8", newline="\n")
+    json_path.write_text(dumps(for_export(record)), encoding="utf-8", newline="\n")
     html_path.write_text(to_html(record), encoding="utf-8", newline="\n")
     return json_path, html_path

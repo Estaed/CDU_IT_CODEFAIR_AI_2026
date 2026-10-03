@@ -1,0 +1,29 @@
+{
+  "part": "audit_labels",
+  "method": "The orchestrator (claude-opus-5-5) labelled each flagged claim of H-01's frozen summary audit by reading the claim, its cited quotes, the cited passages and the document headers, after H-01's single run (2026-10-03). Labels: real_summary_error = the summary sentence is wrong or overstates the file; file_inconsistency = the summary is right, and the flag points at a real contradiction inside the file; false_alarm = the summary is right and the flag is not useful. Only flagged claims were labelled; unflagged claims were not reviewed, so missed summary errors are not counted.",
+  "cases": {
+    "H-01": {
+      "flags": {"count": 14, "n": 105},
+      "real_summary_error": {"count": 1, "n": 14},
+      "file_inconsistency": {"count": 4, "n": 14},
+      "false_alarm": {"count": 9, "n": 14},
+      "useful_flags": {"count": 5, "n": 14}
+    }
+  },
+  "labels": [
+    {"case": "H-01", "claim_id": "a04", "status": "quote_not_found", "label": "false_alarm", "cause": "page_count_not_in_any_passage", "reason": "The file has 17 pages, as the summary says; a page count cannot be quoted from a passage."},
+    {"case": "H-01", "claim_id": "a42", "status": "checker_disagrees", "label": "false_alarm", "cause": "checker_not_enough_information_on_true_claim", "reason": "The intake record on page 9 is dated 22 August 2026, as the summary says."},
+    {"case": "H-01", "claim_id": "a49", "status": "quote_not_found", "label": "false_alarm", "cause": "value_in_document_header", "reason": "The Larkhaven letter is dated 2026-10-01 in its document header; the cited quote holds the content, not the date."},
+    {"case": "H-01", "claim_id": "a50", "status": "quote_not_found", "label": "false_alarm", "cause": "value_in_document_header", "reason": "Same letter and date as a49."},
+    {"case": "H-01", "claim_id": "a52", "status": "checker_disagrees", "label": "real_summary_error", "cause": "overstatement", "reason": "The summary says correspondence goes via Larkhaven only; the form gives Larkhaven as the preferred contact while temporary accommodation continues, and asks only that nothing go to the former shared address."},
+    {"case": "H-01", "claim_id": "a63", "status": "checker_disagrees", "label": "false_alarm", "cause": "checker_contradicts_true_claim", "reason": "The only payslip in the file is the Quayline one (pages 3 and 5); the applicant says she has not enclosed a current earnings statement."},
+    {"case": "H-01", "claim_id": "a64", "status": "quote_not_found", "label": "false_alarm", "cause": "date_range_format", "reason": "'21-27 February 2026' is the quoted 'Pay period: 21 February to 27 February 2026'; the date check does not read the range form."},
+    {"case": "H-01", "claim_id": "a74", "status": "contradicted", "label": "file_inconsistency", "cause": "file_contradicts_itself", "reason": "The prior Marigold tenancy is true (pages 12 and 17); the application form on page 2 answers 'No'. The flag shows the planted form contradiction."},
+    {"case": "H-01", "claim_id": "a82", "status": "quote_not_found", "label": "false_alarm", "cause": "value_in_another_passage", "reason": "The $615.40 amount is on page 14; the cited quotes on pages 3 and 13 hold the dispute. The applicant disputes part of the charge, close to the summary's wording."},
+    {"case": "H-01", "claim_id": "a83", "status": "quote_not_found", "label": "false_alarm", "cause": "value_in_cited_passage_not_in_quote", "reason": "Page 14 paragraph 2 holds both the $615.40 charge and 'remains under review'; the cited quote holds only the second."},
+    {"case": "H-01", "claim_id": "a96", "status": "contradicted", "label": "file_inconsistency", "cause": "summary_reports_the_contradiction", "reason": "The summary itself reports the page 2 versus pages 12 and 17 inconsistency; the flag repeats it."},
+    {"case": "H-01", "claim_id": "a97", "status": "contradicted", "label": "file_inconsistency", "cause": "summary_reports_the_contradiction", "reason": "Same inconsistency as a96, from the page 12 side."},
+    {"case": "H-01", "claim_id": "a98", "status": "contradicted", "label": "file_inconsistency", "cause": "summary_reports_the_contradiction", "reason": "Same inconsistency as a96, from the page 17 side."},
+    {"case": "H-01", "claim_id": "a101", "status": "checker_disagrees", "label": "false_alarm", "cause": "opinion_not_a_fact", "reason": "'May also need checking' is the summary's suggestion, not a fact the file can support."}
+  ]
+}

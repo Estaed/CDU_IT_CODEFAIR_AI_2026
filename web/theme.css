@@ -307,3 +307,19 @@ footer { margin-top: 16px; padding: 16px 0 28px; border-top: 1px solid var(--lin
   .doc .service-band { print-color-adjust: exact; }
   .rec-doc { max-width: none; padding: 0; }
 }
+
+.upload-content { max-width: 680px; padding: 32px 0; }
+.upload-content h1 { font-size: 30px; margin: 24px 0 12px; }
+.upload-content h2 { font-size: 22px; }
+.upload-content input:not([type="file"]), .upload-content select { width: 100%; padding: 10px; border: 2px solid var(--secondary); background: var(--paper); color: var(--ink); }
+.upload-drop { border: 2px dashed var(--line); padding: 20px; background: var(--viewer); }
+.upload-drop p { margin: 0 0 12px; }
+.upload-drop.dragging { border-color: var(--primary); }
+.upload-drop input { max-width: 100%; }
+.upload-files { padding-left: 20px; overflow-wrap: anywhere; }
+.upload-content form > .btn-primary { margin-top: 16px; }
+.upload-steps { padding-left: 28px; margin: 24px 0; }
+.upload-steps li { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.upload-steps li::marker { font-weight: bold; }
+.upload-steps li[aria-current] { font-weight: bold; }
+.upload-step-state { float: right; color: var(--secondary); margin-left: 16px; }

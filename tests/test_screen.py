@@ -97,11 +97,12 @@ TIER_SHOTS = ROOT / ".tmp/shots/wave8c"
 
 
 @contextmanager
-def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN, runs_root=None):
+def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN, runs_root=None, **app_options):
     """The app on a free port (no shared-device lock needed)."""
     port = _free_port()
     config = uvicorn.Config(create_app(case_id, run_dir=run_dir, records_dir=records_dir,
-                                       opened_seconds=opened_seconds, runs_root=runs_root),
+                                       opened_seconds=opened_seconds, runs_root=runs_root,
+                                       **app_options),
                             host="127.0.0.1", port=port, log_level="warning")
     srv = uvicorn.Server(config)
     thread = threading.Thread(target=srv.run, daemon=True)

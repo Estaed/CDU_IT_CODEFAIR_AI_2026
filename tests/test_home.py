@@ -169,8 +169,7 @@ def test_home_lists_groups_titles_pages_and_signed_record(width, home_runs):
         page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" else None)
         page.goto(base)
         expect(page.get_by_role("heading", name="All cases", exact=True)).to_be_visible()
-        expect(page.get_by_test_id("new-case")).to_be_disabled()
-        expect(page.locator("#newCaseNote")).to_have_text("Coming in this build.")
+        expect(page.get_by_test_id("new-case")).to_be_enabled()
         expected_ids = {path.parent.name for path in home_runs.glob("*/view.json")}
         expected_ids -= {"stub", "eval"}
         assert set(page.get_by_test_id("home-case").evaluate_all(

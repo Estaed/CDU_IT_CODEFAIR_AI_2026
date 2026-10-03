@@ -73,6 +73,7 @@ def source_entry(pid: str, passages: dict[str, dict]) -> dict:
             "passage_id": pid, "exists": True, "kind": "case", "page": p["page"],
             "doc_type": p["doc_type"], "doc_title": p["doc_title"], "doc_date": p["doc_date"],
             "text": p["text"],
+            **{key: p[key] for key in ("doc_id", "doc_page") if key in p},
         }
     # Policy text is not stored: the server reads it from the pinned PDF on demand.
     return {
@@ -200,6 +201,15 @@ def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: l
 
 def validate_view(view: dict, question_list: dict | None = None) -> None:
     schema = json.loads(VIEW_SCHEMA.read_text(encoding="utf-8"))
+    if "title" in view["case"]:
+        # Uploaded files have a supplied case name and document ids, but no invented dates.
+        # Bind these additions in memory; the frozen replay contract stays byte-identical.
+        schema["properties"]["case"]["properties"]["title"] = {"type": "string", "minLength": 1}
+        document = schema["properties"]["case"]["properties"]["documents"]["items"]
+        document["properties"]["doc_id"] = {"type": "string"}
+        document["properties"]["doc_date"]["type"] = ["string", "null"]
+        source = schema["properties"]["sources"]["additionalProperties"]
+        source["properties"]["doc_date"]["type"] = ["string", "null"]
     if question_list is not None and question_list["id"] != DEFAULT_LIST_ID:
         # The on-disk schema describes the frozen housing demo. Bind its list-specific
         # constraints to the approved list while keeping every version-2 field unchanged.
@@ -217,7 +227,7 @@ def validate_view(view: dict, question_list: dict | None = None) -> None:
 def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         checker_impl=None, out_dir: Path | None = None, audit: bool | None = None,
         auditor=None, *, case_file: Path | None = None,
-        lists_dir: Path = QUESTION_LISTS_DIR) -> dict:
+        lists_dir: Path = QUESTION_LISTS_DIR, progress=None) -> dict:
     """Run every layer once and write the stage files. ``writer``, ``checker_impl`` and
     ``auditor`` replace the live models (tests use fixed ones); ``replay`` reads every response
     from the cache.
@@ -241,6 +251,8 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     cache = Cache(out / "cache", replay=replay)
 
     # 1. Ingest: pins first, then passages.
+    if progress:
+        progress("Splitting into passages")
     lock = load_lock(question_list=question_list)
     policy = policy_passages(question_list=question_list)
     case_meta, case = case_passages(case_id, input_path)
@@ -252,6 +264,8 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     case_by_id = {p["passage_id"]: p for p in case}
 
     # 3. Writer.
+    if progress:
+        progress("The AI is reading")
     if writer is None and case_id in ("E-01", "E-02", "E-03", "H-01"):
         from readmark.eval.discipline import EvaluationWriter
 
@@ -265,10 +279,14 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     facts = [{**f, "claim_id": f"c{n:02d}"} for n, f in enumerate(raw["facts"], start=1)]
 
     # 4. Code checks on every fact with citations; nothing is dropped.
+    if progress:
+        progress("Checking quotes")
     found = [f for f in facts if f["found"]]
     checks = {f["claim_id"]: check_fact(f, passages) for f in found}
 
     # 5. Checker: second key on each claim against its cited passages that exist.
+    if progress:
+        progress("Second reader")
     checker_impl = checker_impl or make_checker(checker, cache)
     items = []
     for f in found:
@@ -425,4 +443,6 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         from readmark.eval.discipline import finish_heldout
 
         finish_heldout(out)
+    if progress:
+        progress("Ready")
     return view

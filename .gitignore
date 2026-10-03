@@ -1,6 +1,10 @@
 .codex/hooks.json
 .tmp/
+# Chromium can emit this diagnostic on Windows even with CHROME_LOG_FILE set.
+debug.log
 .env
+data/uploads/
+runs/U-*/
 data/policies/*.pdf
 __pycache__/
 runs/*/records/

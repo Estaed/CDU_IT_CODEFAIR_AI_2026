@@ -18,7 +18,7 @@ async function showHome() {
   try {
     const response = await fetch('/api/cases');
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const { cases } = await response.json();
+    const { cases, question_lists, uploads = [] } = await response.json();
     let selected = cases.find((c) => !c.evaluation && !c.signed) || cases[0];
     const decided = (c) => {
       const draft = readCaseDraft(c.draft_key);
@@ -36,8 +36,8 @@ async function showHome() {
       </button>`).join('') : '<p class="note group-empty">No cases here yet.</p>'}</section>`;
     $('home').innerHTML = `<div class="home-heading"><h1>All cases</h1><p>Choose a file to continue your review.</p></div>
       <div class="home-layout"><nav class="case-list" aria-label="Cases">
-        <div class="new-case"><button class="btn-secondary" disabled aria-describedby="newCaseNote" data-testid="new-case">New case</button>
-          <p class="note" id="newCaseNote">Coming in this build.</p></div>
+        <div class="new-case"><button class="btn-secondary" data-testid="new-case">New case</button></div>
+        ${uploads.length ? `<section class="case-group" aria-label="Checks underway"><h2>Uploads (${uploads.length})</h2>${uploads.map((job) => `<a class="case-row" href="/?upload=${encodeURIComponent(job.case_id)}"><span class="case-row-name">${esc(job.name)}</span><span>${job.status === 'failed' ? 'Checks stopped' : 'Checks underway'}</span></a>`).join('')}</section>` : ''}
         ${group('In progress', cases.filter((c) => !c.evaluation && !c.signed))}
         ${group('Completed', cases.filter((c) => !c.evaluation && c.signed))}
         ${group('Evaluation files', cases.filter((c) => c.evaluation), true)}
@@ -69,6 +69,10 @@ async function showHome() {
       document.querySelectorAll('[data-case]').forEach((row) => row.setAttribute('aria-pressed', String(row.dataset.case === c.case_id)));
     }
     $('home').addEventListener('click', (event) => {
+      if (event.target.closest('[data-testid="new-case"]')) {
+        showNewCase(question_lists);
+        return;
+      }
       const row = event.target.closest('[data-case]');
       if (!row) return;
       selected = cases.find((c) => c.case_id === row.dataset.case);

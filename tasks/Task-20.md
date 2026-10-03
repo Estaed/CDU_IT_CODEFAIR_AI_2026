@@ -1,4 +1,5 @@
 # Task-20: New case: upload several documents and run the checks live
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık wants new cases, where a case is a folder of several documents (2026-10-03: "yeni proje
 > gibi onun içine dosyaları atarız"). The home screen's "New case" button (Task-19) needs it.
@@ -33,17 +34,18 @@ A judge can see Readmark work on documents nobody prepared. This is also the pat
 and any later file use.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] Every existing replay is byte-identical: A-0142, E-*, H-01 and S-01, and `runs/eval/`.
-- [ ] A test uploads two small text documents with a fake writer and checker (no keys, no network).
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] Every existing replay is byte-identical: A-0142, E-*, H-01 and S-01, and `runs/eval/`.
+- [x] A test uploads two small text documents with a fake writer and checker (no keys, no network).
   The case appears In progress with passages from both documents, each carrying its document id,
   and the progress steps are shown in order.
-- [ ] A test proves that uploaded files and runs of uploaded cases are git-ignored.
-- [ ] A failing stage shows one plain sentence, and the uploaded files are kept.
-- [ ] Once, by hand (orchestrator, live keys, after measuring the Claude quota): two short real PDFs
+- [x] A test proves that uploaded files and runs of uploaded cases are git-ignored.
+- [x] A failing stage shows one plain sentence, and the uploaded files are kept.
+- [x] Once, by hand (orchestrator, live keys, after measuring the Claude quota): two short real PDFs
   uploaded as one case run to Ready. The case opens with highlights from both documents. Its time
   and the Claude quota cost go in the wave report.
-- [ ] Screenshots of the form, the progress and the new case at 1280 and 1440 in
+  *(Done 2026-10-04 02:20: two PDFs rendered from S-01 pages 1 and 2, list cdu-extension, uploaded through `POST /api/cases`; Ready after 50 s, one Claude call of 42 s, 14 notes, 1 required passage, highlights from both documents. The Claude weekly window was not re-measured (Tarık: on Max, not a concern).)*
+- [x] Screenshots of the form, the progress and the new case at 1280 and 1440 in
   `reports/screens/2026-10-05-wave9/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık uploads two files himself and follows the progress without help.

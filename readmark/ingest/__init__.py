@@ -15,7 +15,7 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-from readmark import CASES_DIR, DATA
+from readmark import CASES_DIR, DATA, dumps
 
 # pypdf warns about a symbol font it cannot fully decode; the text it extracts is still exact.
 logging.getLogger("pypdf").setLevel(logging.ERROR)
@@ -179,6 +179,9 @@ _DOC_HEAD = re.compile(r"^## Document:\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(\d{4}-\d{2}-
 
 
 def case_path(case_id: str) -> Path:
+    # Generated upload ids replay by id through the same CLI as the prepared examples.
+    if re.fullmatch(r"U-[0-9a-f]{32}", case_id):
+        return DATA / "uploads" / case_id / "case.json"
     # Only the reserved held-out id uses the sealed directory. Its labels are never ingested.
     if case_id == "H-01":
         return DATA / "heldout" / case_id / "case.md"
@@ -194,6 +197,8 @@ def case_passages(case_id: str, path: Path | None = None) -> tuple[dict, list[di
     path = path or case_path(case_id)
     if not path.exists():
         raise IngestError(f"Case file not found: {path}")
+    if path.suffix == ".json":
+        return _uploaded_passages(case_id, path)
     pages: list[list[str]] = []
     for line in path.read_text(encoding="utf-8").splitlines():
         m = _PAGE_MARK.match(line)
@@ -245,6 +250,68 @@ def case_passages(case_id: str, path: Path | None = None) -> tuple[dict, list[di
         "sha256": sha256_file(path),
     }
     return meta, passages
+
+
+def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path) -> Path:
+    """Extract uploaded pages as data, never as case-file markup; keep every original."""
+    extracted = []
+    for doc in documents:
+        path = folder / doc["file"]
+        try:
+            if path.suffix == ".pdf":
+                reader = PdfReader(path)
+                pages = [page.extract_text() or "" for page in reader.pages]
+            else:
+                pages = path.read_text(encoding="utf-8-sig").split("\f")
+        except Exception as exc:
+            raise IngestError("A document could not be opened as a text PDF or UTF-8 text.") from exc
+        if not pages:
+            raise IngestError("A document has no pages to read.")
+        for page in pages:
+            if not page.strip():
+                if path.suffix == ".pdf":
+                    raise IngestError("scanned page: Task-22 adds reading these")
+                raise IngestError("A text page is empty; supply text on every page.")
+        paragraphs = [
+            [text for text, _ in _paragraphs([line.strip() for line in page.splitlines()
+                                            if line.strip()])]
+            if path.suffix == ".pdf" else
+            [normalise(block) for block in re.split(r"\n\s*\n", page) if block.strip()]
+            for page in pages
+        ]
+        extracted.append({**doc, "sha256": sha256_file(path), "pages": paragraphs})
+    target = folder / "case.json"
+    target.write_text(dumps({"case_id": case_id, "title": title, "documents": extracted}),
+                      encoding="utf-8", newline="\n")
+    return target
+
+
+def _uploaded_passages(case_id: str, path: Path) -> tuple[dict, list[dict]]:
+    """Global pages keep the viewer stable; ids also identify each original document.
+
+    An upload date is never a document date: dates remain unknown until supplied in evidence.
+    File hashes ensure the originals still match the text on which the checks were made.
+    """
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if data["case_id"] != case_id:
+        raise IngestError("The uploaded case does not match this case id.")
+    passages, documents = [], []
+    page_no = 0
+    for doc in data["documents"]:
+        original = path.parent / doc["file"]
+        if not original.exists() or sha256_file(original) != doc["sha256"]:
+            raise IngestError("An uploaded document has changed since these checks were made.")
+        header = {"doc_id": doc["doc_id"], "doc_type": "uploaded document",
+                  "doc_title": doc["name"], "doc_date": None}
+        documents.append({**header, "page": page_no + 1})
+        for doc_page, paragraphs in enumerate(doc["pages"], 1):
+            page_no += 1
+            for k, text in enumerate(paragraphs, 1):
+                passages.append({"passage_id": f"{case_id}-{doc['doc_id']}:p{page_no}:{k}",
+                                 "source": "case", "page": page_no, "k": k,
+                                 **header, "doc_page": doc_page, "text": text})
+    return {"case_id": case_id, "title": data["title"], "pages": page_no,
+            "documents": documents, "sha256": sha256_file(path)}, passages
 
 
 def stage_record(meta: dict, case: list[dict], policy: list[dict], lock: dict) -> dict:

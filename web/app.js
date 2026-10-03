@@ -195,7 +195,7 @@ const questionFlag = (cl) => questionProblem(cl) || (questionTier(cl) === 'worth
 
 function fmtDate(d) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || '');
-  return m ? `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}` : String(d || '');
+  return m ? `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}` : String(d || 'Date not recorded');
 }
 const fmtTime = (iso) => new Date(iso).toLocaleTimeString('en-AU', { hour12: false });
 const fmtStamp = (iso) => `${new Date(iso).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}, ${fmtTime(iso)}`;
@@ -291,7 +291,7 @@ function quoteHtml(claim, c, testid = 'quote') {
 // ---- Case bar: the file, both counters, the one next action ----
 function renderBar() {
   const v = S.view;
-  $('caseId').textContent = v.case.case_id;
+  $('caseId').textContent = v.case.title || v.case.case_id;
   $('caseFacts').textContent = `${v.case.pages} pages · ${v.case.synthetic ? 'synthetic case' : caseNoun().toLowerCase()}`;
   const n = nextAction();
   let label;
@@ -1174,8 +1174,10 @@ fetch('/api/settings').then((r) => {
   return r.json();
 }).then((settings) => {
   const home = new URLSearchParams(location.search).has('home');
+  const upload = new URLSearchParams(location.search).get('upload');
   activeCase = activeCase || settings.default_case;
-  if (home || !activeCase) showHome();
+  if (upload) showUpload(upload);
+  else if (home || !activeCase) showHome();
   else loadCase();
 }).catch((err) => {
   $('detail').innerHTML = `<p role="alert">Readmark could not be loaded (${esc(err.message)}). <a href="/?home=1">All cases</a></p>`;

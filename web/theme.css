@@ -70,6 +70,13 @@ a, .act { color: var(--primary); }
 .home-documents li { padding: 8px 0; border-bottom: 1px solid var(--line); }
 .home-documents li span { display: block; }
 .home-documents summary { color: var(--primary); padding: 12px 0; cursor: pointer; }
+.question-lists { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--line); }
+.question-lists h2 { font-size: 22px; margin: 0 0 8px; }
+.question-list-row { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.question-list-row h3, .coverage-suggestions h3 { font-size: 18px; margin: 0 0 8px; }
+.coverage-suggestions { padding-left: 24px; }
+.coverage-suggestions li { padding: 16px 0; border-top: 1px solid var(--line); }
+.coverage-suggestions blockquote { margin: 0; font-family: Georgia, serif; }
 @media (max-width: 800px) {
   .home-layout { grid-template-columns: 1fr; gap: 24px; }
   .case-list { border-right: 0; padding-right: 0; }

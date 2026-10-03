@@ -1,4 +1,5 @@
 # Task-26: Question-list coverage: Jev shows decisive policy rules no question covers
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık asked how Jev could do more, and chose this (2026-10-04). A person still writes and
 > approves every question; Jev only points at policy paragraphs that look decisive but that no
@@ -39,15 +40,16 @@ It helps a person build a sound question list for a new rulebook, without lettin
 questions. It also makes the "same engine, a different rulebook" pitch line concrete.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] Every case replay and `runs/eval/` are unchanged.
-- [ ] A test with a fake Jev and a tiny list (one policy, three paragraphs, one question) reports
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] Every case replay and `runs/eval/` are unchanged.
+- [x] A test with a fake Jev and a tiny list (one policy, three paragraphs, one question) reports
   exactly the uncovered rule paragraph.
-- [ ] `--replay` with no key reproduces both `coverage.json` files byte for byte.
-- [ ] No `coverage.json` excerpt is longer than 25 words.
-- [ ] On `cdu-extension`, procedures (74) special consideration and (78) late penalty are among the
+- [x] `--replay` with no key reproduces both `coverage.json` files byte for byte.
+- [x] No `coverage.json` excerpt is longer than 25 words.
+- [x] On `cdu-extension`, procedures (74) special consideration and (78) late penalty are among the
   reported paragraphs. Report them with their scores, n = the number of paragraphs scanned.
-- [ ] Screenshots of the home-screen list section and the opened list at 1280 and 1440 in
+  *(Live run 2026-10-04 04:39, with the scope filter added in the fix round: cdu-extension 6 of 264 paragraphs reported, (74) rule 3.80 / coverage 0.79 / scope 3.34 and (78) rule 3.92 / coverage 0.07 / scope 2.74; nt-priority-housing 12 of 368. At integration, `runs/eval/cases.json` and `summary.json` changed only in H-01's `changed_result_files` list (adds `readmark/__main__.py`), and `readmark/eval/discipline.py` now treats coverage files as non-result code.)*
+- [x] Screenshots of the home-screen list section and the opened list at 1280 and 1440 in
   `reports/screens/2026-10-04-wave11/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık reads the CDU suggestions and agrees they are rules a lecturer would apply.

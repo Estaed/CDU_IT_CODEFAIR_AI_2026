@@ -1,6 +1,7 @@
 {
   "id": "cdu-extension",
   "title": "CDU assessment extension request",
+  "scope": "A student's request for an assessment extension, special consideration or late submission",
   "labels": {
     "service": "Assessment extension review · CDU",
     "case_noun": "Extension request",

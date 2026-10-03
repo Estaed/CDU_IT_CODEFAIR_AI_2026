@@ -42,6 +42,11 @@ async function showHome() {
         ${group('Completed', cases.filter((c) => !c.evaluation && c.signed))}
         ${group('Evaluation files', cases.filter((c) => c.evaluation), true)}
       </nav><section class="case-summary" id="caseSummary" aria-label="Selected case" data-testid="case-summary"></section></div>
+      <section class="question-lists" aria-label="Question lists" data-testid="question-lists">
+        <h2>Question lists</h2><p>For the person who maintains the list. Jev suggests these may need a question. A person decides.</p>
+        ${question_lists.map((list) => `<div class="question-list-row"><h3>${esc(list.title)}</h3>
+          ${list.coverage_count == null ? '<p class="note">Policy coverage has not been checked.</p>' : `<a href="#coverage" class="act" data-coverage="${esc(list.id)}">${list.coverage_count} policy rules no question covers</a>`}</div>`).join('')}
+      </section>
       <footer>Synthetic case files. The officer sets every question outcome and decision.</footer>`;
     function summary() {
       if (!selected) {
@@ -69,6 +74,12 @@ async function showHome() {
       document.querySelectorAll('[data-case]').forEach((row) => row.setAttribute('aria-pressed', String(row.dataset.case === c.case_id)));
     }
     $('home').addEventListener('click', (event) => {
+      const coverage = event.target.closest('[data-coverage]');
+      if (coverage) {
+        event.preventDefault();
+        showListCoverage(coverage.dataset.coverage);
+        return;
+      }
       if (event.target.closest('[data-testid="new-case"]')) {
         showNewCase(question_lists);
         return;
@@ -83,3 +94,42 @@ async function showHome() {
     $('home').innerHTML = `<h1>All cases</h1><p role="alert">The case list could not be loaded (${esc(err.message)}).</p><a class="act" href="/?home=1">Try again</a>`;
   }
 }
+
+// List maintenance opens policies independently of the case opening clock and draft storage.
+async function showListCoverage(listId) {
+  const dialog = $('coverage');
+  dialog.innerHTML = '<div class="dlg"><div class="dlg-head"><h2 id="coverageTitle">Question-list coverage</h2><button class="act" data-coverage-close>Close</button></div><p role="status">Loading suggestions…</p></div>';
+  dialog.showModal();
+  try {
+    const response = await fetch(`/api/question-lists/${encodeURIComponent(listId)}/coverage`);
+    if (!response.ok) throw new Error();
+    const data = await response.json();
+    dialog.innerHTML = `<div class="dlg"><div class="dlg-head"><h2 id="coverageTitle">${esc(data.title)}</h2><button class="act" data-coverage-close>Close</button></div>
+      <p>Jev suggests these may need a question. A person decides.</p>
+      <p class="note">${data.n_reported} policy rules no question covers · ${data.n_scanned} paragraphs scanned · ${esc(fmtDate(data.date))}</p>
+      ${data.suggestions.length ? `<ol class="coverage-suggestions">${data.suggestions.map((s) => `<li data-testid="coverage-suggestion"><h3>${esc(s.section)}</h3><blockquote>${esc(s.excerpt)}…</blockquote>
+        <p class="note">Rule score ${s.scores.rule} / 4 · Question coverage ${s.scores.coverage} / 4</p>
+        <a href="#policy" class="act" data-list-policy="${esc(s.passage_id)}" data-list="${esc(listId)}" data-section="${esc(s.section)}">Open full policy paragraph</a></li>`).join('')}</ol>` : '<p>No uncovered rules were suggested. This does not prove the question list is complete.</p>'}</div>`;
+  } catch {
+    dialog.querySelector('[role="status"]').outerHTML = '<p role="alert">The suggestions could not be loaded. Close and try again.</p>';
+  }
+}
+
+document.addEventListener('click', async (event) => {
+  if (event.target.closest('[data-coverage-close]')) $('coverage').close();
+  if (event.target.closest('[data-list-policy-close]')) $('coveragePolicy').close();
+  const link = event.target.closest('[data-list-policy]');
+  if (!link) return;
+  event.preventDefault();
+  const dialog = $('coveragePolicy');
+  dialog.innerHTML = `<div class="dlg"><div class="dlg-head"><h2>${esc(link.dataset.section)}</h2><button class="act" data-list-policy-close>Back to suggestions</button></div><div class="policy-text" role="status">Reading the pinned policy file…</div></div>`;
+  dialog.showModal();
+  try {
+    const response = await fetch(`/api/question-lists/${encodeURIComponent(link.dataset.list)}/passages/${encodeURIComponent(link.dataset.listPolicy)}`);
+    if (!response.ok) throw new Error();
+    const data = await response.json();
+    dialog.querySelector('.policy-text').textContent = data.text;
+  } catch {
+    dialog.querySelector('.policy-text').innerHTML = '<p role="alert">The pinned policy file could not be read on this machine.</p>';
+  }
+});

@@ -1,0 +1,130 @@
+{
+ "key": "baf42d905dc27f620babb8d08b5d394030bd2b850a1df60f8019d52b4c512518",
+ "kind": "jev-coverage",
+ "response": {
+  "answers": {
+   "P01_coverage": {
+    "score": 0.08
+   },
+   "P01_rule": {
+    "score": 0.96
+   },
+   "P02_coverage": {
+    "score": 0.09
+   },
+   "P02_rule": {
+    "score": 1.63
+   },
+   "P03_coverage": {
+    "score": 0.07
+   },
+   "P03_rule": {
+    "score": 0.53
+   },
+   "P04_coverage": {
+    "score": 0.15
+   },
+   "P04_rule": {
+    "score": 2.89
+   },
+   "P05_coverage": {
+    "score": 0.1
+   },
+   "P05_rule": {
+    "score": 1.23
+   },
+   "P06_coverage": {
+    "score": 0.09
+   },
+   "P06_rule": {
+    "score": 2.27
+   },
+   "P07_coverage": {
+    "score": 0.04
+   },
+   "P07_rule": {
+    "score": 2.7
+   },
+   "P08_coverage": {
+    "score": 0.03
+   },
+   "P08_rule": {
+    "score": 1.7
+   },
+   "P09_coverage": {
+    "score": 0.02
+   },
+   "P09_rule": {
+    "score": 1.42
+   },
+   "P10_coverage": {
+    "score": 0.03
+   },
+   "P10_rule": {
+    "score": 1.33
+   },
+   "P11_coverage": {
+    "score": 0.03
+   },
+   "P11_rule": {
+    "score": 1.04
+   },
+   "P12_coverage": {
+    "score": 0.02
+   },
+   "P12_rule": {
+    "score": 1.44
+   },
+   "P13_coverage": {
+    "score": 0.03
+   },
+   "P13_rule": {
+    "score": 1.5
+   },
+   "P14_coverage": {
+    "score": 0.08
+   },
+   "P14_rule": {
+    "score": 3.21
+   },
+   "P15_coverage": {
+    "score": 0.03
+   },
+   "P15_rule": {
+    "score": 3.55
+   },
+   "P16_coverage": {
+    "score": 0.05
+   },
+   "P16_rule": {
+    "score": 3.33
+   },
+   "P17_coverage": {
+    "score": 0.03
+   },
+   "P17_rule": {
+    "score": 3.49
+   },
+   "P18_coverage": {
+    "score": 0.05
+   },
+   "P18_rule": {
+    "score": 2.86
+   },
+   "P19_coverage": {
+    "score": 0.12
+   },
+   "P19_rule": {
+    "score": 0.07
+   },
+   "P20_coverage": {
+    "score": 0.11
+   },
+   "P20_rule": {
+    "score": 2.1
+   }
+  },
+  "coverage_date": "2026-10-03",
+  "model": "jev-1.13.0"
+ }
+}

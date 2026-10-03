@@ -20,6 +20,11 @@ def main(argv: list[str] | None = None) -> int:
     serve.add_argument("--case", default="stub")
     serve.add_argument("--port", type=int, default=8765)
 
+    lists = sub.add_parser("lists", help="scan an approved question list for uncovered policy rules")
+    lists.add_argument("--coverage", required=True, metavar="LIST_ID")
+    lists.add_argument("--replay", action="store_true",
+                       help="use the list's coverage-cache only; no keys, no network")
+
     ev = sub.add_parser("eval", help="evaluation parts -> runs/eval/<part>.json and summary.json")
     ev.add_argument("--case")
     ev.add_argument("--part", choices=["checker", "cases", "mutations", "ablation", "benchmark"],
@@ -31,6 +36,13 @@ def main(argv: list[str] | None = None) -> int:
     ev.add_argument("--checker", choices=["jev", "claude"], default="jev")
 
     args = parser.parse_args(argv)
+    if args.verb == "lists":
+        from readmark.checklist.coverage import run_coverage
+
+        result = run_coverage(args.coverage, replay=args.replay)
+        print(f"{args.coverage}: {result['n_reported']} policy rules no question covers "
+              f"(n={result['n_scanned']} scanned; {result['model']}; {result['date']})")
+        return 0
     if args.verb == "run":
         from readmark.pipeline import run as run_case
 

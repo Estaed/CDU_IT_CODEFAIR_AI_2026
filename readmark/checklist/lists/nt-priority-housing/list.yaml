@@ -1,6 +1,7 @@
 {
   "id": "nt-priority-housing",
   "title": "NT priority housing, urban",
+  "scope": "An urban applicant's eligibility for social housing and priority housing on urgent need",
   "policy_directory": "../../../../data/policies",
   "policies": [
     {

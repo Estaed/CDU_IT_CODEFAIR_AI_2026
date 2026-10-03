@@ -357,3 +357,65 @@ def test_policy_dialog_and_passage_cache_follow_each_cases_question_list(
             browser.close()
     finally:
         server._policy_text.cache_clear()
+
+
+@pytest.mark.parametrize("width", [1280, 1440])
+def test_home_question_list_coverage_opens_policies_without_changing_case_state(width, home_runs):
+    from readmark.checklist.coverage import read_coverage
+
+    before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in home_runs.rglob("*") if p.is_file()}
+    with serving(None, None, None, runs_root=home_runs) as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": 1000})
+        errors = []
+        page.on("pageerror", lambda error: errors.append(str(error)))
+        page.goto(base)
+        section = page.get_by_test_id("question-lists")
+        expect(section).to_be_visible()
+        expect(section).to_contain_text("Jev suggests these may need a question. A person decides.")
+        storage_before = page.evaluate("JSON.stringify(localStorage)")
+        shots = ROOT / ".tmp/shots/wave11"
+        shots.mkdir(parents=True, exist_ok=True)
+        section.scroll_into_view_if_needed()
+        page.screenshot(path=str(shots / f"question-lists-{width}.png"), full_page=True)
+        for list_id in ("cdu-extension", "nt-priority-housing"):
+            coverage = read_coverage(list_id)
+            link = section.locator(f'[data-coverage="{list_id}"]')
+            expect(link).to_have_text(f"{coverage['n_reported']} policy rules no question covers")
+            link.click()
+            dialog = page.get_by_test_id("list-coverage")
+            expect(dialog).to_be_visible()
+            expect(dialog.get_by_test_id("coverage-suggestion")).to_have_count(coverage["n_reported"])
+            expect(dialog).to_contain_text(f"{coverage['n_scanned']} paragraphs scanned")
+            if list_id == "cdu-extension":
+                for number in (74, 78):
+                    expect(dialog.get_by_role("heading", name=f"Procedure ({number})", exact=True)).to_have_count(1)
+                page.screenshot(path=str(shots / f"cdu-suggestions-{width}.png"))
+                for number in (74, 78):
+                    rule = dialog.get_by_test_id("coverage-suggestion").filter(
+                        has=page.get_by_role("heading", name=f"Procedure ({number})", exact=True))
+                    rule.scroll_into_view_if_needed()
+                    page.screenshot(path=str(shots / f"cdu-procedure-{number}-{width}.png"))
+            suggestion = coverage["suggestions"][0]
+            dialog.locator(f'[data-list-policy="{suggestion["passage_id"]}"]').click()
+            policy = page.get_by_test_id("coverage-policy")
+            expect(policy).to_be_visible()
+            spec = load_question_list(list_id)
+            if all((spec["policies_dir"] / item["file"]).exists() for item in spec["policies"]):
+                expect(policy).to_contain_text(suggestion["excerpt"])
+            else:
+                expect(policy).to_contain_text("The pinned policy file could not be read")
+            policy.get_by_role("button", name="Back to suggestions").click()
+            expect(dialog).to_be_visible()
+            dialog.get_by_role("button", name="Close", exact=True).click()
+            expect(dialog).to_be_hidden()
+        assert page.evaluate("JSON.stringify(localStorage)") == storage_before
+        assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+        assert page.request.get(base + "/api/question-lists/cdu-extension/passages/priority:p1:1").status == 404
+        assert page.request.get(base + "/api/question-lists/unknown/coverage").status == 404
+        assert page.request.get(base + "/api/question-lists/cdu-extension/passages/assessment:p999:1").status == 404
+        assert errors == []
+        browser.close()
+    assert before == {str(path): hashlib.sha256(path.read_bytes()).hexdigest()
+                      for path in home_runs.rglob("*") if path.is_file()}

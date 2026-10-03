@@ -37,6 +37,7 @@ from readmark.checklist import (
     QUESTION_LISTS_DIR, case_question_list, list_question_lists, load_question_list,
     set_case_question_list,
 )
+from readmark.checklist.coverage import read_coverage
 from readmark.ingest import IngestError, case_passages, policy_passages, prepare_upload
 from readmark.pipeline import run
 from readmark.jev import JEV_MODEL, JEV_URL, SCAN_BATCH, SCAN_CRITERIA, render_case_passage
@@ -401,8 +402,39 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         with job_lock:
             pending = [json.loads(p.read_text(encoding="utf-8")) for p in
                        sorted(uploads.glob("*/job.json"))]
-        return {"cases": result, "question_lists": list_question_lists(lists_dir),
+        question_lists = list_question_lists(lists_dir)
+        for item in question_lists:
+            coverage = read_coverage(item["id"], lists_dir)
+            item["coverage_count"] = coverage["n_reported"] if coverage else None
+        return {"cases": result, "question_lists": question_lists,
                 "uploads": [job for job in pending if job["status"] != "ready"]}
+
+    @app.get("/api/question-lists/{list_id}/coverage")
+    def get_list_coverage(list_id: str):
+        try:
+            coverage = read_coverage(list_id, lists_dir)
+            spec = load_question_list(list_id, lists_dir)
+        except IngestError:
+            raise HTTPException(404, "Unknown question list.") from None
+        if coverage is None:
+            raise HTTPException(404, "Coverage has not been checked for this list.")
+        return {**coverage, "title": spec["title"]}
+
+    @app.get("/api/question-lists/{list_id}/passages/{passage_id}")
+    def get_list_policy_passage(list_id: str, passage_id: str):
+        try:
+            spec = load_question_list(list_id, lists_dir)
+        except IngestError:
+            raise HTTPException(404, "Unknown question list.") from None
+        if passage_id.split(":", 1)[0] not in {p["key"] for p in spec["policies"]}:
+            raise HTTPException(404, "This passage is not in this question list.")
+        try:
+            text = _policy_text(list_id, lists_dir).get(passage_id)
+        except IngestError:
+            raise HTTPException(503, "The pinned policy file could not be read on this machine.") from None
+        if text is None:
+            raise HTTPException(404, "This paragraph is not in the pinned policies.")
+        return {"passage_id": passage_id, "text": text}
 
     @app.get("/api/question-list")
     def get_question_list(request: Request):

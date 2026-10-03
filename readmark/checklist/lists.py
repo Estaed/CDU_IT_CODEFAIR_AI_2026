@@ -59,6 +59,9 @@ def load_question_list(list_id: str = DEFAULT_LIST_ID,
     if (not isinstance(spec, dict) or spec.get("id") != list_id
             or not isinstance(spec.get("title"), str) or not spec["title"].strip()):
         raise IngestError(f"{path}: list id must match its folder and title must be present")
+    scope = spec.get("scope")
+    if "scope" in spec and (not isinstance(scope, str) or not scope.strip()):
+        raise IngestError(f"{path}: scope must be a non-empty sentence")
     policies = spec.get("policies")
     if not isinstance(policies, list) or not policies:
         raise IngestError(f"{path}: policies must be a non-empty list")
@@ -101,7 +104,7 @@ def load_question_list(list_id: str = DEFAULT_LIST_ID,
         raise IngestError(f"{path}: labels may set service, case_noun and officer as text")
     return {
         "id": spec["id"], "title": spec["title"], "policies": policies, "decisions": decisions,
-        "labels": labels,
+        "labels": labels, "scope": scope,
         "policies_dir": (folder / directory).resolve(),
         "clauses": validate_clauses(read_yaml(folder / "clauses.yaml"),
                                    folder / "clauses.yaml", keys),

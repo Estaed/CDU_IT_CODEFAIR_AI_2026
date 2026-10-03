@@ -1,0 +1,169 @@
+{
+ "date": "2026-10-03",
+ "list_id": "nt-priority-housing",
+ "method": "rule-question-coverage-and-scope-v2",
+ "model": "jev-1.13.0",
+ "n_reported": 12,
+ "n_scanned": 368,
+ "n_scope_scanned": 56,
+ "policy_pins": {
+  "dfv": "5209d377b63a291af8386245c539aa0ded413581adb2af7e60bb0332314d5bde",
+  "discretion": "275b445c9e0e2241064c28a90ff5a5f260f5c05ec17290fc10848d228014ffdd",
+  "eligibility": "f628d219bf38bea1a8156364f8d2b665eae4d6c37e097e6e4869fb0dd7f64fbf",
+  "identification": "ce59a9a3b24a6a7f2e8a505a3588c86b93ea321cd39048a12b1072797fa97404",
+  "priority": "ea6c52753092bb22a71689862fe8e9a06bc80f604f3ae6b74b5302da4eab12d5"
+ },
+ "scope": "An urban applicant's eligibility for social housing and priority housing on urgent need",
+ "scope_model": "jev-1.13.0",
+ "suggestions": [
+  {
+   "excerpt": "All urban social housing applicants and existing social housing tenants will be subject to the same eligibility criteria mentioned in this policy when applying for",
+   "page": 4,
+   "passage_id": "eligibility:p4:8",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.12,
+    "rule": 3.18,
+    "scope": 2.36
+   },
+   "section": "2. Scope"
+  },
+  {
+   "excerpt": "be 15+ years old to apply for Social",
+   "page": 4,
+   "passage_id": "eligibility:p4:12",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.04,
+    "rule": 3.77,
+    "scope": 2.74
+   },
+   "section": "3. Policy detail"
+  },
+  {
+   "excerpt": "establish their identity under requirements specified in the Identification and Documentation",
+   "page": 4,
+   "passage_id": "eligibility:p4:13",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.52,
+    "rule": 3.06,
+    "scope": 2.1
+   },
+   "section": "3. Policy detail"
+  },
+  {
+   "excerpt": "have an independent income (a source of income that is equal to or greater than the independent rate of Centrelink Youth Allowance);",
+   "page": 4,
+   "passage_id": "eligibility:p4:14",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.39,
+    "rule": 3.51,
+    "scope": 2.61
+   },
+   "section": "3. Policy detail"
+  },
+  {
+   "excerpt": "If the CEO (Housing) cannot establish eligibility, due to the failure of the applicant to comply with a request to provide adequate information for assessment",
+   "page": 4,
+   "passage_id": "eligibility:p4:18",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.08,
+    "rule": 3.87,
+    "scope": 2.28
+   },
+   "section": "3. Policy detail"
+  },
+  {
+   "excerpt": "If an applicant owns, or partly owns, a non-residential property or farm it is classified as an asset and the applicant must provide a professional",
+   "page": 5,
+   "passage_id": "eligibility:p5:7",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.13,
+    "rule": 3.9,
+    "scope": 2.63
+   },
+   "section": "3.1.2 Non-residential property or farm"
+  },
+  {
+   "excerpt": "Social housing applicants must be able to prove that they reside in the Northern Territory when they lodge their application. If an application is approved,",
+   "page": 5,
+   "passage_id": "eligibility:p5:18",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.43,
+    "rule": 3.92,
+    "scope": 3.14
+   },
+   "section": "3.2. Residency"
+  },
+  {
+   "excerpt": "To maintain eligibility once allocated a tenancy, the tenant must continue to reside in the social housing premises, unless there is an approved extended absence,",
+   "page": 6,
+   "passage_id": "eligibility:p6:1",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.14,
+    "rule": 3.74,
+    "scope": 2.11
+   },
+   "section": "3.2. Residency"
+  },
+  {
+   "excerpt": "Social Housing applicants must be 15+ years",
+   "page": 6,
+   "passage_id": "eligibility:p6:4",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.06,
+    "rule": 3.7,
+    "scope": 2.57
+   },
+   "section": "3.3. Age of client"
+  },
+  {
+   "excerpt": "Only people who are 16+ years old can enter into a tenancy",
+   "page": 6,
+   "passage_id": "eligibility:p6:5",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.04,
+    "rule": 3.81,
+    "scope": 2.12
+   },
+   "section": "3.3. Age of client"
+  },
+  {
+   "excerpt": "provide a satisfactory tenancy reference for the previous 2 years prior, or proof of skills obtained to assist them in a successful",
+   "page": 6,
+   "passage_id": "eligibility:p6:14",
+   "policy": "eligibility",
+   "scores": {
+    "coverage": 0.07,
+    "rule": 3.27,
+    "scope": 2.17
+   },
+   "section": "3.5. Unsatisfactory Former Tenancies"
+  },
+  {
+   "excerpt": "Household income and assets must be equal to or below the threshold. Refer to the Income and Assets",
+   "page": 4,
+   "passage_id": "identification:p4:13",
+   "policy": "identification",
+   "scores": {
+    "coverage": 0.99,
+    "rule": 3.51,
+    "scope": 2.49
+   },
+   "section": "3.2 Income and assets"
+  }
+ ],
+ "thresholds": {
+  "coverage_max": 1,
+  "rule_min": 3,
+  "scope_min": 2.0
+ }
+}

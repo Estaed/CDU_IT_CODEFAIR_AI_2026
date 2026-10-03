@@ -3804,6 +3804,7 @@
      },
      "heldout_discipline": {
       "changed_result_files": [
+       "readmark/__main__.py",
        "readmark/audit/claims.py",
        "readmark/checklist/__init__.py",
        "readmark/checklist/clauses.yaml",

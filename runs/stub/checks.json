@@ -169,10 +169,8 @@
     "quote_found": true
    }
   ],
-  "passed": false,
-  "values_missing": [
-   "2026-02-16"
-  ]
+  "passed": true,
+  "values_missing": []
  },
  "c16": {
   "citations": [

@@ -1,4 +1,5 @@
 # Task-12: False alarms, round 2: values in the passage, date ranges, suggestions; H-01 after changes
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `codex` · effort `high`
 > *Why:* after labelling H-01's summary audit, 9 of its 14 flags were false alarms, and 5 of the 9
 > had the value in the cited passage or the document header rather than in the short quote. Tarık
@@ -39,24 +40,24 @@ A summary audit that is mostly false alarms teaches the officer to ignore flags.
 causes the labels showed, without touching the checker or the writer.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] Tests:
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] Tests:
   - a date only in the document header passes;
   - an amount only elsewhere in the cited passage passes;
   - a value found nowhere still fails;
   - "21–27 February 2026" matches its long form;
   - a suggestion claim is exempted;
   - a factual claim containing "should" is still checked.
-- [ ] Every rebuilt run replays twice with `TYPESAFE_API_KEY` unset and `claude` off PATH and gives
+- [x] Every rebuilt run replays twice with `TYPESAFE_API_KEY` unset and `claude` off PATH and gives
   byte-identical output.
-- [ ] The mutation set's catch rate is reported before and after (it was 20 of 21). Any drop is named,
+- [x] The mutation set's catch rate is reported before and after (it was 20 of 21). Any drop is named,
   claim by claim.
-- [ ] For H-01, per label class (real summary error, file inconsistency, false alarm), how many
+- [x] For H-01, per label class (real summary error, file inconsistency, false alarm), how many
   flags remain after the change, with n. a52, the real error, must stay flagged; if it does not,
   say why.
-- [ ] For A-0142, the audit's flags before and after, by status, with n. Its two real errors (a36,
+- [x] For A-0142, the audit's flags before and after, by status, with n. Its two real errors (a36,
   a47) must stay flagged; if one does not, say why.
-- [ ] `runs/eval/summary.json` shows H-01's first-run numbers unchanged beside the "after changes"
+- [x] `runs/eval/summary.json` shows H-01's first-run numbers unchanged beside the "after changes"
   numbers.
 
 ## Out of scope

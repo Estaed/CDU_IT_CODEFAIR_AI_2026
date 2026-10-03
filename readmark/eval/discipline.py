@@ -106,9 +106,14 @@ def assert_scoring_allowed(out: Path) -> dict:
     record = json.loads((out / "evaluation.json").read_text(encoding="utf-8"))
     if not record["completed_at"] or not (out / "view.json").exists():
         raise RuntimeError("H-01 labels stay sealed until its live pipeline has completed.")
-    if result_pin(implementation_pin()) != result_pin(record["implementation_sha256"]):
-        raise RuntimeError("Code changed after H-01 was frozen; report any crash fix explicitly.")
+    current = result_pin(implementation_pin())
+    frozen = result_pin(record["implementation_sha256"])
+    changed = sorted(path for path in current.keys() | frozen.keys()
+                     if current.get(path) != frozen.get(path))
     digest = hashlib.sha256((out / "view.json").read_bytes()).hexdigest()
-    if digest != record["view_sha256"]:
+    if not changed and digest != record["view_sha256"]:
         raise RuntimeError("H-01 view differs from the completed live run.")
-    return record
+    # Never rewrite the single-run marker or its original view digest. Changed code is scored
+    # openly as a follow-up, while the frozen first-run metrics remain alongside it in eval.
+    return {**record, "scoring_label": "after changes, not held-out" if changed else "held-out",
+            "changed_result_files": changed, "scored_view_sha256": digest}

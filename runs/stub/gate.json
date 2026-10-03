@@ -25,52 +25,13 @@
   },
   {
    "claim_ids": [
-    "c15"
-   ],
-   "clause_ids": [
-    "elig-former-tenancy"
-   ],
-   "passage_id": "stub:p4:1",
-   "rank": 3,
-   "reasons": [
-    "quote_not_found"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c15"
-   ],
-   "clause_ids": [
-    "elig-former-tenancy"
-   ],
-   "passage_id": "eligibility:p6:11",
-   "rank": 4,
-   "reasons": [
-    "quote_not_found"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c15"
-   ],
-   "clause_ids": [
-    "elig-former-tenancy"
-   ],
-   "passage_id": "stub:p1:1",
-   "rank": 5,
-   "reasons": [
-    "quote_not_found"
-   ]
-  },
-  {
-   "claim_ids": [
     "c21"
    ],
    "clause_ids": [
     "prio-documentation"
    ],
    "passage_id": "stub:p5:2",
-   "rank": 6,
+   "rank": 3,
    "reasons": [
     "checker_disagrees"
    ]
@@ -83,7 +44,7 @@
     "prio-documentation"
    ],
    "passage_id": "stub:p5:3",
-   "rank": 7,
+   "rank": 4,
    "reasons": [
     "checker_disagrees"
    ]

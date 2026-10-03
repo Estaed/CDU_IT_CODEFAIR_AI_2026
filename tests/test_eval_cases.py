@@ -31,7 +31,7 @@ from readmark.eval.discipline import (
 from readmark.writer import ClaudeWriter
 
 EVAL = ROOT / "runs" / "eval"
-PARTS = ("cases", "mutations", "ablation", "benchmark")
+PARTS = ("cases", "mutations", "ablation", "benchmark", "audit_labels", "checks_round2")
 
 
 def test_six_claim_catch_and_false_alarm_rates_by_hand():
@@ -103,6 +103,25 @@ def test_heldout_marker_blocks_second_run_and_premature_scoring(tmp_path):
         assert_scoring_allowed(tmp_path)
 
 
+def test_changed_result_code_is_reported_without_rewriting_the_first_run(tmp_path, monkeypatch):
+    import readmark.eval.discipline as discipline
+
+    start_heldout(tmp_path)
+    (tmp_path / 'view.json').write_text('{}\n', encoding='utf-8')
+    finish_heldout(tmp_path)
+    first_bytes = (tmp_path / 'evaluation.json').read_bytes()
+    first = load(tmp_path / 'evaluation.json')
+    changed = {**first['implementation_sha256'], 'readmark/checks/__init__.py': 'changed'}
+    monkeypatch.setattr(discipline, 'implementation_pin', lambda: changed)
+    (tmp_path / 'view.json').write_text('{"after": true}\n', encoding='utf-8')
+    followup = assert_scoring_allowed(tmp_path)
+    assert followup['scoring_label'] == 'after changes, not held-out'
+    assert followup['changed_result_files'] == ['readmark/checks/__init__.py']
+    assert followup['view_sha256'] == first['view_sha256']
+    assert followup['scored_view_sha256'] != first['view_sha256']
+    assert (tmp_path / 'evaluation.json').read_bytes() == first_bytes
+
+
 def test_isolated_writer_keeps_the_original_prompt_and_cache_key(tmp_path, monkeypatch):
     import readmark.eval.discipline as discipline
 
@@ -148,7 +167,7 @@ def complete_outputs():
 @pytest.mark.skipif(not complete_outputs(), reason="live evaluation has not completed yet")
 def test_each_new_part_replays_twice_with_no_keys_or_claude(tmp_path):
     runs = tmp_path / "runs"
-    for cid in ("A-0142", *ALL_CASES):
+    for cid in ALL_CASES:
         shutil.copytree(ROOT / "runs" / cid, runs / cid)
     shutil.copytree(EVAL, runs / "eval")
     env = {k: v for k, v in os.environ.items() if k not in ("TYPESAFE_API_KEY", "PATH")}
@@ -157,16 +176,26 @@ def test_each_new_part_replays_twice_with_no_keys_or_claude(tmp_path):
     assert shutil.which("claude", path=env["PATH"]) is None
     # Benchmark release is checked below with an isolated destination, since the CLI writes
     # the project's committed CSVs. It has no live-model code path.
-    for part in ("cases", "mutations", "ablation"):
-        expected = (EVAL / f"{part}.json").read_bytes()
+    for part in ("cases", "mutations", "ablation", None):
+        name = part or 'audit_labels'  # summary assembly also rebuilds the labelled comparison
+        expected = (EVAL / f"{name}.json").read_bytes()
         for _ in range(2):
-            subprocess.run([sys.executable, "-m", "readmark", "eval", "--part", part, "--replay"],
+            command = [sys.executable, '-m', 'readmark', 'eval', '--replay']
+            if part:
+                command += ['--part', part]
+            subprocess.run(command,
                            cwd=ROOT, env=env, capture_output=True, check=True, timeout=300)
-            assert (runs / "eval" / f"{part}.json").read_bytes() == expected
+            assert (runs / "eval" / f"{name}.json").read_bytes() == expected
             for cid in ALL_CASES:
-                for name in ("view", "writer", "checks", "jev", "gate", "scan", "pairs", "dedup"):
-                    assert (runs / cid / f"{name}.json").read_bytes() == (
-                        ROOT / "runs" / cid / f"{name}.json").read_bytes()
+                stages = ['view', 'writer', 'checks', 'jev', 'gate', 'scan', 'pairs', 'dedup']
+                if cid in ('A-0142', 'H-01'):
+                    stages += ['audit']
+                for stage in stages:
+                    assert (runs / cid / f"{stage}.json").read_bytes() == (
+                        ROOT / "runs" / cid / f"{stage}.json").read_bytes()
+    assert (runs / 'eval' / 'summary.json').read_bytes() == (EVAL / 'summary.json').read_bytes()
+    assert (runs / 'eval' / 'checks_round2.json').read_bytes() == (
+        EVAL / 'checks_round2.json').read_bytes()
 
 
 @pytest.mark.skipif(not complete_outputs(), reason="live evaluation has not completed yet")
@@ -190,7 +219,7 @@ def test_benchmark_csvs_rebuild_twice_and_match_sources(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(not complete_outputs(), reason="live evaluation has not completed yet")
-def test_full_ablation_matches_gate_and_frozen_heldout_hash():
+def test_full_ablation_matches_gate_and_records_the_current_heldout_hash():
     cases = load(EVAL / "cases.json")["cases"]
     for cid in ALL_CASES:
         coverage = cases[cid]["gold_page_coverage"]
@@ -199,4 +228,31 @@ def test_full_ablation_matches_gate_and_frozen_heldout_hash():
         assert final["gold_page_coverage"]["count"] == coverage["count"]
     record = assert_scoring_allowed(ROOT / "runs" / "H-01")
     assert hashlib.sha256((ROOT / "runs" / "H-01" / "view.json").read_bytes()).hexdigest() == (
-        record["view_sha256"])
+        record["scored_view_sha256"])
+    assert record['scoring_label'] == 'after changes, not held-out'
+    assert cases['H-01']['first_run'] == (
+        load(EVAL / 'checks_round2.json')['before']['parts']['cases']['cases']['H-01'])
+    assert cases['H-01']['first_run']['summary_audit']['flags'] == {
+        'count': 14, 'n': 105, 'rate': 0.1333}
+
+
+def test_round2_keeps_the_real_errors_and_labels_every_exempted_suggestion():
+    comparison = load(EVAL / 'checks_round2.json')
+    for claims in comparison['real_errors'].values():
+        assert all(c['remains_flagged'] for c in claims)
+    assert comparison['new_model_calls']['claude']['count'] == 0
+    assert comparison['new_model_calls']['jev']['count'] == 0
+    assert not any(c['lost_catch'] for c in comparison['mutation_changes'])
+    labels = load(EVAL / 'audit_labels.json')
+    assert labels['after_changes']['retained_by_label'] == {
+        'real_summary_error': {'count': 1, 'n': 1, 'rate': 1.0},
+        'file_inconsistency': {'count': 4, 'n': 4, 'rate': 1.0},
+        'false_alarm': {'count': 4, 'n': 9, 'rate': 0.4444},
+    }
+    for cid, suggestions in comparison['suggestions'].items():
+        audit = load(ROOT / 'runs' / cid / 'audit.json')
+        assert suggestions['n'] == len(audit['claims'])
+        assert suggestions['count'] == len(suggestions['claims'])
+        for suggestion in suggestions['claims']:
+            claim = next(c for c in audit['claims'] if c['claim_id'] == suggestion['claim_id'])
+            assert claim['status'] == 'supported' and claim['checker']['verdict'] is None

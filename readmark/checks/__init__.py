@@ -1,7 +1,7 @@
 """Code checks: deterministic, no model.
 
 1. Each quote is in its cited passage after whitespace normalisation.
-2. Every number and date in the claim appears in one of its cited quotes.
+2. Every number and date appears in a verified quote, its passage or its document header.
 
 A failure is shown as "quote not found" and is never dropped. Negation is deliberately not
 checked: "will not be withheld" against "not eligible" defeats any word count (notes, System).
@@ -32,6 +32,14 @@ _DATE = re.compile(
     rf"\b(?P<day>\d{{1,2}})\s+(?P<month>{_M})\b\.?"
     rf"(?:,?\s+(?P<year>\d{{4}})\b)?|"
     rf"\b(?P<month_only>{_M})\b\.?\s+(?P<month_year>\d{{4}})\b",
+    re.IGNORECASE,
+)
+# A range shares its trailing month/year only within that range, never across citations.
+_DAY_DATE = rf"\d{{1,2}}\s+(?:{_M})\b\.?(?:,?\s+\d{{4}}\b)?"
+_RANGE = re.compile(
+    rf"\b(?P<start>\d{{4}}-\d{{2}}-\d{{2}}|{_DAY_DATE}|\d{{1,2}})"
+    rf"\s*(?:[-–—]|\bto\b)\s*"
+    rf"(?P<end>\d{{4}}-\d{{2}}-\d{{2}}|{_DAY_DATE})",
     re.IGNORECASE,
 )
 _IDENTIFIER = re.compile(r"\b[A-Za-z]+-?\d+(?:-\d+)*\b")
@@ -70,25 +78,65 @@ def _dates(text: str) -> tuple[list[tuple[str, tuple]], str]:
     return hits, _DATE.sub(extract, text)
 
 
+def _ranges(text: str) -> tuple[list[tuple[str, tuple, tuple]], str]:
+    hits = []
+
+    def extract(match):
+        end, _ = _dates(match['end'])
+        start, _ = _dates(match['start'])
+        if not end:
+            return match[0]
+        right = end[0][1]
+        if not start and not match['start'].isdigit():
+            return match[0]
+        left = start[0][1] if start else (None, right[1], int(match['start']))
+        left = (left[0] or right[0], left[1], left[2])
+        right = (right[0] or left[0], right[1], right[2])
+        # Invalid dates must fail rather than become a valid range through digit matching.
+        try:
+            for parts in (left, right):
+                date(parts[0] or 2000, parts[1], parts[2])
+        except ValueError:
+            return match[0]
+        hits.append((match[0], left, right))
+        return ' '
+
+    return hits, _RANGE.sub(extract, text)
+
+
+def _date_matches(wanted: tuple, candidate: tuple) -> bool:
+    return all(want is None or want == have
+               for want, have in zip(wanted, candidate, strict=True))
+
+
 def quote_present(quote: str, passage_text: str | None) -> bool:
     needle = normalise(quote)
     return bool(passage_text) and bool(needle) and needle in normalise(passage_text)
 
 
 def values_missing(claim: str, quotes: list[str]) -> list[str]:
-    """Values must occur in a verified quote, allowing equivalent date/reference spellings.
+    """Values must occur in the supplied verified evidence, allowing equivalent spellings.
 
-    Chosen after the demo audit: the sealed held-out evaluation is the honest test. Dates
+    Expanded after H-01's first run; its updated scores are not held-out. Dates
     compare as whole dates, never independent digits from unrelated amounts or other dates.
     A partial date requires only its stated components, in the same quoted date.
     """
-    claim_text = _REFERENCE.sub(" ", claim)
+    claim_ranges, claim_text = _ranges(_REFERENCE.sub(" ", claim))
     dates, rest = _dates(claim_text)
-    quoted = [_dates(q) for q in quotes]
+    evidence_ranges = [_ranges(q) for q in quotes]
+    have_ranges = [r for hits, _ in evidence_ranges for r in hits]
+    quoted = [_dates(rest) for _, rest in evidence_ranges]
     have_dates = [parts for hits, _ in quoted for _, parts in hits]
-    missing = [raw for raw, parts in dates if not any(
-        all(want is None or want == have for want, have in zip(parts, candidate, strict=True))
-        for candidate in have_dates)]
+    have_dates += [parts for _, left, right in have_ranges for parts in (left, right)]
+    # Presence checks verify both whole dates. The passage may state them as 'commenced ...
+    # and ended ...'; whether those dates describe this claim remains the second key's job.
+    missing = [raw for raw, left, right in claim_ranges if not (
+        date(left[0] or 2000, left[1], left[2]) <= date(right[0] or 2000, right[1], right[2])
+        and
+        any(_date_matches(left, candidate) for candidate in have_dates)
+        and any(_date_matches(right, candidate) for candidate in have_dates))]
+    missing += [raw for raw, parts in dates if not any(
+        _date_matches(parts, candidate) for candidate in have_dates)]
     # References keep leading zeroes and letters; their digits are not standalone amounts.
     def canonical(raw):
         return raw.replace('-', '').casefold()
@@ -113,9 +161,13 @@ def check_fact(fact: dict, passages_by_id: dict[str, dict]) -> dict:
                 "quote_found": quote_present(c["quote"], passage and passage["text"]),
             }
         )
-    found_quotes = [c["quote"] for c, r in zip(fact.get("citations", []), citations, strict=True)
-                    if r["quote_found"]]
-    missing = values_missing(fact["claim"], found_quotes)
+    evidence = []
+    for c, result in zip(fact.get("citations", []), citations, strict=True):
+        if result["quote_found"]:
+            passage = passages_by_id[c["passage_id"]]
+            evidence.extend([c["quote"], passage["text"],
+                             passage.get("doc_title") or "", passage.get("doc_date") or ""])
+    missing = values_missing(fact["claim"], evidence)
     # A fact marked found must cite at least one passage (writer contract: 1 to n citations).
     # One that arrives with none has nothing a reader can check, so it fails here and shows
     # "quote not found"; it can never look supported.

@@ -1,5 +1,186 @@
 {
  "cases": {
+  "A-0142": {
+   "all_flagged_gold_page_coverage": {
+    "count": 5,
+    "covered": [
+     "p8",
+     "p23",
+     "p30",
+     "p51",
+     "p58"
+    ],
+    "missed": [],
+    "n": 5,
+    "rate": 1.0
+   },
+   "gold_page_coverage": {
+    "count": 3,
+    "covered": [
+     "p8",
+     "p23",
+     "p51"
+    ],
+    "missed": [
+     "p30",
+     "p58"
+    ],
+    "n": 5,
+    "rate": 0.6
+   },
+   "live_responses": {
+    "by_kind": {
+     "audit-cover": {
+      "count": 1,
+      "n": 380
+     },
+     "audit-locate": {
+      "count": 1,
+      "n": 380
+     },
+     "audit-split": {
+      "count": 1,
+      "n": 380
+     },
+     "jev": {
+      "count": 135,
+      "n": 380
+     },
+     "jev-dedup": {
+      "count": 8,
+      "n": 380
+     },
+     "jev-dedup-confirm": {
+      "count": 8,
+      "n": 380
+     },
+     "jev-pair": {
+      "count": 80,
+      "n": 380
+     },
+     "jev-scan": {
+      "count": 144,
+      "n": 380
+     },
+     "summary": {
+      "count": 1,
+      "n": 380
+     },
+     "writer": {
+      "count": 1,
+      "n": 380
+     }
+    },
+    "claude": 5,
+    "jev": 375,
+    "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
+    "n": 380
+   },
+   "required_reading": {
+    "count": 8,
+    "n": 8,
+    "unit": "passages; n is the maximum allowed"
+   },
+   "summary_audit": {
+    "by_status": {
+     "checker_disagrees": {
+      "count": 15,
+      "n": 95
+     },
+     "contradicted": {
+      "count": 0,
+      "n": 95
+     },
+     "quote_not_found": {
+      "count": 4,
+      "n": 95
+     },
+     "supported": {
+      "count": 76,
+      "n": 95
+     }
+    },
+    "created": "2026-10-03",
+    "flags": {
+     "count": 19,
+     "n": 95,
+     "rate": 0.2
+    },
+    "meaning": "Flags are candidate errors, not a real-error count. H-01's first-run flags were independently labelled after the run; unflagged claims were not reviewed. The fixed-schema supported bucket includes suggestions with null checker judgments; nothing_to_check reports them separately.",
+    "model": "claude-opus-5-5",
+    "nothing_to_check": {
+     "count": 1,
+     "n": 95,
+     "rate": 0.0105
+    },
+    "prompt": "Summarise this file."
+   },
+   "trap_touch_rate": {
+    "count": 3,
+    "n": 6,
+    "rate": 0.5
+   },
+   "traps": [
+    {
+     "clause_id": "elig-debts",
+     "fact_id": "A01",
+     "missing_evidence_flag": false,
+     "required": [
+      "A-0142:p8:3"
+     ],
+     "suggested": [],
+     "touched": true,
+     "trap": "stale_value"
+    },
+    {
+     "clause_id": "elig-debts",
+     "fact_id": "A02",
+     "missing_evidence_flag": false,
+     "required": [
+      "A-0142:p23:3"
+     ],
+     "suggested": [],
+     "touched": true,
+     "trap": "contradiction"
+    },
+    {
+     "clause_id": "elig-former-tenancy",
+     "fact_id": "A03",
+     "missing_evidence_flag": false,
+     "required": [],
+     "suggested": [],
+     "touched": false,
+     "trap": "policy_misread"
+    },
+    {
+     "clause_id": "prio-category",
+     "fact_id": "A04",
+     "missing_evidence_flag": false,
+     "required": [],
+     "suggested": [],
+     "touched": false,
+     "trap": "omission"
+    },
+    {
+     "clause_id": "prio-documentation",
+     "fact_id": "A05",
+     "missing_evidence_flag": false,
+     "required": [],
+     "suggested": [],
+     "touched": false,
+     "trap": "omission"
+    },
+    {
+     "clause_id": "elig-income",
+     "fact_id": "A10",
+     "missing_evidence_flag": true,
+     "required": [],
+     "suggested": [],
+     "touched": true,
+     "trap": "omission"
+    }
+   ]
+  },
   "E-01": {
    "all_flagged_gold_page_coverage": {
     "count": 2,
@@ -375,6 +556,240 @@
     "n": 8,
     "rate": 1.0
    },
+   "first_run": {
+    "all_flagged_gold_page_coverage": {
+     "count": 8,
+     "covered": [
+      "p3",
+      "p5",
+      "p6",
+      "p12",
+      "p13",
+      "p14",
+      "p15",
+      "p17"
+     ],
+     "missed": [],
+     "n": 8,
+     "rate": 1.0
+    },
+    "gold_page_coverage": {
+     "count": 4,
+     "covered": [
+      "p3",
+      "p5",
+      "p12",
+      "p17"
+     ],
+     "missed": [
+      "p6",
+      "p13",
+      "p14",
+      "p15"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "heldout_discipline": {
+     "code_frozen_at": "2026-10-03T06:16:01.556266+00:00",
+     "completed_at": "2026-10-03T06:20:06.544757+00:00",
+     "crash_fixes": [],
+     "implementation_sha256": {
+      "readmark/__init__.py": "675479391259cb91a6f0432ed240cccb1f8f028f6562099458aa061611cbff1d",
+      "readmark/__main__.py": "540e68024c1f4e0ae982d17e037d316a552a04e0a9ea049b380dda6acd150b5d",
+      "readmark/audit/__init__.py": "5cdb2004562b9ec6d5e11561b3689a84617c11125c377dd02acdcbb114faf2eb",
+      "readmark/audit/claims.py": "13d3bff08b0b2b13424c5b3470a23e97121546c0a22c402eb80d1cbe40c60126",
+      "readmark/audit/claude.py": "e321fc94178f258b6d8542ca1bbaa6c4b1c7d0b98e598243f5fcbd43bc9a8f25",
+      "readmark/cache.py": "3a85a355be7de3a70a6014464240610d4fae4b3d87e4f73c173228ccfcb7795c",
+      "readmark/checklist/__init__.py": "6bc78839f040ac638eaae8201c41ab895381b4ca058a960755a067f7e2fb075e",
+      "readmark/checklist/clauses.yaml": "91572f49c9e27950eb58f2382cc3ab3c16eb3f70d766b34a6fb8eb346f2cc320",
+      "readmark/checks/__init__.py": "ee36d8ef17500f962a151d4dab7c94edb792867a4b65ae9e938faf883869f4ee",
+      "readmark/checks/cross.py": "a309148761529b45d27cb38ae5e83393fc8f9ba64f80fa4af511644343ed4475",
+      "readmark/eval/__init__.py": "28e458617ad32a3dddcd874e6d9dd68f51491045190477585acf78fa45bea2e8",
+      "readmark/eval/cases.py": "1f3804902b1e6059b20037d26b32f7d98b938a9e0987f1e43530fcbab69294aa",
+      "readmark/eval/checker.py": "68c826a9ff8f670ca0954886d6f45aabf8b9771a7c2f336eba56ff7f8da0fa79",
+      "readmark/eval/discipline.py": "5256c408e373a6b4eac45c5a16b506d97500ee9f6b7d51b4b3fd2bfda80e66f7",
+      "readmark/eval/summedits.py": "a4fc02e95370a7644bf6a0ce9ecc5112597bd5630464765edb464157a4917984",
+      "readmark/gate/__init__.py": "98c98831a43a481244b4b81c3b293e7cb2e26cf92bfc4dfce78e87c15cf1c571",
+      "readmark/ingest/__init__.py": "491e0332a10690ee15e3654eab17a5c8b73fff629cdf967978843cf259d39904",
+      "readmark/jev/__init__.py": "26ab1150391d741d3223c74365f2da49bbb6deea129fe6cbdef7bf4ed7e6fa66",
+      "readmark/pipeline.py": "70abf938274ec2cd3a5c0d9674a33fcb47249e9404346fdcc35f8e3e4e698ad5",
+      "readmark/record/__init__.py": "41deebca7c1874a86f8198aed0b6424c2a7aa945752c1c66df0f92f9f64a53e2",
+      "readmark/schemas/view.schema.json": "56767498d0a1235d1f52ac6ccdab439d802db0fececdd698b2ff63941fa1f535",
+      "readmark/serve.py": "d2cc91ee1b83a257fffa02a500c021029a303c41d7fa16d277d14c63daaecc08",
+      "readmark/writer/__init__.py": "1dcc6b498b0c105aa7426e87e1f351f2f140a2b6aaabb0cb221bb634463348fe",
+      "readmark/writer/claude_cli.py": "ef50ea61dd3d8bb6e4da8582511209ad2b34080442a7398028c14897f8e3977d",
+      "tests/test_eval_cases.py": "d7ef0997134988768e6a91a0cf9eff696721e3a14ba13675fef625a4d96ec926",
+      "uv.lock": "7fc1d81cf3928172567e8e1b17075c3f5fc8488ec7975370b00c1b1ef63c991e"
+     },
+     "last_code_change_at": "2026-10-03T06:12:16.224455+00:00",
+     "live_runs": {
+      "count": 1,
+      "n": 1
+     },
+     "seal_read_after_run": true,
+     "started_at": "2026-10-03T06:16:01.666461+00:00",
+     "tuned_after_run": false
+    },
+    "live_responses": {
+     "by_kind": {
+      "audit-cover": {
+       "count": 1,
+       "n": 297
+      },
+      "audit-locate": {
+       "count": 1,
+       "n": 297
+      },
+      "audit-split": {
+       "count": 1,
+       "n": 297
+      },
+      "jev": {
+       "count": 187,
+       "n": 297
+      },
+      "jev-dedup": {
+       "count": 6,
+       "n": 297
+      },
+      "jev-dedup-confirm": {
+       "count": 5,
+       "n": 297
+      },
+      "jev-pair": {
+       "count": 62,
+       "n": 297
+      },
+      "jev-scan": {
+       "count": 32,
+       "n": 297
+      },
+      "summary": {
+       "count": 1,
+       "n": 297
+      },
+      "writer": {
+       "count": 1,
+       "n": 297
+      }
+     },
+     "claude": 5,
+     "jev": 292,
+     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
+     "n": 297
+    },
+    "required_reading": {
+     "count": 8,
+     "n": 8,
+     "unit": "passages; n is the maximum allowed"
+    },
+    "summary_audit": {
+     "by_status": {
+      "checker_disagrees": {
+       "count": 4,
+       "n": 105
+      },
+      "contradicted": {
+       "count": 4,
+       "n": 105
+      },
+      "quote_not_found": {
+       "count": 6,
+       "n": 105
+      },
+      "supported": {
+       "count": 91,
+       "n": 105
+      }
+     },
+     "created": "2026-10-03",
+     "flags": {
+      "count": 14,
+      "n": 105,
+      "rate": 0.1333
+     },
+     "meaning": "Flags are candidate errors. No independent labels exist for the held-out summary, so flag counts are not a real-error count.",
+     "model": "claude-opus-5-5",
+     "prompt": "Summarise this file."
+    },
+    "trap_touch_rate": {
+     "count": 3,
+     "n": 7,
+     "rate": 0.4286
+    },
+    "traps": [
+     {
+      "clause_id": "elig-income",
+      "fact_id": "F03",
+      "missing_evidence_flag": false,
+      "required": [
+       "H-01:p5:2"
+      ],
+      "suggested": [],
+      "touched": true,
+      "trap": "stale_value"
+     },
+     {
+      "clause_id": "elig-income",
+      "fact_id": "F04",
+      "missing_evidence_flag": false,
+      "required": [],
+      "suggested": [],
+      "touched": false,
+      "trap": "stale_value"
+     },
+     {
+      "clause_id": "elig-former-tenancy",
+      "fact_id": "F08",
+      "missing_evidence_flag": false,
+      "required": [
+       "H-01:p2:3"
+      ],
+      "suggested": [],
+      "touched": true,
+      "trap": "contradiction"
+     },
+     {
+      "clause_id": "elig-former-tenancy",
+      "fact_id": "F09",
+      "missing_evidence_flag": false,
+      "required": [
+       "H-01:p12:1"
+      ],
+      "suggested": [],
+      "touched": true,
+      "trap": "contradiction"
+     },
+     {
+      "clause_id": "elig-former-tenancy",
+      "fact_id": "F10",
+      "missing_evidence_flag": false,
+      "required": [],
+      "suggested": [],
+      "touched": false,
+      "trap": "exclusion_2yr"
+     },
+     {
+      "clause_id": "elig-former-tenancy",
+      "fact_id": "F11",
+      "missing_evidence_flag": false,
+      "required": [],
+      "suggested": [],
+      "touched": false,
+      "trap": "exclusion_2yr"
+     },
+     {
+      "clause_id": "prio-documentation",
+      "fact_id": "F15",
+      "missing_evidence_flag": false,
+      "required": [],
+      "suggested": [],
+      "touched": false,
+      "trap": "missing_doc"
+     }
+    ]
+   },
    "gold_page_coverage": {
     "count": 4,
     "covered": [
@@ -393,9 +808,19 @@
     "rate": 0.5
    },
    "heldout_discipline": {
+    "changed_result_files": [
+     "readmark/audit/claims.py",
+     "readmark/checks/__init__.py",
+     "readmark/eval/__init__.py",
+     "readmark/eval/cases.py",
+     "readmark/eval/round2.py",
+     "readmark/pipeline.py",
+     "tests/test_eval_cases.py"
+    ],
     "code_frozen_at": "2026-10-03T06:16:01.556266+00:00",
     "completed_at": "2026-10-03T06:20:06.544757+00:00",
     "crash_fixes": [],
+    "first_run_view_sha256": "c8475c88c5e85fcfebb498fa171511a32e03d2dfa7bdd346ecb59bf5bb1d4417",
     "implementation_sha256": {
      "readmark/__init__.py": "675479391259cb91a6f0432ed240cccb1f8f028f6562099458aa061611cbff1d",
      "readmark/__main__.py": "540e68024c1f4e0ae982d17e037d316a552a04e0a9ea049b380dda6acd150b5d",
@@ -424,15 +849,18 @@
      "tests/test_eval_cases.py": "d7ef0997134988768e6a91a0cf9eff696721e3a14ba13675fef625a4d96ec926",
      "uv.lock": "7fc1d81cf3928172567e8e1b17075c3f5fc8488ec7975370b00c1b1ef63c991e"
     },
+    "label": "after changes, not held-out",
     "last_code_change_at": "2026-10-03T06:12:16.224455+00:00",
     "live_runs": {
      "count": 1,
      "n": 1
     },
+    "scored_view_sha256": "41c2575b8b91b20ec7a11999af5342d65996deece1d8d3f816c8c1916d146507",
     "seal_read_after_run": true,
     "started_at": "2026-10-03T06:16:01.666461+00:00",
-    "tuned_after_run": false
+    "tuned_after_run": true
    },
+   "label": "after changes, not held-out",
    "live_responses": {
     "by_kind": {
      "audit-cover": {
@@ -489,7 +917,7 @@
    "summary_audit": {
     "by_status": {
      "checker_disagrees": {
-      "count": 4,
+      "count": 3,
       "n": 105
      },
      "contradicted": {
@@ -497,22 +925,27 @@
       "n": 105
      },
      "quote_not_found": {
-      "count": 6,
+      "count": 2,
       "n": 105
      },
      "supported": {
-      "count": 91,
+      "count": 96,
       "n": 105
      }
     },
     "created": "2026-10-03",
     "flags": {
-     "count": 14,
+     "count": 9,
      "n": 105,
-     "rate": 0.1333
+     "rate": 0.0857
     },
-    "meaning": "Flags are candidate errors. No independent labels exist for the held-out summary, so flag counts are not a real-error count.",
+    "meaning": "Flags are candidate errors, not a real-error count. H-01's first-run flags were independently labelled after the run; unflagged claims were not reviewed. The fixed-schema supported bucket includes suggestions with null checker judgments; nothing_to_check reports them separately.",
     "model": "claude-opus-5-5",
+    "nothing_to_check": {
+     "count": 1,
+     "n": 105,
+     "rate": 0.0095
+    },
     "prompt": "Summarise this file."
    },
    "trap_touch_rate": {
@@ -594,6 +1027,6 @@
   }
  },
  "part": "cases",
- "riskiest_assumption": "The single held-out run required 8 passages (cap n=8) and covered 4 gold required pages (n=8); required reading stayed within eight. Flags touched 3 planted trap facts (n=7) across required, suggested and missing-evidence flags. Its frozen summary produced 14 flags (n=105 claims), whose real-error precision is not independently labelled. The demo summary found two real errors among twenty-two flags (n=95 claims). The reading cap holds; the evidence for finding real summary errors remains the demo, and held-out flag counts alone do not establish accuracy.",
+ "riskiest_assumption": "H-01 first run (held-out): 14 summary flags (n=105 claims), unchanged. After changes, not held-out: 9 flags (n=105 claims). First-run labels found one real summary error and four file-inconsistency flags among fourteen flags (n=14); nine were false alarms. Unflagged claims were not reviewed. See audit_labels for retained flags by class; a new held-out file is needed to test the changed checks independently.",
  "trap_rule": "Exact quote in a flagged passage under the same clause, or an explicit missing-evidence flag for a fact with no page. Required and suggested touches are reported separately."
 }

@@ -84,10 +84,8 @@
    "clause_id": "other",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "A-0142"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -1878,10 +1876,8 @@
    "clause_id": "elig-debts",
    "contradicted_by": [],
    "required": true,
-   "status": "quote_not_found",
-   "values_missing": [
-    "January 2026"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -1903,10 +1899,8 @@
    "clause_id": "elig-debts",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "January 2026"
-   ]
+   "status": "checker_disagrees",
+   "values_missing": []
   },
   {
    "checker": {
@@ -1928,10 +1922,8 @@
    "clause_id": "elig-debts",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "January 2026"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2017,10 +2009,8 @@
    "clause_id": "elig-debts",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "March 2026"
-   ]
+   "status": "checker_disagrees",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2249,11 +2239,8 @@
    "clause_id": "other",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "27 Feb.",
-    "60"
-   ]
+   "status": "checker_disagrees",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2548,9 +2535,9 @@
   {
    "checker": {
     "claim_id": "a92",
-    "probability": 0.8,
-    "supports": 0.31,
-    "verdict": "supports"
+    "probability": null,
+    "supports": null,
+    "verdict": null
    },
    "citations": [
     {
@@ -2652,10 +2639,8 @@
    "clause_id": "elig-income",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "24 March 2026"
-   ]
+   "status": "checker_disagrees",
+   "values_missing": []
   }
  ],
  "considered_for_omission": [
@@ -2690,7 +2675,7 @@
   },
   "claims_by_status": {
    "checker_disagrees": {
-    "count": 11,
+    "count": 15,
     "n": 95
    },
    "contradicted": {
@@ -2698,13 +2683,17 @@
     "n": 95
    },
    "quote_not_found": {
-    "count": 11,
+    "count": 4,
     "n": 95
    },
    "supported": {
-    "count": 73,
+    "count": 76,
     "n": 95
    }
+  },
+  "nothing_to_check": {
+   "count": 1,
+   "n": 95
   },
   "omitted": {
    "count": 9,
@@ -2721,6 +2710,13 @@
   "auditor": "claude-opus-5-5",
   "checker": "jev-1.13.0"
  },
+ "nothing_to_check": [
+  {
+   "claim": "It may be worth clarifying the support letter wording with the coordinator.",
+   "claim_id": "a92",
+   "display": "nothing to check"
+  }
+ ],
  "omitted": [
   {
    "claim_id": "c02",

@@ -188,6 +188,41 @@ def test_claim_path_takes_two_claim_sentences_and_returns_two_view_claims():
     assert claims[1]["citations"] == [] and claims[1]["checker"] is None
 
 
+def test_only_review_suggestions_are_exempt_and_have_no_checker_judgment():
+    from readmark.audit.claims import nothing_to_check
+
+    suggestion = 'The answer "Previously applied for social housing: No" may also need checking.'
+    factual = 'The applicant should have received $50.'
+    assert nothing_to_check(suggestion)
+    assert nothing_to_check('It may be worth clarifying the support letter wording.')
+    for text in [factual, 'Interviews should be held in a private room.',
+                 'The applicant may own a unit.',
+                 'The officer should check income because the payslip is missing.',
+                 'The officer should check income and the applicant earns $50.']:
+        assert not nothing_to_check(text)
+    checker = FixedChecker()
+    jobs = []
+    original = checker.check
+
+    def record(items):
+        jobs.extend(items)
+        return original(items)
+
+    checker.check = record
+    locator = FixedAuditor(located={
+        suggestion: ('elig-income', [(MARCH, 'Arrears cleared in full.')]),
+        factual: ('elig-income', [(MARCH, 'Arrears cleared in full.')]),
+    })
+    claims = check_claims('stub', [suggestion, factual], locator=locator, checker=checker)
+    assert claims[0]['status'] == 'supported'  # fixed schema's non-flagged bucket
+    assert claims[0]['checker'] == {'claim_id': 'a01', 'verdict': None,
+                                    'probability': None, 'supports': None}
+    assert claims[1]['status'] == 'quote_not_found' and claims[1]['values_missing'] == ['50']
+    assert [j['claim_id'] for j in jobs] == ['a02']
+    for claim in claims:
+        jsonschema.validate(claim, claim_schema())
+
+
 @needs_pdfs
 def test_a_demo_file_run_with_fixed_models_never_reaches_claude(tmp_path, monkeypatch):
     def refuse(*args, **kwargs):

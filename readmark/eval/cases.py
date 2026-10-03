@@ -20,7 +20,7 @@ from readmark.ingest import case_path, normalise
 from readmark.pipeline import run
 
 EVALUATION_CASES = ("E-01", "E-02", "E-03")
-ALL_CASES = (*EVALUATION_CASES, "H-01")
+ALL_CASES = ("A-0142", *EVALUATION_CASES, "H-01")
 LAYERS = ("claude_alone", "code_checks", "second_key", "contradiction_pairs", "scan")
 STATUSES = ("supported", "quote_not_found", "checker_disagrees", "contradicted")
 
@@ -117,10 +117,15 @@ def scoring_inputs(cid: str) -> tuple[dict, list[dict], dict | None]:
         sealed = (folder / "SEALED.md").read_text(encoding="utf-8")
         discipline = {k: record[k] for k in
                       ("last_code_change_at", "code_frozen_at", "started_at", "completed_at")}
+        changed = record['changed_result_files']
         discipline.update({"seal_read_after_run": bool(sealed),
                            "live_runs": {"count": 1, "n": 1},
-                           "crash_fixes": [], "tuned_after_run": False,
-                           "implementation_sha256": record["implementation_sha256"]})
+                           "crash_fixes": [], "tuned_after_run": bool(changed),
+                           "implementation_sha256": record["implementation_sha256"],
+                           "label": record['scoring_label'],
+                           "changed_result_files": changed,
+                           "first_run_view_sha256": record['view_sha256'],
+                           "scored_view_sha256": record['scored_view_sha256']})
     gold = load(folder / "gold.json")
     with (folder / "facts.csv").open(encoding="utf-8", newline="") as stream:
         facts = list(csv.DictReader(stream))
@@ -183,6 +188,8 @@ def score_case(cid: str) -> dict:
     }
     if discipline:
         result["heldout_discipline"] = discipline
+        result['label'] = discipline['label']
+    if (out / 'audit.json').exists():
         audit = load(out / "audit.json")
         result["summary_audit"] = {
             "model": audit["model"], "prompt": audit["prompt"], "created": audit["created"],
@@ -190,9 +197,17 @@ def score_case(cid: str) -> dict:
                           len(audit["claims"])),
             "by_status": {s: {"count": sum(c["status"] == s for c in audit["claims"]),
                               "n": len(audit["claims"])} for s in STATUSES},
-            "meaning": "Flags are candidate errors. No independent labels exist for the "
-                       "held-out summary, so flag counts are not a real-error count.",
+            "nothing_to_check": rate(len(audit.get('nothing_to_check', [])),
+                                     len(audit['claims'])),
+            "meaning": "Flags are candidate errors, not a real-error count. H-01's "
+                       "first-run flags were independently labelled after the run; "
+                       "unflagged claims were not reviewed. The fixed-schema supported "
+                       "bucket includes suggestions with null checker judgments; "
+                       "nothing_to_check reports them separately.",
         }
+    if discipline and discipline['tuned_after_run']:
+        baseline = load(out.parent / 'eval' / 'checks_round2.json')
+        result['first_run'] = baseline['before']['parts']['cases']['cases'][cid]
     return result
 
 
@@ -200,6 +215,16 @@ def assumption_result(cases: dict) -> str:
     if "H-01" not in cases:
         return "The held-out file has not completed; the riskiest assumption is still untested."
     held = cases["H-01"]
+    if held.get('label') == 'after changes, not held-out':
+        first = held['first_run']
+        before, after = first['summary_audit']['flags'], held['summary_audit']['flags']
+        return (f"H-01 first run (held-out): {before['count']} summary flags "
+                f"(n={before['n']} claims), unchanged. After changes, not held-out: "
+                f"{after['count']} flags (n={after['n']} claims). First-run labels found "
+                "one real summary error and four file-inconsistency flags among fourteen "
+                "flags (n=14); nine were false alarms. Unflagged claims were not reviewed. "
+                "See audit_labels for retained flags by class; a new held-out file is needed "
+                "to test the changed checks independently.")
     reading, coverage = held["required_reading"], held["gold_page_coverage"]
     flags = held["summary_audit"]["flags"]
     traps = held["trap_touch_rate"]
@@ -241,6 +266,8 @@ def evaluate_cases(replay: bool, case_id: str | None = None) -> dict:
 
 
 def layer_reasons(check: dict, verdict: dict | None, contra: list[str], layer: int) -> list[str]:
+    if verdict and verdict.get('verdict') is None:
+        return []  # nothing to check: a review suggestion, not a positive model judgment
     if layer == 0:
         return []
     if layer == 1:
@@ -348,7 +375,7 @@ def write_csv(path: Path, rows: list[dict], columns: list[str]) -> None:
 def release_benchmark(folder: Path | None = None) -> dict:
     """Release original synthetic labels, keeping the held-out scorer's seal checks."""
     facts, gold_rows, mutations = [], [], []
-    for cid in ("A-0142", *ALL_CASES):
+    for cid in ALL_CASES:
         gold, case_facts, _ = scoring_inputs(cid)
         facts.extend({"case_id": cid, **f} for f in case_facts)
         for clause, outcome in gold["outcomes"].items():

@@ -18,6 +18,7 @@ import jsonschema
 from readmark import SCHEMAS_DIR, case_run_dir, dumps
 from readmark.audit import AUDIT_CASES, audit_summary, view_block
 from readmark.audit.claude import ClaudeAuditor
+from readmark.audit.claims import nothing_to_check
 from readmark.cache import Cache
 from readmark.checklist import anchor, load_clauses
 from readmark.checks import check_fact, claim_reasons, claim_status
@@ -335,6 +336,13 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
             case_id, case_path(case_id).read_text(encoding="utf-8"), map_claims,
             set(case_by_id), auditor=auditor or ClaudeAuditor(cache), checker=checker_impl,
             pairs=all_pairs, required={i["passage_id"] for i in gate["required"]}, cache=cache)
+        # The fixed view enum cannot name an exemption. The audit stage explicitly labels
+        # these sentences, while the view keeps a null checker judgment and no flag.
+        record['nothing_to_check'] = [
+            {'claim_id': c['claim_id'], 'claim': c['claim'], 'display': 'nothing to check'}
+            for c in record['claims'] if nothing_to_check(c['claim'])]
+        record['counts']['nothing_to_check'] = {
+            'count': len(record['nothing_to_check']), 'n': len(record['claims'])}
 
     # 10. View.
     view = build_view(case_meta, case, policy, clauses, lock, facts, checks, verdicts, gate,

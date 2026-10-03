@@ -23,6 +23,10 @@ def write_part(name: str, content: dict) -> Path:
 
 def assemble_summary() -> Path:
     """``summary.json`` = ``{"parts": {<part>: <runs/eval/<part>.json>}}`` for every part present."""
+    if (eval_dir() / 'checks_round2.json').exists():
+        from readmark.eval.round2 import refresh
+
+        refresh()
     parts = {
         p.stem: json.loads(p.read_text(encoding="utf-8"))
         for p in sorted(eval_dir().glob("*.json"))

@@ -1293,10 +1293,8 @@
    "clause_id": "prio-documentation",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "1 October"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -1318,10 +1316,8 @@
    "clause_id": "prio-documentation",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "1 October"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -1714,10 +1710,8 @@
    "clause_id": "elig-income",
    "contradicted_by": [],
    "required": true,
-   "status": "quote_not_found",
-   "values_missing": [
-    "21"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2223,10 +2217,8 @@
    "clause_id": "elig-debts",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "615.40"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2665,9 +2657,9 @@
   {
    "checker": {
     "claim_id": "a101",
-    "probability": 0.11,
-    "supports": 0.19,
-    "verdict": "not_enough_information"
+    "probability": null,
+    "supports": null,
+    "verdict": null
    },
    "citations": [
     {
@@ -2688,7 +2680,7 @@
    "clause_id": "other",
    "contradicted_by": [],
    "required": true,
-   "status": "checker_disagrees",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2843,7 +2835,7 @@
   },
   "claims_by_status": {
    "checker_disagrees": {
-    "count": 4,
+    "count": 3,
     "n": 105
    },
    "contradicted": {
@@ -2851,13 +2843,17 @@
     "n": 105
    },
    "quote_not_found": {
-    "count": 6,
+    "count": 2,
     "n": 105
    },
    "supported": {
-    "count": 91,
+    "count": 96,
     "n": 105
    }
+  },
+  "nothing_to_check": {
+   "count": 1,
+   "n": 105
   },
   "omitted": {
    "count": 6,
@@ -2874,6 +2870,13 @@
   "auditor": "claude-opus-5-5",
   "checker": "jev-1.13.0"
  },
+ "nothing_to_check": [
+  {
+   "claim": "The answer \"Previously applied for social housing: No\" may need checking.",
+   "claim_id": "a101",
+   "display": "nothing to check"
+  }
+ ],
  "omitted": [
   {
    "claim_id": "c05",

@@ -319,7 +319,7 @@
    "claim_id": "c13",
    "clause_id": "elig-former-tenancy",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -342,7 +342,7 @@
    "claim_id": "c14",
    "clause_id": "elig-former-tenancy",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -377,11 +377,9 @@
    "claim_id": "c15",
    "clause_id": "elig-former-tenancy",
    "contradicted_by": [],
-   "required": true,
-   "status": "quote_not_found",
-   "values_missing": [
-    "2026-02-16"
-   ]
+   "required": false,
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -592,7 +590,7 @@
    "claim_id": "c26",
    "clause_id": "other",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   }
@@ -864,52 +862,13 @@
   },
   {
    "claim_ids": [
-    "c15"
-   ],
-   "clause_ids": [
-    "elig-former-tenancy"
-   ],
-   "passage_id": "stub:p4:1",
-   "rank": 3,
-   "reasons": [
-    "quote_not_found"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c15"
-   ],
-   "clause_ids": [
-    "elig-former-tenancy"
-   ],
-   "passage_id": "eligibility:p6:11",
-   "rank": 4,
-   "reasons": [
-    "quote_not_found"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c15"
-   ],
-   "clause_ids": [
-    "elig-former-tenancy"
-   ],
-   "passage_id": "stub:p1:1",
-   "rank": 5,
-   "reasons": [
-    "quote_not_found"
-   ]
-  },
-  {
-   "claim_ids": [
     "c21"
    ],
    "clause_ids": [
     "prio-documentation"
    ],
    "passage_id": "stub:p5:2",
-   "rank": 6,
+   "rank": 3,
    "reasons": [
     "checker_disagrees"
    ]
@@ -922,7 +881,7 @@
     "prio-documentation"
    ],
    "passage_id": "stub:p5:3",
-   "rank": 7,
+   "rank": 4,
    "reasons": [
     "checker_disagrees"
    ]

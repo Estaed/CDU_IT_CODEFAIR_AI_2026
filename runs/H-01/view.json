@@ -1259,10 +1259,8 @@
     "clause_id": "prio-documentation",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "1 October"
-    ]
+    "status": "supported",
+    "values_missing": []
    },
    {
     "checker": {
@@ -1284,10 +1282,8 @@
     "clause_id": "prio-documentation",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "1 October"
-    ]
+    "status": "supported",
+    "values_missing": []
    },
    {
     "checker": {
@@ -1680,10 +1676,8 @@
     "clause_id": "elig-income",
     "contradicted_by": [],
     "required": true,
-    "status": "quote_not_found",
-    "values_missing": [
-     "21"
-    ]
+    "status": "supported",
+    "values_missing": []
    },
    {
     "checker": {
@@ -2189,10 +2183,8 @@
     "clause_id": "elig-debts",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "615.40"
-    ]
+    "status": "supported",
+    "values_missing": []
    },
    {
     "checker": {
@@ -2631,9 +2623,9 @@
    {
     "checker": {
      "claim_id": "a101",
-     "probability": 0.11,
-     "supports": 0.19,
-     "verdict": "not_enough_information"
+     "probability": null,
+     "supports": null,
+     "verdict": null
     },
     "citations": [
      {
@@ -2654,7 +2646,7 @@
     "clause_id": "other",
     "contradicted_by": [],
     "required": true,
-    "status": "checker_disagrees",
+    "status": "supported",
     "values_missing": []
    },
    {

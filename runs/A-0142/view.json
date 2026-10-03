@@ -50,10 +50,8 @@
     "clause_id": "other",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "A-0142"
-    ]
+    "status": "supported",
+    "values_missing": []
    },
    {
     "checker": {
@@ -1844,10 +1842,8 @@
     "clause_id": "elig-debts",
     "contradicted_by": [],
     "required": true,
-    "status": "quote_not_found",
-    "values_missing": [
-     "January 2026"
-    ]
+    "status": "supported",
+    "values_missing": []
    },
    {
     "checker": {
@@ -1869,10 +1865,8 @@
     "clause_id": "elig-debts",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "January 2026"
-    ]
+    "status": "checker_disagrees",
+    "values_missing": []
    },
    {
     "checker": {
@@ -1894,10 +1888,8 @@
     "clause_id": "elig-debts",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "January 2026"
-    ]
+    "status": "supported",
+    "values_missing": []
    },
    {
     "checker": {
@@ -1983,10 +1975,8 @@
     "clause_id": "elig-debts",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "March 2026"
-    ]
+    "status": "checker_disagrees",
+    "values_missing": []
    },
    {
     "checker": {
@@ -2215,11 +2205,8 @@
     "clause_id": "other",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "27 Feb.",
-     "60"
-    ]
+    "status": "checker_disagrees",
+    "values_missing": []
    },
    {
     "checker": {
@@ -2514,9 +2501,9 @@
    {
     "checker": {
      "claim_id": "a92",
-     "probability": 0.8,
-     "supports": 0.31,
-     "verdict": "supports"
+     "probability": null,
+     "supports": null,
+     "verdict": null
     },
     "citations": [
      {
@@ -2618,10 +2605,8 @@
     "clause_id": "elig-income",
     "contradicted_by": [],
     "required": false,
-    "status": "quote_not_found",
-    "values_missing": [
-     "24 March 2026"
-    ]
+    "status": "checker_disagrees",
+    "values_missing": []
    }
   ],
   "created": "2026-10-03",

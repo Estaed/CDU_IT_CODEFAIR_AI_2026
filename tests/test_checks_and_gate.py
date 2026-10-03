@@ -44,12 +44,48 @@ def test_stale_claim_citing_only_the_january_ledger_is_caught_by_the_pair_not_th
     assert claim_status(reasons) == "contradicted"
 
 
-def test_number_or_date_absent_from_the_quotes_fails():
-    f = fact("elig-debts", "Arrears of $3,400 were cleared in March 2026.",
+def test_number_or_date_absent_from_all_cited_evidence_fails():
+    f = fact("elig-debts", "Arrears of $3,400 were cleared in April 2026.",
              ("stub:p3:2", "Arrears cleared in full. Balance $0.00."))
     result = check_fact(f, PASSAGES)
     assert result["passed"] is False
-    assert set(result["values_missing"]) == {"3,400", "March 2026"}
+    assert set(result["values_missing"]) == {"3,400", "April 2026"}
+
+
+def test_date_in_the_document_header_and_amount_elsewhere_in_the_passage_pass():
+    passages = {'case:p1:1': {'text': 'Charge $615.40. The account remains under review.',
+                            'doc_title': 'Account review, 1 October 2026',
+                            'doc_date': '2026-10-01'}}
+    claim = fact('elig-debts', 'The $615.40 charge is under review on 1 October 2026.',
+                 ('case:p1:1', 'The account remains under review.'))
+    assert check_fact(claim, passages)['passed']
+    passages['case:p1:1']['doc_title'] = 'Account review'
+    assert check_fact(claim, passages)['passed']  # date only in the header's date field
+    passages['case:p1:1']['doc_date'] = None
+    assert check_fact(claim, passages)['values_missing'] == ['1 October 2026']
+    claim['claim'] = 'The $616.40 charge is under review.'
+    assert check_fact(claim, passages)['values_missing'] == ['616.40']
+    passages['uncited:p2:1'] = {'text': 'Charge $616.40.', 'doc_date': '2026-10-01'}
+    assert not check_fact(claim, passages)['passed']  # uncited evidence cannot rescue it
+    claim['citations'][0]['quote'] = 'Invented quote.'
+    claim['claim'] = 'The $615.40 charge is under review on 1 October 2026.'
+    assert set(check_fact(claim, passages)['values_missing']) == {'615.40', '1 October 2026'}
+
+
+def test_date_ranges_match_as_connected_dates_not_independent_digits():
+    forms = ['21–27 February 2026', '21-27 Feb 2026',
+             '21 February to 27 February 2026',
+             '21 February 2026 to 27 February 2026', '2026-02-21 to 2026-02-27']
+    for claim in forms:
+        for source in forms:
+            assert values_missing(claim, [source]) == []
+    for wrong in ['20–27 February 2026', '21–28 February 2026', '21–27 March 2026',
+                  '21–27 February 2025', '2026-02-21 to 2026-03-27', '27–21 February 2026']:
+        assert values_missing(wrong, [forms[0]])
+    assert values_missing(forms[0], ['21 February 2026', '27 February 2026']) == []
+    assert values_missing(forms[0], ['Commenced 21 February 2026 and ended 27 February 2026.']) == []
+    assert values_missing(forms[0], ['21 January 2026', '27 February 2025'])
+    assert values_missing('31–32 February 2026', [forms[0]])
 
 
 def test_values_compare_by_value_and_ignore_page_references():

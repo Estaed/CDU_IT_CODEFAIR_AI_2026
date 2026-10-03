@@ -31,3 +31,7 @@ Wave 4 (2026-10-03). Width 2: Task-12 and Task-13 run together (disjoint OWNS). 
 Wave 5 (2026-10-03). Width 1.
 
 - [x] Task-14: Jev's "supports" score as a second signal for "checker disagrees" (codex)
+
+Wave 6 (2026-10-03). Width 1: one feature, the final look.
+
+- [ ] Task-15: The final look: a government question page with the file inside it (ultracode)

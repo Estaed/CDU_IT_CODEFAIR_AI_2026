@@ -25,7 +25,9 @@ and `notes.md` keeps a one-line link.
   `design/DESIGN.md` holding only what this project overrides, and `design/deviations.md`. The base
   design language is `D:/TarikOS/.brain/skills/tasarim/references/DESIGN.md`; read it before any UI
   work and never copy it here. The only files copied from there are its code tokens (`tokens.css`
-  or `tarik_theme.dart`), unchanged, into the app's theme folder.
+  or `tarik_theme.dart`), unchanged, into the app's theme folder. **Deliberate exception:**
+  Readmark does not use that base or its tokens; `design/DESIGN.md` is the whole design language
+  here (Blueprint → Decisions, final look).
 - `reports/`: research, `idea-arena` and spike write-ups, otopilot reports and `screens/`; dated, input not decisions.
 - `docs/`: long specs or diagrams that outgrow Blueprint, and `docs/TASKS_INDEX.md`.
 - `tasks/`: task files, only when `plan-wave` writes them.
@@ -136,8 +138,8 @@ Provisional until Task-00 writes `uv.lock`.
   replay smoke test: the demo case from the cache, with no keys, validating `view.json`. Clean means
   exit 0. It runs for the first time at the end of Task-00.
 - **Eye check:** Tarık checks the review screen against its reference. Until he approves the
-  Task-07 screen, the look is `design/direction-A.html` and the layout is the Decisions row below;
-  from then, that screen's screenshots in `design/screens/` are the reference.
+  Task-15 screen, the reference is `reports/screens/ui-references/mock-6-gov-filepanel.png`, with
+  `design/DESIGN.md`; from then, that screen's screenshots in `design/screens/` are the reference.
   `design/mock-v0.html` defines behaviour only. Playwright screenshots at 1280 and 1440 wide.
   Intended deviations go in `design/deviations.md`.
 - **Numbers:** every evaluation number is written to `runs/eval/summary.json` with its n.
@@ -166,6 +168,7 @@ Provisional until Task-00 writes `uv.lock`.
 | H-01 is no longer held-out once the checks change after its run. Its first-run numbers stay frozen and reported as such; later numbers on it are labelled "after changes". A new held-out file is written another time (2026-10-03) | Freezing the code for good after H-01: the system is still being settled |
 | Context data: the NT "Urban Public Housing Wait Times" open dataset (CC BY, data to 31 Dec 2020) shows one line on the case header, labelled with its source and age (2026-10-03, for the datasets criterion) | Leaving it out: the only real open dataset in v1 besides the policies |
 | Light mode is the default. The final look will follow comparable caseworker tools rather than Tarik Base, and the interface is the last job of v1 (2026-10-03) | Dark Tarik Base as the default |
+| Final look (2026-10-03, after `reports/2026-10-03-ui-references.md`): hybrid 6, the Australian Government caseworker look (AgDS / GOV.UK task list, header band, identity bar, big radios, one primary button), with one question per page. The question page holds a file viewer with a tab for each cited page, the labelled highlight in place, and "open in full file" for the whole file with next/previous highlight. Light only: dark mode is removed. Tarik Base is not used (`design/DESIGN.md`) | 2, a review workstation: too complex. 3, margin notes: generic and too empty. 4, a CRM stage bar: rejected. 1 alone: the original document was not visible. 5, a margin card beside the file: needs alignment code for the same gain |
 
 ### Constraints
 - No real person's data in any document. No AustLII material as model input.

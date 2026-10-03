@@ -3,7 +3,8 @@
 1. **Contradiction pairs.** For each decisive clause, the case passages that matter most to it
    (cited by one of its claims, or at or above the scan threshold; the top ``PAIR_TOP`` by scan
    score) are compared pair by pair. A claim that rests on one side of a contradicting pair and
-   not the other is "contradicted by another passage". This is what catches "arrears $2,400"
+   not the other is checked against the other passage before being marked contradicted.
+   This is what catches "arrears $2,400"
    citing only the January ledger, which passes every check against its own passage.
 2. **Possibly missed.** A case passage at or above the threshold for a clause that no claim
    cites at all is "possibly missed" under that clause: the omission map.
@@ -85,8 +86,8 @@ def contradicting(verdicts: list[dict]) -> list[dict]:
                                        passage_key(p["b"])))
 
 
-def contradicted_by(citations: list[dict], pairs: list[dict]) -> list[str]:
-    """The passages that contradict what a claim rests on.
+def opposing_passages(citations: list[dict], pairs: list[dict]) -> list[str]:
+    """Candidate opposing passages, before checking whether they contradict the claim.
 
     ``citations`` are the code-check results (``passage_id``, ``quote_found``). A claim rests on
     a passage only where its quote was found there, so a fabricated quote keeps its own status
@@ -102,9 +103,57 @@ def contradicted_by(citations: list[dict], pairs: list[dict]) -> list[str]:
     return sorted(others, key=passage_key)
 
 
+def contradicted_by(facts: list[dict], checks: dict, pairs: list[dict],
+                    passages: dict[str, dict], checker) -> dict[str, list[str]]:
+    """Check the claim itself against each opposing passage through the checker seam.
+
+    Chosen after the demo audit; the held-out file is the honest test. A passage pair can
+    disagree while a historical claim or the later balance remains true. Only an explicit
+    'contradicts' verdict flags the claim. Pair display and required reading are independent.
+    """
+    jobs = [{"claim_id": f"{f['claim_id']}@{pid}", "claim": f['claim'],
+             "passages": [passages[pid]],
+             "context": [passages[c['passage_id']] for c in checks[f['claim_id']]['citations']
+                         if c.get('quote_found') and c['passage_id'] in passages
+                         and passages[c['passage_id']].get('source') != 'policy']}
+            for f in facts for pid in opposing_passages(checks[f['claim_id']]['citations'], pairs)
+            if pid in passages]
+    verdicts = {v['claim_id']: v for v in checker.check(jobs)} if jobs else {}
+    result = {f['claim_id']: [] for f in facts}
+    for job in jobs:
+        if verdicts.get(job['claim_id'], {}).get('verdict') == 'contradicts':
+            cid, pid = job['claim_id'].split('@', 1)
+            result[cid].append(pid)
+    return result
+
+
 def possibly_missed(scores: dict[str, float], cited: set[str], threshold: float) -> list[dict]:
     """Passages at or above the threshold for one clause that no claim cites, most relevant
     first."""
     hits = [(pid, s) for pid, s in scores.items() if s >= threshold and pid not in cited]
     return [{"passage_id": pid, "score": s}
             for pid, s in sorted(hits, key=lambda h: (-h[1], passage_key(h[0])))]
+
+
+def distinct_missed(hits: list[dict], cited: set[str], passages: dict[str, dict],
+                    duplicates: dict[str, str] | None = None) -> list[dict]:
+    """Keep the strongest passage for each fact, including facts already cited by the map.
+
+    Chosen after the demo audit; the held-out evaluation is its honest test. Jev supplies
+    semantic duplicates (each must refer to a cited or earlier, stronger passage); exact text
+    repetitions are also duplicates. Same-topic or conflicting facts must remain distinct.
+    """
+    from readmark.ingest import normalise
+
+    seen = {normalise(passages[pid]['text']) for pid in cited if pid in passages}
+    prior = set(cited)
+    kept = []
+    for hit in hits:
+        pid = hit['passage_id']
+        text = normalise(passages[pid]['text'])
+        representative = (duplicates or {}).get(pid)
+        if text not in seen and representative not in prior:
+            kept.append(hit)
+        seen.add(text)
+        prior.add(pid)
+    return kept

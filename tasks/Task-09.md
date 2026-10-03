@@ -1,4 +1,5 @@
 # Task-09: Cut the checks' false alarms: dates, the pair rule, possibly-missed duplicates
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `codex` · effort `high`
 > *Why:* on A-0142's summary under audit, 26 of 28 flags were false (Task-06, n=95 claims), mostly
 > from a date check that misses "15 Mar" against "2026-03-15" and a pair rule that flags true
@@ -36,20 +37,20 @@ The riskiest assumption is measured on precision as well as catches. A tab where
 wrong teaches the officer to ignore flags, which is the over-trust the brief warns about.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] `run --case A-0142` rebuilds with `claude` off PATH (no Claude call), and `run --case A-0142
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] `run --case A-0142` rebuilds with `claude` off PATH (no Claude call), and `run --case A-0142
   --replay` twice gives byte-identical `view.json` with `TYPESAFE_API_KEY` unset.
-- [ ] Tests: "15 Mar" and "15 March 2026" match a quote holding "2026-03-15"; "A0142" matches
+- [x] Tests: "15 Mar" and "15 March 2026" match a quote holding "2026-03-15"; "A0142" matches
   "A-0142"; a date that is absent still fails.
-- [ ] A test: a claim citing one side of a pair, which the other passage does not contradict, is
+- [x] A test: a claim citing one side of a pair, which the other passage does not contradict, is
   not `contradicted`; one that the other passage does contradict is.
-- [ ] A test: two possibly-missed passages that restate one fact count once.
-- [ ] On A-0142, the builder's report gives the audit's flag counts before and after, by status,
+- [x] A test: two possibly-missed passages that restate one fact count once.
+- [x] On A-0142, the builder's report gives the audit's flag counts before and after, by status,
   with n. The two real errors Task-06 found (the "verified" eligibility heading against p48:1 and
   p58:1, and the support-worker contact sentence against p46:1) are still flagged. The p.8/p.23
   pair is still under Debts, and both passages are still required. Required reading stays at 8 or
   fewer. Possibly-missed counts per clause, before and after, with n.
-- [ ] `tests/test_screen.py` still passes. An assertion there that pins an A-0142 value this task
+- [x] `tests/test_screen.py` still passes. An assertion there that pins an A-0142 value this task
   changes may be updated, and only that one; each such line is listed in the report.
 
 ## Out of scope

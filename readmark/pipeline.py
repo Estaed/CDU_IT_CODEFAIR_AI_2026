@@ -28,6 +28,7 @@ from readmark.checks.cross import (
     THRESHOLD_HOW,
     contradicted_by,
     contradicting,
+    distinct_missed,
     pair_candidates,
     pairs_of,
     possibly_missed,
@@ -271,12 +272,19 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     # claim at all, under any clause.
     all_pairs = [p for cid in clause_ids for p in contradictions[cid]]
     cited_anywhere = {c["passage_id"] for f in found for c in f["citations"]}
-    contra = {f["claim_id"]: contradicted_by(checks[f["claim_id"]]["citations"], all_pairs)
-              for f in found}
+    contra = contradicted_by(found, checks, all_pairs, passages, cross_impl)
     reasons = {f["claim_id"]: claim_reasons(checks[f["claim_id"]], verdicts.get(f["claim_id"]),
                                             contra[f["claim_id"]]) for f in found}
     missed = {cid: possibly_missed(scores[cid], cited_anywhere, SCAN_THRESHOLD)
               for cid in clause_ids}
+    dedup_jobs = [{'clause': c,
+                   'anchors': [case_by_id[pid] for pid in sorted(cited_anywhere, key=passage_key)
+                               if pid in case_by_id],
+                   'candidates': [case_by_id[m['passage_id']] for m in missed[c['clause_id']]]}
+                  for c in clauses if missed[c['clause_id']]]
+    duplicates = cross_impl.deduplicate(dedup_jobs) if hasattr(cross_impl, 'deduplicate') else {}
+    missed = {cid: distinct_missed(hits, cited_anywhere, case_by_id, duplicates.get(cid))
+              for cid, hits in missed.items()}
     cross = {"contradictions": contradictions, "possibly_missed": missed,
              "contradicted_by": contra, "reasons": reasons}
 
@@ -302,6 +310,18 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         map_claims = [{"claim_id": f["claim_id"], "clause_id": f["clause_id"],
                        "claim": f["claim"], "citations": f["citations"],
                        "status": claim_status(reasons[f["claim_id"]])} for f in found]
+        # Coverage is a frozen Claude judgment, outside this task. Pin its original input
+        # alongside the response cache, so new checks never change the coverage request.
+        # It also travels with cache-only replay smoke runs (which have no audit.json).
+        coverage_pin = cache.directory / 'coverage-input.json'
+        previous = out / 'audit.json'
+        if not coverage_pin.exists() and previous.exists():
+            considered = json.loads(previous.read_text(encoding='utf-8'))['considered_for_omission']
+            coverage_pin.write_text(dumps({'claim_ids': considered}), encoding='utf-8', newline='\n')
+        if coverage_pin.exists():
+            considered = set(json.loads(coverage_pin.read_text(encoding='utf-8'))['claim_ids'])
+            map_claims = [{**c, 'status': 'supported' if c['claim_id'] in considered
+                           else 'checker_disagrees'} for c in map_claims]
         record = audit_summary(
             case_id, case_path(case_id).read_text(encoding="utf-8"), map_claims,
             set(case_by_id), auditor=auditor or ClaudeAuditor(cache), checker=checker_impl,
@@ -343,6 +363,15 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
             "candidates": candidates,
             "verdicts": sorted(pair_verdicts, key=lambda v: (
                 clause_ids.index(v["clause_id"]), passage_key(v["a"]), passage_key(v["b"]))),
+        },
+        "dedup": {
+            'model': job_models.get('dedup', cross_model),
+            'duplicates': duplicates,
+            'duplicate_probability_minimum': 0.9,
+            'method': 'Keep the strongest distinct clause facts; discard only repetitions '
+                      'of a cited or stronger passage, with binary duplicate probability '
+                      '>= 0.9. Chosen after '
+                      'the demo audit; the held-out evaluation remains its honest test.',
         },
         "gate": gate,
         **({"audit": record} if record else {}),

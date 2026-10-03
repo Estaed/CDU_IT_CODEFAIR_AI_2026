@@ -6,9 +6,13 @@ import json
 from conftest import FixedChecker, FixedWriter, fact, needs_pdfs
 
 from readmark import CASES_DIR, ROOT
-from readmark.checks.cross import SCAN_THRESHOLD, THRESHOLD_CASE, choose_threshold, page_of
+from readmark.checks.cross import (
+    SCAN_THRESHOLD, THRESHOLD_CASE, choose_threshold, distinct_missed, page_of,
+)
 from readmark.gate import CAP, required_reading
 from readmark.ingest import case_passages
+from readmark.cache import Cache
+from readmark.jev import JevChecker
 from readmark.pipeline import run, validate_view
 
 A_RUN = ROOT / "runs" / "A-0142"
@@ -27,6 +31,7 @@ def test_claim_citing_only_the_january_ledger_is_contradicted_by_march(tmp_path)
     both = fact("elig-debts", "The arrears of $2,400 were later cleared in full.",
                 (JANUARY, "Arrears balance $2,400.00."), (MARCH, "Arrears cleared in full."))
     checker = FixedChecker(scores={"elig-debts": {JANUARY: HIGH, MARCH: HIGH}},
+                           verdicts={f'c01@{MARCH}': ('contradicts', 0.9)},
                            contradict=[(JANUARY, MARCH)])
     view = run("A-0142", writer=FixedWriter([STALE, both]), checker_impl=checker,
                out_dir=tmp_path)
@@ -47,6 +52,101 @@ def test_claim_citing_only_the_january_ledger_is_contradicted_by_march(tmp_path)
     assert "elig-debts" in required[MARCH]["clause_ids"]
     assert view["sources"][MARCH]["kind"] == "case"
     validate_view(view)
+
+
+@needs_pdfs
+def test_true_claim_on_one_side_of_a_pair_is_not_contradicted(tmp_path):
+    cleared = fact('elig-debts', 'The March ledger shows the arrears cleared.',
+                   (MARCH, 'Arrears cleared in full.'))
+    historical = fact('elig-debts', 'The January ledger showed $2,400 arrears.',
+                      (JANUARY, 'Arrears balance $2,400.00.'))
+    checker = FixedChecker(scores={'elig-debts': {JANUARY: HIGH, MARCH: HIGH}},
+                           contradict=[(JANUARY, MARCH)])
+    checked = []
+    original = checker.check
+
+    def record(items):
+        checked.extend(items)
+        return original(items)
+
+    checker.check = record
+    view = run('A-0142', writer=FixedWriter([cleared, historical]), checker_impl=checker,
+               out_dir=tmp_path)
+    assert all(c['status'] == 'supported' and c['contradicted_by'] == [] for c in view['claims'])
+    opposing = [i for i in checked if 'context' in i]
+    assert len(opposing) == 2
+    assert opposing[0]['claim'] == cleared['claim']
+    assert opposing[0]['passages'][0]['passage_id'] == JANUARY
+    assert opposing[1]['passages'][0]['passage_id'] == MARCH
+    assert {JANUARY, MARCH} <= {i['passage_id'] for i in view['required_reading']}
+    assert clause(view, 'elig-debts')['contradictions']
+
+
+def test_possibly_missed_repetitions_keep_the_strongest_fact_and_distinct_values():
+    passages = {f'X:p{n}:1': {'text': text} for n, text in enumerate([
+        'Income evidence is outstanding.', 'No current income statement has arrived.',
+        'Income statement received on 2 March.', 'Income evidence is outstanding.',
+    ], start=1)}
+    hits = [{'passage_id': pid, 'score': 4 - n / 10}
+            for n, pid in enumerate(passages)]
+    duplicate = {'X:p2:1': 'X:p1:1'}
+    assert distinct_missed(hits, set(), passages, duplicate) == [hits[0], hits[2]]
+    assert distinct_missed(hits[1:], {'X:p1:1'}, passages, duplicate) == [hits[2]]
+    # A bad model pointer to a later/lower-scored passage cannot hide the strongest fact.
+    assert distinct_missed(hits, set(), passages, {'X:p1:1': 'X:p2:1'})[0] == hits[0]
+
+
+def test_semantic_dedup_uses_confirmed_facts_and_replays_without_network(tmp_path):
+    clause = {'clause_id': 'income', 'title': 'Income', 'decides': 'Current income evidence'}
+    passages = [{'passage_id': f'X:p{n}:1', 'text': text, 'doc_type': 'letter',
+                 'doc_title': 'Income request', 'doc_date': '2026-03-20'}
+                for n, text in enumerate([
+                    'No current income statement is in the file.',
+                    'Current income evidence remains outstanding.',
+                    'The officer asked for a statement on 20 March.',
+                ], start=1)]
+    checker = JevChecker(Cache(tmp_path / 'cache', replay=False))
+    bodies = []
+
+    def post(body):
+        bodies.append(body)
+        if body['questions']['P001']['type'] == 'choice':
+            return {'model': 'fixed-jev', 'answers': {
+                'P001': {'choice': 'P000', 'confidence': 0.6},
+                'P002': {'choice': 'P000', 'confidence': 0.6}}}
+        return {'model': 'fixed-jev', 'answers': {'P001': {'noul': 0.99},
+                                                'P002': {'noul': 0.3}}}
+
+    checker._post = post
+    jobs = [{'clause': clause, 'anchors': [], 'candidates': passages}]
+    result = checker.deduplicate(jobs)
+    assert result == {'income': {'X:p2:1': 'X:p1:1'}}
+    assert len(bodies) == 2  # source selection and binary confirmation
+    hits = [{'passage_id': p['passage_id'], 'score': 4 - n / 10}
+            for n, p in enumerate(passages)]
+    assert distinct_missed(hits, set(), {p['passage_id']: p for p in passages},
+                           result['income']) == [hits[0], hits[2]]
+    checker.cache.replay = True
+    assert checker.deduplicate(jobs) == result
+    assert len(bodies) == 2
+
+
+@needs_pdfs
+def test_pipeline_only_distinct_missed_facts_compete_for_reading(tmp_path):
+    strongest, duplicate = 'A-0142:p19:3', 'A-0142:p19:4'
+
+    class DeduplicatingChecker(FixedChecker):
+        def deduplicate(self, jobs):
+            assert any([p['passage_id'] for p in j['candidates']] == [strongest, duplicate]
+                       for j in jobs)
+            return {'elig-property': {duplicate: strongest}}
+
+    checker = DeduplicatingChecker(scores={'elig-property': {strongest: 4, duplicate: 3}})
+    view = run('A-0142', writer=FixedWriter([]), checker_impl=checker, out_dir=tmp_path)
+    assert clause(view, 'elig-property')['possibly_missed'] == [
+        {'passage_id': strongest, 'score': 4}]
+    assert [i['passage_id'] for i in view['required_reading']] == [strongest]
+    assert duplicate not in view['sources']
 
 
 @needs_pdfs

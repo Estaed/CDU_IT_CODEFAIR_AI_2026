@@ -70,7 +70,8 @@ def test_summary_stating_the_january_arrears_as_current_is_flagged(tmp_path, stu
     auditor = FixedAuditor(f"Ms K. applied for priority housing. {STALE}",
                            located={STALE: ("elig-debts", citations)})
     # The second key wrongly supports the stale claim, as it can on the January passage alone.
-    checker = FixedChecker(contradict=[(JANUARY, MARCH)])
+    checker = FixedChecker(contradict=[(JANUARY, MARCH)], verdicts={
+        f'a02@{MARCH}': ('contradicts', 0.9)})
     view = run("stub", writer=FixedWriter(stub_facts), checker_impl=checker, out_dir=tmp_path,
                audit=True, auditor=auditor)
 
@@ -100,7 +101,8 @@ def test_supported_map_claims_the_summary_leaves_out_are_listed_by_clause(tmp_pa
     summary = " ".join(f["claim"] for f in facts
                        if f["found"] and f["claim"] not in {fleeing, january, policy_only["claim"]})
     view = run("stub", writer=FixedWriter(facts),
-               checker_impl=FixedChecker(contradict=[(JANUARY, MARCH)]), out_dir=tmp_path,
+               checker_impl=FixedChecker(contradict=[(JANUARY, MARCH)], verdicts={
+                   f'c01@{MARCH}': ('contradicts', 0.9)}), out_dir=tmp_path,
                audit=True, auditor=FixedAuditor(summary))
 
     by_text = {c["claim"]: c for c in view["claims"]}
@@ -122,7 +124,8 @@ def test_the_audit_adds_nothing_to_required_reading(tmp_path, stub_facts):
         invented: ("elig-property", [("stub:p6:1", "I own a unit in Palmerston.")])})
 
     def checker():
-        return FixedChecker(contradict=[(JANUARY, MARCH)])
+        return FixedChecker(contradict=[(JANUARY, MARCH)], verdicts={
+            f'a01@{MARCH}': ('contradicts', 0.9), f'c01@{MARCH}': ('contradicts', 0.9)})
 
     plain = run("stub", writer=FixedWriter(stub_facts), checker_impl=checker(),
                 out_dir=tmp_path / "plain", audit=False)

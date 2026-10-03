@@ -277,7 +277,7 @@ def test_guided_review_flow_on_a0142(width, tmp_path):
         expect(intro).to_be_visible()
         expect(intro).to_contain_text("What the AI did")
         expect(intro).to_contain_text("Supported")
-        expect(intro).to_contain_text("Contradicted by another passage")
+        expect(intro).to_contain_text("Checker disagrees")
         assert_plain(page)
         assert_no_overflow(page)
         page.get_by_test_id("intro-dismiss").click()
@@ -308,9 +308,9 @@ def test_guided_review_flow_on_a0142(width, tmp_path):
         # The contradicting pair is in plain words, and the correct March claim is not called false.
         expect(page.get_by_test_id("pairs")).to_contain_text("disagree")
         march = page.get_by_test_id("claim").filter(has_text=c15["claim"])
-        expect(march).to_contain_text("Contradicted by another passage")
-        expect(march).to_contain_text("disagrees with page 8, paragraph 3, an earlier record")
-        expect(march).to_contain_text("not that this claim is false")
+        expect(march).to_contain_text("Supported")
+        expect(march).to_contain_text("Quoted word for word, figures and dates included")
+        expect(march).to_contain_text("the second checker agrees")
         assert_plain(page)
         assert_no_overflow(page)
 

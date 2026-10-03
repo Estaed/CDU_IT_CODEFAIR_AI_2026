@@ -34,7 +34,11 @@ def test_stale_claim_citing_only_the_january_ledger_is_caught_by_the_pair_not_th
     assert result["passed"] is True  # code checks alone still cannot see it
 
     pairs = [{"a": "stub:p2:2", "b": "stub:p3:2", "probability": 0.69}]
-    by = contradicted_by(result["citations"], pairs)
+    from conftest import FixedChecker
+
+    f['claim_id'] = 'c01'
+    by = contradicted_by([f], {'c01': result}, pairs, PASSAGES,
+                         FixedChecker(verdicts={'c01@stub:p3:2': ('contradicts', 0.9)}))['c01']
     assert by == ["stub:p3:2"]
     reasons = claim_reasons(result, {"verdict": "supports", "probability": 0.9}, by)
     assert claim_status(reasons) == "contradicted"
@@ -45,13 +49,52 @@ def test_number_or_date_absent_from_the_quotes_fails():
              ("stub:p3:2", "Arrears cleared in full. Balance $0.00."))
     result = check_fact(f, PASSAGES)
     assert result["passed"] is False
-    assert set(result["values_missing"]) == {"3,400", "March", "2026"}
+    assert set(result["values_missing"]) == {"3,400", "March 2026"}
 
 
 def test_values_compare_by_value_and_ignore_page_references():
     quotes = ["Statement date 15 Jan 2026.", "Arrears balance $2,400.00."]
     assert values_missing("Arrears of $2,400 in January 2026 (p. 2, §3.4).", quotes) == []
     assert values_missing("The delegate may use discretion.", []) == []
+
+
+def test_equivalent_dates_and_identifiers_match_without_losing_absent_values():
+    quotes = ['Reference A-0142. Consultation 2026-03-15.']
+    for claim in ['15 Mar', '15 March 2026', 'March 2026', 'A0142', 'A-0142']:
+        assert values_missing(claim, quotes) == []
+    assert values_missing('January 2026', ['Recorded 2026-01-31.']) == []
+    assert values_missing('2026-03-15', ['Consultation 15 Mar 2026.']) == []
+    for claim in ['16 Mar', '15 March 2025', 'January 2026', 'A0143', '$3400']:
+        assert values_missing(claim, quotes)
+    # Date components cannot be borrowed across dates, amounts, or separate quotes.
+    assert values_missing('15 March 2026', ['15 January 2026; 16 March 2026.'])
+    assert values_missing('15 Mar', ['$15. March 2026.'])
+    assert values_missing('15 March 2026', ['15 March', 'Year 2026'])
+    assert values_missing('A0142', ['Reference B-0142.'])
+    assert values_missing('2026-03-15', ['15 Mar'])
+    assert values_missing('$2026', ['Reference A2026.'])
+
+
+def test_pair_context_uses_case_records_when_a_claim_also_cites_policy():
+    from conftest import FixedChecker
+
+    january, march = 'stub:p2:2', 'stub:p3:2'
+    passages = {**PASSAGES, 'policy:p1:1': {'source': 'policy', 'text': 'Policy text.'}}
+    checks = {'c01': {'citations': [{'passage_id': pid, 'quote_found': True}
+                                   for pid in (january, 'policy:p1:1')]}}
+    checker = FixedChecker()
+    jobs = []
+    original = checker.check
+
+    def record(items):
+        jobs.extend(items)
+        return original(items)
+
+    checker.check = record
+    result = contradicted_by([{'claim_id': 'c01', 'claim': 'The January ledger showed arrears.'}],
+                             checks, [{'a': january, 'b': march}], passages, checker)
+    assert result == {'c01': []}
+    assert [p['passage_id'] for p in jobs[0]['context']] == [january]
 
 
 def _claim(i, status, clause="elig-debts", verdict=None, prob=None):

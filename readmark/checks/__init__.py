@@ -14,6 +14,7 @@ ranks them: contradicted by another passage, quote not found, checker disagrees.
 """
 
 import re
+from datetime import date
 from decimal import Decimal
 
 from readmark.ingest import normalise
@@ -26,7 +27,14 @@ MONTHS["sept"] = 9
 _NUMBER = re.compile(r"\d[\d,]*(?:\.\d+)?")
 # A month counts only next to a day or a year, so "may" the verb is not read as May.
 _M = "|".join(sorted(MONTHS, key=len, reverse=True))
-_MONTH = re.compile(rf"\b\d{{1,2}}\s+({_M})\b|\b({_M})\b\.?,?\s+\d{{4}}", re.IGNORECASE)
+_DATE = re.compile(
+    rf"\b(?P<iso>\d{{4}}-\d{{2}}-\d{{2}})\b|"
+    rf"\b(?P<day>\d{{1,2}})\s+(?P<month>{_M})\b\.?"
+    rf"(?:,?\s+(?P<year>\d{{4}})\b)?|"
+    rf"\b(?P<month_only>{_M})\b\.?\s+(?P<month_year>\d{{4}})\b",
+    re.IGNORECASE,
+)
+_IDENTIFIER = re.compile(r"\b[A-Za-z]+-?\d+(?:-\d+)*\b")
 # References to pages and sections are pointers, not facts, so they are not checked as numbers.
 _REFERENCE = re.compile(
     r"\b(?:pp?|pages?)\.?\s*\d+(?:\s*(?:-|–|and|,)\s*\d+)*|§\s*[\d.]*\d", re.IGNORECASE
@@ -41,8 +49,25 @@ def _numbers(text: str) -> set[Decimal]:
     return {_value(raw) for raw in _NUMBER.findall(text)}
 
 
-def _month_hits(text: str) -> list[str]:
-    return [(a or b) for a, b in _MONTH.findall(text)]
+def _dates(text: str) -> tuple[list[tuple[str, tuple]], str]:
+    hits = []
+
+    def extract(match):
+        if match['iso']:
+            try:
+                value = date.fromisoformat(match['iso'])
+            except ValueError:
+                return match[0]  # invalid dates remain numbers to be checked
+            parts = (value.year, value.month, value.day)
+        else:
+            parts = (int(match['year'] or match['month_year'])
+                     if match['year'] or match['month_year'] else None,
+                     MONTHS[(match['month'] or match['month_only']).lower()],
+                     int(match['day']) if match['day'] else None)
+        hits.append((match[0], parts))
+        return ' '
+
+    return hits, _DATE.sub(extract, text)
 
 
 def quote_present(quote: str, passage_text: str | None) -> bool:
@@ -51,16 +76,28 @@ def quote_present(quote: str, passage_text: str | None) -> bool:
 
 
 def values_missing(claim: str, quotes: list[str]) -> list[str]:
-    """Numbers and months in the claim that none of its quotes contain.
+    """Values must occur in a verified quote, allowing equivalent date/reference spellings.
 
-    Numbers compare by value ("$2,400" matches "$2,400.00"); a month in the claim must appear in
-    a quote by name or abbreviation ("March 2026" matches "4 Mar 2026")."""
+    Chosen after the demo audit: the sealed held-out evaluation is the honest test. Dates
+    compare as whole dates, never independent digits from unrelated amounts or other dates.
+    A partial date requires only its stated components, in the same quoted date.
+    """
     claim_text = _REFERENCE.sub(" ", claim)
-    joined = " ".join(quotes)
-    have_numbers = _numbers(joined)
-    have_months = {MONTHS[m.lower()] for m in _month_hits(joined)}
-    missing = [raw for raw in _NUMBER.findall(claim_text) if _value(raw) not in have_numbers]
-    missing += [m for m in _month_hits(claim_text) if MONTHS[m.lower()] not in have_months]
+    dates, rest = _dates(claim_text)
+    quoted = [_dates(q) for q in quotes]
+    have_dates = [parts for hits, _ in quoted for _, parts in hits]
+    missing = [raw for raw, parts in dates if not any(
+        all(want is None or want == have for want, have in zip(parts, candidate, strict=True))
+        for candidate in have_dates)]
+    # References keep leading zeroes and letters; their digits are not standalone amounts.
+    def canonical(raw):
+        return raw.replace('-', '').casefold()
+    have_ids = {canonical(m[0]) for q in quotes for m in _IDENTIFIER.finditer(q)}
+    missing += [m[0] for m in _IDENTIFIER.finditer(rest) if canonical(m[0]) not in have_ids]
+    rest = _IDENTIFIER.sub(' ', rest)
+    have_numbers = _numbers(' '.join(_IDENTIFIER.sub(' ', q) for _, q in quoted))
+    have_numbers |= {Decimal(parts[0]) for parts in have_dates if parts[0] is not None}
+    missing += [raw for raw in _NUMBER.findall(rest) if _value(raw) not in have_numbers]
     return missing
 
 

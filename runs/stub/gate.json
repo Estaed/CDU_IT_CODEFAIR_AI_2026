@@ -2,9 +2,7 @@
  "cap": 8,
  "required": [
   {
-   "claim_ids": [
-    "c10"
-   ],
+   "claim_ids": [],
    "clause_ids": [
     "elig-debts"
    ],
@@ -15,40 +13,12 @@
    ]
   },
   {
-   "claim_ids": [
-    "c11"
-   ],
+   "claim_ids": [],
    "clause_ids": [
     "elig-debts"
    ],
    "passage_id": "stub:p3:2",
    "rank": 2,
-   "reasons": [
-    "contradicted"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c10"
-   ],
-   "clause_ids": [
-    "elig-debts"
-   ],
-   "passage_id": "stub:p2:1",
-   "rank": 3,
-   "reasons": [
-    "contradicted"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c11"
-   ],
-   "clause_ids": [
-    "elig-debts"
-   ],
-   "passage_id": "stub:p3:1",
-   "rank": 4,
    "reasons": [
     "contradicted"
    ]
@@ -61,7 +31,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "stub:p4:1",
-   "rank": 5,
+   "rank": 3,
    "reasons": [
     "quote_not_found"
    ]
@@ -74,7 +44,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "eligibility:p6:11",
-   "rank": 6,
+   "rank": 4,
    "reasons": [
     "quote_not_found"
    ]
@@ -87,7 +57,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "stub:p1:1",
-   "rank": 7,
+   "rank": 5,
    "reasons": [
     "quote_not_found"
    ]
@@ -100,13 +70,11 @@
     "prio-documentation"
    ],
    "passage_id": "stub:p5:2",
-   "rank": 8,
+   "rank": 6,
    "reasons": [
     "checker_disagrees"
    ]
-  }
- ],
- "suggested": [
+  },
   {
    "claim_ids": [
     "c20"
@@ -115,10 +83,11 @@
     "prio-documentation"
    ],
    "passage_id": "stub:p5:3",
-   "rank": 9,
+   "rank": 7,
    "reasons": [
     "checker_disagrees"
    ]
   }
- ]
+ ],
+ "suggested": []
 }

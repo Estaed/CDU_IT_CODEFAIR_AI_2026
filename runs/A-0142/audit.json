@@ -86,7 +86,7 @@
    "required": false,
    "status": "quote_not_found",
    "values_missing": [
-    "0142"
+    "A-0142"
    ]
   },
   {
@@ -360,7 +360,7 @@
    "required": true,
    "status": "quote_not_found",
    "values_missing": [
-    "0142"
+    "A-0142"
    ]
   },
   {
@@ -443,9 +443,7 @@
    "required": true,
    "status": "quote_not_found",
    "values_missing": [
-    "2",
-    "2026,",
-    "February"
+    "2 February 2026"
    ]
   },
   {
@@ -775,10 +773,8 @@
    "clause_id": "prio-documentation",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "Mar"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -1851,11 +1847,9 @@
    "claim": "Ms K.'s former-tenancy debt is now cleared.",
    "claim_id": "a67",
    "clause_id": "elig-debts",
-   "contradicted_by": [
-    "A-0142:p8:3"
-   ],
+   "contradicted_by": [],
    "required": true,
-   "status": "contradicted",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -1882,14 +1876,11 @@
    "claim": "The January 2026 ledger showed $2,400 arrears.",
    "claim_id": "a68",
    "clause_id": "elig-debts",
-   "contradicted_by": [
-    "A-0142:p23:3"
-   ],
+   "contradicted_by": [],
    "required": true,
-   "status": "contradicted",
+   "status": "quote_not_found",
    "values_missing": [
-    "2026",
-    "January"
+    "January 2026"
    ]
   },
   {
@@ -1914,8 +1905,7 @@
    "required": false,
    "status": "quote_not_found",
    "values_missing": [
-    "2026",
-    "January"
+    "January 2026"
    ]
   },
   {
@@ -1940,8 +1930,7 @@
    "required": false,
    "status": "quote_not_found",
    "values_missing": [
-    "2026",
-    "January"
+    "January 2026"
    ]
   },
   {
@@ -1968,11 +1957,9 @@
    "claim": "A $100/fortnight payment plan was proposed.",
    "claim_id": "a71",
    "clause_id": "elig-debts",
-   "contradicted_by": [
-    "A-0142:p23:3"
-   ],
+   "contradicted_by": [],
    "required": true,
-   "status": "contradicted",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2006,7 +1993,7 @@
    "claim_id": "a72",
    "clause_id": "elig-debts",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -2032,8 +2019,7 @@
    "required": false,
    "status": "quote_not_found",
    "values_missing": [
-    "2026",
-    "March"
+    "March 2026"
    ]
   },
   {
@@ -2060,11 +2046,9 @@
    "claim": "The March 2026 ledger shows $0.00.",
    "claim_id": "a74",
    "clause_id": "elig-debts",
-   "contradicted_by": [
-    "A-0142:p8:3"
-   ],
+   "contradicted_by": [],
    "required": true,
-   "status": "contradicted",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2095,8 +2079,7 @@
    "required": false,
    "status": "quote_not_found",
    "values_missing": [
-    "0.00",
-    "March"
+    "0.00"
    ]
   },
   {
@@ -2130,9 +2113,11 @@
    "claim_id": "a76",
    "clause_id": "elig-debts",
    "contradicted_by": [],
-   "required": true,
-   "status": "supported",
-   "values_missing": []
+   "required": false,
+   "status": "quote_not_found",
+   "values_missing": [
+    "January 2026"
+   ]
   },
   {
    "checker": {
@@ -2266,8 +2251,8 @@
    "required": false,
    "status": "quote_not_found",
    "values_missing": [
-    "60",
-    "27"
+    "27 Feb.",
+    "60"
    ]
   },
   {
@@ -2354,10 +2339,8 @@
    "clause_id": "elig-income",
    "contradicted_by": [],
    "required": true,
-   "status": "quote_not_found",
-   "values_missing": [
-    "Mar"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2385,10 +2368,8 @@
    "clause_id": "elig-income",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "Mar"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2416,10 +2397,8 @@
    "clause_id": "elig-income",
    "contradicted_by": [],
    "required": false,
-   "status": "quote_not_found",
-   "values_missing": [
-    "Mar"
-   ]
+   "status": "supported",
+   "values_missing": []
   },
   {
    "checker": {
@@ -2675,9 +2654,7 @@
    "required": false,
    "status": "quote_not_found",
    "values_missing": [
-    "24",
-    "2026",
-    "March"
+    "24 March 2026"
    ]
   }
  ],
@@ -2717,15 +2694,15 @@
     "n": 95
    },
    "contradicted": {
-    "count": 4,
+    "count": 0,
     "n": 95
    },
    "quote_not_found": {
-    "count": 13,
+    "count": 11,
     "n": 95
    },
    "supported": {
-    "count": 67,
+    "count": 73,
     "n": 95
    }
   },

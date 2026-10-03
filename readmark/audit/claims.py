@@ -7,8 +7,7 @@ map gives its own claims:
 1. a locator (Claude) finds the case passages that bear on it, with verbatim quotes;
 2. code: each quote is in its passage, and every number and date in the claim is in a quote;
 3. Jev's second key on the claim against its cited passages;
-4. Task-05's contradiction pairs: a claim resting on one side of a contradicting pair and not the
-   other is "contradicted by another passage".
+4. Check each claim against the other side of any contradicting pair it rests on.
 
 Nothing is hidden: a claim no passage supports keeps the status "quote not found".
 """
@@ -87,10 +86,12 @@ def check_claims(case_id: str, claims: list[str], *, locator=None, checker=None,
     verdicts = {v["claim_id"]: v for v in checker.check(items)} if items else {}
 
     # 4. Contradiction pairs, then one status per claim, ranked as the map ranks them.
+    pair_checker = make_checker('jev', cache) if checker.name == 'claude' else checker
+    contradictions = contradicted_by(facts, checks, list(pairs), passages, pair_checker)
     out = []
     for f in facts:
         check, verdict = checks[f["claim_id"]], verdicts.get(f["claim_id"])
-        contra = contradicted_by(check["citations"], list(pairs))
+        contra = contradictions[f['claim_id']]
         out.append({
             "claim_id": f["claim_id"],
             "clause_id": f["clause_id"],

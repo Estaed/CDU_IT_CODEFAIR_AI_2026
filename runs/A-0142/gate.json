@@ -16,27 +16,12 @@
    ]
   },
   {
-   "claim_ids": [
-    "c15"
-   ],
+   "claim_ids": [],
    "clause_ids": [
     "elig-debts"
    ],
    "passage_id": "A-0142:p23:3",
    "rank": 2,
-   "reasons": [
-    "contradicted"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c15"
-   ],
-   "clause_ids": [
-    "elig-debts"
-   ],
-   "passage_id": "A-0142:p23:2",
-   "rank": 3,
    "reasons": [
     "contradicted"
    ]
@@ -49,7 +34,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p34:4",
-   "rank": 4,
+   "rank": 3,
    "reasons": [
     "checker_disagrees"
    ]
@@ -62,7 +47,7 @@
     "elig-residency"
    ],
    "passage_id": "A-0142:p16:1",
-   "rank": 5,
+   "rank": 4,
    "reasons": [
     "checker_disagrees"
    ]
@@ -75,7 +60,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p4:1",
-   "rank": 6,
+   "rank": 5,
    "reasons": [
     "possibly_missed"
    ]
@@ -86,7 +71,7 @@
     "elig-property"
    ],
    "passage_id": "A-0142:p19:3",
-   "rank": 7,
+   "rank": 6,
    "reasons": [
     "possibly_missed"
    ]
@@ -97,6 +82,18 @@
     "elig-income"
    ],
    "passage_id": "A-0142:p56:1",
+   "rank": 7,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-category",
+    "prio-documentation"
+   ],
+   "passage_id": "A-0142:p51:5",
    "rank": 8,
    "reasons": [
     "possibly_missed"
@@ -107,22 +104,10 @@
   {
    "claim_ids": [],
    "clause_ids": [
-    "prio-category",
-    "prio-documentation"
-   ],
-   "passage_id": "A-0142:p51:5",
-   "rank": 9,
-   "reasons": [
-    "possibly_missed"
-   ]
-  },
-  {
-   "claim_ids": [],
-   "clause_ids": [
     "elig-income"
    ],
    "passage_id": "A-0142:p58:3",
-   "rank": 10,
+   "rank": 9,
    "reasons": [
     "possibly_missed"
    ]
@@ -135,7 +120,7 @@
     "prio-discretion"
    ],
    "passage_id": "A-0142:p4:3",
-   "rank": 11,
+   "rank": 10,
    "reasons": [
     "possibly_missed"
    ]
@@ -146,7 +131,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "A-0142:p30:4",
-   "rank": 12,
+   "rank": 11,
    "reasons": [
     "possibly_missed"
    ]
@@ -157,7 +142,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p43:4",
-   "rank": 13,
+   "rank": 12,
    "reasons": [
     "possibly_missed"
    ]
@@ -169,7 +154,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p44:3",
-   "rank": 14,
+   "rank": 13,
    "reasons": [
     "possibly_missed"
    ]
@@ -181,7 +166,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p60:1",
-   "rank": 15,
+   "rank": 14,
    "reasons": [
     "possibly_missed"
    ]
@@ -192,7 +177,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "A-0142:p32:1",
-   "rank": 16,
+   "rank": 15,
    "reasons": [
     "possibly_missed"
    ]
@@ -204,7 +189,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p43:1",
-   "rank": 17,
+   "rank": 16,
    "reasons": [
     "possibly_missed"
    ]
@@ -215,7 +200,7 @@
     "elig-residency"
    ],
    "passage_id": "A-0142:p12:3",
-   "rank": 18,
+   "rank": 17,
    "reasons": [
     "possibly_missed"
    ]
@@ -226,7 +211,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "A-0142:p33:3",
-   "rank": 19,
+   "rank": 18,
    "reasons": [
     "possibly_missed"
    ]
@@ -239,32 +224,7 @@
     "prio-discretion"
    ],
    "passage_id": "A-0142:p50:1",
-   "rank": 20,
-   "reasons": [
-    "possibly_missed"
-   ]
-  },
-  {
-   "claim_ids": [],
-   "clause_ids": [
-    "prio-documentation",
-    "prio-category"
-   ],
-   "passage_id": "A-0142:p34:5",
-   "rank": 21,
-   "reasons": [
-    "possibly_missed"
-   ]
-  },
-  {
-   "claim_ids": [],
-   "clause_ids": [
-    "prio-documentation",
-    "prio-discretion",
-    "prio-category"
-   ],
-   "passage_id": "A-0142:p36:5",
-   "rank": 22,
+   "rank": 19,
    "reasons": [
     "possibly_missed"
    ]
@@ -274,8 +234,8 @@
    "clause_ids": [
     "prio-documentation"
    ],
-   "passage_id": "A-0142:p44:4",
-   "rank": 23,
+   "passage_id": "A-0142:p34:5",
+   "rank": 20,
    "reasons": [
     "possibly_missed"
    ]
@@ -287,7 +247,7 @@
     "elig-income"
    ],
    "passage_id": "A-0142:p55:3",
-   "rank": 24,
+   "rank": 21,
    "reasons": [
     "possibly_missed"
    ]
@@ -298,7 +258,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p43:3",
-   "rank": 25,
+   "rank": 22,
    "reasons": [
     "possibly_missed"
    ]
@@ -310,7 +270,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p35:3",
-   "rank": 26,
+   "rank": 23,
    "reasons": [
     "possibly_missed"
    ]
@@ -323,7 +283,7 @@
     "elig-property"
    ],
    "passage_id": "A-0142:p59:1",
-   "rank": 27,
+   "rank": 24,
    "reasons": [
     "possibly_missed"
    ]
@@ -334,7 +294,7 @@
     "elig-income"
    ],
    "passage_id": "A-0142:p57:1",
-   "rank": 28,
+   "rank": 25,
    "reasons": [
     "possibly_missed"
    ]
@@ -346,7 +306,7 @@
     "elig-income"
    ],
    "passage_id": "A-0142:p48:3",
-   "rank": 29,
+   "rank": 26,
    "reasons": [
     "possibly_missed"
    ]
@@ -359,7 +319,7 @@
     "prio-discretion"
    ],
    "passage_id": "A-0142:p37:4",
-   "rank": 30,
+   "rank": 27,
    "reasons": [
     "possibly_missed"
    ]
@@ -370,7 +330,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p47:1",
-   "rank": 31,
+   "rank": 28,
    "reasons": [
     "possibly_missed"
    ]
@@ -383,7 +343,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p36:4",
-   "rank": 32,
+   "rank": 29,
    "reasons": [
     "possibly_missed"
    ]
@@ -394,7 +354,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p45:1",
-   "rank": 33,
+   "rank": 30,
    "reasons": [
     "possibly_missed"
    ]
@@ -405,7 +365,7 @@
     "elig-property"
    ],
    "passage_id": "A-0142:p18:1",
-   "rank": 34,
+   "rank": 31,
    "reasons": [
     "possibly_missed"
    ]
@@ -416,7 +376,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "A-0142:p31:3",
-   "rank": 35,
+   "rank": 32,
    "reasons": [
     "possibly_missed"
    ]
@@ -429,7 +389,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p37:1",
-   "rank": 36,
+   "rank": 33,
    "reasons": [
     "possibly_missed"
    ]
@@ -440,7 +400,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p45:4",
-   "rank": 37,
+   "rank": 34,
    "reasons": [
     "possibly_missed"
    ]
@@ -451,7 +411,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p36:6",
-   "rank": 38,
+   "rank": 35,
    "reasons": [
     "possibly_missed"
    ]
@@ -462,7 +422,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p51:6",
-   "rank": 39,
+   "rank": 36,
    "reasons": [
     "possibly_missed"
    ]
@@ -473,7 +433,19 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p46:1",
-   "rank": 40,
+   "rank": 37,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-discretion",
+    "prio-category"
+   ],
+   "passage_id": "A-0142:p36:5",
+   "rank": 38,
    "reasons": [
     "possibly_missed"
    ]
@@ -484,7 +456,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p42:1",
-   "rank": 41,
+   "rank": 39,
    "reasons": [
     "possibly_missed"
    ]
@@ -496,7 +468,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p42:4",
-   "rank": 42,
+   "rank": 40,
    "reasons": [
     "possibly_missed"
    ]
@@ -507,7 +479,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "A-0142:p29:3",
-   "rank": 43,
+   "rank": 41,
    "reasons": [
     "possibly_missed"
    ]
@@ -518,7 +490,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p37:6",
-   "rank": 44,
+   "rank": 42,
    "reasons": [
     "possibly_missed"
    ]
@@ -529,7 +501,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p40:3",
-   "rank": 45,
+   "rank": 43,
    "reasons": [
     "possibly_missed"
    ]
@@ -541,7 +513,7 @@
     "elig-debts"
    ],
    "passage_id": "A-0142:p8:1",
-   "rank": 46,
+   "rank": 44,
    "reasons": [
     "possibly_missed"
    ]
@@ -552,7 +524,7 @@
     "prio-category"
    ],
    "passage_id": "A-0142:p51:1",
-   "rank": 47,
+   "rank": 45,
    "reasons": [
     "possibly_missed"
    ]
@@ -563,7 +535,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p49:1",
-   "rank": 48,
+   "rank": 46,
    "reasons": [
     "possibly_missed"
    ]
@@ -574,7 +546,7 @@
     "elig-income"
    ],
    "passage_id": "A-0142:p57:5",
-   "rank": 49,
+   "rank": 47,
    "reasons": [
     "possibly_missed"
    ]
@@ -585,7 +557,7 @@
     "elig-debts"
    ],
    "passage_id": "A-0142:p8:2",
-   "rank": 50,
+   "rank": 48,
    "reasons": [
     "possibly_missed"
    ]
@@ -596,18 +568,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p42:5",
-   "rank": 51,
-   "reasons": [
-    "possibly_missed"
-   ]
-  },
-  {
-   "claim_ids": [],
-   "clause_ids": [
-    "prio-documentation"
-   ],
-   "passage_id": "A-0142:p34:6",
-   "rank": 52,
+   "rank": 49,
    "reasons": [
     "possibly_missed"
    ]
@@ -618,7 +579,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "A-0142:p27:3",
-   "rank": 53,
+   "rank": 50,
    "reasons": [
     "possibly_missed"
    ]
@@ -629,7 +590,7 @@
     "elig-former-tenancy"
    ],
    "passage_id": "A-0142:p29:1",
-   "rank": 54,
+   "rank": 51,
    "reasons": [
     "possibly_missed"
    ]
@@ -640,7 +601,7 @@
     "prio-documentation"
    ],
    "passage_id": "A-0142:p41:1",
-   "rank": 55,
+   "rank": 52,
    "reasons": [
     "possibly_missed"
    ]

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Direction 4: Case record with a stage bar (Dynamics 365 / Salesforce)</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Arial,sans-serif;font-size:14px;color:#242424;background:#f5f5f5}
+.cmd{display:flex;gap:20px;background:#fff;border-bottom:1px solid #e0e0e0;padding:8px 20px;color:#424242}
+.rec{background:#fff;padding:12px 20px 0;display:flex;align-items:flex-end;gap:30px}
+.rec h1{font-size:22px;font-weight:600;margin:0}.rec .s{color:#616161;font-size:13px}
+.kv{margin-left:auto;display:flex;gap:28px;padding-bottom:6px}.kv div{font-size:13px}.kv b{display:block;font-size:15px}
+.path{display:flex;background:#fff;padding:12px 20px;border-bottom:1px solid #e0e0e0;gap:4px}
+.st{flex:1;position:relative;padding:10px 18px;background:#edebe9;color:#424242;font-weight:600;clip-path:polygon(0 0,95% 0,100% 50%,95% 100%,0 100%,5% 50%)}
+.st.cur{background:#0f6cbd;color:#fff}.st.done{background:#c7e0f4;color:#0f548c}
+.st small{display:block;font-weight:400;font-size:12px}
+.fly{position:absolute;left:20px;top:150px;width:360px;background:#fff;border:1px solid #d1d1d1;box-shadow:0 6px 18px #0002;border-radius:4px;z-index:2}
+.fly h4{margin:0;padding:10px 14px;border-bottom:1px solid #eee;font-size:13px;color:#616161;font-weight:400}
+.fr{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #f0f0f0}.fr .f{color:#bc4b09;font-weight:600}
+.fly .nb{margin:10px 14px;background:#0f6cbd;color:#fff;text-align:center;padding:8px;border-radius:4px;opacity:.45}
+.tabs{display:flex;gap:24px;background:#fff;padding:0 20px;border-bottom:1px solid #e0e0e0}.tabs span{padding:10px 0}.tabs .on{border-bottom:3px solid #0f6cbd;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1.2fr;gap:16px;padding:16px 20px}
+.card{background:#fff;border-radius:6px;box-shadow:0 1px 3px #0002;padding:14px 16px}
+.card h3{margin:0 0 10px;font-size:15px}
+.row{display:grid;grid-template-columns:150px 1fr;padding:8px 0;border-bottom:1px solid #f0f0f0}.row .l{color:#616161}
+.pill{display:inline-block;background:#fde7e9;color:#a4262c;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:600}
+.pill.o{background:#fff4ce;color:#835b00}
+.sel{border:1px solid #8a8886;border-radius:4px;padding:6px 10px;color:#616161}
+.doc{font-family:Georgia,serif;font-size:15px;line-height:1.7;border:1px solid #e0e0e0;padding:16px 20px;border-radius:4px}
+mark{background:#fff4ce;border-bottom:2px solid #c19c00}
+.doc .h{font-family:"Segoe UI";font-size:12px;color:#616161;margin-bottom:6px}
+</style></head><body>
+<div class="cmd"><span>← Cases</span><span>💾 Save</span><span>⇆ Compare pages</span><span>⚑ Dispute claim</span><span>⬇ Export record</span></div>
+<div class="rec"><div><h1>A-0142 · Ms K.</h1><div class="s">Priority housing application · Darwin urban</div></div>
+<div class="kv"><div>Questions decided<b>0 of 8</b></div><div>Required passages<b>0 of 8 opened</b></div><div>Darwin wait (NT data, 2020)<b>2–4 yrs</b></div></div></div>
+<div class="path"><div class="st cur">Open flagged passages<small>0 of 8 · active</small></div><div class="st">Decide 8 questions<small>0 of 8</small></div><div class="st">Reason &amp; sign<small>locked</small></div><div class="st">Decision record<small>export</small></div></div>
+<div class="fly"><h4>Open flagged passages · steps in this stage</h4>
+<div class="fr"><span>Debts · page 8 ¶3</span><span class="f">open</span></div><div class="fr"><span>Debts · page 23 ¶3</span><span class="f">open</span></div><div class="fr"><span>Urgent need · page 4</span><span class="f">open</span></div><div class="fr"><span>Residency · page 16</span><span class="f">open</span></div><div class="fr"><span>+ 4 more</span><span></span></div><div class="nb">Next stage ›</div></div>
+<div class="tabs"><span class="on">Questions</span><span>Case file (60 pp.)</span><span>Policies</span><span>Decision record</span></div>
+<div class="grid">
+<div class="card" style="margin-top:150px"><h3>Debts · Eligibility §3.4</h3>
+<div class="row"><span class="l">Policy says</span><span>A debt to the CEO (Housing) does not withhold housing.</span></div>
+<div class="row"><span class="l">Check</span><span><span class="pill">Two pages disagree</span></span></div>
+<div class="row"><span class="l">Evidence</span><span>p. 8 (15 Jan) $2,400 owed · p. 23 (4 Mar) cleared</span></div>
+<div class="row"><span class="l">Required</span><span><span class="pill o">0 of 2 opened</span></span></div>
+<div class="row"><span class="l">Outcome</span><span class="sel">Select: Met / Not met / Cannot decide yet ▾</span></div></div>
+<div class="card"><h3>Case file · page 8</h3><div class="doc"><div class="h">Former public-tenancy account, January statement · 15 Jan 2026</div><mark>Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00.</mark> Payment plan proposed at $100 per fortnight.<br><br>The proposed arrangement was recorded after the account holder asked for a manageable payment schedule.</div></div>
+</div></body></html>

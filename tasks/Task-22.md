@@ -1,5 +1,5 @@
 # Task-22: Scanned pages: Claude reads the page image, and the image stays beside the text
-> **Execution:** agent `ultracode` · effort `high`
+> **Execution:** agent `codex` · effort `high`
 > *Why:* real case files contain scans. Tarık asked whether Claude can read them (2026-10-03). It
 > can read a page image and transcribe it, so no separate OCR program is needed.
 

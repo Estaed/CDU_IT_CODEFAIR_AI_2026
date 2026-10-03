@@ -1,5 +1,5 @@
 # Task-20: New case: upload several documents and run the checks live
-> **Execution:** agent `ultracode` · effort `high`
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık wants new cases, where a case is a folder of several documents (2026-10-03: "yeni proje
 > gibi onun içine dosyaları atarız"). The home screen's "New case" button (Task-19) needs it.
 

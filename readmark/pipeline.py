@@ -20,7 +20,14 @@ from readmark.audit import AUDIT_CASES, audit_summary, view_block
 from readmark.audit.claude import ClaudeAuditor
 from readmark.audit.claims import nothing_to_check
 from readmark.cache import Cache
-from readmark.checklist import anchor, load_clauses
+from readmark.checklist import (
+    DEFAULT_LIST_ID,
+    QUESTION_LISTS_DIR,
+    anchor,
+    case_question_list,
+    load_clauses,
+    load_question_list,
+)
 from readmark.checks import check_fact, claim_reasons, claim_status
 from readmark.checks.cross import (
     PAIR_TOP,
@@ -36,7 +43,6 @@ from readmark.checks.cross import (
 )
 from readmark.gate import required_reading
 from readmark.ingest import (
-    POLICIES,
     case_passages,
     case_path,
     load_lock,
@@ -98,7 +104,8 @@ def named_passage_ids(view: dict) -> set[str]:
 
 def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: list[dict],
                lock: dict, facts: list[dict], checks: dict, verdicts: dict, gate: dict,
-               models: dict, cross: dict, audit: dict | None = None) -> dict:
+               models: dict, cross: dict, audit: dict | None = None,
+               question_list: dict | None = None) -> dict:
     """``cross`` holds the cross-passage results: ``contradictions`` and ``possibly_missed``
     per clause, and ``contradicted_by`` and ``reasons`` per claim. ``audit`` is the summary
     under audit's view block, ``None`` when no summary was audited."""
@@ -166,7 +173,8 @@ def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: l
             }
         )
 
-    titles = {f: t for f, t in POLICIES.values()}
+    spec = question_list if question_list is not None else load_question_list()
+    titles = {p["file"]: p["title"] for p in spec["policies"]}
     view = {
         "schema_version": SCHEMA_VERSION,
         "case": {**case_meta, "synthetic": True},
@@ -190,8 +198,16 @@ def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: l
     return view
 
 
-def validate_view(view: dict) -> None:
+def validate_view(view: dict, question_list: dict | None = None) -> None:
     schema = json.loads(VIEW_SCHEMA.read_text(encoding="utf-8"))
+    if question_list is not None and question_list["id"] != DEFAULT_LIST_ID:
+        # The on-disk schema describes the frozen housing demo. Bind its list-specific
+        # constraints to the approved list while keeping every version-2 field unchanged.
+        schema["properties"]["policies"]["minItems"] = len(question_list["policies"])
+        schema["properties"]["policies"]["maxItems"] = len(question_list["policies"])
+        schema["properties"]["clauses"]["items"]["properties"]["clause_id"]["enum"] = [
+            *[c["clause_id"] for c in question_list["clauses"]], OTHER
+        ]
     jsonschema.validate(view, schema)
     unsourced = named_passage_ids(view) - set(view["sources"])
     if unsourced:
@@ -200,7 +216,8 @@ def validate_view(view: dict) -> None:
 
 def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         checker_impl=None, out_dir: Path | None = None, audit: bool | None = None,
-        auditor=None) -> dict:
+        auditor=None, *, case_file: Path | None = None,
+        lists_dir: Path = QUESTION_LISTS_DIR) -> dict:
     """Run every layer once and write the stage files. ``writer``, ``checker_impl`` and
     ``auditor`` replace the live models (tests use fixed ones); ``replay`` reads every response
     from the cache.
@@ -210,6 +227,9 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     under audit runs when ``audit`` is true. By default it runs on the cases in ``AUDIT_CASES``
     and only on a real run: a run with a fixed writer or checker has no real map to audit the
     summary against, and must never reach Claude for it, so it audits only when asked."""
+    input_path = case_file if case_file is not None else case_path(case_id)
+    list_id = case_question_list(case_id, case_dir=input_path.parent, lists_dir=lists_dir)
+    question_list = load_question_list(list_id, lists_dir)
     if audit is None:
         audit = case_id in (*AUDIT_CASES, "H-01") and writer is None and checker_impl is None
     out = out_dir or case_run_dir(case_id)
@@ -221,11 +241,11 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
     cache = Cache(out / "cache", replay=replay)
 
     # 1. Ingest: pins first, then passages.
-    lock = load_lock()
-    policy = policy_passages()
-    case_meta, case = case_passages(case_id)
+    lock = load_lock(question_list=question_list)
+    policy = policy_passages(question_list=question_list)
+    case_meta, case = case_passages(case_id, input_path)
     # 2. Checklist: each clause anchored to the passage that holds its sentence.
-    clauses = anchor(load_clauses(), policy)
+    clauses = anchor(load_clauses(question_list=question_list), policy)
     clause_ids = [c["clause_id"] for c in clauses]
     policy_by_id = {p["passage_id"]: p for p in policy}
     passages = {p["passage_id"]: p for p in [*case, *policy]}
@@ -236,6 +256,10 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         from readmark.eval.discipline import EvaluationWriter
 
         writer = EvaluationWriter(cache)
+    if writer is None and list_id != DEFAULT_LIST_ID:
+        from readmark.checklist.writer import QuestionListWriter
+
+        writer = QuestionListWriter(cache)
     writer = writer or ClaudeWriter(cache)
     raw = writer.write(case_meta, case, clauses, policy_by_id)
     facts = [{**f, "claim_id": f"c{n:02d}"} for n, f in enumerate(raw["facts"], start=1)]
@@ -333,7 +357,7 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
             map_claims = [{**c, 'status': 'supported' if c['claim_id'] in considered
                            else 'checker_disagrees'} for c in map_claims]
         record = audit_summary(
-            case_id, case_path(case_id).read_text(encoding="utf-8"), map_claims,
+            case_id, input_path.read_text(encoding="utf-8"), map_claims,
             set(case_by_id), auditor=auditor or ClaudeAuditor(cache), checker=checker_impl,
             pairs=all_pairs, required={i["passage_id"] for i in gate["required"]}, cache=cache)
         # The fixed view enum cannot name an exemption. The audit stage explicitly labels
@@ -346,8 +370,8 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
 
     # 10. View.
     view = build_view(case_meta, case, policy, clauses, lock, facts, checks, verdicts, gate,
-                      models, cross, view_block(record))
-    validate_view(view)
+                      models, cross, view_block(record), question_list)
+    validate_view(view, question_list)
 
     job_models = getattr(cross_impl, "job_models", {})
     cross_model = getattr(cross_impl, "model_id", None)

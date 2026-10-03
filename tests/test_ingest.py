@@ -6,9 +6,10 @@ import shutil
 
 import pytest
 from conftest import needs_pdfs
+from test_checklist import make_tiny_list
 
 from readmark import CASES_DIR, POLICIES_DIR
-from readmark.checklist import CLAUSE_IDS, anchor, load_clauses
+from readmark.checklist import CLAUSE_IDS, anchor, load_clauses, load_question_list
 from readmark.ingest import IngestError, case_passages, normalise, policy_passages
 
 
@@ -95,3 +96,22 @@ def test_every_clause_sentence_is_verbatim_in_its_policy():
     clauses = anchor(load_clauses(), policy_passages())
     assert [c["clause_id"] for c in clauses] == list(CLAUSE_IDS)
     assert {c["clause_id"]: c["passage_id"] for c in clauses}["elig-debts"] == "eligibility:p6:9"
+
+
+def test_changed_policy_in_a_second_list_stops_on_its_own_pin(tmp_path):
+    lists_dir, _, policy_file = make_tiny_list(tmp_path)
+    spec = load_question_list("tiny-review", lists_dir)
+    expected = spec["policies"][0]["pin"]["sha256"]
+    policy_file.write_text("A different rule.\n", encoding="utf-8")
+    with pytest.raises(IngestError) as err:
+        policy_passages(question_list=spec)
+    assert "rules.txt" in str(err.value)
+    assert expected in str(err.value)
+
+
+def test_new_list_questions_must_be_verbatim_in_the_pinned_policy(tmp_path):
+    lists_dir, _, _ = make_tiny_list(tmp_path)
+    spec = load_question_list("tiny-review", lists_dir)
+    spec["clauses"][0]["sentence"] = "An invented rule."
+    with pytest.raises(IngestError, match="not found verbatim"):
+        anchor(load_clauses(question_list=spec), policy_passages(question_list=spec))

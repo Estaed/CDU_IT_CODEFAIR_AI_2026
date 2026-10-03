@@ -2,29 +2,32 @@
 
 from pathlib import Path
 
-import yaml
-
 from readmark.ingest import IngestError, normalise
-
-CLAUSES_FILE = Path(__file__).resolve().parent / "clauses.yaml"
-CLAUSE_IDS = (
-    "elig-residency",
-    "elig-property",
-    "elig-income",
-    "elig-debts",
-    "elig-former-tenancy",
-    "prio-category",
-    "prio-documentation",
-    "prio-discretion",
+from readmark.checklist.lists import (
+    DEFAULT_LIST_ID,
+    QUESTION_LISTS_DIR,
+    case_question_list,
+    list_question_lists,
+    load_question_list,
+    read_yaml,
+    set_case_question_list,
+    validate_clauses,
 )
 
+__all__ = ["DEFAULT_LIST_ID", "QUESTION_LISTS_DIR", "case_question_list", "list_question_lists",
+           "load_question_list", "set_case_question_list", "load_clauses", "anchor",
+           "CLAUSES_FILE", "CLAUSE_IDS"]
 
-def load_clauses(path: Path = CLAUSES_FILE) -> list[dict]:
-    clauses = yaml.safe_load(path.read_text(encoding="utf-8"))
-    ids = tuple(c["clause_id"] for c in clauses)
-    if sorted(ids) != sorted(CLAUSE_IDS):
-        raise IngestError(f"{path.name} must hold exactly the contract clause ids, got {ids}")
-    return clauses
+CLAUSES_FILE = QUESTION_LISTS_DIR / DEFAULT_LIST_ID / "clauses.yaml"
+# Compatibility for the frozen housing writer, audit and evaluation contracts.
+CLAUSE_IDS = tuple(c["clause_id"] for c in load_question_list()["clauses"])
+
+
+def load_clauses(path: Path | None = None, *, question_list: dict | None = None) -> list[dict]:
+    if path is not None:
+        return validate_clauses(read_yaml(path), path)
+    spec = question_list if question_list is not None else load_question_list()
+    return spec["clauses"]
 
 
 def anchor(clauses: list[dict], policy_passages: list[dict]) -> list[dict]:

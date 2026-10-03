@@ -3805,6 +3805,12 @@
      "heldout_discipline": {
       "changed_result_files": [
        "readmark/audit/claims.py",
+       "readmark/checklist/__init__.py",
+       "readmark/checklist/clauses.yaml",
+       "readmark/checklist/lists.py",
+       "readmark/checklist/lists/nt-priority-housing/clauses.yaml",
+       "readmark/checklist/lists/nt-priority-housing/list.yaml",
+       "readmark/checklist/writer.py",
        "readmark/checks/__init__.py",
        "readmark/checks/supports.py",
        "readmark/eval/__init__.py",
@@ -3812,6 +3818,7 @@
        "readmark/eval/checker.py",
        "readmark/eval/round2.py",
        "readmark/eval/supports.py",
+       "readmark/ingest/__init__.py",
        "readmark/pipeline.py",
        "tests/test_eval_cases.py"
       ],

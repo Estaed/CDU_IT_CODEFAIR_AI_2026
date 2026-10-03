@@ -11,8 +11,10 @@ from pathlib import Path
 
 import pytest
 from conftest import FixedChecker, FixedWriter, fact, needs_pdfs
+from test_checklist import make_tiny_list
 
 from readmark import ROOT
+from readmark.checklist import load_question_list
 from readmark.ingest import normalise, policy_passages
 from readmark.pipeline import run, validate_view
 
@@ -123,3 +125,62 @@ def test_run_and_cache_hold_no_policy_text_beyond_shown_quotes(case_id):
     }
     leaked = [s for s in sentences if s in stored and not any(s in q for q in shown)]
     assert leaked == []
+
+
+def test_case_selected_second_list_runs_without_the_nt_bundle(tmp_path):
+    lists_dir, case_dir, _ = make_tiny_list(tmp_path)
+
+    class InspectWriter(FixedWriter):
+        def write(self, case_meta, case_passages, clauses, policy_by_id):
+            assert [c["clause_id"] for c in clauses] == ["enrolment", "explanation"]
+            assert [c["passage_id"] for c in clauses] == ["tiny:p1:1", "tiny:p1:2"]
+            assert {p["policy"] for p in policy_by_id.values()} == {"tiny"}
+            assert all(p["doc_title"] == "Application rules policy" for p in policy_by_id.values())
+            return super().write(case_meta, case_passages, clauses, policy_by_id)
+
+    writer = InspectWriter([
+        fact("enrolment", "The student is enrolled.", ("tiny-case:p1:1", "The student is enrolled.")),
+        fact("explanation", "No explanation is in the file.", found=False),
+        fact("enrolment", "The student supplied a certificate.",
+             ("tiny-case:p1:1", "A certificate was supplied.")),
+    ])
+    out = tmp_path / "run"
+    view = run("tiny-case", writer=writer, checker_impl=FixedChecker(), out_dir=out,
+               case_file=case_dir / "case.md", lists_dir=lists_dir)
+    assert [p["file"] for p in view["policies"]] == ["rules.txt"]
+    assert [c["clause_id"] for c in view["clauses"]] == ["enrolment", "explanation"]
+    assert view["claims"][0]["status"] == "supported"
+    assert view["claims"][1]["status"] == "quote_not_found"
+    assert view["claims"][1]["required"] is True
+    assert view["clauses"][1]["coverage"] == "no_evidence_in_file"
+    assert "outcome" not in json.dumps(view["clauses"])
+    passages = json.loads((out / "passages.json").read_text(encoding="utf-8"))
+    assert [p["passage_id"] for p in passages["policy_passages"]] == ["tiny:p1:1", "tiny:p1:2"]
+    assert set(passages["policies"]) == {"rules.txt"}
+    validate_view(view, load_question_list("tiny-review", lists_dir))
+
+
+def test_new_list_writer_binds_ids_and_reuses_evidence_rules_without_a_model(tmp_path):
+    from readmark.checklist import anchor
+    from readmark.checklist.writer import QuestionListWriter
+    from readmark.writer import WRITER_SCHEMA
+
+    lists_dir, _, _ = make_tiny_list(tmp_path)
+    spec = load_question_list("tiny-review", lists_dir)
+    policy = policy_passages(question_list=spec)
+    clauses = anchor(spec["clauses"], policy)
+
+    class InspectCache:
+        def call(self, kind, request, live):
+            assert kind == "writer"
+            ids = request["schema"]["properties"]["facts"]["items"]["properties"]["clause_id"]["enum"]
+            assert ids == ["enrolment", "explanation", "other"]
+            assert "NT housing authority" not in request["prompt"]
+            assert "copied word for word" in request["prompt"]
+            return {"model": "fake", "output": {"facts": []}}
+
+    writer = QuestionListWriter(InspectCache())
+    assert writer.write({"case_id": "tiny", "pages": 1}, [], clauses,
+                        {p["passage_id"]: p for p in policy}) == {"facts": []}
+    assert writer.model_id == "fake"
+    assert "elig-residency" in WRITER_SCHEMA["properties"]["facts"]["items"]["properties"]["clause_id"]["enum"]

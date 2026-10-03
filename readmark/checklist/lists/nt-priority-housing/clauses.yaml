@@ -4,7 +4,7 @@
 # there word for word. These sentences are the only policy text kept in the repo, and the
 # review screen shows every one of them.
 #
-# Fields: clause_id; policy (key in readmark.ingest.POLICIES); source (the section shown);
+# Fields: clause_id; policy (key in this list's list.yaml); source (the section shown);
 # title; decides (what the officer decides, from the contract); sentence (verbatim);
 # items (optional verbatim list entries that complete the sentence).
 

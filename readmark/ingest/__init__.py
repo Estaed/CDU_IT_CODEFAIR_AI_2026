@@ -1,4 +1,4 @@
-"""Ingest: the five policy PDFs and one case file become numbered passages.
+"""Ingest: a question list's pinned policies and one case become numbered passages.
 
 Policy passages are ``<policy>:p<N>:<k>`` and case passages ``<case_id>:p<N>:<k>`` (contract),
 where N is the page and k the 1-based paragraph on that page. Every PDF is checked against its
@@ -15,23 +15,10 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-from readmark import CASES_DIR, DATA, POLICIES_DIR
+from readmark import CASES_DIR, DATA
 
 # pypdf warns about a symbol font it cannot fully decode; the text it extracts is still exact.
 logging.getLogger("pypdf").setLevel(logging.ERROR)
-
-# Short key (used in passage ids), file name and display title for each bundled policy.
-POLICIES = {
-    "eligibility": ("eligibility-for-social-housing-policy.pdf", "Eligibility for Social Housing"),
-    "priority": ("priority-housing-policy.pdf", "Priority Housing"),
-    "identification": (
-        "identification-and-documentation-policy.pdf",
-        "Identification and Documentation",
-    ),
-    "dfv": ("domestic-family-violence-policy.pdf", "Domestic and Family Violence"),
-    "discretion": ("discretionary-decision-making-policy.pdf", "Discretionary Decision Making"),
-}
-
 
 class IngestError(RuntimeError):
     """Raised when an input cannot be trusted: a missing or changed PDF, a malformed case."""
@@ -65,24 +52,37 @@ def sha256_text(text: str) -> str:
 # ---------------------------------------------------------------------------------------------
 
 
-def load_lock(policies_dir: Path = POLICIES_DIR) -> dict:
-    return json.loads((policies_dir / "policies.lock.json").read_text(encoding="utf-8"))
+def _question_list(question_list: dict | None) -> dict:
+    # Lazy import: checklist anchors use the ingest helpers too.
+    from readmark.checklist import load_question_list
+
+    return question_list if question_list is not None else load_question_list()
 
 
-def verify_pins(policies_dir: Path = POLICIES_DIR, lock: dict | None = None) -> dict:
-    """Stop unless every pinned PDF is present and byte-identical to its pin."""
-    lock = lock if lock is not None else load_lock(policies_dir)
+def load_lock(policies_dir: Path | None = None, *, question_list: dict | None = None) -> dict:
+    """Pins belong to the list. An explicit legacy lock directory remains readable."""
+    if policies_dir is not None and question_list is None:
+        return json.loads((policies_dir / "policies.lock.json").read_text(encoding="utf-8"))
+    return {p["file"]: p["pin"] for p in _question_list(question_list)["policies"]}
+
+
+def verify_pins(policies_dir: Path | None = None, lock: dict | None = None, *,
+                question_list: dict | None = None) -> dict:
+    """Stop unless every pinned policy is present and byte-identical to its pin."""
+    spec = _question_list(question_list)
+    policies_dir = policies_dir if policies_dir is not None else spec["policies_dir"]
+    lock = lock if lock is not None else load_lock(question_list=spec)
     for file_name, pin in sorted(lock.items()):
         path = policies_dir / file_name
         if not path.exists():
             raise IngestError(
-                f"Policy PDF missing: {path}. Download it by hand from {pin['url']} "
+                f"Policy file missing: {path}. Download it by hand from {pin['url']} "
                 f"(expected SHA-256 {pin['sha256']}); see README."
             )
         actual = sha256_file(path)
         if actual != pin["sha256"]:
             raise IngestError(
-                f"Policy PDF changed: {file_name} has SHA-256 {actual}, expected SHA-256 "
+                f"Policy file changed: {file_name} has SHA-256 {actual}, expected SHA-256 "
                 f"{pin['sha256']} (version {pin['version']}). Re-download it from {pin['url']} "
                 "or re-pin it on purpose."
             )
@@ -132,18 +132,26 @@ def _paragraphs(lines: list[str]) -> list[tuple[str, str | None]]:
             zip(paras, kinds, strict=True)]
 
 
-def policy_passages(policies_dir: Path = POLICIES_DIR) -> list[dict]:
+def policy_passages(policies_dir: Path | None = None, *,
+                    question_list: dict | None = None) -> list[dict]:
     """All policy passages, text included. The text stays in memory: stage files keep only ids,
     offsets and hashes (contract, Run outputs)."""
-    lock = verify_pins(policies_dir)
+    spec = _question_list(question_list)
+    policies_dir = policies_dir if policies_dir is not None else spec["policies_dir"]
+    lock = verify_pins(policies_dir, question_list=spec)
     out: list[dict] = []
-    for key, (file_name, title) in POLICIES.items():
-        if file_name not in lock:
-            raise IngestError(f"{file_name} is not pinned in policies.lock.json")
-        reader = PdfReader(str(policies_dir / file_name))
+    for policy in spec["policies"]:
+        key, file_name, title = policy["key"], policy["file"], policy["title"]
+        path = policies_dir / file_name
+        if path.suffix.lower() == ".pdf":
+            pages = [_paragraphs(lines) for lines in _page_lines(PdfReader(str(path)))]
+        else:
+            # Text policies: form feed separates pages, blank lines separate paragraphs.
+            pages = [[(normalise(block), None) for block in re.split(r"\n\s*\n", page)
+                      if block.strip()] for page in path.read_text(encoding="utf-8").split("\f")]
         section = None
-        for page_no, lines in enumerate(_page_lines(reader), start=1):
-            for k, (text, heading) in enumerate(_paragraphs(lines), start=1):
+        for page_no, paragraphs in enumerate(pages, start=1):
+            for k, (text, heading) in enumerate(paragraphs, start=1):
                 if heading:
                     section = heading
                 out.append(

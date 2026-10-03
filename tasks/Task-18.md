@@ -1,4 +1,5 @@
 # Task-18: Question lists: each list brings its own policies and questions
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık wants question lists per application type and an easy, non-housing example
 > (2026-10-03). Today the 8 housing questions sit in one `clauses.yaml`, and the five NT policies
@@ -36,15 +37,16 @@ The easy example (Task-21) and new cases (Task-20) need lists other than housing
 (Task-19) shows each case's list.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] **Nothing changes for existing cases.** `python -m readmark run --case <id> --replay` for
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] **Nothing changes for existing cases.** `python -m readmark run --case <id> --replay` for
   A-0142, E-01, E-02, E-03 and H-01 leaves `runs/` byte-identical (`git status` clean). Every file
   under `runs/eval/` is byte-identical.
-- [ ] A test builds a second, tiny list in a temporary folder: one policy text file pinned by its
+  *(At integration, 2026-10-03: `runs/eval/cases.json` and `summary.json` changed only in H-01's `changed_result_files` list, which now names the new checklist files; no number changed. The orchestrator regenerated them in this commit.)*
+- [x] A test builds a second, tiny list in a temporary folder: one policy text file pinned by its
   hash, and two questions. A tiny case that names that list then runs through ingest and checklist
   with a fake writer and checker. Its passages come from that policy, not from the NT bundle.
-- [ ] A changed policy file in any list still fails loudly on its pin, as today.
-- [ ] `docs/question-lists.md` exists, and says how to add a list in under a page.
+- [x] A changed policy file in any list still fails loudly on its pin, as today.
+- [x] `docs/question-lists.md` exists, and says how to add a list in under a page.
 
 ## Out of scope
 - The CDU list itself and the easy example (Task-21).

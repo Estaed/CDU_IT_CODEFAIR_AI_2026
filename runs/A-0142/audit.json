@@ -504,7 +504,7 @@
    "claim_id": "a17",
    "clause_id": "prio-category",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -533,7 +533,7 @@
    "claim_id": "a18",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -562,7 +562,7 @@
    "claim_id": "a19",
    "clause_id": "prio-category",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -591,7 +591,7 @@
    "claim_id": "a20",
    "clause_id": "prio-category",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -696,7 +696,7 @@
    "clause_id": "prio-documentation",
    "contradicted_by": [],
    "required": false,
-   "status": "checker_disagrees",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -1656,7 +1656,7 @@
    "clause_id": "elig-former-tenancy",
    "contradicted_by": [],
    "required": false,
-   "status": "checker_disagrees",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2009,7 +2009,7 @@
    "clause_id": "elig-debts",
    "contradicted_by": [],
    "required": false,
-   "status": "checker_disagrees",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2239,7 +2239,7 @@
    "clause_id": "other",
    "contradicted_by": [],
    "required": false,
-   "status": "checker_disagrees",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2407,7 +2407,7 @@
    "clause_id": "other",
    "contradicted_by": [],
    "required": false,
-   "status": "checker_disagrees",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2610,7 +2610,7 @@
    "clause_id": "other",
    "contradicted_by": [],
    "required": false,
-   "status": "checker_disagrees",
+   "status": "supported",
    "values_missing": []
   },
   {
@@ -2675,7 +2675,7 @@
   },
   "claims_by_status": {
    "checker_disagrees": {
-    "count": 15,
+    "count": 9,
     "n": 95
    },
    "contradicted": {
@@ -2687,7 +2687,7 @@
     "n": 95
    },
    "supported": {
-    "count": 76,
+    "count": 82,
     "n": 95
    }
   },

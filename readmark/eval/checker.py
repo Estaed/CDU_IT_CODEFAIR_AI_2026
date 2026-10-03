@@ -14,8 +14,10 @@ the cache with no key and no network.
 import json
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from fractions import Fraction
 
 from readmark.cache import Cache
+from readmark.checks.supports import SUPPORTS_THRESHOLD, checker_backs
 from readmark.eval import eval_dir, write_part
 from readmark.eval.summedits import (
     MAX_DOC_WORDS,
@@ -53,6 +55,9 @@ UNSURE_RULE = (f"highest bin edge t where the calls below t (n >= {UNSURE_MIN_N}
 
 RULE = ("A 'supports' verdict counts as consistent; contradicts, not_enough_information or no "
         "verdict counts as inconsistent. Positive class = consistent (SummEdits label 1).")
+SUPPORTS_RULE = ("Backed when verdict is supports, or verdict is not_enough_information and "
+                 "the separate supports score is at least the threshold. A contradicts or "
+                 "missing verdict is never backed by the score alone.")
 
 
 # ---------------------------------------------------------------- items and batches
@@ -260,6 +265,42 @@ def rows_for(sample: list[dict], verdicts: dict) -> list[dict]:
     ]
 
 
+def select_supports_rule(sample: list[dict], verdicts: dict) -> dict:
+    """Maximise balanced accuracy on SummEdits run1 only, before reading any case.
+
+    Observed score cutoffs plus 0 and 1 cover every distinct prediction in [0, 1].
+    Ties choose the highest cutoff, retaining the most conservative rescue rule.
+    Compare exact fractions rather than rounded metrics when choosing the winner.
+    """
+    scores = {v['supports'] for v in verdicts.values()
+              if isinstance(v.get('supports'), (int, float))
+              and not isinstance(v['supports'], bool) and 0 <= v['supports'] <= 1}
+    candidates = sorted({0.0, 1.0, *scores})
+    original = rows_for(sample, verdicts)
+    table = []
+    for threshold in candidates:
+        rows = [{**r, 'call': int(checker_backs(verdicts.get(s['sample_id']), threshold))}
+                for s, r in zip(sample, original, strict=True)]
+        table.append({'threshold': threshold, **confusion(rows)})
+
+    def objective(row):
+        return (Fraction(row['tp'], row['tp'] + row['fn'])
+                + Fraction(row['tn'], row['tn'] + row['fp'])) / 2
+
+    chosen = max(table, key=lambda r: (objective(r), r['threshold']))
+    return {
+        'n': len(sample), 'rule': SUPPORTS_RULE, 'threshold': chosen['threshold'],
+        'selection': 'Maximum balanced accuracy; highest threshold breaks ties. '
+                     'All observed score cutoffs plus 0 and 1, exact fraction comparison.',
+        'source': 'Committed SummEdits sample and cached Jev jev-run1 only; no Readmark cases.',
+        'cache': 'runs/eval/cache/jev-run1',
+        'verdict_alone': confusion(original), 'verdict_or_supports': chosen,
+        'eligible_nei': {'count': sum(v.get('verdict') == 'not_enough_information'
+                                    for v in verdicts.values()), 'n': len(sample)},
+        'candidates': table,
+    }
+
+
 def checker_block(rows: list[dict], models: list[str]) -> dict:
     domains = sorted({r["domain"] for r in rows})
     verdict_counts = {"n": len(rows)}
@@ -296,6 +337,10 @@ def evaluate(replay: bool) -> dict:
     ids = [s["sample_id"] for s in sample]
 
     jev1, jev1_models = run_jev(items, RUNS["jev"], replay)
+    backing = select_supports_rule(sample, jev1)
+    if backing['threshold'] != SUPPORTS_THRESHOLD:
+        raise RuntimeError('SummEdits optimum differs from the frozen backing threshold; '
+                           'review the calibration before applying it to cases.')
     jev2, jev2_models = run_jev(items, RUNS["jev_run2"], replay)
     claude, claude_models = run_claude(items, replay)
 
@@ -318,7 +363,8 @@ def evaluate(replay: bool) -> dict:
         },
         "checkers": {
             "claude": checker_block(rows_for(sample, claude), claude_models),
-            "jev": {**checker_block(jev_rows, jev1_models), "unsure_band": unsure_band(jev_rows)},
+            "jev": {**checker_block(jev_rows, jev1_models), "unsure_band": unsure_band(jev_rows),
+                    "backing_rule": backing},
             "jev_run2": checker_block(rows_for(sample, jev2), jev2_models),
         },
         "jev_agreement": agreement(jev1, jev2, ids),

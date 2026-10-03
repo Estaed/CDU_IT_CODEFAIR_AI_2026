@@ -31,7 +31,8 @@ from readmark.eval.discipline import (
 from readmark.writer import ClaudeWriter
 
 EVAL = ROOT / "runs" / "eval"
-PARTS = ("cases", "mutations", "ablation", "benchmark", "audit_labels", "checks_round2")
+PARTS = ("cases", "mutations", "ablation", "benchmark", "audit_labels", "checks_round2",
+         "jev_supports")
 
 
 def test_six_claim_catch_and_false_alarm_rates_by_hand():
@@ -190,12 +191,16 @@ def test_each_new_part_replays_twice_with_no_keys_or_claude(tmp_path):
                 stages = ['view', 'writer', 'checks', 'jev', 'gate', 'scan', 'pairs', 'dedup']
                 if cid in ('A-0142', 'H-01'):
                     stages += ['audit']
+                if cid.startswith('E-'):
+                    stages += ['mutations']
                 for stage in stages:
                     assert (runs / cid / f"{stage}.json").read_bytes() == (
                         ROOT / "runs" / cid / f"{stage}.json").read_bytes()
     assert (runs / 'eval' / 'summary.json').read_bytes() == (EVAL / 'summary.json').read_bytes()
     assert (runs / 'eval' / 'checks_round2.json').read_bytes() == (
         EVAL / 'checks_round2.json').read_bytes()
+    assert (runs / 'eval' / 'jev_supports.json').read_bytes() == (
+        EVAL / 'jev_supports.json').read_bytes()
 
 
 @pytest.mark.skipif(not complete_outputs(), reason="live evaluation has not completed yet")
@@ -256,3 +261,28 @@ def test_round2_keeps_the_real_errors_and_labels_every_exempted_suggestion():
         for suggestion in suggestions['claims']:
             claim = next(c for c in audit['claims'] if c['claim_id'] == suggestion['claim_id'])
             assert claim['status'] == 'supported' and claim['checker']['verdict'] is None
+
+
+def test_supports_comparison_keeps_baselines_and_reports_every_lost_catch():
+    comparison = load(EVAL / 'jev_supports.json')
+    first = load(EVAL / 'checks_round2.json')['before']['parts']['cases']['cases']['H-01']
+    cases = load(EVAL / 'cases.json')['cases']
+    labels = load(EVAL / 'audit_labels.json')
+    assert comparison['first_run_h01'] == cases['H-01']['first_run'] == first
+    assert labels['first_run'] == comparison['before']['audit_labels']['first_run']
+    assert comparison['response_cache']['unchanged']
+    assert comparison['response_cache']['new_model_calls']['count'] == 0
+    for cid, old_rows in comparison['before']['mutations'].items():
+        new = load(ROOT / 'runs' / cid / 'mutations.json')['claims']
+        lost = {c['claim_id'] for old, c in zip(old_rows, new, strict=True)
+                if old['label'] != 'supported' and old['status'] != 'supported'
+                and c['status'] == 'supported'}
+        reported = {c['claim_id'] for c in comparison['mutation_changes']
+                    if c['case'] == cid and c['lost_catch']}
+        assert lost == reported
+    for cid, rows in comparison['real_errors'].items():
+        audit = {c['claim_id']: c for c in load(ROOT / 'runs' / cid / 'audit.json')['claims']}
+        for row in rows:
+            claim = audit[row['claim_id']]
+            assert row['remains_flagged'] == (claim['status'] != 'supported')
+            assert {k: v for k, v in row['checker'].items() if k != 'n'} == claim['checker']

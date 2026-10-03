@@ -1,4 +1,5 @@
 # Task-14: Jev's "supports" score as a second signal for "checker disagrees"
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `codex` · effort `high`
 > *Why:* after Task-12, Jev's "not enough information" on true claims is the main remaining source
 > of false alarms (A-0142: 15 "checker disagrees" of 19 flags, n=95). Task-08 found that Jev's
@@ -40,17 +41,17 @@
 to ignore it, and the one that matters is skipped with the rest.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] A test: on a hand-made set, a claim with verdict "not_enough_information" and a "supports"
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] A test: on a hand-made set, a claim with verdict "not_enough_information" and a "supports"
   score above the threshold is backed; one below it is not; a "contradicts" verdict is never backed
   by the score alone.
-- [ ] The checker part records the rule, the threshold and both balanced accuracies on SummEdits,
+- [x] The checker part records the rule, the threshold and both balanced accuracies on SummEdits,
   with n. A test checks that the threshold is computed from SummEdits alone.
-- [ ] Every rebuilt run replays twice with `TYPESAFE_API_KEY` unset and `claude` off PATH, and gives
+- [x] Every rebuilt run replays twice with `TYPESAFE_API_KEY` unset and `claude` off PATH, and gives
   byte-identical output.
-- [ ] `runs/eval/summary.json` carries before and after for each headline number, each with n, and
+- [x] `runs/eval/summary.json` carries before and after for each headline number, each with n, and
   H-01's first-run numbers unchanged.
-- [ ] The builder's report states plainly whether the change helps: false alarms removed, real
+- [x] The builder's report states plainly whether the change helps: false alarms removed, real
   errors kept, catches lost. If the rule loses a real error or a caught mutation, it is still
   reported, and the decision to keep it is left to Tarık.
 

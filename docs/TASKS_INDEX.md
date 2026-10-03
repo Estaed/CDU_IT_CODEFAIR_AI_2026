@@ -30,4 +30,4 @@ Wave 4 (2026-10-03). Width 2: Task-12 and Task-13 run together (disjoint OWNS). 
 
 Wave 5 (2026-10-03). Width 1.
 
-- [ ] Task-14: Jev's "supports" score as a second signal for "checker disagrees" (codex)
+- [x] Task-14: Jev's "supports" score as a second signal for "checker disagrees" (codex)

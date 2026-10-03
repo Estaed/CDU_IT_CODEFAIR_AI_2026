@@ -18,6 +18,7 @@ from readmark.eval.checker import (
     claude_batches,
     confusion,
     rows_for,
+    select_supports_rule,
     to_items,
     unsure_band,
 )
@@ -164,3 +165,42 @@ def test_replay_twice_is_byte_identical_without_key_or_claude(tmp_path):
                        cwd=ROOT, env=env, check=True, capture_output=True)
         outputs.append((runs / "eval" / "checker.json").read_bytes())
     assert outputs[0] == outputs[1] == committed
+
+
+def test_supports_threshold_optimises_or_rule_and_breaks_ties_conservatively():
+    sample = [{'sample_id': f's{i}', 'domain': 'hand', 'label': label}
+              for i, label in enumerate((1, 1, 0, 0))]
+    verdicts = {
+        's0': {'verdict': 'supports', 'supports': 0.1},
+        's1': {'verdict': 'not_enough_information', 'supports': 0.7},
+        's2': {'verdict': 'not_enough_information', 'supports': 0.4},
+        's3': {'verdict': 'contradicts', 'supports': 0.99},
+    }
+    result = select_supports_rule(sample, verdicts)
+    assert result['threshold'] == 0.7  # perfect; highest tied threshold wins
+    assert result['verdict_alone']['balanced_accuracy'] == 0.75
+    assert result['verdict_or_supports']['balanced_accuracy'] == 1.0
+    assert result['n'] == 4
+
+
+def test_committed_threshold_is_computed_from_summedits_alone(monkeypatch):
+    from readmark.checks.supports import SUPPORTS_THRESHOLD
+    from readmark.eval.checker import RUNS, run_jev
+
+    def refuse(*args, **kwargs):
+        raise AssertionError('Calibration reached a Readmark case or a live model.')
+
+    monkeypatch.setattr('readmark.case_run_dir', refuse)
+    monkeypatch.setattr('readmark.ingest.case_passages', refuse)
+    monkeypatch.setattr('readmark.pipeline.run', refuse)
+    monkeypatch.setattr('readmark.jev.JevChecker._post', refuse)
+    sample = load_sample()
+    verdicts, _ = run_jev(to_items(sample), RUNS['jev'], replay=True)
+    computed = select_supports_rule(sample, verdicts)
+    saved = json.loads((EVAL / 'checker.json').read_text(encoding='utf-8'))
+    assert computed == saved['checkers']['jev']['backing_rule']
+    assert computed['threshold'] == SUPPORTS_THRESHOLD == 0.1
+    assert computed['n'] == 300
+    assert computed['verdict_alone']['balanced_accuracy'] == 0.8267
+    assert computed['verdict_or_supports']['balanced_accuracy'] == 0.83
+    assert computed['eligible_nei'] == {'count': 1, 'n': 300}

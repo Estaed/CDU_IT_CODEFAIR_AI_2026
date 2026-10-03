@@ -17,6 +17,7 @@ import re
 from datetime import date
 from decimal import Decimal
 
+from readmark.checks.supports import checker_backs
 from readmark.ingest import normalise
 
 _MONTH_NAMES = ["january", "february", "march", "april", "may", "june", "july", "august",
@@ -188,7 +189,7 @@ def claim_reasons(check: dict, verdict: dict | None, contradicted: list[str]) ->
     reasons = ["contradicted"] if contradicted else []
     if not check["passed"]:
         reasons.append("quote_not_found")
-    elif not verdict or verdict.get("verdict") != "supports":
+    elif not checker_backs(verdict):
         reasons.append("checker_disagrees")
     return reasons
 

@@ -15,18 +15,18 @@
     "rate": 1.0
    },
    "gold_page_coverage": {
-    "count": 3,
+    "count": 4,
     "covered": [
      "p8",
      "p23",
-     "p51"
-    ],
-    "missed": [
-     "p30",
+     "p51",
      "p58"
     ],
+    "missed": [
+     "p30"
+    ],
     "n": 5,
-    "rate": 0.6
+    "rate": 0.8
    },
    "live_responses": {
     "by_kind": {
@@ -84,7 +84,7 @@
    "summary_audit": {
     "by_status": {
      "checker_disagrees": {
-      "count": 15,
+      "count": 9,
       "n": 95
      },
      "contradicted": {
@@ -96,15 +96,15 @@
       "n": 95
      },
      "supported": {
-      "count": 76,
+      "count": 82,
       "n": 95
      }
     },
     "created": "2026-10-03",
     "flags": {
-     "count": 19,
+     "count": 13,
      "n": 95,
-     "rate": 0.2
+     "rate": 0.1368
     },
     "meaning": "Flags are candidate errors, not a real-error count. H-01's first-run flags were independently labelled after the run; unflagged claims were not reviewed. The fixed-schema supported bucket includes suggestions with null checker judgments; nothing_to_check reports them separately.",
     "model": "claude-opus-5-5",
@@ -468,9 +468,9 @@
     "unit": "passages; n is the maximum allowed"
    },
    "trap_touch_rate": {
-    "count": 5,
+    "count": 4,
     "n": 6,
-    "rate": 0.8333
+    "rate": 0.6667
    },
    "traps": [
     {
@@ -500,10 +500,8 @@
      "fact_id": "E03F05",
      "missing_evidence_flag": false,
      "required": [],
-     "suggested": [
-      "E-03:p9:1"
-     ],
-     "touched": true,
+     "suggested": [],
+     "touched": false,
      "trap": "discretion"
     },
     {
@@ -541,20 +539,21 @@
   },
   "H-01": {
    "all_flagged_gold_page_coverage": {
-    "count": 8,
+    "count": 7,
     "covered": [
      "p3",
      "p5",
-     "p6",
      "p12",
      "p13",
      "p14",
      "p15",
      "p17"
     ],
-    "missed": [],
+    "missed": [
+     "p6"
+    ],
     "n": 8,
-    "rate": 1.0
+    "rate": 0.875
    },
    "first_run": {
     "all_flagged_gold_page_coverage": {
@@ -811,9 +810,12 @@
     "changed_result_files": [
      "readmark/audit/claims.py",
      "readmark/checks/__init__.py",
+     "readmark/checks/supports.py",
      "readmark/eval/__init__.py",
      "readmark/eval/cases.py",
+     "readmark/eval/checker.py",
      "readmark/eval/round2.py",
+     "readmark/eval/supports.py",
      "readmark/pipeline.py",
      "tests/test_eval_cases.py"
     ],
@@ -855,7 +857,7 @@
      "count": 1,
      "n": 1
     },
-    "scored_view_sha256": "41c2575b8b91b20ec7a11999af5342d65996deece1d8d3f816c8c1916d146507",
+    "scored_view_sha256": "36fe1222779d6237f20bed7ca782e7d4a8c56145b8ba349d8bb4edcc022b23af",
     "seal_read_after_run": true,
     "started_at": "2026-10-03T06:16:01.666461+00:00",
     "tuned_after_run": true

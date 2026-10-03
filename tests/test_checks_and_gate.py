@@ -165,3 +165,23 @@ def test_clause_order_breaks_ties():
               _claim(2, "quote_not_found", clause="elig-residency")]
     gate = required_reading(claims, ["elig-residency", "prio-category"])
     assert [i["passage_id"] for i in gate["required"]] == ["stub:p2:1", "stub:p1:1"]
+
+
+def test_supports_score_rescues_only_nei_and_never_bypasses_other_checks():
+    from readmark.checks.supports import SUPPORTS_THRESHOLD, checker_backs
+
+    above = {'verdict': 'not_enough_information', 'supports': SUPPORTS_THRESHOLD + 0.01}
+    below = {'verdict': 'not_enough_information', 'supports': SUPPORTS_THRESHOLD - 0.01,
+             'probability': 0.99}
+    assert checker_backs(above)
+    assert checker_backs({**above, 'supports': SUPPORTS_THRESHOLD})
+    assert not checker_backs(below)
+    assert not checker_backs({'verdict': 'contradicts', 'supports': 1.0})
+    assert not checker_backs({'verdict': None, 'supports': 1.0})
+    assert checker_backs({'verdict': 'supports', 'supports': 0.0})
+    for score in (None, True, '0.9', float('nan'), float('inf'), -0.1, 1.1):
+        assert not checker_backs({**above, 'supports': score})
+    assert claim_reasons({'passed': True}, above, []) == []
+    assert claim_reasons({'passed': True}, below, []) == ['checker_disagrees']
+    assert claim_reasons({'passed': False}, above, []) == ['quote_not_found']
+    assert claim_reasons({'passed': True}, above, ['another:p1:1']) == ['contradicted']

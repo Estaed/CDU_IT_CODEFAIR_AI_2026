@@ -1,0 +1,1241 @@
+{
+ "key": "3c2598a430fa35b61815e21568239fd0541d1cae767282af7d02c7db5a59020d",
+ "kind": "audit-locate",
+ "response": {
+  "cost_usd": 0.6330800000000001,
+  "input_tokens": 41916,
+  "model": "claude-opus-5-5",
+  "output": {
+   "claims": [
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p1:3",
+       "quote": "Section: Application for urban social housing, A-0142."
+      },
+      {
+       "passage_id": "A-0142:p1:1",
+       "quote": "Ms K. applies for urban public housing in Darwin for herself and two dependent children."
+      }
+     ],
+     "claim_id": "a01",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p1:3",
+       "quote": "Household or account name as shown on the application: Ms K."
+      }
+     ],
+     "claim_id": "a02",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p1:3",
+       "quote": "Locality for service: Darwin, Northern Territory."
+      },
+      {
+       "passage_id": "A-0142:p16:1",
+       "quote": "I am currently staying in Darwin with my children while we seek secure accommodation."
+      },
+      {
+       "passage_id": "A-0142:p17:4",
+       "quote": "The current stay is recorded only as Darwin; the temporary host's address is restricted."
+      }
+     ],
+     "claim_id": "a03",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p2:1",
+       "quote": "Ms K. is the sole adult applicant."
+      }
+     ],
+     "claim_id": "a04",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p1:1",
+       "quote": "Ms K. applies for urban public housing in Darwin for herself and two dependent children."
+      }
+     ],
+     "claim_id": "a05",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p3:1",
+       "quote": "The household includes two dependent children, Niko K. and Elia K."
+      },
+      {
+       "passage_id": "A-0142:p13:1",
+       "quote": "Birth certificate extracts for Niko K. and Elia K. were sighted."
+      }
+     ],
+     "claim_id": "a06",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p1:3",
+       "quote": "Household size is three."
+      }
+     ],
+     "claim_id": "a07",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p40:3",
+       "quote": "The requested home needs sleeping space for one adult and two children, access to transport and a location that avoids contact near the former home."
+      },
+      {
+       "passage_id": "A-0142:p2:3",
+       "quote": "The family is using temporary accommodation and needs enough sleeping space for one adult and two children."
+      }
+     ],
+     "claim_id": "a08",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p40:1",
+       "quote": "Ms K. requests sleeping space suitable for one adult and two children and access to public transport."
+      },
+      {
+       "passage_id": "A-0142:p1:3",
+       "quote": "Preferred area is Darwin, with school access by public transport."
+      }
+     ],
+     "claim_id": "a09",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p2:1",
+       "quote": "She requests a location that lets them stay at their current school where possible."
+      }
+     ],
+     "claim_id": "a10",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p40:3",
+       "quote": "The requested home needs sleeping space for one adult and two children, access to transport and a location that avoids contact near the former home."
+      },
+      {
+       "passage_id": "A-0142:p51:4",
+       "quote": "Our service has worked with Ms K. since February and can confirm that the family needs a safe address away from the former home."
+      }
+     ],
+     "claim_id": "a11",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:3",
+       "quote": "Ms K. and her two children are fleeing family violence and cannot safely return to their current address."
+      },
+      {
+       "passage_id": "A-0142:p4:1",
+       "quote": "I request priority consideration because my children and I cannot safely return to the home we left in February."
+      }
+     ],
+     "claim_id": "a12",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p50:4",
+       "quote": "The service first spoke with Ms K. after the 2 February incident."
+      },
+      {
+       "passage_id": "A-0142:p51:3",
+       "quote": "Police attended the property on 2 February 2026."
+      }
+     ],
+     "claim_id": "a13",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:3",
+       "quote": "Police attended the property on 2 February 2026."
+      }
+     ],
+     "claim_id": "a14",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p4:3",
+       "quote": "The family left the former home after the February incident."
+      },
+      {
+       "passage_id": "A-0142:p4:1",
+       "quote": "I request priority consideration because my children and I cannot safely return to the home we left in February."
+      }
+     ],
+     "claim_id": "a15",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p35:1",
+       "quote": "My children and I have moved twice since the February incident."
+      },
+      {
+       "passage_id": "A-0142:p4:1",
+       "quote": "We have moved between short stays since then"
+      }
+     ],
+     "claim_id": "a16",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p34:4",
+       "quote": "The room is shared and crowded; there is no written tenancy or assured end date for the family."
+      },
+      {
+       "passage_id": "A-0142:p36:1",
+       "quote": "The room is shared and crowded, and I cannot offer a written tenancy or an assured end date."
+      },
+      {
+       "passage_id": "A-0142:p34:5",
+       "quote": "The family may use the room while I can make it available, but the arrangement is informal and shared with my household."
+      }
+     ],
+     "claim_id": "a17",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p34:4",
+       "quote": "The room is shared and crowded; there is no written tenancy or assured end date for the family."
+      },
+      {
+       "passage_id": "A-0142:p36:1",
+       "quote": "The room is shared and crowded, and I cannot offer a written tenancy or an assured end date."
+      }
+     ],
+     "claim_id": "a18",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p34:4",
+       "quote": "The room is shared and crowded; there is no written tenancy or assured end date for the family."
+      },
+      {
+       "passage_id": "A-0142:p36:1",
+       "quote": "The room is shared and crowded, and I cannot offer a written tenancy or an assured end date."
+      }
+     ],
+     "claim_id": "a19",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p34:4",
+       "quote": "The room is shared and crowded; there is no written tenancy or assured end date for the family."
+      },
+      {
+       "passage_id": "A-0142:p36:1",
+       "quote": "The room is shared and crowded, and I cannot offer a written tenancy or an assured end date."
+      }
+     ],
+     "claim_id": "a20",
+     "clause_id": "prio-category"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:6",
+       "quote": "Signed, Mara Ellin, Service Coordinator, Wattle Quay Family Support."
+      }
+     ],
+     "claim_id": "a21",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:6",
+       "quote": "Signed, Mara Ellin, Service Coordinator, Wattle Quay Family Support."
+      },
+      {
+       "passage_id": "A-0142:p49:1",
+       "quote": "We enclose our signed letter for Ms K.'s priority request."
+      }
+     ],
+     "claim_id": "a22",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:1",
+       "quote": "Wattle Quay Family Support | Housing assistance correspondence | 18 March 2026"
+      }
+     ],
+     "claim_id": "a23",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p50:1",
+       "quote": "We first met Ms K. after the February incident and discussed immediate safety options."
+      },
+      {
+       "passage_id": "A-0142:p50:4",
+       "quote": "The service first spoke with Ms K. after the 2 February incident."
+      }
+     ],
+     "claim_id": "a24",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p52:1",
+       "quote": "I confirm that direct correspondence to the former home is unsafe."
+      },
+      {
+       "passage_id": "A-0142:p52:4",
+       "quote": "Direct mail to the former home would be unsafe."
+      }
+     ],
+     "claim_id": "a25",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p44:6",
+       "quote": "Signed, Dr L. Merin, general practitioner."
+      }
+     ],
+     "claim_id": "a26",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p44:2",
+       "quote": "Paperbark Community Practice | Clinical correspondence A0142-44 | Consultation 2026-03-15"
+      }
+     ],
+     "claim_id": "a27",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p44:1",
+       "quote": "Ms K. reports anxiety and disrupted sleep following the family violence incident; a stable and safe home would support treatment."
+      }
+     ],
+     "claim_id": "a28",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p44:1",
+       "quote": "Ms K. reports anxiety and disrupted sleep following the family violence incident; a stable and safe home would support treatment."
+      }
+     ],
+     "claim_id": "a29",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p44:1",
+       "quote": "Ms K. reports anxiety and disrupted sleep following the family violence incident; a stable and safe home would support treatment."
+      }
+     ],
+     "claim_id": "a30",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p37:7",
+       "quote": "Yours sincerely, J. Callen, school liaison."
+      }
+     ],
+     "claim_id": "a31",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p37:1",
+       "quote": "Our staff observed intermittent late arrivals after the children's sleeping arrangements changed."
+      }
+     ],
+     "claim_id": "a32",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p39:1",
+       "quote": "I have observed that both children benefit from a predictable route and arrival time."
+      }
+     ],
+     "claim_id": "a33",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p46:3",
+       "quote": "Do not post to the former home or disclose a temporary stay to an unverified caller."
+      },
+      {
+       "passage_id": "A-0142:p1:1",
+       "quote": "The preferred contact method is a message through her nominated support worker because direct mail to the former home is unsafe."
+      }
+     ],
+     "claim_id": "a34",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p46:3",
+       "quote": "Do not post to the former home or disclose a temporary stay to an unverified caller."
+      },
+      {
+       "passage_id": "A-0142:p36:4",
+       "quote": "The host's location must remain confidential."
+      },
+      {
+       "passage_id": "A-0142:p5:1",
+       "quote": "The authority does not permit release of her current location to the former household."
+      }
+     ],
+     "claim_id": "a35",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p46:1",
+       "quote": "The application is to be discussed only with Ms K. or her authorised support worker."
+      },
+      {
+       "passage_id": "A-0142:p1:1",
+       "quote": "The preferred contact method is a message through her nominated support worker because direct mail to the former home is unsafe."
+      }
+     ],
+     "claim_id": "a36",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p5:3",
+       "quote": "It may not release the family's present location or speak for Ms K. on a housing decision."
+      },
+      {
+       "passage_id": "A-0142:p38:3",
+       "quote": "The school is not authorised to receive the family violence correspondence or the temporary address."
+      },
+      {
+       "passage_id": "A-0142:p41:3",
+       "quote": "Full clinical records and unrelated treatment information are outside this authority."
+      },
+      {
+       "passage_id": "A-0142:p53:3",
+       "quote": "Counselling notes are excluded."
+      }
+     ],
+     "claim_id": "a37",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p5:3",
+       "quote": "Wattle Quay Family Support may arrange appointments and transmit agreed documents."
+      }
+     ],
+     "claim_id": "a38",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p5:1",
+       "quote": "Ms K. authorises Wattle Quay Family Support to arrange appointment times and to send documents she has approved for this application."
+      },
+      {
+       "passage_id": "A-0142:p5:3",
+       "quote": "Wattle Quay Family Support may arrange appointments and transmit agreed documents."
+      }
+     ],
+     "claim_id": "a39",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p38:1",
+       "quote": "Ms K. permits a housing officer to confirm school attendance and transport needs with the school liaison."
+      },
+      {
+       "passage_id": "A-0142:p38:3",
+       "quote": "Ms K. consents to the school liaison confirming attendance and transport needs."
+      }
+     ],
+     "claim_id": "a40",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p38:1",
+       "quote": "She does not permit the school to be told the details of the family violence report."
+      },
+      {
+       "passage_id": "A-0142:p38:3",
+       "quote": "The school is not authorised to receive the family violence correspondence or the temporary address."
+      }
+     ],
+     "claim_id": "a41",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p38:3",
+       "quote": "The school is not authorised to receive the family violence correspondence or the temporary address."
+      },
+      {
+       "passage_id": "A-0142:p37:5",
+       "quote": "We have not been given permission to receive the family violence account or the temporary address."
+      }
+     ],
+     "claim_id": "a42",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p41:3",
+       "quote": "Ms K. permits her GP to send a short functional note."
+      },
+      {
+       "passage_id": "A-0142:p41:1",
+       "quote": "She does not consent to release of full clinical records."
+      }
+     ],
+     "claim_id": "a43",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p53:3",
+       "quote": "Counselling notes are excluded."
+      },
+      {
+       "passage_id": "A-0142:p53:1",
+       "quote": "The authority excludes unrelated counselling records."
+      }
+     ],
+     "claim_id": "a44",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p45:1",
+       "quote": "We ask for a private room so the children need not hear another account of the incident."
+      },
+      {
+       "passage_id": "A-0142:p54:4",
+       "quote": "A private room is requested and the children need not accompany her."
+      }
+     ],
+     "claim_id": "a45",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p45:4",
+       "quote": "She asked that the children not be present when the February incident is discussed."
+      },
+      {
+       "passage_id": "A-0142:p51:6",
+       "quote": "Please arrange a private conversation if further detail is needed; the children should not be present for that discussion."
+      }
+     ],
+     "claim_id": "a46",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p48:1",
+       "quote": "Current income statement: received date blank."
+      },
+      {
+       "passage_id": "A-0142:p58:1",
+       "quote": "Current income evidence is still outstanding; the intake team has not received an income statement or employer remittance advice."
+      }
+     ],
+     "claim_id": "a47",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p12:1",
+       "quote": "Australian passport sighted for Ms K.; name and date of birth matched the application."
+      }
+     ],
+     "claim_id": "a48",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p12:1",
+       "quote": "Australian passport sighted for Ms K.; name and date of birth matched the application."
+      }
+     ],
+     "claim_id": "a49",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p13:1",
+       "quote": "Birth certificate extracts for Niko K. and Elia K. were sighted."
+      }
+     ],
+     "claim_id": "a50",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p13:1",
+       "quote": "Birth certificate extracts for Niko K. and Elia K. were sighted."
+      }
+     ],
+     "claim_id": "a51",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p16:1",
+       "quote": "I am an Australian citizen and have lived in the Northern Territory continuously since 2021."
+      },
+      {
+       "passage_id": "A-0142:p12:1",
+       "quote": "Australian passport sighted for Ms K.; name and date of birth matched the application."
+      }
+     ],
+     "claim_id": "a52",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p16:1",
+       "quote": "I am an Australian citizen and have lived in the Northern Territory continuously since 2021."
+      }
+     ],
+     "claim_id": "a53",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p16:1",
+       "quote": "I am an Australian citizen and have lived in the Northern Territory continuously since 2021."
+      },
+      {
+       "passage_id": "A-0142:p16:2",
+       "quote": "Declaration reference A0142-16 | Made at Darwin on 2026-03-10"
+      }
+     ],
+     "claim_id": "a54",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p14:3",
+       "quote": "The account is issued in Ms K.'s name."
+      },
+      {
+       "passage_id": "A-0142:p14:2",
+       "quote": "Service locality: Darwin, Northern Territory."
+      }
+     ],
+     "claim_id": "a55",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p6:1",
+       "quote": "I do not own or partly own any residential property in Australia."
+      }
+     ],
+     "claim_id": "a56",
+     "clause_id": "elig-property"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p6:2",
+       "quote": "Declaration reference A0142-06 | Made at Darwin on 2026-03-10"
+      },
+      {
+       "passage_id": "A-0142:p6:1",
+       "quote": "I do not own or partly own any residential property in Australia."
+      }
+     ],
+     "claim_id": "a57",
+     "clause_id": "elig-property"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p19:3",
+       "quote": "The register query returned zero matches under the declared names."
+      },
+      {
+       "passage_id": "A-0142:p19:1",
+       "quote": "Search against the applicant's declared names returned no residential property interest in the Northern Territory register."
+      }
+     ],
+     "claim_id": "a58",
+     "clause_id": "elig-property"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p19:1",
+       "quote": "Search against the applicant's declared names returned no residential property interest in the Northern Territory register."
+      }
+     ],
+     "claim_id": "a59",
+     "clause_id": "elig-property"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:2",
+       "quote": "Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023."
+      }
+     ],
+     "claim_id": "a60",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:2",
+       "quote": "Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023."
+      }
+     ],
+     "claim_id": "a61",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:2",
+       "quote": "Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023."
+      },
+      {
+       "passage_id": "A-0142:p29:3",
+       "quote": "The closure date is 12 June 2023; the account was sent for later reconciliation."
+      }
+     ],
+     "claim_id": "a62",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:1",
+       "quote": "Tenancy file: Palmerston former public tenancy | Closure date: 12 June 2023 | Record series: signed surrender and final inspection."
+      },
+      {
+       "passage_id": "A-0142:p30:4",
+       "quote": "Tenant signature: Ms K. Property officer signature: A. Meren."
+      }
+     ],
+     "claim_id": "a63",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:2",
+       "quote": "No breach of the tenancy agreement recorded."
+      },
+      {
+       "passage_id": "A-0142:p32:4",
+       "quote": "The retrieved packet contains the agreed surrender and no attached breach notice."
+      }
+     ],
+     "claim_id": "a64",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:3",
+       "quote": "No termination notice or tribunal order is attached to this signed record."
+      },
+      {
+       "passage_id": "A-0142:p33:1",
+       "quote": "No termination order appears on the packet index."
+      }
+     ],
+     "claim_id": "a65",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:3",
+       "quote": "No termination notice or tribunal order is attached to this signed record."
+      }
+     ],
+     "claim_id": "a66",
+     "clause_id": "elig-former-tenancy"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p23:3",
+       "quote": "Arrears cleared in full. Balance $0.00."
+      },
+      {
+       "passage_id": "A-0142:p24:4",
+       "quote": "Housing Accounts confirms that the posted closing balance is zero and encloses the new statement for the account holder."
+      }
+     ],
+     "claim_id": "a67",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p8:3",
+       "quote": "Arrears balance $2,400.00."
+      },
+      {
+       "passage_id": "A-0142:p25:1",
+       "quote": "The January printout records arrears of $2,400.00; the March printout records a payment and a closing balance of $0.00."
+      }
+     ],
+     "claim_id": "a68",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p8:2",
+       "quote": "Posting history: Opening arrears carried from tenancy close, $2,700.00 debit."
+      }
+     ],
+     "claim_id": "a69",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p8:2",
+       "quote": "Payment received 18 July 2023, $100.00 credit. Payment received 7 August 2023, $100.00 credit. Payment received 21 August 2023, $100.00 credit."
+      }
+     ],
+     "claim_id": "a70",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p8:3",
+       "quote": "Payment plan proposed at $100 per fortnight."
+      },
+      {
+       "passage_id": "A-0142:p9:4",
+       "quote": "Housing Accounts has recorded the proposed $100 fortnightly arrangement."
+      }
+     ],
+     "claim_id": "a71",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p22:2",
+       "quote": "Amount remitted: $2,400.00."
+      },
+      {
+       "passage_id": "A-0142:p22:2",
+       "quote": "Date released: 2 March 2026."
+      },
+      {
+       "passage_id": "A-0142:p23:2",
+       "quote": "Support-agency remittance received 2 March 2026: $2,400.00 credit."
+      }
+     ],
+     "claim_id": "a72",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p24:1",
+       "quote": "The March statement is the latest account record in the file."
+      }
+     ],
+     "claim_id": "a73",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p23:2",
+       "quote": "Closing account balance at 4 March 2026: $0.00."
+      },
+      {
+       "passage_id": "A-0142:p23:3",
+       "quote": "Arrears cleared in full. Balance $0.00."
+      }
+     ],
+     "claim_id": "a74",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p24:4",
+       "quote": "Housing Accounts confirms that the posted closing balance is zero and encloses the new statement for the account holder."
+      },
+      {
+       "passage_id": "A-0142:p24:2",
+       "quote": "Housing Accounts | Correspondence reference A0142-24 | 2026-03-05"
+      }
+     ],
+     "claim_id": "a75",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p23:2",
+       "quote": "Opening balance brought forward from 15 January statement: $2,400.00 debit."
+      },
+      {
+       "passage_id": "A-0142:p23:2",
+       "quote": "Closing account balance at 4 March 2026: $0.00."
+      },
+      {
+       "passage_id": "A-0142:p24:1",
+       "quote": "The March statement is the latest account record in the file."
+      }
+     ],
+     "claim_id": "a76",
+     "clause_id": "elig-debts"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p15:2",
+       "quote": "Balance after this payment, before any later supply charges: $79.10."
+      }
+     ],
+     "claim_id": "a77",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p14:1",
+       "quote": "Northlight Utility Co. | Customer account: NL-A0142 | Issue date: 20 February 2026 | Account holder: Ms K."
+      },
+      {
+       "passage_id": "A-0142:p14:2",
+       "quote": "Service: residential electricity."
+      }
+     ],
+     "claim_id": "a78",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p15:2",
+       "quote": "Balance after this payment, before any later supply charges: $79.10."
+      }
+     ],
+     "claim_id": "a79",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p15:2",
+       "quote": "Amount received: $60.00."
+      },
+      {
+       "passage_id": "A-0142:p15:1",
+       "quote": "Northlight Utility Co. | Payment record | Account NL-A0142 | Receipt date 27 February 2026"
+      }
+     ],
+     "claim_id": "a80",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p15:2",
+       "quote": "Previous amount due on the 20 February account: $139.10."
+      },
+      {
+       "passage_id": "A-0142:p15:2",
+       "quote": "Balance after this payment, before any later supply charges: $79.10."
+      }
+     ],
+     "claim_id": "a81",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p17:4",
+       "quote": "The utility account and passport sighting were compared with the application name."
+      },
+      {
+       "passage_id": "A-0142:p17:1",
+       "quote": "The intake officer compared the application, utility account and citizenship sighting."
+      }
+     ],
+     "claim_id": "a82",
+     "clause_id": "elig-residency"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p58:1",
+       "quote": "Current income evidence is still outstanding; the intake team has not received an income statement or employer remittance advice."
+      },
+      {
+       "passage_id": "A-0142:p60:3",
+       "quote": "Items checked: application packet transferred with current-income request open."
+      }
+     ],
+     "claim_id": "a83",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p56:1",
+       "quote": "Please provide the most recent income statement or employer remittance advice for the urban housing application."
+      },
+      {
+       "passage_id": "A-0142:p56:2",
+       "quote": "Darwin housing intake | Correspondence reference A0142-56 | 2026-03-20"
+      }
+     ],
+     "claim_id": "a84",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p57:1",
+       "quote": "I received the request and will ask the paying authority for a current statement."
+      },
+      {
+       "passage_id": "A-0142:p57:2",
+       "quote": "Ms K. | Correspondence reference A0142-57 | 2026-03-22"
+      }
+     ],
+     "claim_id": "a85",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p59:1",
+       "quote": "A safe method for the remaining material has been given to Ms K."
+      },
+      {
+       "passage_id": "A-0142:p59:2",
+       "quote": "Darwin housing intake | Correspondence reference A0142-59 | 2026-03-23"
+      }
+     ],
+     "claim_id": "a86",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p60:1",
+       "quote": "File transfer date: 24 March 2026."
+      }
+     ],
+     "claim_id": "a87",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p60:3",
+       "quote": "Items checked: application packet transferred with current-income request open."
+      },
+      {
+       "passage_id": "A-0142:p60:1",
+       "quote": "Enclosed: application, identity sighting, property declaration, account history, former-tenancy closure, medical note, support correspondence and the outstanding-income request."
+      }
+     ],
+     "claim_id": "a88",
+     "clause_id": "elig-income"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:3",
+       "quote": "Ms K. and her two children are fleeing family violence and cannot safely return to their current address."
+      }
+     ],
+     "claim_id": "a89",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p4:3",
+       "quote": "The family left the former home after the February incident."
+      },
+      {
+       "passage_id": "A-0142:p52:4",
+       "quote": "Direct mail to the former home would be unsafe."
+      },
+      {
+       "passage_id": "A-0142:p49:4",
+       "quote": "The family is staying away from the former home."
+      },
+      {
+       "passage_id": "A-0142:p51:4",
+       "quote": "Our service has worked with Ms K. since February and can confirm that the family needs a safe address away from the former home."
+      }
+     ],
+     "claim_id": "a90",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:3",
+       "quote": "Ms K. and her two children are fleeing family violence and cannot safely return to their current address."
+      },
+      {
+       "passage_id": "A-0142:p51:4",
+       "quote": "Our service has worked with Ms K. since February and can confirm that the family needs a safe address away from the former home."
+      }
+     ],
+     "claim_id": "a91",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p53:3",
+       "quote": "Ms K. permits the housing office to ask the service coordinator about the housing-related statements in the letter."
+      },
+      {
+       "passage_id": "A-0142:p51:6",
+       "quote": "We can confirm the dates of our contact and discuss the housing-related circumstances with Ms K.'s consent."
+      }
+     ],
+     "claim_id": "a92",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p53:3",
+       "quote": "Ms K. permits the housing office to ask the service coordinator about the housing-related statements in the letter."
+      },
+      {
+       "passage_id": "A-0142:p53:1",
+       "quote": "Ms K. consented to the housing office asking the service coordinator about the letter's housing-relevant statements."
+      }
+     ],
+     "claim_id": "a93",
+     "clause_id": "prio-documentation"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p60:1",
+       "quote": "File transfer date: 24 March 2026."
+      }
+     ],
+     "claim_id": "a94",
+     "clause_id": "other"
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p60:3",
+       "quote": "Items checked: application packet transferred with current-income request open."
+      },
+      {
+       "passage_id": "A-0142:p58:1",
+       "quote": "Current income evidence is still outstanding; the intake team has not received an income statement or employer remittance advice."
+      }
+     ],
+     "claim_id": "a95",
+     "clause_id": "elig-income"
+    }
+   ]
+  },
+  "output_tokens": 14888,
+  "seconds": 101.8
+ }
+}

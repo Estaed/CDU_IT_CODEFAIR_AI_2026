@@ -1,6 +1,8 @@
 """``run --case <id>``: every v1 layer once, each writing ``runs/<case>/<stage>.json``.
 
-ingest -> checklist -> writer -> code checks -> checker -> scan -> pairs -> gate -> view.
+ingest -> checklist -> writer -> code checks -> checker -> scan -> pairs -> gate -> audit
+-> view. The audit (the summary under audit, ``readmark.audit``) runs on the demo file only and
+after the gate, so it can never change required reading.
 
 Stage files hold case text (synthetic) and policy offsets and hashes, never policy text beyond
 the clause sentences and the quotes the screen shows (contract, Run outputs).
@@ -14,6 +16,8 @@ from pathlib import Path
 import jsonschema
 
 from readmark import SCHEMAS_DIR, case_run_dir, dumps
+from readmark.audit import AUDIT_CASES, audit_summary, view_block
+from readmark.audit.claude import ClaudeAuditor
 from readmark.cache import Cache
 from readmark.checklist import anchor, load_clauses
 from readmark.checks import check_fact, claim_reasons, claim_status
@@ -32,6 +36,7 @@ from readmark.gate import required_reading
 from readmark.ingest import (
     POLICIES,
     case_passages,
+    case_path,
     load_lock,
     passage_key,
     policy_passages,
@@ -83,14 +88,18 @@ def named_passage_ids(view: dict) -> set[str]:
         ids |= {m["passage_id"] for m in clause["possibly_missed"]}
     for item in [*view["required_reading"], *view["suggested_reading"]]:
         ids.add(item["passage_id"])
+    for claim in (view.get("audit") or {}).get("claims", []):
+        ids |= {c["passage_id"] for c in claim["citations"]}
+        ids |= set(claim["contradicted_by"])
     return ids
 
 
 def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: list[dict],
                lock: dict, facts: list[dict], checks: dict, verdicts: dict, gate: dict,
-               models: dict, cross: dict) -> dict:
+               models: dict, cross: dict, audit: dict | None = None) -> dict:
     """``cross`` holds the cross-passage results: ``contradictions`` and ``possibly_missed``
-    per clause, and ``contradicted_by`` and ``reasons`` per claim."""
+    per clause, and ``contradicted_by`` and ``reasons`` per claim. ``audit`` is the summary
+    under audit's view block, ``None`` when no summary was audited."""
     passages = {p["passage_id"]: p for p in [*case, *policy]}
     claims, missing = [], {}
     for fact in facts:
@@ -171,6 +180,7 @@ def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: l
         "required_reading": gate["required"],
         "suggested_reading": gate["suggested"],
         "cap": gate["cap"],
+        "audit": audit,
     }
     # Sources last, from everything the view names, so no passage id is ever left without one.
     view["sources"] = {pid: source_entry(pid, passages)
@@ -187,12 +197,19 @@ def validate_view(view: dict) -> None:
 
 
 def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
-        checker_impl=None, out_dir: Path | None = None) -> dict:
-    """Run every layer once and write the stage files. ``writer`` and ``checker_impl`` replace
-    the live models (tests use fixed ones); ``replay`` reads every response from the cache.
+        checker_impl=None, out_dir: Path | None = None, audit: bool | None = None,
+        auditor=None) -> dict:
+    """Run every layer once and write the stage files. ``writer``, ``checker_impl`` and
+    ``auditor`` replace the live models (tests use fixed ones); ``replay`` reads every response
+    from the cache.
 
     The scan and the contradiction pairs are Jev's jobs: they run on ``checker_impl`` when it
-    offers ``scan`` and ``compare`` (Jev, or a test's fixed checker), else on Jev."""
+    offers ``scan`` and ``compare`` (Jev, or a test's fixed checker), else on Jev. The summary
+    under audit runs when ``audit`` is true. By default it runs on the cases in ``AUDIT_CASES``
+    and only on a real run: a run with a fixed writer or checker has no real map to audit the
+    summary against, and must never reach Claude for it, so it audits only when asked."""
+    if audit is None:
+        audit = case_id in AUDIT_CASES and writer is None and checker_impl is None
     out = out_dir or case_run_dir(case_id)
     cache = Cache(out / "cache", replay=replay)
 
@@ -278,9 +295,21 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         possibly_missed=[{**m, "clause_id": cid} for cid in clause_ids for m in missed[cid]],
     )
 
-    # 9. View.
+    # 9. Summary under audit: the map's claims, pairs and required passages go in; nothing
+    # comes back into the gate.
+    record = None
+    if audit:
+        map_claims = [{"claim_id": f["claim_id"], "clause_id": f["clause_id"],
+                       "claim": f["claim"], "citations": f["citations"],
+                       "status": claim_status(reasons[f["claim_id"]])} for f in found]
+        record = audit_summary(
+            case_id, case_path(case_id).read_text(encoding="utf-8"), map_claims,
+            set(case_by_id), auditor=auditor or ClaudeAuditor(cache), checker=checker_impl,
+            pairs=all_pairs, required={i["passage_id"] for i in gate["required"]}, cache=cache)
+
+    # 10. View.
     view = build_view(case_meta, case, policy, clauses, lock, facts, checks, verdicts, gate,
-                      models, cross)
+                      models, cross, view_block(record))
     validate_view(view)
 
     job_models = getattr(cross_impl, "job_models", {})
@@ -316,6 +345,7 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
                 clause_ids.index(v["clause_id"]), passage_key(v["a"]), passage_key(v["b"]))),
         },
         "gate": gate,
+        **({"audit": record} if record else {}),
         "view": view,
     }
     for name, data in stages.items():

@@ -1,4 +1,5 @@
 # Task-06: Summary under audit on the demo file
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `ultracode` · effort `xhigh`
 > *Why:* Readmark's riskiest assumption is that it finds real errors in a summary we did not
 > write; this builds that path on A-0142, so the evaluation wave can measure it.
@@ -35,17 +36,17 @@ mutation set and the held-out file all go through it. The screen's "Summary unde
 (Task-07) renders this block.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0; the A-0142 replay smoke validates the `audit` block.
-- [ ] `run --case A-0142 --replay` twice gives byte-identical `view.json` with no keys and `claude`
+- [x] `uv run python scripts/gate.py` exits 0; the A-0142 replay smoke validates the `audit` block.
+- [x] `run --case A-0142 --replay` twice gives byte-identical `view.json` with no keys and `claude`
   not on PATH; the frozen summary comes from the cache.
-- [ ] A test: a fixed summary that states the January arrears as current, against the stub's
+- [x] A test: a fixed summary that states the January arrears as current, against the stub's
   passages, yields a claim that is flagged (contradicted, checker disagrees or quote not found) and
   never `supported`.
-- [ ] A test: a summary that leaves out a supported decisive map claim lists it in `omitted`.
-- [ ] A test: every sentence of the summary appears in `sentences`, in order; none is dropped.
-- [ ] A test calls the reusable claim path directly with two claim sentences and gets two claims in
+- [x] A test: a summary that leaves out a supported decisive map claim lists it in `omitted`.
+- [x] A test: every sentence of the summary appears in `sentences`, in order; none is dropped.
+- [x] A test calls the reusable claim path directly with two claim sentences and gets two claims in
   the view's claim shape.
-- [ ] `runs/A-0142/audit.json` holds the summary, its model id, prompt and date, the count of audit
+- [x] `runs/A-0142/audit.json` holds the summary, its model id, prompt and date, the count of audit
   claims per status and the count left out, each with n. The builder's report lists what the real
   summary got wrong in plain words, each with its passage, or says it found nothing.
 

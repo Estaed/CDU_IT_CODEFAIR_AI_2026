@@ -1,0 +1,324 @@
+{
+ "key": "34035263afe0e6f3479fb0871c6555964352822f37fa0bc1b8687f735b767cac",
+ "kind": "audit-split",
+ "response": {
+  "cost_usd": 0.08498399999999999,
+  "input_tokens": 4044,
+  "model": "claude-opus-5-5",
+  "output": {
+   "sentences": [
+    {
+     "claims": [
+      "The application is urban social housing application A-0142.",
+      "Application A-0142 is for Ms K.",
+      "Ms K. is in Darwin NT."
+     ],
+     "sentence_id": "s01"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s02"
+    },
+    {
+     "claims": [
+      "Ms K. is the sole adult applicant.",
+      "Ms K. is applying for urban public housing in Darwin.",
+      "Ms K. has two dependent children, Niko K. and Elia K.",
+      "Ms K.'s household is a household of three."
+     ],
+     "sentence_id": "s03"
+    },
+    {
+     "claims": [
+      "Ms K.'s household needs sleeping space for one adult and two children.",
+      "Ms K.'s household needs public transport access.",
+      "Ms K.'s household needs a location that keeps the children at their current school.",
+      "Ms K.'s household needs a location away from the former home."
+     ],
+     "sentence_id": "s04"
+    },
+    {
+     "claims": [
+      "The priority basis for application A-0142 is family violence."
+     ],
+     "sentence_id": "s05"
+    },
+    {
+     "claims": [
+      "An incident occurred on 2 February 2026.",
+      "Police attended the incident on 2 February 2026.",
+      "After the incident on 2 February 2026, Ms K.'s family left their home."
+     ],
+     "sentence_id": "s06"
+    },
+    {
+     "claims": [
+      "Since leaving their home, Ms K.'s family have moved twice between short stays.",
+      "Ms K.'s family are now in a crowded, informal shared room with a host in Darwin.",
+      "The current living situation of Ms K.'s family is documented on pp. 34 and 36."
+     ],
+     "sentence_id": "s07"
+    },
+    {
+     "claims": [
+      "Ms K.'s family have no tenancy in their current accommodation.",
+      "Ms K.'s family's current accommodation has no assured end date."
+     ],
+     "sentence_id": "s08"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s09"
+    },
+    {
+     "claims": [
+      "Mara Ellin is from Wattle Quay Family Support.",
+      "Wattle Quay Family Support provided a signed support letter.",
+      "The Wattle Quay Family Support letter is on p. 51.",
+      "Wattle Quay Family Support provided a chronology.",
+      "Wattle Quay Family Support provided safety follow-ups."
+     ],
+     "sentence_id": "s10"
+    },
+    {
+     "claims": [
+      "Dr L. Merin is the GP who wrote the GP note.",
+      "The GP note is dated 15 Mar.",
+      "The GP note records anxiety.",
+      "The GP note records disrupted sleep.",
+      "The GP note states that a stable, safe home would support treatment."
+     ],
+     "sentence_id": "s11"
+    },
+    {
+     "claims": [
+      "J. Callen is the school liaison.",
+      "The school liaison reports that the children are arriving late intermittently.",
+      "The school liaison reports that the children benefit from a predictable routine."
+     ],
+     "sentence_id": "s12"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s13"
+    },
+    {
+     "claims": [
+      "Nothing is to be sent to the former home.",
+      "The temporary location must not be disclosed."
+     ],
+     "sentence_id": "s14"
+    },
+    {
+     "claims": [
+      "All contact goes through the support worker."
+     ],
+     "sentence_id": "s15"
+    },
+    {
+     "claims": [
+      "Ms K.'s consents are narrowly scoped."
+     ],
+     "sentence_id": "s16"
+    },
+    {
+     "claims": [
+      "The support service may arrange appointments.",
+      "The support service may send approved documents only."
+     ],
+     "sentence_id": "s17"
+    },
+    {
+     "claims": [
+      "The school may confirm attendance and transport only.",
+      "The school may not provide family violence details.",
+      "The school may not provide the address."
+     ],
+     "sentence_id": "s18"
+    },
+    {
+     "claims": [
+      "The GP may provide a functional note only."
+     ],
+     "sentence_id": "s19"
+    },
+    {
+     "claims": [
+      "Counselling notes are excluded."
+     ],
+     "sentence_id": "s20"
+    },
+    {
+     "claims": [
+      "Interviews should be held in a private room.",
+      "Interviews should be held without the children present."
+     ],
+     "sentence_id": "s21"
+    },
+    {
+     "claims": [
+      "The eligibility evidence has been verified."
+     ],
+     "sentence_id": "s22"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s23"
+    },
+    {
+     "claims": [
+      "Ms K.'s passport was sighted.",
+      "Ms K.'s passport is on p. 12.",
+      "The children's birth extracts were sighted.",
+      "The children's birth extracts are on p. 13."
+     ],
+     "sentence_id": "s24"
+    },
+    {
+     "claims": [
+      "Ms K. is an Australian citizen.",
+      "Ms K. has been in the NT continuously since 2021.",
+      "Ms K.'s continuous NT residence since 2021 is supported by a stat dec on p. 16.",
+      "Ms K. has a utility account in her name in Darwin."
+     ],
+     "sentence_id": "s25"
+    },
+    {
+     "claims": [
+      "Ms K. declared no property.",
+      "Ms K.'s property declaration is on p. 6.",
+      "An NT register search returned zero matches.",
+      "The NT register search is on p. 19."
+     ],
+     "sentence_id": "s26"
+    },
+    {
+     "claims": [
+      "Ms K. had a former tenancy in Palmerston.",
+      "The Palmerston tenancy ended by mutual agreement.",
+      "The Palmerston tenancy ended on 12 June 2023.",
+      "The Palmerston tenancy closure is recorded in a signed closure entry on p. 30."
+     ],
+     "sentence_id": "s27"
+    },
+    {
+     "claims": [
+      "There is no breach in the packet.",
+      "There is no termination notice in the packet.",
+      "There is no tribunal order in the packet."
+     ],
+     "sentence_id": "s28"
+    },
+    {
+     "claims": [
+      "Ms K.'s former-tenancy debt is now cleared."
+     ],
+     "sentence_id": "s29"
+    },
+    {
+     "claims": [
+      "The January 2026 ledger showed $2,400 arrears.",
+      "The January 2026 ledger showed a $2,700 opening balance.",
+      "The January 2026 ledger showed three $100 payments in 2023.",
+      "A $100/fortnight payment plan was proposed."
+     ],
+     "sentence_id": "s30"
+    },
+    {
+     "claims": [
+      "Wattle Quay paid $2,400 on 2 March 2026."
+     ],
+     "sentence_id": "s31"
+    },
+    {
+     "claims": [
+      "The March 2026 ledger is the latest ledger.",
+      "The March 2026 ledger shows $0.00.",
+      "Housing Accounts confirmed the $0.00 balance on 5 March."
+     ],
+     "sentence_id": "s32"
+    },
+    {
+     "claims": [
+      "The January 2026 ledger figure is superseded."
+     ],
+     "sentence_id": "s33"
+    },
+    {
+     "claims": [
+      "The utility account issue is minor."
+     ],
+     "sentence_id": "s34"
+    },
+    {
+     "claims": [
+      "Ms K.'s utility account is with Northlight electricity.",
+      "The Northlight electricity account had $79.10 owing.",
+      "A $60 payment was made on the Northlight electricity account on 27 Feb.",
+      "The $79.10 owing was after the $60 payment on 27 Feb.",
+      "The Northlight electricity account is relevant only as residence evidence."
+     ],
+     "sentence_id": "s35"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s36"
+    },
+    {
+     "claims": [
+      "The current income statement or employer remittance advice has still not been received."
+     ],
+     "sentence_id": "s37"
+    },
+    {
+     "claims": [
+      "The income statement was requested on 20 Mar.",
+      "Ms K. replied on 22 Mar that she would get an income statement from the paying authority.",
+      "Intake gave Ms K. a safe delivery method on 23 Mar.",
+      "The file was handed to the delegated officer on 24 March 2026.",
+      "The income evidence item was still open when the file was handed to the delegated officer."
+     ],
+     "sentence_id": "s38"
+    },
+    {
+     "claims": [],
+     "sentence_id": "s39"
+    },
+    {
+     "claims": [
+      "The support letter on p. 51 says the family \"cannot safely return to their current address\"."
+     ],
+     "sentence_id": "s40"
+    },
+    {
+     "claims": [
+      "Every document other than the support letter refers to the former home.",
+      "The phrase \"current address\" in the support letter looks like a wording slip."
+     ],
+     "sentence_id": "s41"
+    },
+    {
+     "claims": [
+      "It may be worth clarifying the support letter wording with the coordinator.",
+      "Ms K.'s consent on p. 53 permits clarifying the support letter wording with the coordinator."
+     ],
+     "sentence_id": "s42"
+    },
+    {
+     "claims": [
+      "The file ends on 24 March 2026."
+     ],
+     "sentence_id": "s43"
+    },
+    {
+     "claims": [
+      "Any income evidence that arrived after 24 March 2026 is not in the file."
+     ],
+     "sentence_id": "s44"
+    }
+   ]
+  },
+  "output_tokens": 2632,
+  "seconds": 22.9
+ }
+}

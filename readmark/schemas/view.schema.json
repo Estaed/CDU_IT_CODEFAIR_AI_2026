@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "readmark/view.schema.json",
   "title": "Readmark review view (runs/<case>/view.json)",
-  "description": "Everything the review screen shows for one case. Three status lists stay separate: claim checks (claims[].status), clause coverage (clauses[].coverage) and the clause outcome, which only the officer sets on screen and which therefore never appears here. Policy passage text is absent (text: null); the server reads it from the pinned PDF on demand. Version 2 adds the cross-passage checks (Task-05): claims[].contradicted_by, clauses[].contradictions, clauses[].possibly_missed, and reading items with clause_ids and the possibly_missed reason. Every passage id named anywhere in the view has an entry in sources; JSON Schema cannot express that, so readmark.pipeline.validate_view checks it in code.",
+  "description": "Everything the review screen shows for one case. Three status lists stay separate: claim checks (claims[].status), clause coverage (clauses[].coverage) and the clause outcome, which only the officer sets on screen and which therefore never appears here. Policy passage text is absent (text: null); the server reads it from the pinned PDF on demand. Version 2 adds the cross-passage checks (Task-05): claims[].contradicted_by, clauses[].contradictions, clauses[].possibly_missed, and reading items with clause_ids and the possibly_missed reason. Within version 2, Task-06 adds audit: the summary under audit, or null when no summary was audited. Every passage id named anywhere in the view, the audit's claims included, has an entry in sources; JSON Schema cannot express that, so readmark.pipeline.validate_view checks it in code.",
   "type": "object",
   "required": ["schema_version", "case", "policies", "models", "clauses", "claims", "sources",
-               "required_reading", "suggested_reading", "cap"],
+               "required_reading", "suggested_reading", "cap", "audit"],
   "additionalProperties": false,
   "properties": {
     "schema_version": {"const": 2},
@@ -118,61 +118,7 @@
         }
       }
     },
-    "claims": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["claim_id", "clause_id", "claim", "citations", "values_missing", "checker",
-                     "contradicted_by", "status", "required"],
-        "additionalProperties": false,
-        "properties": {
-          "claim_id": {"type": "string"},
-          "clause_id": {"type": "string"},
-          "claim": {"type": "string"},
-          "citations": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["passage_id", "quote", "quote_found", "passage_exists"],
-              "additionalProperties": false,
-              "properties": {
-                "passage_id": {"type": "string"},
-                "quote": {"type": "string"},
-                "quote_found": {"type": "boolean"},
-                "passage_exists": {"type": "boolean"}
-              }
-            }
-          },
-          "values_missing": {"type": "array", "items": {"type": "string"}},
-          "checker": {
-            "oneOf": [
-              {"type": "null"},
-              {
-                "type": "object",
-                "required": ["claim_id", "verdict", "probability", "supports"],
-                "additionalProperties": false,
-                "properties": {
-                  "claim_id": {"type": "string"},
-                  "verdict": {"enum": ["supports", "contradicts", "not_enough_information", null]},
-                  "probability": {"type": ["number", "null"]},
-                  "supports": {"type": ["number", "null"]}
-                }
-              }
-            ]
-          },
-          "contradicted_by": {
-            "description": "Passage ids that contradict a passage this claim rests on (its quote was found in one side of a contradicting pair, and it does not cite the other side). Empty when none.",
-            "type": "array",
-            "items": {"type": "string"}
-          },
-          "status": {
-            "description": "contradicted when contradicted_by is non-empty, and it ranks first; then quote_not_found (a quote not in its passage, a number or date in no quote, or no citation at all); then checker_disagrees; else supported.",
-            "enum": ["supported", "checker_disagrees", "contradicted", "quote_not_found"]
-          },
-          "required": {"type": "boolean"}
-        }
-      }
-    },
+    "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}},
     "sources": {
       "type": "object",
       "additionalProperties": {
@@ -196,9 +142,107 @@
     },
     "required_reading": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/reading"}},
     "suggested_reading": {"type": "array", "items": {"$ref": "#/$defs/reading"}},
-    "cap": {"const": 8}
+    "cap": {"const": 8},
+    "audit": {
+      "description": "The summary under audit (Task-06): a plain Claude summary of the case file from the one-line prompt, frozen with its model id, prompt and date, split into sentences and then claims, each claim checked exactly as the evidence map checks its own. It adds nothing to required_reading. null when no summary was audited (every case but the demo file).",
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["model", "prompt", "created", "summary", "sentences", "claims", "omitted"],
+          "additionalProperties": false,
+          "properties": {
+            "model": {"type": "string", "minLength": 1},
+            "prompt": {"type": "string", "minLength": 1},
+            "created": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+            "summary": {"type": "string", "minLength": 1},
+            "sentences": {
+              "description": "Every sentence of the summary, in order, markdown markup removed; claim_ids name the audit claims split from it (empty for a heading or framing line).",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["sentence_id", "text", "claim_ids"],
+                "additionalProperties": false,
+                "properties": {
+                  "sentence_id": {"type": "string", "pattern": "^s\\d{2,}$"},
+                  "text": {"type": "string", "minLength": 1},
+                  "claim_ids": {"type": "array", "items": {"type": "string", "pattern": "^a\\d{2,}$"}}
+                }
+              }
+            },
+            "claims": {
+              "description": "The summary's claims, ids a01, a02, ..., in the shape of claims[]. A claim no passage supports shows quote_not_found; none is dropped. required says whether a cited passage is already in required_reading.",
+              "type": "array",
+              "items": {"$ref": "#/$defs/claim"}
+            },
+            "omitted": {
+              "description": "Evidence-map claims (claims[].claim_id) that are supported, on a decisive clause and rest on a case passage, which the summary never states: left out of the summary, in clause order.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["claim_id", "clause_id"],
+                "additionalProperties": false,
+                "properties": {"claim_id": {"type": "string"}, "clause_id": {"type": "string"}}
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "$defs": {
+    "claim": {
+      "type": "object",
+      "required": ["claim_id", "clause_id", "claim", "citations", "values_missing", "checker",
+                   "contradicted_by", "status", "required"],
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {"type": "string"},
+        "clause_id": {"type": "string"},
+        "claim": {"type": "string"},
+        "citations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["passage_id", "quote", "quote_found", "passage_exists"],
+            "additionalProperties": false,
+            "properties": {
+              "passage_id": {"type": "string"},
+              "quote": {"type": "string"},
+              "quote_found": {"type": "boolean"},
+              "passage_exists": {"type": "boolean"}
+            }
+          }
+        },
+        "values_missing": {"type": "array", "items": {"type": "string"}},
+        "checker": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["claim_id", "verdict", "probability", "supports"],
+              "additionalProperties": false,
+              "properties": {
+                "claim_id": {"type": "string"},
+                "verdict": {"enum": ["supports", "contradicts", "not_enough_information", null]},
+                "probability": {"type": ["number", "null"]},
+                "supports": {"type": ["number", "null"]}
+              }
+            }
+          ]
+        },
+        "contradicted_by": {
+          "description": "Passage ids that contradict a passage this claim rests on (its quote was found in one side of a contradicting pair, and it does not cite the other side). Empty when none.",
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "status": {
+          "description": "contradicted when contradicted_by is non-empty, and it ranks first; then quote_not_found (a quote not in its passage, a number or date in no quote, or no citation at all); then checker_disagrees; else supported.",
+          "enum": ["supported", "checker_disagrees", "contradicted", "quote_not_found"]
+        },
+        "required": {"type": "boolean"}
+      }
+    },
     "model": {
       "type": "object",
       "required": ["name", "model"],

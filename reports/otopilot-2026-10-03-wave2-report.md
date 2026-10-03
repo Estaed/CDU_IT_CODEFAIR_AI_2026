@@ -1,4 +1,4 @@
-# otopilot report, 2026-10-03: wave 2 (Task-05..08)
+# otopilot report, 2026-10-03: wave 2 (Task-05..09)
 
 Plan: [otopilot-2026-10-03-wave2-plan.md](otopilot-2026-10-03-wave2-plan.md). BASE_SHA `f6fa15f`
 (2a), `961a3d4` (2b). Orchestrator `claude-opus-5-5` (this session). Approved just before 12:24
@@ -12,7 +12,7 @@ ACST; wave 2a launched 12:29.
 | Task-08 | 2a | same Workflow, spec lens | green | 1 (no fix round) | 12:29–13:00 | lane (0), main (0: ruff ok, 39 passed, both smokes ok) | `961a3d4` |
 | Task-06 | 2b | ultracode Workflow `wf_e04d13ff-b3e`, spec lens | green | 1 (no fix round) | 13:03–14:06 | lane (0), main (0: ruff ok, 49 passed, both smokes ok) | `337aff2` |
 | Task-07 | 2b | same Workflow, screen lens, 1 fix round; attempt 2 `wf_3c54762c-ada`, screen lens | green on attempt 2, eye check pending: 1 | 2 | 13:03–14:07; attempt 2 14:10–14:26 | attempt 1: lane (0: 43 passed); main after Task-06 (1: 2 failed, 51 passed); pick reverted in `67411ba`. Attempt 2: lane (0: 44 passed), main (0: 54 passed) | `4faaeb4` |
-| Task-09 | 2c | Codex bee `gpt-6.1-sol`/`high`, network on | running | | from 14:28 | | |
+| Task-09 | 2c | Codex bee `gpt-6.1-sol`/`high`, network on (added by Tarık at 14:20) | green | 1 | 14:28–14:50 | bee: gate 0 (60 passed); orchestrator: lane (0: 60 passed), main (0: 60 passed) | `ee086e1` |
 
 Failure counts: Task-07 `0 -> 2` (lane gate 0 fail, main gate 2 fail:
 `test_guided_review_flow_on_a0142[1280]` and `[1440]`). The flow test expected A-0142's audit tab
@@ -28,6 +28,39 @@ an integration preview (main's HEAD without `data/heldout`, plus the lane's scre
   `A-0142:p8:3`–`A-0142:p23:3` is contradicting (0.58). Required reading 8, suggested 47, no
   passage twice; every passage id the view names has a `sources` entry.
 - Task-08: `eval --part checker --replay` twice with no key and no `claude`: `runs/eval/` unchanged.
+
+- Task-06: the same replay check on main: byte-identical with no key and no `claude`. One
+  `summary-*` file in the cache; audit 95 claims, 44 sentences, 9 omitted.
+- Task-09: the same replay check: byte-identical. Audit after the fix: supported 73,
+  quote not found 11, checker disagrees 11, contradicted 0 (n=95). The two real errors (a36, a47)
+  are still `checker_disagrees`. The March "debt cleared" map claim (c15) is now `supported`.
+
+## What 2c produced (Task-09, Codex `gpt-6.1-sol`)
+- **Audit flags 28 → 22** (n=95 claims):
+  - contradicted 4 → 0;
+  - quote not found 13 → 11;
+  - checker disagrees 11 → 11.
+- Why only 2 of the 13 quote-not-found went away: the bee says the remaining failures are honest.
+  The date or reference really is not in the frozen quote, or zero is written in words. It did not
+  change the locator to manufacture citations.
+- **The pair rule:** a claim that cites one side of a pair is now checked by Jev against the other
+  side. The pair itself stays under Debts (0.58), and both passages stay required.
+- **Possibly missed:** prio-documentation 28 → 25 and prio-category 19 → 18. The other clauses are
+  unchanged (n=357 passages scanned). The duplicate rule is conservative (a binary duplicate
+  probability of at least 0.9), so the lists stay long.
+- **Required reading** is still 8. p23:2 left and p51:5 (the support-agency letter, a gold page)
+  came in, so 3 of the 5 gold required pages are now required (p8, p23, p51; n=5).
+- **Cost:** 24 new Jev calls and 0 Claude calls. All 358 original cache files keep their SHA-256.
+  To keep the coverage request byte-identical, the bee pinned its original candidate ids in
+  `runs/A-0142/cache/coverage-input.json`. The "left out" list is therefore computed against the
+  pre-Task-09 candidates.
+- **Screen tests:** 4 assertions in `tests/test_screen.py` changed (lines 280, 311–313), all values
+  pinned to A-0142's data. The intro's flagged example is now "Checker disagrees". The March claim
+  is now "Supported" with "the second checker agrees".
+- **Integration:** the Codex sandbox could not write the worktree's git index (as in wave 1), so
+  the orchestrator made the single commit after checking the diff stayed inside `OWNS`. The bee
+  had also written two report files under `runs/A-0142/` that are not stage files; they were left
+  out of the commit (kept in `readmark-lanes/logs/task-09-bee-report.md`).
 
 ## What 2a produced
 
@@ -122,7 +155,8 @@ Left for the polish wave:
 6. **The riskiest assumption's first signal is weak precision (Task-06).** The audit found 2 real
    errors, but 26 of its 28 flags were false (n=95 claims). Most come from two fixable causes,
    the date format check and the pair rule. A fix before the evaluation wave would move the frozen
-   numbers, so it has to be decided before 7 Oct.
+   numbers, so it has to be decided before 7 Oct. **Decided by Tarık at 14:20: fixed in Task-09**
+   (28 → 22 flags; the remaining quote failures are honest; checker-disagrees is unchanged at 11).
 7. **"Left out of the summary" overstates (Task-06 lens, 50).** The coverage call marks a fact as
    left out when the summary gives the core but not every detail (c21, c02).
 8. **Three cosmetic sentence-split defects** in the frozen summary: literal `**` in s27, and two
@@ -137,7 +171,6 @@ Left for the polish wave:
 | Task-05 | spec | 55 | Pair wording tuned after the demo pair returned "agree" | left; item 1 above |
 | Task-05 | spec | 35 | Correct March claim marked contradicted | left; item 3 above |
 | Task-08 | spec | 52 | Jev's "probability" is the API's `confidence`, and nothing says so | left; item 4 above |
-
 | Task-06 | spec | 60 | Most flags on the real summary are false alarms | left; item 6 above |
 | Task-06 | spec | 50 | Some "left out" entries are facts the summary states | left; item 7 above |
 | Task-06 | spec | 45 | Sentence s27 keeps literal `**` | left; item 8 above |
@@ -146,6 +179,11 @@ Left for the polish wave:
 | Task-07 | screen | 50 | First-run panel says "Code found every quote in its passage" as fixed text | left |
 | Task-07 | screen | 45 | Debts lists the same two passages in "Open before you sign" and in "Passages that disagree" before any evidence | left |
 | Task-07 | screen | 30 | JSON record mixes UTC and +09:30 (the HTML export uses one zone, as accepted) | left |
+| Task-07 a2 | screen | 70 | On the audit tab, a sentence with one claim hides that claim, so its reason names figures not in the sentence (`web/app.js:610`) | left; polish wave |
+| Task-07 a2 | screen | 45 | Source pane says "no claim uses it", then lists a summary claim resting on that passage | left |
+
+Task-09 (a Codex bee) had no review panel: otopilot's lenses are part of the ultracode engine.
+Its gate ran in the lane and on main, and the orchestrator checked the replay on main.
 
 No finding reached 80 in 2a, so no fix round ran there. The Task-07 lens's 10-second answer
 (first-time viewer): "Open page 16, paragraph 1, in the Residency clause", read from the
@@ -158,6 +196,19 @@ independently from the cached verdicts and found them right.
 |---|---|---|
 | 12:19 plan | 25% | 82% |
 | 13:00 before 2b | — | 84% |
+| 14:09 before Task-07 attempt 2 | — | 87% |
+| 14:54 close | 73% | 87% |
+
+Codex (Task-09): 5-hour 0% → 10%, weekly 5% → 6%. The whole run moved the Claude weekly window
+82% → 87%, inside the plan's 4–8 point estimate.
+
+## Awaiting eye check
+- **Task-07, the review screen (layout B).** Run `uv run python -m readmark serve --case A-0142`
+  and open the printed address, or look at `reports/screens/2026-10-03-wave2/task-07-r1-*` and
+  `task-07-a2-r1-*` (1280 and 1440 wide). Check: a first-time viewer names the next step within 10
+  seconds. The layout should match Blueprint → Decisions (layout B), with the look of design A.
+  Once you approve it, its screenshots go to `design/screens/` (Blueprint → Verification).
+- **Task-00's `readmark/checklist/clauses.yaml`** (from wave 1): the eight clauses read right.
 
 ## Integration notes
 - A parallel session committed `deed747` (`notes.md`, a home screen moved to *After v1*) and
@@ -167,3 +218,13 @@ independently from the cached verdicts and found them right.
   they did not need it.
 - 2a worktrees removed (no junctions; files were copied); `data/policies/` on main still holds its
   five PDFs and `policies.lock.json`.
+- Cleanup at close: all five run worktrees are unregistered (`git worktree list` shows only main).
+  One folder is left: `readmark-lanes/task-09/.pytest_cache`. The Codex sandbox created it with an
+  ACL this session cannot read or delete (`Access is denied`). It is outside the repo and harmless.
+  It goes with `takeown /f <dir> /r /d y` and then `rd /s /q` from an admin prompt. Logged with
+  `gardener.py`.
+- Two orchestrator lessons, written down in the vault: a `plan-wave` line (parallel tasks that
+  share data say their tests follow it in both states), and the calibration log.
+- Wake lock released at close by its stop file.
+
+Run closed: tasks consumed

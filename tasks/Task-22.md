@@ -4,7 +4,7 @@
 > can read a page image and transcribe it, so no separate OCR program is needed.
 
 **Lane**
-- OWNS: `readmark/ingest/**`, `readmark/writer/**` (the transcription call only), `web/**`, `readmark/serve.py`, `tests/test_ocr.py`, `tests/test_screen.py`, `tests/fixtures/scanned/**`, `pyproject.toml`, `uv.lock`, `reports/screens/2026-10-06-wave10/**`
+- OWNS: `readmark/ingest/**`, `readmark/writer/**` (the transcription call only), `web/**`, `readmark/serve.py`, `tests/test_ocr.py`, `tests/test_screen.py`, `tests/fixtures/scanned/**`, `pyproject.toml`, `uv.lock`, `reports/screens/2026-10-04-wave10/**`
 - MUST NOT TOUCH: `readmark/checklist/**`, `readmark/checks/**`, `readmark/jev/**`, `readmark/audit/**`, `readmark/eval/**`, `readmark/schemas/**`, `runs/A-0142/**`, `runs/E-*/**`, `runs/H-01/**`, `runs/S-01/**`, `runs/eval/**`, `data/**`, `design/**`, `docs/contracts.md`, `AGENTS.md`, `notes.md`
 - GATE: `uv run python scripts/gate.py` (from repo root)
 - DEPENDS ON: Task-20
@@ -34,7 +34,7 @@ machine read.
 - [ ] Once, by hand (orchestrator, live): a real two-page scan transcribes. The viewer shows the
   image beside the text. Time and quota cost go in the wave report.
 - [ ] Screenshots of a scanned page in the viewer at 1280 and 1440 in
-  `reports/screens/2026-10-06-wave10/`. Tests write to `.tmp/shots/`, and the delivered set is
+  `reports/screens/2026-10-04-wave10/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık compares an image with its transcription and finds the label clear.
 

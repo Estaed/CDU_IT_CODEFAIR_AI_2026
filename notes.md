@@ -280,6 +280,17 @@ In the survey's §5:
   though the worker said they checked it.
 - ASIC trial: AI summaries scored 47% against 81% for humans.
 - NT AI Policy (2026-06-05) and NT AI Assurance Framework wording.
+- **What Readmark is, in one phrase (Tarık, 2026-10-03): rule-based evidence review.** It does not
+  check whether a document is genuine. It checks what the AI says about the documents against one
+  rulebook's questions, and records what the human opened and decided.
+- **"Same engine, a different rulebook"** (Eko's proposal, accepted by Tarık 2026-10-03). One pitch
+  line: "a housing application and a student's assignment extension; the code did not change, only
+  the question list."
+  - Then show S-01 for about 30 seconds: the AI's notes name both everyday problems, and the screen
+    tiers them (Task-25).
+  - It serves the creativity and practicality criteria.
+  - **Do not say "it works in any domain".** The cross-domain evidence is one file
+    (`reports/2026-10-03-easy-example.md`, n = 1).
 
 ### Hard questions judges will ask (Eko's honest review, 2026-10-03)
 - **"Case text goes to Claude and Jev in the cloud. The NT AI Policy forbids that for real data."**

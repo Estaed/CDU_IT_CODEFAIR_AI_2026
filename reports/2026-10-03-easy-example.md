@@ -71,3 +71,24 @@ It is also an internal test: a real rule, and a file that no Claude stage saw be
   fail. The certificate gap therefore does not reach required reading.
 - These are findings, not fixes. Changing the scan or the gate now would change the frozen numbers
   due on 7 Oct. The orchestrator brings both to Tarık to decide.
+
+## Follow-up: two scan rules tried on the data before any change (2026-10-03, 23:15)
+Tarık asked the orchestrator to cut the noise. Each candidate rule was first counted on the stored
+runs (`.tmp/scan_count.py`, `.tmp/scan_rule.py`, which read the `view.json` and `scan.json` files),
+with nothing changed.
+
+| Rule | S-01 possibly missed | A-0142 gold pages among them | E-01 | E-02 | E-03 |
+|---|---|---|---|---|---|
+| Today (score ≥ 1.76, cited nowhere) | 24 | 6 | 4 | 3 | 6 |
+| Flag only passages scoring above the best passage the AI cited for that question | **0** | **1** (loses p.51, the family-violence letter at the heart of the demo, and p.58) | 2 | 0 | 1 |
+| At most one possibly-missed passage per question in required reading | still 4 questions flagged: the top passage is the upload receipt (p.5) each time | — | — | — | — |
+
+- **Neither rule was adopted.** The first kills the demo's key omission. The second does not calm
+  S-01.
+- **The scan is not wrong on S-01.** The receipt and the email do bear on the questions; the AI's
+  notes simply did not cite them.
+- **What looks noisy is the presentation.** A question with only "possibly missed" carries the same
+  orange "!" as a contradiction.
+- **Adopted instead (Task-25):** a calmer screen tier, with no change to checks, gate or numbers.
+  - Problems with the AI's notes keep the flag: contradicted, quote not found, checker disagrees.
+  - A question that has only possibly-missed passages shows "Worth a look (N pages)".

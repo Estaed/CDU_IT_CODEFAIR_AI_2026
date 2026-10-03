@@ -4,44 +4,35 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Readmark · Priority housing review</title>
-<script>
-try {
-  const theme = localStorage.getItem('readmark-theme');
-  if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
-} catch { /* Light mode remains the default when storage is unavailable. */ }
-</script>
 <link rel="icon" href="data:,">
-<link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="theme.css">
 </head>
 <body>
-<header class="casebar" id="casebar" aria-label="Case">
+<header class="service-band" data-testid="service-band">
+  <div class="service-context">NT priority housing<br>Demonstration service</div>
+  <div><b>Readmark</b><div>Priority housing review · Darwin urban</div></div>
+  <span class="officer">Delegated officer</span>
+</header>
+<div class="casebar" id="casebar" aria-label="Case">
   <div class="wrap casebar-in">
     <div class="case-id">
-      <div class="eyebrow">Priority housing review · Darwin</div>
       <h1>Applicant file <span class="accent" id="caseId">…</span></h1>
     </div>
-    <div class="counters" id="counters" aria-live="polite"></div>
+    <div class="case-facts"><span id="caseFacts"></span><p class="context" id="waitContext" data-testid="wait-context"></p></div>
     <div class="next" id="next"></div>
-    <p class="context" id="waitContext" data-testid="wait-context"></p>
   </div>
-</header>
+</div>
 
 <div class="wrap">
-  <div class="jobline">
-    <p class="job" id="job">Loading the case…</p>
-    <div class="job-actions">
-      <button class="act" type="button" data-act="intro-open" data-testid="help-btn" aria-label="How this works">
-        <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>How this works</button>
-      <button class="act" type="button" data-act="about-open" data-testid="about-btn">About these checks</button>
-      <button class="act muted" type="button" data-act="theme" id="themeBtn">Light mode</button>
-    </div>
-  </div>
+  <p class="sr" id="job">Loading the case…</p>
   <div class="work" id="work">
     <nav class="rail" id="rail" aria-label="Questions"></nav>
-    <section id="intro" aria-label="How this works"></section>
-    <section class="reader" id="reader" aria-label="Applicant file"></section>
+    <section id="intro" aria-label="How this works" hidden></section>
     <main class="detail" id="detail"></main>
+  </div>
+  <div class="job-actions">
+    <button class="act" type="button" data-act="intro-open" data-testid="help-btn">How this works</button>
+    <button class="act" type="button" data-act="about-open" data-testid="about-btn">About these checks</button>
   </div>
   <footer>Synthetic case file. Policy text from NT public housing policies, read from the pinned
     PDFs. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it
@@ -51,6 +42,7 @@ try {
 <dialog id="about" aria-labelledby="aboutTitle" data-testid="about"></dialog>
 <dialog id="policy" aria-label="Policy passage"><div id="pane"></div></dialog>
 <dialog id="comparison" aria-label="Pages that disagree"></dialog>
+<dialog id="fullFile" aria-label="Full applicant file"><div class="dlg"><div class="dlg-head"><h2>Applicant file · all pages</h2><button class="act" data-act="full-close">Back to question</button></div><div id="fullReader"></div></div></dialog>
 <script src="app.js"></script>
 </body>
 </html>

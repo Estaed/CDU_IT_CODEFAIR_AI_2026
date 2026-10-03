@@ -34,4 +34,4 @@ Wave 5 (2026-10-03). Width 1.
 
 Wave 6 (2026-10-03). Width 1: one feature, the final look.
 
-- [ ] Task-15: The final look: a government question page with the file inside it (codex)
+- [x] Task-15: The final look: a government question page with the file inside it (codex)

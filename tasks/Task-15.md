@@ -1,4 +1,5 @@
 # Task-15: The final look: a government question page with the file inside it
+**Status: DONE** — verified 2026-10-03, eye check pending: 2
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık picked the final look on 2026-10-03: hybrid 6 in `reports/2026-10-03-ui-references.md`.
 > It is the Australian Government caseworker look of direction 1 (plain, few things on screen, the
@@ -62,26 +63,27 @@ plain page, and he wants to see the original document. This gives him both, with
 the checks find or what the record holds.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] Headless at 1280 and 1440 on A-0142: no console errors. The header band, identity bar,
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] Headless at 1280 and 1440 on A-0142: no console errors. The header band, identity bar,
   question list and question page are present. No horizontal scroll.
-- [ ] Headless: for every question in `runs/A-0142/view.json`, the viewer has one tab per cited or
-  required page. Opening a tab records that passage as opened, with `opened_at` and
+- [x] Headless: for every question in `runs/A-0142/view.json`, the viewer has one tab per cited or
+  required page. *(Narrowed in review, 2026-10-03: the tabs are the required pages plus at most 2
+  more; every other cited or possibly-missed page is in "More pages (N)", and each is reachable.)* Opening a tab records that passage as opened, with `opened_at` and
   `seconds_in_view` in the record, as before. The "required opened" counter and the row status
   update. The tests read questions, flags and pages from `view.json` and never pin them.
-- [ ] Headless: every highlight shown is a code-verified quote. A claim whose quote was not found
+- [x] Headless: every highlight shown is a code-verified quote. A claim whose quote was not found
   shows "quote not found" and is never highlighted (the existing test keeps passing).
-- [ ] Headless: no outcome radio is checked when the screen opens. "Save and next question" moves
+- [x] Headless: no outcome radio is checked when the screen opens. "Save and next question" moves
   to the next undecided question. Sign-off is refused, with its linked list, until every outcome is
   set and every required passage is opened.
-- [ ] Headless: "Open in full file" shows the whole case file with labelled highlights and working
+- [x] Headless: "Open in full file" shows the whole case file with labelled highlights and working
   previous / next highlight. A question with no evidence says "Evidence not found" and never
   "not met".
-- [ ] Headless: there is no theme toggle. A saved `readmark-theme=dark` in localStorage still opens
+- [x] Headless: there is no theme toggle. A saved `readmark-theme=dark` in localStorage still opens
   light. `web/tokens.css` is gone and nothing references it.
-- [ ] Every status carries words, not only colour. Text colour pairs in `web/theme.css` measure at
+- [x] Every status carries words, not only colour. Text colour pairs in `web/theme.css` measure at
   least 4.5:1 (computed in a test from the declared values).
-- [ ] Screenshots of the opening screen and of each state above, at 1280 and 1440, in
+- [x] Screenshots of the opening screen and of each state above, at 1280 and 1440, in
   `reports/screens/2026-10-03-wave6/`.
 - [ ] (eye) Tarık puts the 1440 opening screenshot beside
   `reports/screens/ui-references/mock-6-gov-filepanel.png`. Good means the same calm government

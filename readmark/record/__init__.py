@@ -4,8 +4,8 @@ The server checks the same lock the screen shows (every required passage opened,
 outcome set by the officer) so a record can never claim a sign-off the gate did not allow. The
 record says "opened", never "read": opening a passage does not prove it was read.
 
-The HTML export is styled only by the review screen's own files (``web/tokens.css`` and
-``web/theme.css``, the Blueprint's single styling file), inlined so the export stands alone, and
+The HTML export is styled only by ``web/theme.css``, the Blueprint's single styling file,
+inlined so the export stands alone, and
 it shows every time in one zone: the one the record was signed in.
 """
 
@@ -26,8 +26,8 @@ DECISIONS = {
 OUTCOMES = {"met": "Met", "not_met": "Not met", "cannot_decide": "Cannot decide yet"}
 RECORD_ID = re.compile(r"^[0-9A-Za-z-]{1,64}$")
 OPENED_NOTE = "Opening a passage is recorded; it does not prove the passage was read."
-# The screen's styling files, in load order: the copied Tarik Base tokens, then the theme.
-STYLE_FILES = ("tokens.css", "theme.css")
+# The same light-only government look as the screen; no separate export stylesheet.
+STYLE_FILES = ("theme.css",)
 
 
 class RecordError(ValueError):
@@ -214,7 +214,8 @@ def to_html(record: dict) -> str:
 <style>
 {styles()}
 </style></head>
-<body class="doc"><main class="rec rec-doc">
+<body class="doc"><header class="service-band"><div><b>Readmark</b>
+<div>Priority housing review · Decision record</div></div></header><main class="rec rec-doc">
 <div class="rec-head"><h2>Decision record, applicant file {e(record['case_id'])}</h2>
 <span class="tag done">Signed</span></div>
 <div class="rec-dec">{e(DECISIONS[record['decision']])}</div>

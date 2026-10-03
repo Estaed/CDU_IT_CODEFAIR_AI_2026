@@ -1,5 +1,5 @@
-// Answer-key review: the real case file in the middle, questions on the left, an officer's
-// outcome on the right. Verified quotes are marked in place; claims are one click away.
+// Government question pages: the original file and officer's outcome inside each question.
+// Verified quotes are marked in place; claims and the full file are one click away.
 // Reads /api/view (runs/<case>/view.json), opens one passage at a time and logs its time in view,
 // keeps the officer's clause outcomes and disputes, and posts the decision record. The AI never
 // fills a clause outcome; the officer sets every one. The main screen speaks in plain words: no
@@ -69,6 +69,10 @@ const S = {
   cleanOpen: false,
   claimOpen: false,
   readerPage: 1,
+  tab: null,        // document/page key in the selected question
+  morePages: false,
+  fullFile: false,
+  policyInline: false,
   sel: null,         // a clause_id, or 'signoff'
   opened: {},        // passage_id -> {opened_at, seconds}
   current: null,     // {pid, claimIds}: the one passage in view
@@ -83,7 +87,6 @@ const S = {
   formErr: '',
   signErr: '',
   signed: null,
-  justSet: null,
   policyText: {},    // passage_id -> text, or false when the server could not read it
   intro: !stored(INTRO_KEY),
 };
@@ -109,22 +112,25 @@ function closePassage() {
   S.current = null;
 }
 
-function openPassage(pid, claimIds = []) {
+function openPassage(pid, claimIds = [], inline = false) {
   if (S.signed) return;
   pause();
   if ($('policy').open) $('policy').close();
   if ($('comparison').open) $('comparison').close();
+  const s = src(pid);
+  if (!s || !s.exists) { S.current = null; render(); return; }
   if (!S.opened[pid]) S.opened[pid] = { opened_at: new Date().toISOString(), seconds: 0 };
   S.current = { pid, claimIds };
-  const s = src(pid);
+  S.policyInline = inline && s.kind === 'policy';
+  if (!S.fullFile && (s.kind === 'case' || inline)) S.tab = pageKey(s);
   if (s && s.kind === 'policy' && !(pid in S.policyText)) {
     fetch(`/api/passages/${encodeURIComponent(pid)}`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { S.policyText[pid] = d ? d.text : false; renderPane(); watchPassage(); })
-      .catch(() => { S.policyText[pid] = false; renderPane(); });
+      .then((d) => { S.policyText[pid] = d ? d.text : false; renderPane(); if (S.policyInline) renderReader(); watchPassage(); })
+      .catch(() => { S.policyText[pid] = false; renderPane(); if (S.policyInline) renderReader(); });
   }
   render();
-  if (s && s.kind === 'policy') {
+  if (s && s.kind === 'policy' && !inline) {
     $('policy').showModal();
     watchPassage();
   } else jumpToPassage(pid, claimIds);
@@ -145,10 +151,7 @@ const railClauses = () => S.view.clauses.filter((c) => c.clause_id !== 'other'
   return rank(a) - rank(b);
 });
 
-const shortName = (cl) => ({ 'elig-property': 'Property', 'elig-income': 'Income',
-  'elig-former-tenancy': 'Former tenancy', 'prio-category': 'Urgent need',
-  'prio-documentation': 'Supporting documents', 'prio-discretion': 'Discretion',
-  other: 'Other facts' }[cl.clause_id] || cl.title);
+const shortName = (cl) => cl.clause_id === 'other' ? 'Other facts' : cl.title;
 
 function questionFlag(cl) {
   if (cl.contradictions.length) return 'Two pages disagree';
@@ -283,10 +286,13 @@ function passageRow(pid, { task = false, testid = 'passage-item' } = {}) {
   const o = S.opened[pid];
   const cur = S.current && S.current.pid === pid;
   let state = o ? 'Opened' : task ? 'Must open' : 'Open';
-  if (cur) state = 'In view';
+  if (cur) state = 'Opened · in view';
+  const s = src(pid);
+  const samePage = s?.kind === 'case' && required().filter((r) => src(r.passage_id)?.kind === 'case' && src(r.passage_id).page === s.page).length;
+  const label = task && s?.kind === 'case' && samePage === 1 ? `Page ${s.page}` : cap(loc(pid));
   return `<li><button class="prow ${o ? 'opened' : ''} ${cur ? 'is-cur' : ''} ${task ? 'task' : ''}" data-act="open" data-arg="${esc(pid)}" data-testid="${testid}" data-pid="${esc(pid)}"${S.signed ? ' disabled' : ''}>
     <span class="pst">${icon(o ? 'check' : task ? 'ring' : 'file')}</span>
-    <span class="pmain"><span class="ploc">${esc(cap(loc(pid)))}</span></span>
+    <span class="pmain"><span class="ploc">${esc(label)}</span></span>
     <span class="pstate"><span class="ps">${state}${!o && !cur ? icon('arrow') : ''}</span></span></button></li>`;
 }
 function quoteHtml(claim, c, testid = 'quote') {
@@ -297,38 +303,27 @@ function quoteHtml(claim, c, testid = 'quote') {
       ${c.quote_found ? '' : `<span class="qflag">${icon('x')}Not word for word in this passage</span>`}
       ${S.opened[c.passage_id] ? `<span class="tag done">${icon('check')}Opened</span>` : ''}</span></button>`;
 }
-function segs(flags) {
-  return `<span class="segs" aria-hidden="true">${flags.map((on) => `<i class="${on ? 'on' : ''}"></i>`).join('')}</span>`;
-}
-
 // ---- Case bar: the file, both counters, the one next action ----
 function renderBar() {
   const v = S.view;
   $('caseId').textContent = v.case.case_id;
-  const req = required();
-  const dec = decisive();
-  const nOpen = req.filter((r) => S.opened[r.passage_id]).length;
-  const nSet = dec.filter((c) => S.outcomes[c.clause_id]).length;
-  $('counters').innerHTML = `
-    <div class="counter" data-testid="outcome-counter"><span class="ct">Outcomes <b class="mono" id="outcomeCount">${nSet}</b> of ${num(dec.length)}</span>${segs(dec.map((c) => !!S.outcomes[c.clause_id]))}</div>
-    <div class="counter" data-testid="passage-counter"><span class="ct">Flagged passages <b class="mono" id="passageCount">${nOpen}</b> of ${num(req.length)} opened</span>${req.length ? segs(req.map((r) => !!S.opened[r.passage_id])) : ''}</div>`;
+  $('caseFacts').textContent = `${v.case.pages} pages · ${v.case.synthetic ? 'synthetic case' : 'applicant file'}`;
   const n = nextAction();
   let label;
   let hint;
-  if (n.kind === 'passage') { label = `Open ${loc(n.pid)}`; hint = `Next step in ${n.clause.clause_id === 'other' ? 'Other facts' : n.clause.title}`; }
+  if (n.kind === 'passage') { label = src(n.pid)?.kind === 'case' ? `Open page ${src(n.pid).page}` : `Open ${loc(n.pid)}`; hint = `Next step in ${shortName(n.clause)}`; }
   else if (n.kind === 'outcome') { label = 'Set your outcome'; hint = `Next step in ${n.clause.title}`; }
   else if (n.kind === 'sign') { label = 'Sign decision'; hint = 'Next step · everything is ready'; }
   else { label = 'View the record'; hint = 'Decision signed'; }
   const target = n.kind === 'passage' ? `passage:${n.pid}` : n.kind === 'outcome' ? `outcome:${n.clause.clause_id}` : n.kind;
-  $('next').innerHTML = `<div class="next-step"><span class="eyebrow" data-testid="next-hint">${esc(hint)}</span>
-      <button class="btn-primary" data-act="next" data-testid="next-action" data-next="${esc(target)}">${n.kind === 'sign' ? icon('pen') : ''}${esc(label)}${n.kind === 'sign' ? '' : icon('arrow')}</button></div>
-    ${n.kind === 'sign' || n.kind === 'record' ? '' : `<button class="btn-secondary" data-act="sign" data-testid="sign-btn">${icon('pen')}Sign decision</button>`}`;
+  $('next').innerHTML = `<span class="sr" data-testid="next-hint">${esc(hint)}</span>
+      <button class="btn-primary" data-act="next" data-testid="next-action" data-next="${esc(target)}" title="${esc(hint)}">Next: ${esc(label[0].toLowerCase() + label.slice(1))}${icon('arrow')}</button>
+      <button class="btn-secondary" data-act="sign" data-testid="sign-btn">${S.signed ? 'Decision record' : 'Sign decision'}</button>`;
 }
 
 function renderJob() {
   const v = S.view;
   $('job').innerHTML = `<b>Your job:</b> decide this application. Open each flagged passage, set all ${num(decisive().length)} clause outcomes, then sign.`;
-  $('themeBtn').textContent = document.documentElement.dataset.theme === 'light' ? 'Dark mode' : 'Light mode';
   document.title = `Readmark · Applicant file ${v.case.case_id}`;
 }
 
@@ -353,28 +348,30 @@ function renderRail() {
     const st = clauseState(cl);
     const id = cl.clause_id;
     const sel = S.sel === id;
-    return `<button class="rrow ${sel ? 'is-sel' : ''} ${S.justSet === id ? 'just' : ''}"
+    const status = st.outcome ? `Decided: ${OUTCOME_LABEL[st.outcome]}` : id === 'other' ? 'No outcome needed' : questionFlag(cl) || 'Looks clean · not decided';
+    return `<button class="rrow ${sel ? 'is-sel' : ''}"
       data-act="clause" data-arg="${esc(id)}" data-testid="clause-row" data-clause="${esc(id)}" aria-current="${sel}">
-      <span class="rname">${questionFlag(cl) ? icon('flag') : icon('check')}${esc(shortName(cl))}</span>
-      ${questionFlag(cl) ? `<span class="rreason">${esc(questionFlag(cl))}</span>` : ''}
-      <span class="rsrc">${esc(cl.source || 'Not on the checklist')}</span>
-      <span class="rstat"><span class="rs ${st.outcome ? 'done' : ''}">${st.outcome ? icon('check') : icon('ring')}
-        ${st.needsOutcome ? (st.outcome ? esc(OUTCOME_LABEL[st.outcome]) : 'Outcome not set') : 'No outcome needed'}</span>
-      ${st.flagged.length ? `<span class="rs">${num(st.opened)} of ${num(st.flagged.length)} opened</span>` : ''}</span></button>`;
+      <span class="task-icon ${questionFlag(cl) && !st.outcome ? 'flag' : ''}">${st.outcome ? '✓' : questionFlag(cl) ? '!' : id === 'other' ? '–' : ''}</span>
+      <span><span class="rname">${esc(shortName(cl))}</span>
+      <span class="rstat">${esc(status)}${st.flagged.length ? ` · ${st.opened} of ${st.flagged.length} opened` : ''}</span></span></button>`;
   };
-  const flagged = railClauses().filter(questionFlag);
+  const flagged = railClauses().filter((c) => c.clause_id !== 'other' && questionFlag(c));
   const clean = decisive().filter((c) => !questionFlag(c));
-  const other = railClauses().filter((c) => c.clause_id === 'other' && !questionFlag(c));
-  const sign = S.signed ? 'Signed · record locked' : ready() ? 'Ready to sign' : `${missingItems().length} questions to finish`;
-  $('rail').innerHTML = `<div class="eyebrow rail-h">Questions to look at · ${num(flagged.length)}</div>
+  const other = railClauses().filter((c) => c.clause_id === 'other');
+  const sign = S.signed ? 'Signed · record locked' : ready() ? 'Ready to sign' : `${missingItems().length} questions to finish · cannot start yet`;
+  const nSet = decisive().filter((c) => S.outcomes[c.clause_id]).length;
+  const nOpen = required().filter((r) => S.opened[r.passage_id]).length;
+  $('rail').innerHTML = `<h2>Decide these questions</h2><div class="counters" id="counters" aria-live="polite">
+    <span data-testid="outcome-counter"><b id="outcomeCount">${nSet}</b> of ${decisive().length} decided</span> ·
+    <span data-testid="passage-counter"><b id="passageCount">${nOpen}</b> of ${required().length} required opened</span></div>
     <div class="rail-list">${flagged.map(row).join('')}</div>
     ${clean.length ? `<details class="rail-list clean-group" data-testid="clean-questions"${S.cleanOpen ? ' open' : ''}>
       <summary data-testid="clean-toggle">${clean.length} ${clean.length === 1 ? 'question looks' : 'questions look'} clean
-        <span class="sub">${clean.filter((c) => S.outcomes[c.clause_id]).length} outcomes set</span></summary>
+        <span class="sub"> · ${clean.filter((c) => S.outcomes[c.clause_id]).length} decided</span></summary>
       ${clean.map(row).join('')}</details>` : ''}
-    ${other.length ? `<details class="rail-list"><summary>Other facts · no outcome needed</summary>${other.map(row).join('')}</details>` : ''}
+    ${other.length ? `<details class="rail-list other-group"><summary>Other facts · no outcome needed</summary>${other.map(row).join('')}</details>` : ''}
     <div class="rail-list"><button class="rrow signrow ${S.sel === 'signoff' ? 'is-sel' : ''}" data-act="signoff" data-testid="signoff-row">
-      <span class="rname">${icon('pen')}Sign off</span><span class="rs">${icon(S.signed || !ready() ? 'lock' : 'check')}${sign}</span></button></div>`;
+      <span class="task-icon">${S.signed ? '✓' : '–'}</span><span><span class="rname">Sign decision</span><span class="rstat">${sign}</span></span></button></div>`;
 }
 
 // ---- Right: the selected clause ----
@@ -404,13 +401,6 @@ function claimItem(claim) {
     <p class="why">${claimReason(claim)}</p>${body}</article>`;
 }
 
-function nextClauseButton(cl) {
-  const list = railClauses();
-  const next = list[list.findIndex((c) => c.clause_id === cl.clause_id) + 1];
-  return next ? `<button class="act" data-act="clause" data-arg="${esc(next.clause_id)}" data-testid="next-clause">Next question${icon('arrow')}</button>`
-    : `<button class="act" data-act="signoff" data-testid="next-clause">Go to sign-off${icon('arrow')}</button>`;
-}
-
 function clauseView(cl) {
   const id = cl.clause_id;
   const st = clauseState(cl);
@@ -418,34 +408,57 @@ function clauseView(cl) {
   const badQuotes = claims.filter((c) => !c.citations.length || c.citations.some((q) => !q.quote_found));
   const gaps = cl.missing.map((m) => `<p>${esc(m.statement)}</p>`).join('')
     || (cl.coverage === 'no_evidence_in_file' ? '<p>No evidence in file.</p>' : '');
-  const flagged = st.flagged.length ? `<section class="question-block" data-testid="flagged">
-    <div class="sec-h"><span>Open before you sign</span><span>${num(st.opened)} of ${num(st.flagged.length)}</span></div>
+  const flagged = st.flagged.length ? `<section class="must" data-testid="flagged">
+    <b>Open before you sign</b>
     <ul class="plist">${st.flagged.map((r) => passageRow(r.passage_id, { task: true, testid: 'flagged-item' })).join('')}</ul></section>` : '';
-  const pairs = cl.contradictions.length ? `<section class="question-block" data-testid="pairs">
-    <div class="sec-h"><span>${icon('arrows')}Two pages disagree</span></div>
+  const pairs = cl.contradictions.length ? `<div data-testid="pairs">
     ${cl.contradictions.map((p) => `<button class="btn-secondary compare-btn" data-act="compare" data-arg="${esc(p.a)}" data-other="${esc(p.b)}" data-testid="compare-pages"${S.signed ? ' disabled' : ''}>Compare pages ${src(p.a).page} and ${src(p.b).page}${icon('arrows')}</button>`).join('')}
-    <p class="note">Open each passage to record it. Comparing pages alone records neither.</p></section>` : '';
-  const pm = cl.possibly_missed.filter((p) => !isRequired(p.passage_id));
+    </div>` : '';
   const o = st.outcome;
+  const flag = questionFlag(cl);
+  const pair = cl.contradictions[0];
+  const warning = pair ? `Page ${src(pair.a).page}${whenOf(pair.a)} and page ${src(pair.b).page}${whenOf(pair.b)} disagree; open both before you decide.`
+    : flag.includes('evidence not found') || flag === 'Evidence not found' ? 'Missing evidence does not mean “not met”; decide whether the file lets you answer this question.'
+    : flag === 'Checker disagrees' ? 'The quote is in the file, but the second checker could not confirm the claim; open the passage and judge.'
+    : flag === 'Quote not found' ? 'A claim has no verified quote; open its AI claims to see what could not be checked.'
+    : flag ? 'The scan found a relevant passage that no claim uses; open it and judge whether it changes this question.' : '';
+  const list = railClauses().filter((c) => c.clause_id !== 'other');
+  const number = list.findIndex((c) => c.clause_id === id) + 1;
   return `<div class="clause" data-testid="clause-detail" data-clause="${esc(id)}">
-    <div class="d-head"><div class="eyebrow">${esc(cl.source || 'Not on the checklist')}</div>
-      <h2 data-testid="clause-title">${esc(shortName(cl))}</h2><p class="decides">${esc(id === 'elig-income' ? 'Whether current income evidence is in the file. Income thresholds are outside this review.' : cl.decides)}</p></div>
-    ${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
-      <div class="oc-label">Your outcome: <span class="state ${o ? '' : 'unset'}" data-testid="outcome-state">${o ? esc(OUTCOME_LABEL[o]) : 'not set'}</span></div>
-      <div class="chips" role="radiogroup" aria-label="Your outcome for ${esc(cl.title)}">${OUTCOMES.map(([val, lab, ic]) => `<button class="chip" role="radio" aria-checked="${o === val}" data-act="outcome" data-arg="${esc(id)}" data-val="${val}" data-outcome="${val}" data-testid="outcome-${esc(id)}-${val}"${S.signed ? ' disabled' : ''}>${icon(ic)}${lab}</button>`).join('')}</div>
-      ${nextClauseButton(cl)}</div>` : ''}
-    ${gaps ? `<section class="question-block gaps" data-testid="gaps"><div class="sec-h"><span>${icon('searchx')}Evidence not found</span></div>${gaps}<p class="note">You decide the outcome; missing evidence does not mean “not met”.</p></section>` : ''}
+    <div class="d-head"><h2 data-testid="clause-title">${esc(shortName(cl))}</h2>
+      <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
+    ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
+    ${warning ? `<section class="warning-box" data-testid="question-warning"><span class="task-icon flag">!</span><div class="warning-copy"><div class="warning-heading"><b>${esc(flag)}</b>${pairs}</div><p>${warning}</p></div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'claim' : 'claims'}. <button class="act" data-act="claims">Show claims</button></section>` : ''}
-    ${pairs}${flagged}
+    <div class="question-split"><section class="reader" id="reader" aria-label="Applicant file pages"></section>
+      <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
+        <fieldset><legend>Is this question met?</legend><div class="opts">${OUTCOMES.map(([val, lab]) => `<label class="outcome-radio"><input type="radio" name="outcome" value="${val}" data-act="outcome" data-arg="${esc(id)}" data-val="${val}" data-outcome="${val}" data-testid="outcome-${esc(id)}-${val}"${o === val ? ' checked' : ''}${S.signed ? ' disabled' : ''}>${lab}</label>`).join('')}</div></fieldset>
+        <span class="sr" data-testid="outcome-state">${o ? esc(OUTCOME_LABEL[o]) : 'not set'}</span>
+        ${flagged}<button class="btn-primary" data-act="save-next" data-arg="${esc(id)}" data-testid="save-next"${S.signed ? ' disabled' : ''}>Save and next question</button>
+        ${S.formErr ? `<p class="helper err" role="alert">${esc(S.formErr)}</p>` : ''}</div>` : '<p class="note">Other facts · no outcome needed.</p>'}</aside></div>
+    ${gaps ? `<details class="question-block gaps" data-testid="gaps"><summary>Evidence not found · missing evidence does not mean “not met”</summary>${gaps}</details>` : ''}
     ${cl.policy_sentence ? `<details class="question-block"><summary>The policy question</summary><blockquote class="q">“${esc(cl.policy_sentence)}”</blockquote>
       ${cl.policy_items.length ? `<ul class="pitems">${cl.policy_items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>` : ''}
       <button class="act" data-act="open" data-arg="${esc(cl.policy_passage_id)}" data-testid="open-policy"${S.signed ? ' disabled' : ''}>Open policy passage${icon('arrow')}</button></details>` : ''}
     <details class="question-block claim-details" data-testid="claim-details"${S.claimOpen ? ' open' : ''}>
       <summary>AI claims · ${num(claims.length)}</summary><div class="items">${claims.map(claimItem).join('') || '<p class="note">No claim given.</p>'}</div></details>
-    ${pm.length ? `<details class="question-block"><summary>Possibly missed · ${num(pm.length)} optional</summary>
-      <p class="note">The scan found these relevant; no claim uses them. Opening is optional.</p>
-      <ul class="plist">${pm.map((p) => passageRow(p.passage_id, { testid: 'missed-item' })).join('')}</ul></details>` : ''}
   </div>`;
+}
+
+function saveNext(id) {
+  if (!S.outcomes[id]) {
+    S.formErr = 'Choose an outcome before saving this question.';
+    render();
+    return;
+  }
+  S.formErr = '';
+  const list = railClauses().filter((c) => c.clause_id !== 'other');
+  const start = list.findIndex((c) => c.clause_id === id);
+  for (let i = 1; i <= list.length; i += 1) {
+    const next = list[(start + i) % list.length];
+    if (!S.outcomes[next.clause_id]) { selectClause(next.clause_id); return; }
+  }
+  selectSignoff();
 }
 
 // ---- Sign-off: what is missing, then the decision, then check your answers, then the record ----
@@ -580,7 +593,9 @@ function buildAnnotations() {
 const flagHighlights = () => S.annotations.filter((a) => a.flagged);
 
 function pageParagraph(p) {
-  const annotations = S.annotations.filter((a) => a.pid === p.passage_id);
+  const pageHasQuote = S.annotations.some((a) => a.cid === S.sel && src(a.pid).page === p.page && a.quote);
+  const annotations = S.annotations.filter((a) => a.pid === p.passage_id && (S.fullFile
+    || (a.cid === S.sel && (a.quote || isRequired(a.pid) || !pageHasQuote))));
   const ranges = annotations.flatMap((a) => {
     if (!a.quote) return [];
     const start = p.text.indexOf(a.quote);
@@ -599,9 +614,9 @@ function pageParagraph(p) {
   }
   const labels = annotations.map((a) => `<button class="evidence-label ${a.flagged ? 'flag-label' : ''} ${S.current?.annotation === a.id ? 'current-label' : ''}" id="${a.id}"
     data-act="annotation" data-arg="${a.id}" data-testid="highlight-label" data-clause="${esc(a.cid)}" data-pid="${esc(a.pid)}"
-    data-flag="${a.flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${icon(a.flagged ? 'flag' : 'check')}${esc(shortName(clauseById(a.cid)))}
-    ${a.kind === 'missed' ? ' · Possibly missed' : a.kind === 'pair' ? ' · Two pages disagree' : a.flagged ? ' · Check' : ''}
-    ${isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}</button>`).join('');
+    data-flag="${a.flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${S.fullFile ? icon(a.flagged ? 'flag' : 'check') : ''}${esc(shortName(clauseById(a.cid)))}
+    ${a.kind === 'missed' ? ' · Possibly missed' : a.kind === 'pair' ? ' · Two pages disagree' : S.fullFile && a.flagged ? ' · Check' : ''}
+    ${S.fullFile && isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}</button>`).join('');
   const active = S.current?.pid === p.passage_id;
   return `<div class="file-paragraph ${active ? 'active-passage' : ''} ${annotations.some((a) => !a.quote) ? 'scan-passage' : ''}"
     data-testid="${active ? 'source' : 'file-paragraph'}" data-pid="${esc(p.passage_id)}">
@@ -612,29 +627,85 @@ function pageParagraph(p) {
 function pageHtml(page) {
   const p = page.passages[0];
   return `<article class="file-page" data-testid="file-page" data-page="${page.page}">
-    <header class="file-page-head"><div><div class="eyebrow">Synthetic case file · Page ${num(page.page)}</div>
-      <h3>${esc(p?.doc_title || 'Case file')}</h3><div class="sub">${esc(String(p?.doc_type || '').replace(/-/g, ' '))} · ${esc(fmtDate(p?.doc_date))}</div></div></header>
+    <header class="file-page-head">Page ${num(page.page)} · ${esc(p?.doc_title || 'Case file')} · ${esc(fmtDate(p?.doc_date))}</header>
     ${page.passages.map(pageParagraph).join('')}</article>`;
 }
 
+const pageKey = (s) => `${s.kind === 'case' ? 'case' : s.passage_id.split(':')[0]}:${s.page}`;
+
+// Required pages first, then cited pages, then scan suggestions in their existing rank order.
+// A tab can contain several cited paragraphs; each required paragraph still opens separately.
+function questionPages(cl) {
+  const groups = [];
+  const add = (pid, required = false, cited = false, missed = false) => {
+    const s = src(pid);
+    if (!s?.exists || s.kind !== 'case') return;
+    const key = pageKey(s);
+    let group = groups.find((g) => g.key === key);
+    if (!group) { group = { key, page: s.page, kind: s.kind, date: s.doc_date, title: s.doc_title, pids: [], required, cited, missed }; groups.push(group); }
+    if (!group.pids.includes(pid)) group.pids.push(pid);
+    group.required ||= required;
+    group.cited ||= cited;
+    group.missed ||= missed;
+  };
+  flaggedFor(cl.clause_id).forEach((r) => add(r.passage_id, true, false, r.reasons.includes('possibly_missed')));
+  cl.claim_ids.map(claimById).filter(Boolean).forEach((c) => c.citations.forEach((q) => add(q.passage_id, false, true)));
+  cl.possibly_missed.forEach((p) => add(p.passage_id, false, false, true));
+  return groups;
+}
+
+function tabPassage(group) {
+  return group.pids.find((pid) => isRequired(pid) && !S.opened[pid])
+    || group.pids.find(isRequired) || group.pids[0];
+}
+
+function openPageTab(key) {
+  const group = questionPages(clauseById(S.sel)).find((g) => g.key === key);
+  if (!group) return;
+  S.tab = key;
+  S.morePages = false;
+  const target = tabPassage(group);
+  openPassage(target, [], true);
+}
+
 function renderReader() {
-  const reader = $('reader');
+  const inlineReader = $('reader');
+  const reader = S.fullFile ? $('fullReader') : inlineReader;
+  if (!reader) return;
   const scroll = $('fileScroll')?.scrollTop || 0;
   const flags = flagHighlights();
   const index = flags.findIndex((a) => a.pid === S.current?.pid && (!S.current.annotation || a.id === S.current.annotation));
-  const review = S.sel !== 'signoff';
-  reader.hidden = !review;
-  if (!review) { reader.innerHTML = ''; return; }
-  reader.innerHTML = `<div class="reader-head"><div><h2>Applicant file</h2><span class="sub" id="fileContext">Exact quotes marked by question</span></div>
-    <span class="tag">${icon('flask')}Synthetic</span></div>
+  if (S.sel === 'signoff') { reader.innerHTML = ''; return; }
+  const groups = questionPages(clauseById(S.sel));
+  const optional = groups.filter((g) => !g.required);
+  const visible = groups.filter((g) => g.required).concat(optional.slice(0, 2));
+  const more = optional.slice(2);
+  const active = groups.find((g) => g.key === S.tab) || groups[0];
+  if (active) S.tab = active.key;
+  const fullButton = `<button class="act full-link" data-act="full-open" data-testid="open-full-file">Open in full file (${S.pages.length} pages) ↗</button>`;
+  const tabs = `<div class="viewer-top"><div class="page-tabs" role="tablist" aria-label="Pages for this question">${visible.map((g) => {
+    const opened = g.pids.some((pid) => S.opened[pid]);
+    const solelyMissed = g.missed && !g.pids.some((pid) => S.annotations.some((a) => a.pid === pid && a.cid === S.sel && a.quote)) && !clauseById(S.sel).contradictions.some((p) => g.pids.includes(p.a) || g.pids.includes(p.b));
+    return `<button role="tab" class="page-tab" aria-selected="${g.key === active?.key}" aria-controls="fileScroll" data-act="page-tab" data-arg="${esc(g.key)}" data-testid="page-tab" data-page="${g.page}" data-kind="${g.kind}"${S.signed ? ' disabled' : ''}>Page ${g.page}${opened ? ' ✓ opened' : ''}<span class="tab-note">${g.date ? esc(fmtDate(g.date).replace(/ \d{4}$/, '')) : 'Date not recorded'}</span>${solelyMissed ? '<span class="tab-note">Possibly missed</span>' : ''}</button>`;
+  }).join('')}${more.length ? `<button class="page-tab more-pages" data-act="more-pages" data-testid="more-pages" aria-expanded="${S.morePages}" aria-controls="morePages"${S.signed ? ' disabled' : ''}>More pages (${more.length})${more.includes(active) ? `<span class="tab-note">Page ${active.page} selected</span>` : ''}</button>` : ''}</div>
+    ${more.length ? `<div class="more-page-list" id="morePages"${S.morePages ? '' : ' hidden'}>${[
+      ["Cited by the AI's claims", more.filter((g) => g.cited)],
+      ['Possibly missed', more.filter((g) => !g.cited)],
+    ].filter(([, pages]) => pages.length).map(([label, pages]) => `<section><h3>${esc(label)}</h3><ul>${pages.map((g) => `<li><button class="act" data-act="page-tab" data-arg="${esc(g.key)}" data-testid="more-page" aria-current="${g.key === active?.key ? 'page' : 'false'}"${S.signed ? ' disabled' : ''}>Page ${g.page} · ${esc(fmtDate(g.date))} · ${esc(g.title)}${g.pids.some((pid) => S.opened[pid]) ? ' ✓ opened' : ''}</button></li>`).join('')}</ul></section>`).join('')}</div>` : ''}${fullButton}</div>`;
+  let content;
+  if (S.fullFile) content = S.pages.map(pageHtml).join('');
+  else if (!active) content = '<p class="empty-file">Evidence not found. No page is cited for this question. Missing evidence does not mean “not met”.</p>';
+  else content = pageHtml(S.pages.find((p) => p.page === active.page));
+  if (S.fullFile && inlineReader) inlineReader.innerHTML = '<p class="empty-file">The full applicant file is open.</p>';
+  reader.innerHTML = `${S.fullFile ? `<div class="reader-head"><span id="fileContext">Exact quotes marked by question</span></div>
     <div class="file-controls"><button class="act" data-act="previous-flag" data-testid="previous-flag"${S.signed || !flags.length ? ' disabled' : ''}>Previous flag</button>
       <span class="flag-position" data-testid="flag-position">${index < 0 ? `${flags.length} highlights to check` : `Flag ${index + 1} of ${flags.length}`}</span>
       <button class="btn-secondary" data-act="next-flag" data-testid="next-flag"${S.signed || !flags.length ? ' disabled' : ''}>Next flag${icon('arrow')}</button></div>
     <div class="page-controls"><button class="act" data-act="previous-page" aria-label="Previous page"${S.readerPage <= 1 ? ' disabled' : ''}>Previous page</button>
       <label>Page <select id="pageJump" aria-label="Go to page">${S.pages.map((p) => `<option value="${p.page}"${p.page === S.readerPage ? ' selected' : ''}>${p.page}</option>`).join('')}</select> of ${num(S.pages.length)}</label>
-      <button class="act" data-act="next-page" aria-label="Next page"${S.readerPage >= S.pages.length ? ' disabled' : ''}>Next page</button></div>
-    <div class="file-scroll" id="fileScroll" tabindex="0" aria-label="Case pages">${S.pages.map(pageHtml).join('')}</div>`;
-  $('fileScroll').scrollTop = scroll;
+      <button class="act" data-act="next-page" aria-label="Next page"${S.readerPage >= S.pages.length ? ' disabled' : ''}>Next page</button></div>` : tabs}
+    <div class="file-scroll" id="fileScroll" tabindex="0" ${S.fullFile ? '' : 'role="tabpanel"'} aria-label="Case pages">${content}</div>`;
+  if (S.fullFile) $('fileScroll').scrollTop = scroll;
   $('fileScroll').addEventListener('scroll', updateReaderVisibility);
 }
 
@@ -643,9 +714,13 @@ function jumpToPassage(pid, claimIds = [], annotationId = null) {
   const target = label ? label.closest('.file-paragraph') : document.querySelector(`#fileScroll .file-paragraph[data-pid="${CSS.escape(pid)}"]`);
   if (!target) return;
   const scroller = $('fileScroll');
-  scroller.scrollTop += target.getBoundingClientRect().top - scroller.getBoundingClientRect().top - 16;
+  const paragraph = target.getBoundingClientRect();
+  const viewport = scroller.getBoundingClientRect();
+  if (paragraph.top < viewport.top || paragraph.bottom > viewport.bottom) {
+    scroller.scrollTop += paragraph.top - viewport.top - 16;
+  }
   S.readerPage = src(pid).page;
-  $('pageJump').value = S.readerPage;
+  if ($('pageJump')) $('pageJump').value = S.readerPage;
   watchPassage();
 }
 
@@ -679,6 +754,23 @@ function goToPage(n) {
   $('fileScroll').scrollTop += target.getBoundingClientRect().top - $('fileScroll').getBoundingClientRect().top;
 }
 
+function openFullFile() {
+  pause();
+  S.fullFile = true;
+  render();
+  $('fullFile').showModal();
+  if (S.current && src(S.current.pid)?.kind === 'case') jumpToPassage(S.current.pid, S.current.claimIds);
+  else goToPage(S.readerPage);
+}
+
+function closeFullFile() {
+  closePassage();
+  S.fullFile = false;
+  $('fullFile').close();
+  $('fullReader').innerHTML = '';
+  render();
+}
+
 function comparePages(a, b) {
   closePassage();
   render();
@@ -706,7 +798,7 @@ function highlight(text, quotes) {
 function renderPane() {
   const pid = S.current?.pid;
   const s = pid && src(pid);
-  if (!s || s.kind !== 'policy') { $('pane').innerHTML = ''; return; }
+  if (!s || s.kind !== 'policy' || S.policyInline) { $('pane').innerHTML = ''; return; }
   const cl = S.view.clauses.find((c) => c.policy_passage_id === pid);
   const cites = S.view.claims.flatMap((c) => c.citations).filter((q) => q.passage_id === pid);
   const text = S.policyText[pid];
@@ -721,13 +813,13 @@ function renderPane() {
 let passageObserver = null;
 function passageVisible() {
   if (!S.current || document.hidden || S.signed || $('about').open || $('comparison').open) return false;
-  const isPolicy = src(S.current.pid)?.kind === 'policy';
+  const isPolicy = src(S.current.pid)?.kind === 'policy' && !S.policyInline;
   if ($('policy').open !== isPolicy) return false;
   const el = document.querySelector('[data-testid="source"]');
   if (!el) return false;
   const r = el.getBoundingClientRect();
   const container = (isPolicy ? $('policy') : $('fileScroll')).getBoundingClientRect();
-  return r.bottom > Math.max(container.top, $('casebar').getBoundingClientRect().bottom)
+  return r.bottom > Math.max(container.top, S.fullFile || isPolicy ? 0 : $('casebar').getBoundingClientRect().bottom)
     && r.top < Math.min(container.bottom, window.innerHeight) && r.width > 0;
 }
 function updateReaderVisibility() {
@@ -738,9 +830,9 @@ function updateReaderVisibility() {
   const page = [...scroller.querySelectorAll('.file-page')].find((p) => p.getBoundingClientRect().bottom > top + 24);
   if (page) {
     S.readerPage = Number(page.dataset.page);
-    $('pageJump').value = S.readerPage;
+    if ($('pageJump')) $('pageJump').value = S.readerPage;
     const p = S.pages.find((x) => x.page === S.readerPage)?.passages[0];
-    $('fileContext').textContent = `${p?.doc_title || 'Case file'} · ${fmtDate(p?.doc_date)}`;
+    if ($('fileContext')) $('fileContext').textContent = `${p?.doc_title || 'Case file'} · ${fmtDate(p?.doc_date)}`;
   }
 }
 function watchPassage() {
@@ -795,7 +887,6 @@ function render() {
   renderPane();
   syncBarHeight();
   watchPassage();
-  S.justSet = null;
   if (key) {
     const sel = `[data-act="${key[0]}"]${key[1] ? `[data-arg="${CSS.escape(key[1])}"]` : ''}${key[2] ? `[data-val="${key[2]}"]` : ''}`;
     const el = document.querySelector(sel);
@@ -813,17 +904,22 @@ function scrollToWork() {
   if (window.scrollY > top) window.scrollTo({ top, behavior: 'auto' });
 }
 function selectClause(id) {
+  if (S.fullFile) closeFullFile();
   closePassage();
   S.sel = id;
+  S.tab = null;
+  S.morePages = false;
+  S.formErr = '';
   S.disputing = null;
   S.claimOpen = false;
   if (!questionFlag(clauseById(id))) S.cleanOpen = true;
   render();
-  const first = S.annotations.find((a) => a.cid === id && a.flagged) || S.annotations.find((a) => a.cid === id);
-  if (first && !S.signed) openAnnotation(first.id);
+  const first = questionPages(clauseById(id))[0];
+  if (first && !S.signed) openPageTab(first.key);
   scrollToWork();
 }
 function selectSignoff() {
+  if (S.fullFile) closeFullFile();
   closePassage();
   S.sel = 'signoff';
   if ($('policy').open) $('policy').close();
@@ -880,7 +976,7 @@ async function confirmSign() {
 
 // ---- Events (delegated, so re-rendering never loses a handler) ----
 // Once signed, outcomes, disputes and openings are on the record; only looking around remains.
-const AFTER_SIGN = new Set(['clause', 'signoff', 'sign', 'next', 'previous-page', 'next-page', 'theme', 'intro-open', 'intro-close', 'about-open', 'about-close']);
+const AFTER_SIGN = new Set(['clause', 'signoff', 'sign', 'next', 'previous-page', 'next-page', 'full-open', 'full-close', 'intro-open', 'intro-close', 'about-open', 'about-close']);
 document.addEventListener('click', (e) => {
   const t = e.target.closest('[data-act]');
   if (!t || !S.view) return;
@@ -892,6 +988,18 @@ document.addEventListener('click', (e) => {
     case 'signoff': case 'sign': selectSignoff(); break;
     case 'next': doNext(); break;
     case 'open': openPassage(arg, t.dataset.claims ? t.dataset.claims.split(',') : []); break;
+    case 'page-tab': openPageTab(arg); break;
+    case 'more-pages': {
+      const scroll = $('fileScroll').scrollTop;
+      S.morePages = !S.morePages;
+      renderReader();
+      $('fileScroll').scrollTop = scroll;
+      document.querySelector('[data-testid="more-pages"]').focus();
+      watchPassage();
+      break;
+    }
+    case 'full-open': openFullFile(); break;
+    case 'full-close': closeFullFile(); break;
     case 'close-pane': closePassage(); $('policy').close(); render(); break;
     case 'annotation': openAnnotation(arg); break;
     case 'next-flag': moveFlag(1); break;
@@ -903,9 +1011,10 @@ document.addEventListener('click', (e) => {
     case 'claims': S.claimOpen = true; render(); break;
     case 'outcome':
       S.outcomes[arg] = t.dataset.val;
-      S.justSet = arg;
+      S.formErr = '';
       render();
       break;
+    case 'save-next': saveNext(arg); break;
     case 'dispute': {
       S.disputing = arg;
       S.disputeErr = false;
@@ -947,22 +1056,23 @@ document.addEventListener('click', (e) => {
       break;
     case 'about-open': pause(); $('about').showModal(); break;
     case 'about-close': $('about').close(); break;
-    case 'theme':
-      document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
-      store('readmark-theme', document.documentElement.dataset.theme);
-      renderJob();
-      break;
     default: break;
   }
 });
 document.addEventListener('input', (e) => { if (e.target.id === 'reason') S.reason = e.target.value; });
 document.addEventListener('change', (e) => {
+  if (e.target.matches('[data-outcome]') && !S.signed) {
+    S.outcomes[e.target.dataset.arg] = e.target.value;
+    S.formErr = '';
+    render();
+  }
   if (e.target.name === 'decision') S.decision = e.target.value;
   if (e.target.id === 'pageJump') goToPage(Number(e.target.value));
 });
 $('about').addEventListener('close', resume);
 $('policy').addEventListener('close', () => { if (!$('policy').open && src(S.current?.pid)?.kind === 'policy') closePassage(); });
 $('comparison').addEventListener('close', resume);
+$('fullFile').addEventListener('cancel', (e) => { e.preventDefault(); closeFullFile(); });
 document.addEventListener('toggle', (e) => {
   if (e.target.matches('[data-testid=clean-questions]')) S.cleanOpen = e.target.open;
   if (e.target.matches('[data-testid=claim-details]')) S.claimOpen = e.target.open;

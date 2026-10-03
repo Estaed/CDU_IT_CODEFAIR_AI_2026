@@ -52,6 +52,20 @@ def implementation_pin() -> dict:
             for p in files}
 
 
+# Files that compute no H-01 result: the screen server, the officer's decision record, and this
+# guard itself (it only decides whether scoring may run). Changing them after H-01 must not void
+# its numbers; otherwise the repo would stay frozen for good (orchestrator integration fix,
+# 2026-10-03, when the Task-11 screen landed after H-01). The H-01 view digest check below still
+# proves the scored output is the frozen run's output.
+NOT_RESULT_CODE = ("readmark/serve.py", "readmark/record/", "readmark/eval/discipline.py")
+
+
+def result_pin(pin: dict) -> dict:
+    """The part of an implementation pin that can affect H-01's results."""
+    return {path: digest for path, digest in pin.items()
+            if not path.startswith(NOT_RESULT_CODE)}
+
+
 def save(path: Path, record: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(dumps(record), encoding="utf-8", newline="\n")
@@ -92,7 +106,7 @@ def assert_scoring_allowed(out: Path) -> dict:
     record = json.loads((out / "evaluation.json").read_text(encoding="utf-8"))
     if not record["completed_at"] or not (out / "view.json").exists():
         raise RuntimeError("H-01 labels stay sealed until its live pipeline has completed.")
-    if implementation_pin() != record["implementation_sha256"]:
+    if result_pin(implementation_pin()) != result_pin(record["implementation_sha256"]):
         raise RuntimeError("Code changed after H-01 was frozen; report any crash fix explicitly.")
     digest = hashlib.sha256((out / "view.json").read_bytes()).hexdigest()
     if digest != record["view_sha256"]:

@@ -27,3 +27,7 @@ Wave 4 (2026-10-03). Width 2: Task-12 and Task-13 run together (disjoint OWNS). 
 
 - [x] Task-12: False alarms, round 2: values in the passage, date ranges, suggestions; H-01 after changes (codex)
 - [x] Task-13: Light by default, wait-time context on the case header, a cleaner record (codex)
+
+Wave 5 (2026-10-03). Width 1.
+
+- [ ] Task-14: Jev's "supports" score as a second signal for "checker disagrees" (codex)

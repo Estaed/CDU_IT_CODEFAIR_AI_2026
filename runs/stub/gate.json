@@ -1,0 +1,56 @@
+{
+ "cap": 8,
+ "required": [
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "passage_id": "stub:p4:1",
+   "rank": 1,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "passage_id": "eligibility:p6:11",
+   "rank": 2,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "passage_id": "stub:p1:1",
+   "rank": 3,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c21"
+   ],
+   "passage_id": "stub:p5:2",
+   "rank": 4,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c20"
+   ],
+   "passage_id": "stub:p5:3",
+   "rank": 5,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  }
+ ],
+ "suggested": []
+}

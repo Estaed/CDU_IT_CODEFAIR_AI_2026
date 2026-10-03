@@ -1,0 +1,37 @@
+{
+  "discretionary-decision-making-policy.pdf": {
+    "url": "https://dhlgcd.nt.gov.au/media/documents/policies,-procedures-and-guidelines/foundations/discretionary-decision-making-policy.pdf",
+    "version": "2.02",
+    "approved": "2016-11-23",
+    "sha256": "275b445c9e0e2241064c28a90ff5a5f260f5c05ec17290fc10848d228014ffdd",
+    "pages": 5
+  },
+  "domestic-family-violence-policy.pdf": {
+    "url": "https://dhlgcd.nt.gov.au/media/documents/policies,-procedures-and-guidelines/living/domestic-family-violence-policy.pdf",
+    "version": "2.01",
+    "approved": "2024-02-29",
+    "sha256": "5209d377b63a291af8386245c539aa0ded413581adb2af7e60bb0332314d5bde",
+    "pages": 11
+  },
+  "eligibility-for-social-housing-policy.pdf": {
+    "url": "https://dhlgcd.nt.gov.au/media/documents/policies,-procedures-and-guidelines/accessing/eligibility-for-social-housing-policy.pdf",
+    "version": "7.1",
+    "approved": "2024-06-27",
+    "sha256": "f628d219bf38bea1a8156364f8d2b665eae4d6c37e097e6e4869fb0dd7f64fbf",
+    "pages": 8
+  },
+  "identification-and-documentation-policy.pdf": {
+    "url": "https://dhlgcd.nt.gov.au/media/documents/policies,-procedures-and-guidelines/accessing/identification-and-documentation-policy.pdf",
+    "version": "4.02",
+    "approved": "2024-08-29",
+    "sha256": "ce59a9a3b24a6a7f2e8a505a3588c86b93ea321cd39048a12b1072797fa97404",
+    "pages": 9
+  },
+  "priority-housing-policy.pdf": {
+    "url": "https://dhlgcd.nt.gov.au/media/documents/policies,-procedures-and-guidelines/accessing/priority-housing-policy.pdf",
+    "version": "2.04",
+    "approved": "2024-03-26",
+    "sha256": "ea6c52753092bb22a71689862fe8e9a06bc80f604f3ae6b74b5302da4eab12d5",
+    "pages": 7
+  }
+}

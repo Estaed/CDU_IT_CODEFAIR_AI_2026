@@ -1,0 +1,282 @@
+{
+ "c01": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c02": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c03": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c04": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p6:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p6:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c06": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:5",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c07": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:5",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c09": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "eligibility:p4:16",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c10": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p2:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p2:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c11": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p3:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p3:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c12": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "eligibility:p6:9",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c13": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p4:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p4:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c14": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p4:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c15": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p4:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "eligibility:p6:11",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:1",
+    "quote_found": true
+   }
+  ],
+  "passed": false,
+  "values_missing": [
+   "2026",
+   "16"
+  ]
+ },
+ "c16": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:4",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c17": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p5:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c18": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "priority:p4:13",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c19": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p5:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p5:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c20": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p5:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c21": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p5:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c23": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "priority:p4:19",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c25": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "priority:p4:18",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c26": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "stub:p1:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ }
+}

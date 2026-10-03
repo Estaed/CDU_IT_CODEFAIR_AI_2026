@@ -1,0 +1,311 @@
+{
+ "key": "a836781b1489658fb2b9e3989c10193ffec732c508e98ed2b5333f06696bc172",
+ "kind": "writer",
+ "response": {
+  "model": "claude-opus-5-5",
+  "output": {
+   "facts": [
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p1:2",
+       "quote": "Residency: Australian citizen."
+      }
+     ],
+     "claim": "The applicant states she is an Australian citizen.",
+     "clause_id": "elig-residency",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p1:2",
+       "quote": "Copy of the applicant's Australian birth certificate attached and sighted by the Darwin housing office on 16 February 2026."
+      }
+     ],
+     "claim": "A copy of her Australian birth certificate was attached and sighted by the Darwin housing office on 16 February 2026.",
+     "clause_id": "elig-residency",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p1:3",
+       "quote": "the applicant declares that no household member owns or part owns residential property anywhere in Australia"
+      }
+     ],
+     "claim": "The application form declares that no household member owns or part owns residential property in Australia.",
+     "clause_id": "elig-property",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p6:1",
+       "quote": "I, Leanne Kestrel, declare that I do not own or part own residential property anywhere in Australia, and that no member of my household does."
+      },
+      {
+       "passage_id": "stub:p6:2",
+       "quote": "Declared at Darwin on 16 February 2026 before an authorised witness."
+      }
+     ],
+     "claim": "A statutory declaration made before an authorised witness on 16 February 2026 states that neither she nor any household member owns or part owns residential property.",
+     "clause_id": "elig-property",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "The file holds no independent property search or title check to confirm the declaration.",
+     "clause_id": "elig-property",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p1:5",
+       "quote": "Income details: to follow."
+      }
+     ],
+     "claim": "Income details were not provided with the application and are marked as to follow.",
+     "clause_id": "elig-income",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p1:5",
+       "quote": "The Income Confirmation Scheme form has not been signed."
+      }
+     ],
+     "claim": "The Income Confirmation Scheme form has not been signed.",
+     "clause_id": "elig-income",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "The file contains no income evidence such as payslips, Centrelink statements or bank statements.",
+     "clause_id": "elig-income",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "eligibility:p4:16",
+       "quote": "If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy."
+      }
+     ],
+     "claim": "Urban applicants must also meet income-based criteria set out in the Income and Assets policy.",
+     "clause_id": "elig-income",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p2:1",
+       "quote": "Statement date 15 Jan 2026."
+      },
+      {
+       "passage_id": "stub:p2:2",
+       "quote": "Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight."
+      }
+     ],
+     "claim": "A ledger dated 15 Jan 2026 shows a former tenancy debt to the CEO (Housing) of $2,400.00 with a proposed payment plan of $100 per fortnight.",
+     "clause_id": "elig-debts",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p3:1",
+       "quote": "Statement date 4 Mar 2026."
+      },
+      {
+       "passage_id": "stub:p3:2",
+       "quote": "Arrears cleared in full. Balance $0.00."
+      }
+     ],
+     "claim": "A later ledger dated 4 Mar 2026 shows the arrears were cleared in full by a support agency payment, leaving a balance of $0.00, so the earlier ledger is out of date.",
+     "clause_id": "elig-debts",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "eligibility:p6:9",
+       "quote": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing)."
+      }
+     ],
+     "claim": "Policy says social housing is not withheld because of a debt owed to the CEO (Housing).",
+     "clause_id": "elig-debts",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p4:1",
+       "quote": "Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023."
+      },
+      {
+       "passage_id": "stub:p4:1",
+       "quote": "No breach of the tenancy agreement recorded."
+      }
+     ],
+     "claim": "Her previous tenancy at a Palmerston property ended by mutual agreement on 12 June 2023 with no breach recorded.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p4:1",
+       "quote": "A rent debt remained outstanding at exit."
+      }
+     ],
+     "claim": "A rent debt was outstanding when that tenancy ended, which the officer may weigh when judging whether there was evidence to justify a termination.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p4:1",
+       "quote": "ended by mutual agreement on 12 June 2023"
+      },
+      {
+       "passage_id": "eligibility:p6:11",
+       "quote": "are ineligible to apply for social housing for a period of 2 years"
+      },
+      {
+       "passage_id": "stub:p1:1",
+       "quote": "Applicant: Leanne Kestrel (Ms K.)."
+      }
+     ],
+     "claim": "The tenancy ended on 12 June 2023, more than 2 years before the application dated 2026-02-16.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p1:4",
+       "quote": "Priority category claimed: domestic or family violence."
+      }
+     ],
+     "claim": "The applicant claims priority under the domestic or family violence category.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p5:2",
+       "quote": "Ms K. and her two children are fleeing family violence and cannot safely return to their current address."
+      }
+     ],
+     "claim": "A support agency states she and her two children are fleeing family violence and cannot safely return to their current address.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "priority:p4:13",
+       "quote": "Domestic or family violence."
+      }
+     ],
+     "claim": "Domestic or family violence is one of the listed urgent-need categories.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p5:1",
+       "quote": "I am writing in support of Ms K.'s application for priority housing."
+      },
+      {
+       "passage_id": "stub:p5:3",
+       "quote": "Case worker, Saltwater Lane Family Support."
+      }
+     ],
+     "claim": "The supporting document is a letter from a case worker at Saltwater Lane Family Support.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p5:3",
+       "quote": "Case worker, Saltwater Lane Family Support."
+      }
+     ],
+     "claim": "The support letter does not name the case worker who signed it.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p5:2",
+       "quote": "Police attended the property on 2 February 2026."
+      }
+     ],
+     "claim": "The letter says police attended the property on 2 February 2026, but no police report or reference is in the file.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "The file holds no police report, protection order or other independent document confirming the family violence.",
+     "clause_id": "prio-documentation",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "priority:p4:19",
+       "quote": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority."
+      }
+     ],
+     "claim": "Policy requires applicants to prove urgent need with supporting documentation, as set out in the Identification and Documentation policy.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "Nothing in the file asks for discretion, or says that an eligibility criterion is unmet because of an extreme situation.",
+     "clause_id": "prio-discretion",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "priority:p4:18",
+       "quote": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations."
+      }
+     ],
+     "claim": "Policy gives the CEO (Housing) some discretion for extreme situations when an eligibility criterion is unmet.",
+     "clause_id": "prio-discretion",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "stub:p1:1",
+       "quote": "Household: the applicant and her two children, aged 7 and 10."
+      }
+     ],
+     "claim": "The household includes two children aged 7 and 10.",
+     "clause_id": "other",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "The file holds no identification documents for the two children.",
+     "clause_id": "other",
+     "found": false
+    }
+   ]
+  }
+ }
+}

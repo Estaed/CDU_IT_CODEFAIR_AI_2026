@@ -1,0 +1,70 @@
+# The eight decisive clauses (ids from docs/contracts.md), in the order the officer works
+# through them: eligibility first, then priority. Each rests on one verbatim sentence from the
+# pinned policy PDF; ingest finds the passage that holds it and stops if the sentence is not
+# there word for word. These sentences are the only policy text kept in the repo, and the
+# review screen shows every one of them.
+#
+# Fields: clause_id; policy (key in readmark.ingest.POLICIES); source (the section shown);
+# title; decides (what the officer decides, from the contract); sentence (verbatim);
+# items (optional verbatim list entries that complete the sentence).
+
+- clause_id: elig-residency
+  policy: eligibility
+  source: Eligibility §3.2
+  title: Residency
+  decides: Australian citizen or permanent resident.
+  sentence: Applicants must be an Australian citizen or have permanent residency status.
+
+- clause_id: elig-property
+  policy: eligibility
+  source: Eligibility §3.1.1
+  title: Residential property ownership
+  decides: Owns no residential property (a domestic or family violence exemption needs delegate approval).
+  sentence: Except in Remote Communities, Town Camps and CLAs, applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing.
+
+- clause_id: elig-income
+  policy: eligibility
+  source: Eligibility §3
+  title: Income criteria for urban applicants
+  decides: Whether income evidence is in the file. The Income and Assets policy is not bundled, so v1 does not test the thresholds.
+  sentence: If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.
+
+- clause_id: elig-debts
+  policy: eligibility
+  source: Eligibility §3.4
+  title: Debts
+  decides: A debt to the CEO (Housing) does not withhold housing.
+  sentence: The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).
+
+- clause_id: elig-former-tenancy
+  policy: eligibility
+  source: Eligibility §3.5
+  title: Unsatisfactory former tenancies
+  decides: A tenancy terminated for breach in the last 2 years means ineligible for 2 years.
+  sentence: Former social housing tenants who have had their tenancy agreement terminated or have voluntarily vacated the premises leaving sufficient evidence to justify a termination (under breach of tenancy agreement conditions or satisfactory tenancy criteria), are ineligible to apply for social housing for a period of 2 years, which includes property under the management or ownership of the CEO (Housing).
+
+- clause_id: prio-category
+  policy: priority
+  source: Priority §3
+  title: Urgent-need category
+  decides: The applicant falls in one of the four urgent-need categories.
+  sentence: "The following categories are considered an urgent need for social housing:"
+  items:
+    - Young person in the care of the Chief Executive Officer Territory Families, Housing and Communities transitioning to independence;
+    - At risk of homelessness;
+    - Serious medical or social problems; and
+    - Domestic or family violence.
+
+- clause_id: prio-documentation
+  policy: priority
+  source: Priority §3.1
+  title: Urgent need documented
+  decides: Urgent need is proven with supporting documentation (see the Identification and Documentation policy).
+  sentence: Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.
+
+- clause_id: prio-discretion
+  policy: priority
+  source: Priority §3.1
+  title: Discretion for extreme situations
+  decides: Whether the "some discretion for extreme situations" applies.
+  sentence: Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations.

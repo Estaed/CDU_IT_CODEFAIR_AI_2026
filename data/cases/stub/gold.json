@@ -1,0 +1,25 @@
+{
+  "case_id": "stub",
+  "outcomes": {
+    "elig-residency": "met",
+    "elig-property": "met",
+    "elig-income": "cannot_decide",
+    "elig-debts": "met",
+    "elig-former-tenancy": "met",
+    "prio-category": "met",
+    "prio-documentation": "met",
+    "prio-discretion": "not_applicable"
+  },
+  "correct_decision": "request_information",
+  "required_reading": ["p2", "p3", "p5"],
+  "rationale": {
+    "elig-residency": "Eligibility 3.2 says \"Applicants must be an Australian citizen or have permanent residency status.\" and p1 records an Australian citizen with a birth certificate sighted.",
+    "elig-property": "Eligibility 3.1.1 makes ineligible \"applicants and tenants who own or partly own residential property anywhere in Australia\", and the statutory declaration on p6 says the applicant owns none.",
+    "elig-income": "Eligibility 3 says urban applicants \"must also qualify under additional income based criteria which are specified in the Income and Assets policy\", but the file holds no income evidence (p1 says income details are to follow), so the officer requests it.",
+    "elig-debts": "Eligibility 3.4 says \"The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).\", and the debt on p2 was cleared in full on p3 in any case.",
+    "elig-former-tenancy": "Eligibility 3.5 excludes for 2 years tenants whose \"tenancy agreement\" was \"terminated\" for breach, and p4 records an end by mutual agreement in June 2023 with no breach.",
+    "prio-category": "Priority 3 lists \"Domestic or family violence.\" as an urgent-need category, and the support letter on p5 says the applicant and her children are fleeing family violence.",
+    "prio-documentation": "Priority 3.1 says \"Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.\", and p5 is a support-agency letter recording a police attendance on 2 February 2026.",
+    "prio-discretion": "Priority 3.1 gives \"some discretion for extreme situations\", but nothing on p1 to p6 asks for it because no eligibility criterion is failed."
+  }
+}

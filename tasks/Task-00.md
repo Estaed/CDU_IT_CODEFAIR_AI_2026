@@ -1,4 +1,5 @@
 # Task-00: Thinnest end-to-end path, from a stub case to a signed decision record
+**Status: DONE** — verified 2026-10-03, eye check pending: 2
 > **Execution:** agent `ultracode` · effort `xhigh`
 > *Why:* lays the package, the stage contract, the model seams and the gate. Every later feature
 > plugs into them.
@@ -69,21 +70,21 @@ then adds the real demo case, contradiction pairs, the scan, the summary under a
 evaluation as separate features on these seams.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0. It runs `ruff check`, `pytest`, and a replay smoke
+- [x] `uv run python scripts/gate.py` exits 0. It runs `ruff check`, `pytest`, and a replay smoke
   that runs the stub with no API keys in env and validates `view.json` against its schema.
-- [ ] Replay is deterministic: `run --case stub --replay` twice gives byte-identical `view.json`,
+- [x] Replay is deterministic: `run --case stub --replay` twice gives byte-identical `view.json`,
   with `TYPESAFE_API_KEY` unset and `claude` not on PATH.
-- [ ] A test changes one byte of a copy of a policy PDF; ingest stops with a message naming the
+- [x] A test changes one byte of a copy of a policy PDF; ingest stops with a message naming the
   file and the expected SHA-256.
-- [ ] A test injects a claim with a fabricated quote; it reaches `view.json` with the status
+- [x] A test injects a claim with a fabricated quote; it reaches `view.json` with the status
   "quote not found" and is in required reading.
-- [ ] A test shows that a claim citing only p.8 ("arrears $2,400") passes the code check, so the
+- [x] A test shows that a claim citing only p.8 ("arrears $2,400") passes the code check, so the
   gap that wave 2's contradiction pairs close is measured, not assumed.
-- [ ] Required reading has 8 items or fewer and is ordered. A test covers the cap.
-- [ ] A headless Playwright test opens the served page with no console errors. It opens the
+- [x] Required reading has 8 items or fewer and is ordered. A test covers the cap.
+- [x] A headless Playwright test opens the served page with no console errors. It opens the
   required passages one by one, confirms the sign-off is locked before and unlocked after, signs,
   and finds the record JSON with `opened_at` and `seconds_in_view` per passage.
-- [ ] `runs/stub/` and the cache contain no policy text beyond the quotes shown on screen. A test
+- [x] `runs/stub/` and the cache contain no policy text beyond the quotes shown on screen. A test
   greps the cache for a long policy sentence that is not quoted.
 - [ ] (eye) Against `design/mock-v0.html`'s behaviour (not its look): Tarık can follow one claim to
   its passage, see why the gate is locked, open passages, set clause outcomes, sign, and read the

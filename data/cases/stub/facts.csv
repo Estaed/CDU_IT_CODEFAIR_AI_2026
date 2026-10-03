@@ -1,0 +1,11 @@
+fact_id,clause_id,statement,value,page,quote,role,trap,decisive
+F01,elig-residency,The applicant is an Australian citizen and a birth certificate was sighted,Australian citizen,1,Residency: Australian citizen.,supports,none,no
+F02,elig-property,The applicant declares that she owns no residential property in Australia,no property,6,I do not own or part own residential property anywhere in Australia,supports,none,no
+F03,elig-income,The file holds no income statement or other income evidence,,,,missing,missing_doc,yes
+F04,elig-debts,"The January ledger shows a former-tenancy debt of $2,400 owed to the CEO (Housing)","$2,400.00",2,"Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00.",stale,stale_value,yes
+F05,elig-debts,The March ledger shows the arrears cleared in full by a support agency,$0.00,3,Arrears cleared in full. Balance $0.00.,contradicts,contradiction,yes
+F06,elig-debts,"The debt is owed to the CEO (Housing), so under Eligibility 3.4 it does not withhold social housing",CEO (Housing),2,Former tenancy debt owed to the CEO (Housing).,supports,policy_misread,yes
+F07,elig-former-tenancy,The previous tenancy ended by mutual agreement,2023-06-12,4,ended by mutual agreement on 12 June 2023,supports,none,yes
+F08,elig-former-tenancy,No breach of the previous tenancy agreement was recorded,no breach,4,No breach of the tenancy agreement recorded.,supports,exclusion_2yr,yes
+F09,prio-category,The applicant and her two children are fleeing family violence,domestic or family violence,5,Ms K. and her two children are fleeing family violence and cannot safely return to their current address.,supports,omission,yes
+F10,prio-documentation,A support agency letter documents the family violence and a police attendance,2026-02-02,5,Police attended the property on 2 February 2026.,supports,none,yes

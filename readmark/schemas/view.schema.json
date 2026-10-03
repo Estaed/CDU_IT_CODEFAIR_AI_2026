@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "readmark/view.schema.json",
+  "title": "Readmark review view (runs/<case>/view.json)",
+  "description": "Everything the review screen shows for one case. Three status lists stay separate: claim checks (claims[].status), clause coverage (clauses[].coverage) and the clause outcome, which only the officer sets on screen and which therefore never appears here. Policy passage text is absent (text: null); the server reads it from the pinned PDF on demand.",
+  "type": "object",
+  "required": ["schema_version", "case", "policies", "models", "clauses", "claims", "sources",
+               "required_reading", "suggested_reading", "cap"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": 1},
+    "case": {
+      "type": "object",
+      "required": ["case_id", "pages", "documents", "sha256", "synthetic"],
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {"type": "string", "minLength": 1},
+        "pages": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "synthetic": {"type": "boolean"},
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["doc_type", "doc_title", "doc_date", "page"],
+            "additionalProperties": false,
+            "properties": {
+              "doc_type": {"type": "string"},
+              "doc_title": {"type": "string"},
+              "doc_date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+              "page": {"type": "integer", "minimum": 1}
+            }
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["file", "title", "version", "approved", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "file": {"type": "string"},
+          "title": {"type": "string"},
+          "version": {"type": "string"},
+          "approved": {"type": "string"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "required": ["writer", "checker"],
+      "additionalProperties": false,
+      "properties": {
+        "writer": {"$ref": "#/$defs/model"},
+        "checker": {"$ref": "#/$defs/model"}
+      }
+    },
+    "clauses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["clause_id", "title", "source", "decides", "policy_sentence", "policy_items",
+                     "policy_passage_id", "claim_ids", "coverage", "missing"],
+        "additionalProperties": false,
+        "properties": {
+          "clause_id": {"enum": ["elig-residency", "elig-property", "elig-income", "elig-debts",
+                                 "elig-former-tenancy", "prio-category", "prio-documentation",
+                                 "prio-discretion", "other"]},
+          "title": {"type": "string"},
+          "source": {"type": ["string", "null"]},
+          "decides": {"type": "string"},
+          "policy_sentence": {"type": ["string", "null"]},
+          "policy_items": {"type": "array", "items": {"type": "string"}},
+          "policy_passage_id": {"type": ["string", "null"]},
+          "claim_ids": {"type": "array", "items": {"type": "string"}},
+          "coverage": {"enum": [null, "possibly_missed", "no_evidence_in_file"]},
+          "missing": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["claim_id", "statement"],
+              "additionalProperties": false,
+              "properties": {"claim_id": {"type": "string"}, "statement": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "clause_id", "claim", "citations", "values_missing", "checker",
+                     "status", "required"],
+        "additionalProperties": false,
+        "properties": {
+          "claim_id": {"type": "string"},
+          "clause_id": {"type": "string"},
+          "claim": {"type": "string"},
+          "citations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["passage_id", "quote", "quote_found", "passage_exists"],
+              "additionalProperties": false,
+              "properties": {
+                "passage_id": {"type": "string"},
+                "quote": {"type": "string"},
+                "quote_found": {"type": "boolean"},
+                "passage_exists": {"type": "boolean"}
+              }
+            }
+          },
+          "values_missing": {"type": "array", "items": {"type": "string"}},
+          "checker": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "required": ["claim_id", "verdict", "probability", "supports"],
+                "additionalProperties": false,
+                "properties": {
+                  "claim_id": {"type": "string"},
+                  "verdict": {"enum": ["supports", "contradicts", "not_enough_information", null]},
+                  "probability": {"type": ["number", "null"]},
+                  "supports": {"type": ["number", "null"]}
+                }
+              }
+            ]
+          },
+          "status": {"enum": ["supported", "checker_disagrees", "contradicted", "quote_not_found"]},
+          "required": {"type": "boolean"}
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["passage_id", "exists", "kind"],
+        "properties": {
+          "passage_id": {"type": "string"},
+          "exists": {"type": "boolean"},
+          "kind": {"enum": ["case", "policy", null]},
+          "page": {"type": "integer"},
+          "doc_type": {"type": "string"},
+          "doc_title": {"type": "string"},
+          "doc_date": {"type": "string"},
+          "version": {"type": "string"},
+          "section": {"type": ["string", "null"]},
+          "text": {"type": ["string", "null"]}
+        },
+        "if": {"properties": {"kind": {"const": "policy"}}},
+        "then": {"properties": {"text": {"type": "null"}}}
+      }
+    },
+    "required_reading": {"type": "array", "maxItems": 8, "items": {"$ref": "#/$defs/reading"}},
+    "suggested_reading": {"type": "array", "items": {"$ref": "#/$defs/reading"}},
+    "cap": {"const": 8}
+  },
+  "$defs": {
+    "model": {
+      "type": "object",
+      "required": ["name", "model"],
+      "additionalProperties": false,
+      "properties": {"name": {"type": "string"}, "model": {"type": ["string", "null"]}}
+    },
+    "reading": {
+      "type": "object",
+      "required": ["rank", "passage_id", "claim_ids", "reasons"],
+      "additionalProperties": false,
+      "properties": {
+        "rank": {"type": "integer", "minimum": 1},
+        "passage_id": {"type": "string"},
+        "claim_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "reasons": {"type": "array", "minItems": 1,
+                    "items": {"enum": ["contradicted", "quote_not_found", "checker_disagrees"]}}
+      }
+    }
+  }
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Readmark · Priority housing review</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Priority housing review · Darwin</div>
+      <h1>Applicant file <span class="accent" id="caseId">…</span></h1>
+      <div class="sub" id="caseSub"></div>
+      <div class="tags" id="tags"></div>
+    </div>
+    <div class="actions">
+      <div class="gate" aria-live="polite">
+        <span class="eyebrow">Required reading <span class="mono" id="gateCount">0/0</span></span>
+        <div class="segs" id="segs"></div>
+      </div>
+      <button class="btn-primary" id="signBtn" data-testid="sign-btn">Sign decision</button>
+    </div>
+  </header>
+  <div id="banner" aria-live="polite"></div>
+
+  <div class="grid">
+    <main id="left">
+      <section class="group" id="reqSection"></section>
+      <div id="clauses"></div>
+    </main>
+    <aside class="pane card" id="pane" aria-live="polite"></aside>
+  </div>
+
+  <footer>Synthetic case file. Policy text from NT public housing policies, read from the pinned
+    PDFs. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it
+    never sets a clause outcome or recommends a decision.</footer>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle" data-testid="dialog">
+    <h2 id="dlgTitle">Sign the decision</h2>
+    <div class="sub">The decision is yours. The record keeps your reason, your clause outcomes,
+      your disputes and the passages you opened.</div>
+    <div class="opts" role="radiogroup" aria-label="Decision">
+      <label><input type="radio" name="decision" value="approve" data-testid="decision-approve"> Approve priority housing</label>
+      <label><input type="radio" name="decision" value="decline" data-testid="decision-decline"> Decline</label>
+      <label><input type="radio" name="decision" value="request_information" data-testid="decision-request_information"> Request more information</label>
+    </div>
+    <label class="field-label" for="reason">Reason</label>
+    <textarea id="reason" data-testid="reason" placeholder="Cite the clause and the pages you relied on."></textarea>
+    <div class="helper" id="helper">Write it so the applicant could read and challenge it.</div>
+    <div class="dialog-actions">
+      <button class="btn-secondary" id="cancel">Cancel</button>
+      <button class="btn-primary" id="confirm" data-testid="confirm-sign">Sign decision</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

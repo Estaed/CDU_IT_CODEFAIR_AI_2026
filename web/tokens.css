@@ -1,0 +1,94 @@
+/* Tarik Base tokens, v3 (2026-09-27). Generated from DESIGN.md; edit DESIGN.md first, then this.
+   Dark is the default; set data-theme="light" on <html> for light mode (neutral off-white).
+   Projects copy this file as-is and put overrides (accent) in a separate file loaded after it. */
+
+:root, [data-theme="dark"] {
+  --canvas: #0D0D0F;
+  --surface-1: #16161A;
+  --surface-2: #212026;
+  --surface-3: #2A2930;
+  --hairline: #3A3940;
+  --hairline-strong: #4F4E53;
+  --edge: #4F4E53;
+  --ink: #F2F2F2;
+  --ink-muted: #A1A1AA;
+  --ink-subtle: #71717A;
+  --primary: #FF5A1F;
+  --on-primary: #0D0D0F;
+  --primary-hover: #FF7440;
+  --primary-pressed: #E84A12;
+  --primary-text: #FF7A45;
+  --secondary: #A1A1B5;
+  --success: #3DD68C;
+  --warning: #F5B83D;
+  --danger: #F2555A;
+  --scrim: #000000B3;
+  --chart-1: #FF5A1F;
+  --chart-2: #8FA3FF;
+  --chart-3: #3CC8B4;
+  --chart-4: #F5B83D;
+  --chart-5: #B69CFF;
+  --chart-neutral: #4F4E53;
+  --shadow-3: none;
+  --shadow-hard: none;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --canvas: #F4F4F5;
+  --surface-1: #FFFFFF;
+  --surface-2: #EFEFF1;
+  --surface-3: #E7E7EA;
+  --hairline: #E4E4E7;
+  --hairline-strong: #B4B4BB;
+  --edge: #18181B;
+  --ink: #18181B;
+  --ink-muted: #52525B;
+  --ink-subtle: #8B8B94;
+  --primary: #D4400A;
+  --on-primary: #FFFFFF;
+  --primary-hover: #BF3908;
+  --primary-pressed: #A83206;
+  --primary-text: #C2410C;
+  --secondary: #5F5F73;
+  --success: #15803D;
+  --warning: #B45309;
+  --danger: #D92D32;
+  --scrim: #18181B66;
+  --chart-1: #D4400A;
+  --chart-2: #4C63D9;
+  --chart-3: #0F8F7F;
+  --chart-4: #B45309;
+  --chart-5: #7C5CD6;
+  --chart-neutral: #B4B4BB;
+  --shadow-3: 0 8px 24px #18181B1F;
+  --shadow-hard: 4px 4px 0 #18181B;
+  color-scheme: light;
+}
+
+:root {
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-button: 12px;
+  --r-chip: 8px;
+  --r-pill: 9999px;
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --fast: 120ms ease-out;
+  --base: 200ms ease-out;
+  --slow: 320ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --fast: 0ms linear; --base: 0ms linear; --slow: 0ms linear; }
+}

@@ -2,3 +2,5 @@
 .tmp/
 .env
 data/policies/*.pdf
+__pycache__/
+runs/*/records/

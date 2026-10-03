@@ -1,0 +1,40 @@
+[project]
+name = "readmark"
+version = "0.1.0"
+description = "Readmark: an evidence map and reading gate for NT priority-housing decisions (CDU IT Code Fair 2026, AI Challenge brief 6)"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "fastapi",
+    "jsonschema",
+    "pypdf",
+    "pyyaml",
+    "uvicorn",
+]
+
+[dependency-groups]
+dev = [
+    "playwright",
+    "pytest",
+    "ruff",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = [".tmp"]
+
+[tool.ruff.lint]
+# The classic default (pycodestyle errors and pyflakes). Ruff 0.16 widened its built-in default
+# to about 400 rules; the wave-1 lanes agreed on pyflakes-clean code (otopilot plan, seams), and
+# this gate also lints Task-01's scripts/validate_cases.py, so the rule set is pinned here.
+# readmark/ and tests/ are also clean under ruff 0.16's wider default.
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["."]

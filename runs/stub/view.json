@@ -1,0 +1,1092 @@
+{
+ "cap": 8,
+ "case": {
+  "case_id": "stub",
+  "documents": [
+   {
+    "doc_date": "2026-02-16",
+    "doc_title": "Application for social housing with priority consideration",
+    "doc_type": "form",
+    "page": 1
+   },
+   {
+    "doc_date": "2026-01-15",
+    "doc_title": "Rent ledger summary, former public tenancy",
+    "doc_type": "ledger",
+    "page": 2
+   },
+   {
+    "doc_date": "2026-03-04",
+    "doc_title": "Rent ledger summary, former public tenancy",
+    "doc_type": "ledger",
+    "page": 3
+   },
+   {
+    "doc_date": "2023-06-12",
+    "doc_title": "Previous tenancy record",
+    "doc_type": "tenancy-record",
+    "page": 4
+   },
+   {
+    "doc_date": "2026-02-10",
+    "doc_title": "Letter from a support agency",
+    "doc_type": "letter",
+    "page": 5
+   },
+   {
+    "doc_date": "2026-02-16",
+    "doc_title": "Statutory declaration on property ownership",
+    "doc_type": "statutory-declaration",
+    "page": 6
+   }
+  ],
+  "pages": 6,
+  "sha256": "37aa80a3d456be513502de7921bb6ea981018b5fd43998e7cb6cff9a15cb1179",
+  "synthetic": true
+ },
+ "claims": [
+  {
+   "checker": {
+    "claim_id": "c01",
+    "probability": 0.9,
+    "supports": 0.75,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:2",
+     "quote": "Residency: Australian citizen.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant states she is an Australian citizen.",
+   "claim_id": "c01",
+   "clause_id": "elig-residency",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c02",
+    "probability": 0.8,
+    "supports": 0.66,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:2",
+     "quote": "Copy of the applicant's Australian birth certificate attached and sighted by the Darwin housing office on 16 February 2026.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A copy of her Australian birth certificate was attached and sighted by the Darwin housing office on 16 February 2026.",
+   "claim_id": "c02",
+   "clause_id": "elig-residency",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c03",
+    "probability": 0.98,
+    "supports": 0.94,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:3",
+     "quote": "the applicant declares that no household member owns or part owns residential property anywhere in Australia",
+     "quote_found": true
+    }
+   ],
+   "claim": "The application form declares that no household member owns or part owns residential property in Australia.",
+   "claim_id": "c03",
+   "clause_id": "elig-property",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c04",
+    "probability": 0.99,
+    "supports": 0.95,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p6:1",
+     "quote": "I, Leanne Kestrel, declare that I do not own or part own residential property anywhere in Australia, and that no member of my household does.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p6:2",
+     "quote": "Declared at Darwin on 16 February 2026 before an authorised witness.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A statutory declaration made before an authorised witness on 16 February 2026 states that neither she nor any household member owns or part owns residential property.",
+   "claim_id": "c04",
+   "clause_id": "elig-property",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c06",
+    "probability": 0.97,
+    "supports": 0.57,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:5",
+     "quote": "Income details: to follow.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Income details were not provided with the application and are marked as to follow.",
+   "claim_id": "c06",
+   "clause_id": "elig-income",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c07",
+    "probability": 0.99,
+    "supports": 0.99,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:5",
+     "quote": "The Income Confirmation Scheme form has not been signed.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The Income Confirmation Scheme form has not been signed.",
+   "claim_id": "c07",
+   "clause_id": "elig-income",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c09",
+    "probability": 0.99,
+    "supports": 0.89,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "eligibility:p4:16",
+     "quote": "If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Urban applicants must also meet income-based criteria set out in the Income and Assets policy.",
+   "claim_id": "c09",
+   "clause_id": "elig-income",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c10",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p2:1",
+     "quote": "Statement date 15 Jan 2026.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p2:2",
+     "quote": "Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A ledger dated 15 Jan 2026 shows a former tenancy debt to the CEO (Housing) of $2,400.00 with a proposed payment plan of $100 per fortnight.",
+   "claim_id": "c10",
+   "clause_id": "elig-debts",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c11",
+    "probability": 0.66,
+    "supports": 0.27,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p3:1",
+     "quote": "Statement date 4 Mar 2026.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p3:2",
+     "quote": "Arrears cleared in full. Balance $0.00.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A later ledger dated 4 Mar 2026 shows the arrears were cleared in full by a support agency payment, leaving a balance of $0.00, so the earlier ledger is out of date.",
+   "claim_id": "c11",
+   "clause_id": "elig-debts",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c12",
+    "probability": 1.0,
+    "supports": 0.98,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "eligibility:p6:9",
+     "quote": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).",
+     "quote_found": true
+    }
+   ],
+   "claim": "Policy says social housing is not withheld because of a debt owed to the CEO (Housing).",
+   "claim_id": "c12",
+   "clause_id": "elig-debts",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c13",
+    "probability": 0.92,
+    "supports": 0.74,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p4:1",
+     "quote": "Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p4:1",
+     "quote": "No breach of the tenancy agreement recorded.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Her previous tenancy at a Palmerston property ended by mutual agreement on 12 June 2023 with no breach recorded.",
+   "claim_id": "c13",
+   "clause_id": "elig-former-tenancy",
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c14",
+    "probability": 0.94,
+    "supports": 0.31,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p4:1",
+     "quote": "A rent debt remained outstanding at exit.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A rent debt was outstanding when that tenancy ended, which the officer may weigh when judging whether there was evidence to justify a termination.",
+   "claim_id": "c14",
+   "clause_id": "elig-former-tenancy",
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c15",
+    "probability": 0.3,
+    "supports": 0.13,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p4:1",
+     "quote": "ended by mutual agreement on 12 June 2023",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "eligibility:p6:11",
+     "quote": "are ineligible to apply for social housing for a period of 2 years",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:1",
+     "quote": "Applicant: Leanne Kestrel (Ms K.).",
+     "quote_found": true
+    }
+   ],
+   "claim": "The tenancy ended on 12 June 2023, more than 2 years before the application dated 2026-02-16.",
+   "claim_id": "c15",
+   "clause_id": "elig-former-tenancy",
+   "required": true,
+   "status": "quote_not_found",
+   "values_missing": [
+    "2026",
+    "16"
+   ]
+  },
+  {
+   "checker": {
+    "claim_id": "c16",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:4",
+     "quote": "Priority category claimed: domestic or family violence.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant claims priority under the domestic or family violence category.",
+   "claim_id": "c16",
+   "clause_id": "prio-category",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c17",
+    "probability": 0.44,
+    "supports": 0.36,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p5:2",
+     "quote": "Ms K. and her two children are fleeing family violence and cannot safely return to their current address.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A support agency states she and her two children are fleeing family violence and cannot safely return to their current address.",
+   "claim_id": "c17",
+   "clause_id": "prio-category",
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c18",
+    "probability": 0.88,
+    "supports": 0.55,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "priority:p4:13",
+     "quote": "Domestic or family violence.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Domestic or family violence is one of the listed urgent-need categories.",
+   "claim_id": "c18",
+   "clause_id": "prio-category",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c19",
+    "probability": 0.94,
+    "supports": 0.8,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p5:1",
+     "quote": "I am writing in support of Ms K.'s application for priority housing.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p5:3",
+     "quote": "Case worker, Saltwater Lane Family Support.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The supporting document is a letter from a case worker at Saltwater Lane Family Support.",
+   "claim_id": "c19",
+   "clause_id": "prio-documentation",
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c20",
+    "probability": 0.23,
+    "supports": 0.09,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p5:3",
+     "quote": "Case worker, Saltwater Lane Family Support.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The support letter does not name the case worker who signed it.",
+   "claim_id": "c20",
+   "clause_id": "prio-documentation",
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c21",
+    "probability": 0.53,
+    "supports": 0.08,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p5:2",
+     "quote": "Police attended the property on 2 February 2026.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The letter says police attended the property on 2 February 2026, but no police report or reference is in the file.",
+   "claim_id": "c21",
+   "clause_id": "prio-documentation",
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c23",
+    "probability": 1.0,
+    "supports": 0.94,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "priority:p4:19",
+     "quote": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Policy requires applicants to prove urgent need with supporting documentation, as set out in the Identification and Documentation policy.",
+   "claim_id": "c23",
+   "clause_id": "prio-documentation",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c25",
+    "probability": 1.0,
+    "supports": 0.86,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "priority:p4:18",
+     "quote": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations.",
+     "quote_found": true
+    }
+   ],
+   "claim": "Policy gives the CEO (Housing) some discretion for extreme situations when an eligibility criterion is unmet.",
+   "claim_id": "c25",
+   "clause_id": "prio-discretion",
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c26",
+    "probability": 1.0,
+    "supports": 0.99,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "stub:p1:1",
+     "quote": "Household: the applicant and her two children, aged 7 and 10.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The household includes two children aged 7 and 10.",
+   "claim_id": "c26",
+   "clause_id": "other",
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  }
+ ],
+ "clauses": [
+  {
+   "claim_ids": [
+    "c01",
+    "c02"
+   ],
+   "clause_id": "elig-residency",
+   "coverage": null,
+   "decides": "Australian citizen or permanent resident.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p5:12",
+   "policy_sentence": "Applicants must be an Australian citizen or have permanent residency status.",
+   "source": "Eligibility §3.2",
+   "title": "Residency"
+  },
+  {
+   "claim_ids": [
+    "c03",
+    "c04"
+   ],
+   "clause_id": "elig-property",
+   "coverage": "no_evidence_in_file",
+   "decides": "Owns no residential property (a domestic or family violence exemption needs delegate approval).",
+   "missing": [
+    {
+     "claim_id": "c05",
+     "statement": "The file holds no independent property search or title check to confirm the declaration."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p5:4",
+   "policy_sentence": "Except in Remote Communities, Town Camps and CLAs, applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing.",
+   "source": "Eligibility §3.1.1",
+   "title": "Residential property ownership"
+  },
+  {
+   "claim_ids": [
+    "c06",
+    "c07",
+    "c09"
+   ],
+   "clause_id": "elig-income",
+   "coverage": "no_evidence_in_file",
+   "decides": "Whether income evidence is in the file. The Income and Assets policy is not bundled, so v1 does not test the thresholds.",
+   "missing": [
+    {
+     "claim_id": "c08",
+     "statement": "The file contains no income evidence such as payslips, Centrelink statements or bank statements."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p4:16",
+   "policy_sentence": "If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.",
+   "source": "Eligibility §3",
+   "title": "Income criteria for urban applicants"
+  },
+  {
+   "claim_ids": [
+    "c10",
+    "c11",
+    "c12"
+   ],
+   "clause_id": "elig-debts",
+   "coverage": null,
+   "decides": "A debt to the CEO (Housing) does not withhold housing.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p6:9",
+   "policy_sentence": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).",
+   "source": "Eligibility §3.4",
+   "title": "Debts"
+  },
+  {
+   "claim_ids": [
+    "c13",
+    "c14",
+    "c15"
+   ],
+   "clause_id": "elig-former-tenancy",
+   "coverage": null,
+   "decides": "A tenancy terminated for breach in the last 2 years means ineligible for 2 years.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p6:11",
+   "policy_sentence": "Former social housing tenants who have had their tenancy agreement terminated or have voluntarily vacated the premises leaving sufficient evidence to justify a termination (under breach of tenancy agreement conditions or satisfactory tenancy criteria), are ineligible to apply for social housing for a period of 2 years, which includes property under the management or ownership of the CEO (Housing).",
+   "source": "Eligibility §3.5",
+   "title": "Unsatisfactory former tenancies"
+  },
+  {
+   "claim_ids": [
+    "c16",
+    "c17",
+    "c18"
+   ],
+   "clause_id": "prio-category",
+   "coverage": null,
+   "decides": "The applicant falls in one of the four urgent-need categories.",
+   "missing": [],
+   "policy_items": [
+    "Young person in the care of the Chief Executive Officer Territory Families, Housing and Communities transitioning to independence;",
+    "At risk of homelessness;",
+    "Serious medical or social problems; and",
+    "Domestic or family violence."
+   ],
+   "policy_passage_id": "priority:p4:9",
+   "policy_sentence": "The following categories are considered an urgent need for social housing:",
+   "source": "Priority §3",
+   "title": "Urgent-need category"
+  },
+  {
+   "claim_ids": [
+    "c19",
+    "c20",
+    "c21",
+    "c23"
+   ],
+   "clause_id": "prio-documentation",
+   "coverage": "no_evidence_in_file",
+   "decides": "Urgent need is proven with supporting documentation (see the Identification and Documentation policy).",
+   "missing": [
+    {
+     "claim_id": "c22",
+     "statement": "The file holds no police report, protection order or other independent document confirming the family violence."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": "priority:p4:19",
+   "policy_sentence": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.",
+   "source": "Priority §3.1",
+   "title": "Urgent need documented"
+  },
+  {
+   "claim_ids": [
+    "c25"
+   ],
+   "clause_id": "prio-discretion",
+   "coverage": "no_evidence_in_file",
+   "decides": "Whether the \"some discretion for extreme situations\" applies.",
+   "missing": [
+    {
+     "claim_id": "c24",
+     "statement": "Nothing in the file asks for discretion, or says that an eligibility criterion is unmet because of an extreme situation."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": "priority:p4:18",
+   "policy_sentence": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations.",
+   "source": "Priority §3.1",
+   "title": "Discretion for extreme situations"
+  },
+  {
+   "claim_ids": [
+    "c26"
+   ],
+   "clause_id": "other",
+   "coverage": null,
+   "decides": "Facts the writer found important that no clause names.",
+   "missing": [
+    {
+     "claim_id": "c27",
+     "statement": "The file holds no identification documents for the two children."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": null,
+   "policy_sentence": null,
+   "source": null,
+   "title": "Not on the checklist"
+  }
+ ],
+ "models": {
+  "checker": {
+   "model": "jev-1.13.0",
+   "name": "jev"
+  },
+  "writer": {
+   "model": "claude-opus-5-5",
+   "name": "claude"
+  }
+ },
+ "policies": [
+  {
+   "approved": "2016-11-23",
+   "file": "discretionary-decision-making-policy.pdf",
+   "sha256": "275b445c9e0e2241064c28a90ff5a5f260f5c05ec17290fc10848d228014ffdd",
+   "title": "Discretionary Decision Making",
+   "version": "2.02"
+  },
+  {
+   "approved": "2024-02-29",
+   "file": "domestic-family-violence-policy.pdf",
+   "sha256": "5209d377b63a291af8386245c539aa0ded413581adb2af7e60bb0332314d5bde",
+   "title": "Domestic and Family Violence",
+   "version": "2.01"
+  },
+  {
+   "approved": "2024-06-27",
+   "file": "eligibility-for-social-housing-policy.pdf",
+   "sha256": "f628d219bf38bea1a8156364f8d2b665eae4d6c37e097e6e4869fb0dd7f64fbf",
+   "title": "Eligibility for Social Housing",
+   "version": "7.1"
+  },
+  {
+   "approved": "2024-08-29",
+   "file": "identification-and-documentation-policy.pdf",
+   "sha256": "ce59a9a3b24a6a7f2e8a505a3588c86b93ea321cd39048a12b1072797fa97404",
+   "title": "Identification and Documentation",
+   "version": "4.02"
+  },
+  {
+   "approved": "2024-03-26",
+   "file": "priority-housing-policy.pdf",
+   "sha256": "ea6c52753092bb22a71689862fe8e9a06bc80f604f3ae6b74b5302da4eab12d5",
+   "title": "Priority Housing",
+   "version": "2.04"
+  }
+ ],
+ "required_reading": [
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "passage_id": "stub:p4:1",
+   "rank": 1,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "passage_id": "eligibility:p6:11",
+   "rank": 2,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "passage_id": "stub:p1:1",
+   "rank": 3,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c21"
+   ],
+   "passage_id": "stub:p5:2",
+   "rank": 4,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c20"
+   ],
+   "passage_id": "stub:p5:3",
+   "rank": 5,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  }
+ ],
+ "schema_version": 1,
+ "sources": {
+  "eligibility:p4:16": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "eligibility:p4:16",
+   "section": "§3 Policy detail",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p5:12": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 5,
+   "passage_id": "eligibility:p5:12",
+   "section": "§3.2 Residency",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p5:4": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 5,
+   "passage_id": "eligibility:p5:4",
+   "section": "§3.1.1 Residential property ownership",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p6:11": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 6,
+   "passage_id": "eligibility:p6:11",
+   "section": "§3.5 Unsatisfactory Former Tenancies",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p6:9": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 6,
+   "passage_id": "eligibility:p6:9",
+   "section": "§3.4 Debts",
+   "text": null,
+   "version": "7.1"
+  },
+  "priority:p4:13": {
+   "doc_title": "Priority Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "priority:p4:13",
+   "section": "§3 Policy detail",
+   "text": null,
+   "version": "2.04"
+  },
+  "priority:p4:18": {
+   "doc_title": "Priority Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "priority:p4:18",
+   "section": "§3.1 Applying for priority housing",
+   "text": null,
+   "version": "2.04"
+  },
+  "priority:p4:19": {
+   "doc_title": "Priority Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "priority:p4:19",
+   "section": "§3.1 Applying for priority housing",
+   "text": null,
+   "version": "2.04"
+  },
+  "priority:p4:9": {
+   "doc_title": "Priority Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "priority:p4:9",
+   "section": "§3 Policy detail",
+   "text": null,
+   "version": "2.04"
+  },
+  "stub:p1:1": {
+   "doc_date": "2026-02-16",
+   "doc_title": "Application for social housing with priority consideration",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "stub:p1:1",
+   "text": "Applicant: Leanne Kestrel (Ms K.). Date of birth 9 May 1991. Household: the applicant and her two children, aged 7 and 10. Current location: Darwin, NT."
+  },
+  "stub:p1:2": {
+   "doc_date": "2026-02-16",
+   "doc_title": "Application for social housing with priority consideration",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "stub:p1:2",
+   "text": "Residency: Australian citizen. Copy of the applicant's Australian birth certificate attached and sighted by the Darwin housing office on 16 February 2026."
+  },
+  "stub:p1:3": {
+   "doc_date": "2026-02-16",
+   "doc_title": "Application for social housing with priority consideration",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "stub:p1:3",
+   "text": "Property: the applicant declares that no household member owns or part owns residential property anywhere in Australia. See the statutory declaration attached."
+  },
+  "stub:p1:4": {
+   "doc_date": "2026-02-16",
+   "doc_title": "Application for social housing with priority consideration",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "stub:p1:4",
+   "text": "Priority category claimed: domestic or family violence. Supporting letter from Saltwater Lane Family Support attached."
+  },
+  "stub:p1:5": {
+   "doc_date": "2026-02-16",
+   "doc_title": "Application for social housing with priority consideration",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "stub:p1:5",
+   "text": "Income details: to follow. The Income Confirmation Scheme form has not been signed."
+  },
+  "stub:p2:1": {
+   "doc_date": "2026-01-15",
+   "doc_title": "Rent ledger summary, former public tenancy",
+   "doc_type": "ledger",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "stub:p2:1",
+   "text": "Tenant ledger summary. Statement date 15 Jan 2026."
+  },
+  "stub:p2:2": {
+   "doc_date": "2026-01-15",
+   "doc_title": "Rent ledger summary, former public tenancy",
+   "doc_type": "ledger",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "stub:p2:2",
+   "text": "Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight."
+  },
+  "stub:p3:1": {
+   "doc_date": "2026-03-04",
+   "doc_title": "Rent ledger summary, former public tenancy",
+   "doc_type": "ledger",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "stub:p3:1",
+   "text": "Statement date 4 Mar 2026."
+  },
+  "stub:p3:2": {
+   "doc_date": "2026-03-04",
+   "doc_title": "Rent ledger summary, former public tenancy",
+   "doc_type": "ledger",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "stub:p3:2",
+   "text": "Lump-sum payment received from a support agency on behalf of the former tenant. Arrears cleared in full. Balance $0.00."
+  },
+  "stub:p4:1": {
+   "doc_date": "2023-06-12",
+   "doc_title": "Previous tenancy record",
+   "doc_type": "tenancy-record",
+   "exists": true,
+   "kind": "case",
+   "page": 4,
+   "passage_id": "stub:p4:1",
+   "text": "Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023. A rent debt remained outstanding at exit. No breach of the tenancy agreement recorded."
+  },
+  "stub:p5:1": {
+   "doc_date": "2026-02-10",
+   "doc_title": "Letter from a support agency",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "stub:p5:1",
+   "text": "I am writing in support of Ms K.'s application for priority housing."
+  },
+  "stub:p5:2": {
+   "doc_date": "2026-02-10",
+   "doc_title": "Letter from a support agency",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "stub:p5:2",
+   "text": "Ms K. and her two children are fleeing family violence and cannot safely return to their current address. Police attended the property on 2 February 2026."
+  },
+  "stub:p5:3": {
+   "doc_date": "2026-02-10",
+   "doc_title": "Letter from a support agency",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "stub:p5:3",
+   "text": "Case worker, Saltwater Lane Family Support."
+  },
+  "stub:p6:1": {
+   "doc_date": "2026-02-16",
+   "doc_title": "Statutory declaration on property ownership",
+   "doc_type": "statutory-declaration",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "stub:p6:1",
+   "text": "I, Leanne Kestrel, declare that I do not own or part own residential property anywhere in Australia, and that no member of my household does."
+  },
+  "stub:p6:2": {
+   "doc_date": "2026-02-16",
+   "doc_title": "Statutory declaration on property ownership",
+   "doc_type": "statutory-declaration",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "stub:p6:2",
+   "text": "Declared at Darwin on 16 February 2026 before an authorised witness."
+  }
+ },
+ "suggested_reading": []
+}

@@ -438,7 +438,7 @@ In the survey's §5:
   models do not fall for it. If a judge asks, the precedent is a Connecticut court filing in 3-point
   white font (Aug 2026).
 - 2026-10-03: Local models: Bespoke-MiniCheck as a third vote, and a local writer. v1 runs on Claude
-  plus Jev.
+  plus Jev. Tarık: v1.2 at the earliest, the very last item.
 - 2026-10-03: A draft request to the applicant for items marked "not in file", citing the policy
   clause. Cheap, but not needed for v1.
 - 2026-10-03: A plain-language decision letter to the applicant built from the decision record.

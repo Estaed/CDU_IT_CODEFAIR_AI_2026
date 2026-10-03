@@ -43,7 +43,11 @@ and `notes.md` keeps a one-line link.
   - verbatim quotes first, then Claude's claims;
   - claim checks: quote not found / checker disagrees / contradicted by another passage / supported;
   - coverage: possibly missed / no evidence in file.
-- **Summary under audit:** a frozen plain summary goes through the same checks.
+- **Review screen:** the case file itself is the reading surface. Each code-verified quote is
+  highlighted on its page with the question it answers, like an exam answer key. Flagged questions
+  come first; clean ones fold into one line.
+- **Summary under audit:** a frozen plain summary goes through the same checks. Its result is an
+  evaluation number for the report and pitch, not a tab on the review screen.
 - **Required reading:** at most 8 flagged passages, opened one at a time, before sign-off.
 - **The officer** sets every clause outcome (met / not met / cannot decide yet) and the decision, and
   can dispute any claim.
@@ -73,7 +77,8 @@ Readmark finds real errors in a summary we did not write, while keeping required
 fewer on the demo file.
 - **How it will be tested:** the frozen summary under audit plus a held-out file that Codex writes
   before the first pipeline run, which no Claude stage sees in advance.
-- **Result:** due after wave 1 (2026-10-03: not yet run).
+- **Result:** due after wave 3 (2026-10-03: first signal on the demo summary, 2 real errors among
+  22 flags, n=95 claims; the held-out run is in wave 3).
 
 ### Stack
 Provisional until Task-00 writes `uv.lock`.
@@ -147,6 +152,8 @@ Provisional until Task-00 writes `uv.lock`.
 | Design A/B: A = Tarik Base via `tasarim`, B = a blind agent. Tarık picked A (2026-10-03, "for now"; a polish pass later) | B: looked like slop to Tarık |
 | Review screen layout (2026-10-03, after `reports/2026-10-03-ux-guided-review.md`): clause list on the left with a status per clause and a sign-off row, the selected clause and its source on the right, a case bar with both counters and the next action, plain language with no internal ids, a linked "before you can sign" summary, a dismissible first-run panel. Check: a first-time viewer names the next step within 10 s | A task-list home with one page per clause: loses the whole-case overview staff tools need, the most rework. C the current long page plus guidance: the long scroll stays |
 | Eye-check reference: once Tarık approves the Task-07 screen, its screenshots in `design/screens/` replace the planned `design/screens.html` (2026-10-03) | A separate static prototype: a second copy of the same screen to keep in step |
+| Review screen, after the wave 2 look (2026-10-03): the case file is the reading surface, with code-verified quotes highlighted on their page and labelled with their question (Tarık's idea, from IELTS answer keys); flagged questions first, clean ones folded to one line; "next flag" jumps between highlights; boxes and space instead of dense text | Evidence rows with the AI's sentence as the main surface: too much text, Tarık could not follow it. The rest of layout B stays |
+| The summary under audit leaves the screen and stays an evaluation number (2026-10-03) | A summary tab on screen: it shows that models err, but it does not help the officer decide |
 
 ### Constraints
 - No real person's data in any document. No AustLII material as model input.

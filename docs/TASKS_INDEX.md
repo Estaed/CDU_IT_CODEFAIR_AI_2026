@@ -17,3 +17,8 @@ Task-05 (both build on its schema-2 `view.json` and the A-0142 run), then run to
 - [x] Task-07: Guided review screen, layout B (ultracode)
 - [x] Task-08: Checker evaluation: Jev against Claude on SummEdits (ultracode)
 - [x] Task-09: Cut the checks' false alarms: dates, the pair rule, possibly-missed duplicates (codex, gpt-6.1-sol; after Task-07)
+
+Wave 3 (2026-10-03). Width 2: Task-10 and Task-11 run together (disjoint OWNS, no dependency). Both on Codex `gpt-6.1-sol` at Tarik's request.
+
+- [ ] Task-10: The evaluation: mutation set, held-out file, ablation, benchmark release (codex)
+- [ ] Task-11: Review screen as an answer key: the file itself, highlighted by question (codex)

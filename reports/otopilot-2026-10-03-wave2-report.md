@@ -10,10 +10,16 @@ ACST; wave 2a launched 12:29.
 |---|---|---|---|---|---|---|---|
 | Task-05 | 2a | ultracode Workflow `wf_e58e292b-566`, spec lens | green | 1 (no fix round) | 12:29–12:59 | `uv run python scripts/gate.py` lane (0), main (0: ruff ok, 32 passed, replay smoke stub and A-0142 at schema 2) | `c911a88` |
 | Task-08 | 2a | same Workflow, spec lens | green | 1 (no fix round) | 12:29–13:00 | lane (0), main (0: ruff ok, 39 passed, both smokes ok) | `961a3d4` |
-| Task-06 | 2b | ultracode Workflow `wf_e04d13ff-b3e`, spec lens | running | | from 13:03 | | |
-| Task-07 | 2b | same Workflow, screen lens | running | | from 13:03 | | |
+| Task-06 | 2b | ultracode Workflow `wf_e04d13ff-b3e`, spec lens | green | 1 (no fix round) | 13:03–14:06 | lane (0), main (0: ruff ok, 49 passed, both smokes ok) | `337aff2` |
+| Task-07 | 2b | same Workflow, screen lens, 1 fix round; attempt 2 `wf_3c54762c-ada` | attempt 1 red on main; attempt 2 running | 1 + 1 | 13:03–14:07; attempt 2 from 14:10 | attempt 1: lane (0: 43 passed); main after Task-06 (1: 2 failed, 51 passed); pick reverted in `67411ba` | |
 
-Failure counts: no red attempt in 2a.
+Failure counts: Task-07 `0 -> 2` (lane gate 0 fail, main gate 2 fail:
+`test_guided_review_flow_on_a0142[1280]` and `[1440]`). The flow test expected A-0142's audit tab
+to say "No summary was audited" (`tests/test_screen.py:324`); Task-06, landed just before, gave
+A-0142 its real audit block. The pick was undone with `git revert` (the vault's git hook blocks
+`reset --hard` while another session is open in the folder). Attempt 2 runs in the same worktree
+with the full main gate output: it makes the tests follow the data and checks the real block in
+an integration preview (main's HEAD without `data/heldout`, plus the lane's screen files).
 
 **Orchestrator checks on main, beyond the gate** (`.tmp/check_task05.py`, and the eval replay):
 - Task-05: `run --case A-0142 --replay` twice with `TYPESAFE_API_KEY` unset and `claude` off PATH:
@@ -49,7 +55,32 @@ Failure counts: no red attempt in 2a.
   calls at or above it, 0.865 (n=245).
 - Cost: 30 `claude -p` opus calls (10 pairs each), 600 Jev calls.
 
-## Needs Tarık's judgement (from the 2a builders and lenses)
+## What 2b produced
+
+**Task-06, the summary under audit (A-0142):**
+- The frozen summary: `claude-opus-5-5`, prompt "Summarise this file.", 2026-10-03, 44 sentences.
+  The call ran in an empty temp folder with no tools, CLAUDE.md or hooks. A live run refuses to
+  make a second summary. On main there is one `summary-*` file in the cache.
+- Audit: 95 claims. Supported 67, quote not found 13, checker disagrees 11, contradicted 4.
+  Left out: 9 of the 23 map claims considered. Required reading is unchanged at 8.
+- **Real errors found: 2 of 28 flags** (the builder checked every flag by hand):
+  1. The heading "Eligibility evidence (verified)" overstates: current income evidence never came
+     (p48:1, p58:1). Jev: contradicts, 0.96.
+  2. "All contact goes through the support worker" overstates p46:1 and p1:1. Jev: contradicts,
+     0.59.
+- The summary got the main trap right: the January $2,400 is cleared and superseded.
+- **Why the other 26 are false alarms:**
+  - 13 quote-not-found: the date check (Task-05's) cannot match "15 Mar" or "January 2026"
+    against "2026-03-15", nor "A-0142" against "A0142". The same weakness hits the evidence map.
+  - 4 contradicted: true ledger-history claims, flagged by the pair rule.
+  - 9 of the 11 checker-disagrees: Jev said "not enough information" on true or opinion claims.
+- Reusable claim path for wave 3: `readmark.audit.check_claims(case_id, claims, ...)`.
+- Cost: 4 opus calls ($1.03 list) and 95 Jev calls. **The builder's own mistake:** in its first
+  version, a test run on A-0142 audited by default, so 4 extra full audit runs went live (about
+  $4 list). Nothing from them was committed. It is fixed, with a test that fails on any Claude call
+  in such a run.
+
+## Needs Tarık's judgement (from the builders and lenses)
 
 1. **The pair question was reworded after the demo pair failed (Task-05, lens score 55).**
    - The acceptance said: if Jev does not call p.8/p.23 contradictory, stop and report.
@@ -75,6 +106,15 @@ Failure counts: no red attempt in 2a.
      at 0.3 (n=300). This is an option for after v1.
 5. **SAMSum licence caveat.** The SummEdits samsum documents come from SAMSum, which a mirror card
    lists as CC BY-NC-ND 4.0. Our use is non-commercial and attributed.
+6. **The riskiest assumption's first signal is weak precision (Task-06).** The audit found 2 real
+   errors, but 26 of its 28 flags were false (n=95 claims). Most come from two fixable causes,
+   the date format check and the pair rule. A fix before the evaluation wave would move the frozen
+   numbers, so it has to be decided before 7 Oct.
+7. **"Left out of the summary" overstates (Task-06 lens, 50).** The coverage call marks a fact as
+   left out when the summary gives the core but not every detail (c21, c02).
+8. **Three cosmetic sentence-split defects** in the frozen summary: literal `**` in s27, and two
+   merged sentences. Cleaning them takes one new split and locate call (about $0.72 list); the
+   summary itself stays frozen.
 
 ## Review panel
 
@@ -85,7 +125,19 @@ Failure counts: no red attempt in 2a.
 | Task-05 | spec | 35 | Correct March claim marked contradicted | left; item 3 above |
 | Task-08 | spec | 52 | Jev's "probability" is the API's `confidence`, and nothing says so | left; item 4 above |
 
-No finding reached 80, so no fix round ran in 2a. The Task-08 lens recomputed every number
+| Task-06 | spec | 60 | Most flags on the real summary are false alarms | left; item 6 above |
+| Task-06 | spec | 50 | Some "left out" entries are facts the summary states | left; item 7 above |
+| Task-06 | spec | 45 | Sentence s27 keeps literal `**` | left; item 8 above |
+| Task-07 | screen | 88 | Audit tab on A-0142 with no audit block opened with a 335 px empty band, tabs jumped down (`web/theme.css:89`) | **fixed** in round 1 (`grid-template-rows: auto auto 1fr`; regression test failed on the old CSS); re-review clean |
+| Task-07 | screen | 62 | On the audit tab, a contradicted summary sentence gets "not that this claim is false", wording meant for the correct map claim (`web/app.js:237`) | left; with the real block the 4 contradicted audit claims are true ledger claims, so the wording holds there |
+| Task-07 | screen | 50 | First-run panel says "Code found every quote in its passage" as fixed text | left |
+| Task-07 | screen | 45 | Debts lists the same two passages in "Open before you sign" and in "Passages that disagree" before any evidence | left |
+| Task-07 | screen | 30 | JSON record mixes UTC and +09:30 (the HTML export uses one zone, as accepted) | left |
+
+No finding reached 80 in 2a, so no fix round ran there. The Task-07 lens's 10-second answer
+(first-time viewer): "Open page 16, paragraph 1, in the Residency clause", read from the
+next-step button. It passes the Blueprint check; with the intro open, the clause content starts
+below the fold at 1280×800. The Task-08 lens recomputed every number
 independently from the cached verdicts and found them right.
 
 ## Quota

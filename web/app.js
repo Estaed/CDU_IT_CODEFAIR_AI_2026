@@ -51,7 +51,7 @@ function pause() {
   S.since = null;
 }
 function resume() {
-  if (S.current && !document.hidden && !S.signed) S.since = performance.now();
+  if (S.current && !document.hidden && !S.signed && !$('scrim').classList.contains('open')) S.since = performance.now();
 }
 function secondsInView(pid) {
   const o = S.opened[pid];
@@ -165,14 +165,25 @@ function citationHtml(claim, c) {
     ${bad ? `<span class="qflag">${icon('x', 12)} not in this passage</span>` : ''}</button>`;
 }
 
+// "Quote not found" covers both code checks (Task-00). When every quote was found, the failure is
+// a number or date that no quote contains, and the screen says so instead of leaving the label
+// next to a highlighted quote unexplained.
+function valuesNote(claim) {
+  if (!claim.values_missing.length) return '';
+  const values = `<span class="mono">${esc(claim.values_missing.join(', '))}</span>`;
+  const allFound = claim.citations.length > 0 && claim.citations.every((c) => c.quote_found);
+  return allFound ? `Quotes found, but none contains ${values} · ` : `Not in any quote: ${values} · `;
+}
+
 function claimHtml(claim) {
   const [label, ic, cls] = CLAIM_STATUS[claim.status];
   const ch = claim.checker;
   const checker = ch && ch.verdict ? `Checker: ${esc(VERDICT[ch.verdict] || ch.verdict)}${ch.probability != null ? ` <span class="mono">${Number(ch.probability).toFixed(2)}</span>` : ''}` : 'Checker: not run';
-  const missing = claim.values_missing.length ? ` · not in any quote: <span class="mono">${esc(claim.values_missing.join(', '))}</span>` : '';
+  const missing = valuesNote(claim);
   const mustOpen = claim.required ? (claim.citations.every((c) => S.opened[c.passage_id]) ? '<span class="req done">Opened</span>' : '<span class="req">Must open</span>') : '';
   const d = S.disputes[claim.claim_id];
-  let dispute = `<button class="ghost" data-dispute="${esc(claim.claim_id)}">${d ? 'Edit dispute' : 'Dispute'}</button>`;
+  // After sign-off the record is final, so the screen stops taking disputes.
+  let dispute = S.signed ? '' : `<button class="ghost" data-dispute="${esc(claim.claim_id)}">${d ? 'Edit dispute' : 'Dispute'}</button>`;
   let disputeBody = d ? `<div class="disputed">${icon('alert', 12)} Disputed: ${esc(d.reason)}</div>` : '';
   if (S.disputing === claim.claim_id) {
     dispute = '';
@@ -186,7 +197,7 @@ function claimHtml(claim) {
     <div class="quotes">${claim.citations.map((c) => citationHtml(claim, c)).join('')}</div>
     <div class="claim-text"><span class="who">AI claim</span> ${esc(claim.claim)}</div>
     <div class="row-foot"><span class="pill ${cls}">${icon(ic, 12)} ${label}</span>
-      <span class="muted">${checker}${missing}</span><span class="spacer"></span>${mustOpen}${dispute}</div>
+      <span class="muted">${missing}${checker}</span><span class="spacer"></span>${mustOpen}${dispute}</div>
     ${disputeBody}</div>`;
 }
 
@@ -208,7 +219,7 @@ function clauseHtml(cl) {
   }
   const outcome = cl.clause_id === 'other' ? '' : `<div class="outcome" role="radiogroup" aria-label="Your outcome for ${esc(cl.title)}">
       <span class="eyebrow">Your outcome</span>
-      <div class="seg">${OUTCOMES.map(([val, lab]) => `<button role="radio" data-testid="outcome-${esc(cl.clause_id)}-${val}" data-outcome="${val}" data-clause="${esc(cl.clause_id)}" aria-checked="${S.outcomes[cl.clause_id] === val}">${lab}</button>`).join('')}</div>
+      <div class="seg">${OUTCOMES.map(([val, lab]) => `<button role="radio" data-testid="outcome-${esc(cl.clause_id)}-${val}" data-outcome="${val}" data-clause="${esc(cl.clause_id)}" aria-checked="${S.outcomes[cl.clause_id] === val}"${S.signed ? ' disabled' : ''}>${lab}</button>`).join('')}</div>
       ${S.outcomes[cl.clause_id] ? '' : '<span class="muted">Not set</span>'}</div>`;
   return `<section class="group" data-clause="${esc(cl.clause_id)}">
     <div class="eyebrow">${esc(cl.source ? `${cl.source} · ${cl.title}` : cl.title)}</div>
@@ -280,9 +291,9 @@ function renderPane() {
     .filter((x) => !claimIds.length || claimIds.includes(x.claim_id));
   const forClaims = claimIds.map(claimById).filter(Boolean).map((c) => {
     const [label, ic, cls] = CLAIM_STATUS[c.status];
-    const miss = c.values_missing.length ? ` · not in any quote: <span class="mono">${esc(c.values_missing.join(', '))}</span>` : '';
+    const miss = valuesNote(c);
     return `<div class="pane-claim"><span class="pill ${cls}">${icon(ic, 12)} ${label}</span>
-      <span><span class="who">AI claim <span class="mono">${esc(c.claim_id)}</span></span> ${esc(c.claim)}<span class="muted">${miss}</span></span></div>`;
+      <span><span class="who">AI claim <span class="mono">${esc(c.claim_id)}</span></span> ${esc(c.claim)}${miss ? ` <span class="muted">· ${miss.replace(/ · $/, '')}</span>` : ''}</span></div>`;
   }).join('');
   const head = `<div class="pane-head"><div class="eyebrow">Source passage</div></div>`;
   const foot = `<div class="src-foot"><span>Highlighted: the exact quote the claim rests on</span>
@@ -329,7 +340,8 @@ function render() {
 // ---- Events (delegated, so re-rendering never loses a handler) ----
 document.addEventListener('click', (e) => {
   const t = e.target.closest('button, a');
-  if (!t || !S.view) return;
+  // Once signed, outcomes and disputes are on the record; an edit here would never reach it.
+  if (!t || !S.view || (S.signed && t.tagName !== 'A')) return;
   if (t.dataset.outcome) {
     S.outcomes[t.dataset.clause] = t.dataset.outcome;
     render();
@@ -362,11 +374,18 @@ $('signBtn').onclick = () => {
   if (lockState().locked) { S.bannerOn = true; renderGate(); return; }
   $('helper').textContent = 'Write it so the applicant could read and challenge it.';
   $('helper').className = 'helper';
+  // The dialog covers the passage, so its time is not time in view.
+  pause();
   $('scrim').classList.add('open');
   $('reason').focus();
 };
-$('cancel').onclick = () => $('scrim').classList.remove('open');
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') $('scrim').classList.remove('open'); });
+function closeDialog() {
+  if (!$('scrim').classList.contains('open')) return;
+  $('scrim').classList.remove('open');
+  resume();
+}
+$('cancel').onclick = closeDialog;
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDialog(); });
 
 $('confirm').onclick = async () => {
   const d = document.querySelector('input[name=decision]:checked');
@@ -390,14 +409,12 @@ $('confirm').onclick = async () => {
   try {
     res = await fetch('/api/records', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
   } catch {
-    resume();
     helper.textContent = 'The record could not be saved. Check that the Readmark server is running and sign again.';
     helper.className = 'helper err';
     return;
   }
   const body = await res.json();
   if (!res.ok) {
-    resume();
     helper.textContent = `Not signed: ${(body.problems || [body.detail || 'unknown error']).join(' ')}`;
     helper.className = 'helper err';
     return;

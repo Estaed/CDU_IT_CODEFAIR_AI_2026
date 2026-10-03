@@ -108,10 +108,15 @@ def test_review_screen_end_to_end(server):
         page.get_by_test_id("sign-btn").click()
         expect(page.get_by_test_id("dialog")).to_be_visible()
         expect(page.get_by_test_id("lock-banner")).to_have_count(0)
+        # Time behind the dialog is not time in view (checked on the record below).
+        page.wait_for_timeout(2000)
         page.get_by_test_id("decision-request_information").check()
         page.get_by_test_id("reason").fill("Eligibility §3: no income evidence in the file.")
         page.get_by_test_id("confirm-sign").click()
         expect(page.get_by_test_id("record")).to_be_visible()
+        # After signing, nothing on screen can change an outcome or a dispute the record holds.
+        expect(page.locator("[data-outcome]:not([disabled])")).to_have_count(0)
+        expect(page.locator("[data-dispute]")).to_have_count(0)
 
         href = page.get_by_test_id("export-json").get_attribute("href")
         record = page.request.get(base + href).json()
@@ -126,6 +131,8 @@ def test_review_screen_end_to_end(server):
     for p in record["passages_opened"]:
         assert p["opened_at"] and isinstance(p["seconds_in_view"], float)
     assert all(opened[pid]["seconds_in_view"] > 0 for pid in required[:-1])
+    # The last passage was in view about 0.4 s before the dialog opened, then 2 s behind it.
+    assert opened[required[-1]]["seconds_in_view"] < 1.5
     assert record["decision"] == "request_information"
     assert record["disputes"][0]["claim_id"] == first
     assert {o["outcome"] for o in record["clause_outcomes"]} == {"met", "cannot_decide"}

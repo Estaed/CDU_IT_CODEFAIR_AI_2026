@@ -48,6 +48,17 @@ def test_writer_found_false_becomes_no_evidence_in_file(tmp_path, stub_facts):
     assert "outcome" not in json.dumps(view["clauses"])  # the AI never pre-fills an outcome
 
 
+@needs_pdfs
+def test_clause_with_supported_claims_is_not_labelled_empty(tmp_path, stub_facts):
+    # A sub-fact the writer could not find stays listed, but the clause keeps its evidence.
+    absent = fact("elig-debts", "The file holds no debt repayment agreement.", found=False)
+    view = run("stub", writer=FixedWriter([*stub_facts, absent]), checker_impl=FixedChecker(),
+               out_dir=tmp_path)
+    debts = next(c for c in view["clauses"] if c["clause_id"] == "elig-debts")
+    assert debts["claim_ids"] and debts["coverage"] is None
+    assert debts["missing"][0]["statement"] == absent["claim"]
+
+
 def _replay(runs_dir: Path) -> bytes:
     env = {k: v for k, v in os.environ.items() if k != "TYPESAFE_API_KEY"}
     # PATH holds only the interpreter (and Windows' system folder), so `claude` cannot be found.

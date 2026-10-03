@@ -597,7 +597,7 @@
     "c04"
    ],
    "clause_id": "elig-property",
-   "coverage": "no_evidence_in_file",
+   "coverage": null,
    "decides": "Owns no residential property (a domestic or family violence exemption needs delegate approval).",
    "missing": [
     {
@@ -618,7 +618,7 @@
     "c09"
    ],
    "clause_id": "elig-income",
-   "coverage": "no_evidence_in_file",
+   "coverage": null,
    "decides": "Whether income evidence is in the file. The Income and Assets policy is not bundled, so v1 does not test the thresholds.",
    "missing": [
     {
@@ -693,7 +693,7 @@
     "c23"
    ],
    "clause_id": "prio-documentation",
-   "coverage": "no_evidence_in_file",
+   "coverage": null,
    "decides": "Urgent need is proven with supporting documentation (see the Identification and Documentation policy).",
    "missing": [
     {
@@ -712,7 +712,7 @@
     "c25"
    ],
    "clause_id": "prio-discretion",
-   "coverage": "no_evidence_in_file",
+   "coverage": null,
    "decides": "Whether the \"some discretion for extreme situations\" applies.",
    "missing": [
     {

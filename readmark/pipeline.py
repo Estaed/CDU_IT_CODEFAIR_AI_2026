@@ -82,8 +82,11 @@ def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: l
     view_clauses = []
     for g in groups:
         own = [c["claim_id"] for c in claims if c["clause_id"] == g["clause_id"]]
+        # Clause coverage says "no evidence in file" only when no claim cites the file for this
+        # clause. A sub-fact the writer could not find stays in "missing" and shows on its own
+        # row, so a clause with supported claims is never labelled empty.
         coverage = None
-        if g["clause_id"] != OTHER and (not own or g["clause_id"] in missing):
+        if g["clause_id"] != OTHER and not own:
             coverage = "no_evidence_in_file"
         view_clauses.append(
             {

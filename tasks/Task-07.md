@@ -1,4 +1,5 @@
 # Task-07: Guided review screen, layout B
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `ultracode` · effort `xhigh`
 > *Why:* Tarık followed the Task-00 flow but could not read it: nothing said what was done and
 > what came next. Blueprint → Decisions picked layout B on 2026-10-03.
@@ -51,19 +52,19 @@ The screen is what the judges and Tarık see. The readability problem from the T
 the next thing between v1 and the demo.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0.
-- [ ] Headless Playwright on A-0142, at 1280 and 1440 wide: no console errors and no horizontal
+- [x] `uv run python scripts/gate.py` exits 0.
+- [x] Headless Playwright on A-0142, at 1280 and 1440 wide: no console errors and no horizontal
   overflow; the whole flow passes in the new layout (open each required passage, set 8 outcomes,
   locked before and unlocked after, sign, the record holds `opened_at` and `seconds_in_view` per
   passage, export HTML and JSON).
-- [ ] Headless: the main screen's visible text (outside "About these checks") contains no claim id
+- [x] Headless: the main screen's visible text (outside "About these checks") contains no claim id
   (`\bc\d{2}\b`), no model id (`claude-`, `jev-`) and no "¶".
-- [ ] Headless: after an outcome is set and a passage opened, both case-bar counters change, and the
+- [x] Headless: after an outcome is set and a passage opened, both case-bar counters change, and the
   next-action button points to the next unresolved item.
-- [ ] Headless: an early "Sign decision" lists what is missing; clicking an item selects its clause.
-- [ ] Headless: the audit tab, fed the fixture, shows every sentence with a status word (never
+- [x] Headless: an early "Sign decision" lists what is missing; clicking an item selects its clause.
+- [x] Headless: the audit tab, fed the fixture, shows every sentence with a status word (never
   colour alone), and a sentence's passage opens in the source pane.
-- [ ] The exported HTML record uses one time zone, shows each dispute with its claim text, and
+- [x] The exported HTML record uses one time zone, shows each dispute with its claim text, and
   carries no CSS of its own beyond `web/theme.css`.
 - [ ] (eye) Tarık opens `uv run python -m readmark serve --case A-0142` or the wave's screenshots at
   1280 and 1440: a first-time viewer names the next step within 10 seconds (Blueprint check). The

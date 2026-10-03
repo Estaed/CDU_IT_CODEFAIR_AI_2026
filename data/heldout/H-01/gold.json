@@ -1,0 +1,25 @@
+{
+  "case_id": "H-01",
+  "outcomes": {
+    "elig-residency": "met",
+    "elig-property": "met",
+    "elig-income": "cannot_decide",
+    "elig-debts": "not_applicable",
+    "elig-former-tenancy": "met",
+    "prio-category": "met",
+    "prio-documentation": "met",
+    "prio-discretion": "not_applicable"
+  },
+  "correct_decision": "request_information",
+  "required_reading": ["p3", "p5", "p6", "p12", "p13", "p14", "p15", "p17"],
+  "rationale": {
+    "elig-residency": "The Eligibility for Social Housing policy says, 'Applicants must be an Australian citizen or have permanent residency status.'; the passport and residence check on p4 supports the requirement.",
+    "elig-property": "The Eligibility for Social Housing policy says, 'Except in Remote Communities, Town Camps and CLAs, applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing.'; p3 declares no such property interest.",
+    "elig-income": "The Identification and Documentation policy says, 'The CEO (Housing) requires evidence of income and assets to determine eligibility for social housing, private rental bond assistance, and to calculate rent.'; p3 and p17 promise current evidence, while p5 predates the employment end confirmed on p6.",
+    "elig-debts": "The Eligibility for Social Housing policy says, 'Recovery of debt owed to other social housing providers will be managed in line with the specific provider’s policies and may differ.'; the p14 balance is owed to Marigold Housing Cooperative, so this CEO (Housing) debt clause is not applicable.",
+    "elig-former-tenancy": "The Eligibility for Social Housing policy says, 'Former social housing tenants who have had their tenancy agreement terminated or have voluntarily vacated the premises leaving sufficient evidence to justify a termination (under breach of tenancy agreement conditions or satisfactory tenancy criteria), are ineligible to apply for social housing for a period of 2 years, which includes property under the management or ownership of the CEO (Housing).'; p12 records agreed surrender and p13 records no breach finding.",
+    "prio-category": "The Domestic and Family Violence policy says, 'CEO Housing acknowledges its role in supporting people who experience DFV, providing priority access to appropriate and safe housing as well as referral to support services.'; p15 documents Elena's reported violence and p8 confirms the approaching accommodation end.",
+    "prio-documentation": "The Priority housing policy says, 'Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.'; p15 supplies a specialist service letter and p8 supplies the booking end date, while the Domestic and Family Violence policy says, 'It is not mandatory that supporting documentation be provided.' about DFV documentation.",
+    "prio-discretion": "The Priority housing policy says, 'Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations.'; p3 and p17 instead identify income evidence that has yet to be supplied, so no discretionary exception is currently requested or resolved."
+  }
+}

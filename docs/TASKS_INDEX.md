@@ -5,5 +5,5 @@ validator.
 
 - [ ] Task-00: Thinnest end-to-end path, from a stub case to a signed decision record (ultracode)
 - [x] Task-01: Grounded synthetic case files: demo A-0142 plus three short evaluation files (codex)
-- [ ] Task-02: Held-out case H-01, written blind (codex)
+- [x] Task-02: Held-out case H-01, written blind (codex)
 - [x] Task-03: Design A/B, Tarik Base against a blind direction (main-loop)

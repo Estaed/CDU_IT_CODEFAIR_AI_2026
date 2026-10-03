@@ -1,4 +1,5 @@
 # Task-02: Held-out case H-01, written blind
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `codex` · effort `high`
 > *Why:* it answers "you planted the traps your own system finds" (pre-Blueprint review #10). The
 > author sees no other case, no pipeline and no gold.
@@ -27,9 +28,9 @@ Wave 2 runs the pipeline on H-01 and reports its catch rate next to the other fi
 traps nobody on the Claude side chose is the honest number.
 
 ## Acceptance
-- [ ] `python scripts/validate_cases.py data/heldout/H-01` exits 0.
-- [ ] Every rationale in `gold.json` quotes a policy sentence verbatim.
-- [ ] Every person and organisation is invented.
+- [x] `python scripts/validate_cases.py data/heldout/H-01` exits 0.
+- [x] Every rationale in `gold.json` quotes a policy sentence verbatim.
+- [x] Every person and organisation is invented.
 
 ## Out of scope
 - Any other file, any pipeline run, and any mutation set.

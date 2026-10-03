@@ -1,0 +1,17 @@
+fact_id,clause_id,statement,value,page,quote,role,trap,decisive
+F01,elig-residency,Applicant is an Australian citizen and currently lives in Darwin,Australian citizen; Darwin resident,4,"The current Australian passport was sighted and the applicant's Darwin residence was confirmed from the accommodation record.",supports,none,yes
+F02,elig-property,Applicant declares no residential property interest,none,3,"I do not own or partly own residential property in Australia.",supports,none,yes
+F03,elig-income,February payslip records an old weekly gross amount,$492 gross weekly in February 2026,5,"Gross pay for this week: $492.00.",stale,stale_value,yes
+F04,elig-income,Former employer confirms that employment ended in July 2026,employment ended 2026-07-17,6,"Elena Verran's casual employment with Quayline Events ended on 17 July 2026.",against,stale_value,yes
+F05,elig-income,Applicant reports irregular current earnings without a current statement,irregular earnings,3,"My present casual shifts vary and I have not enclosed a current earnings statement.",supports,none,yes
+F06,elig-income,Current official income and asset evidence is absent,missing current income and asset proof,,,missing,none,yes
+F07,elig-debts,Former housing ledger shows an outstanding balance,$865.40,14,"Balance owing at close: $865.40.",supports,none,yes
+F08,elig-former-tenancy,Application says applicant has not previously held social housing,declared no,2,"Previously held a social housing tenancy: No.",contradicts,contradiction,yes
+F09,elig-former-tenancy,Former provider records a social housing tenancy,tenancy 2024-03-04 to 2025-12-19,12,"Tenancy commenced 4 March 2024 and ended 19 December 2025.",supports,contradiction,yes
+F10,elig-former-tenancy,Former tenancy ended by agreed surrender and was not terminated for breach,agreed surrender; no breach termination,12,"End reason: agreed surrender of tenancy; no termination for breach was recorded.",supports,exclusion_2yr,yes
+F11,elig-former-tenancy,Exit inspection did not establish a breach,fair wear; no breach finding,13,"No breach finding was entered on the tenancy record.",supports,exclusion_2yr,yes
+F12,prio-category,Specialist service records domestic and family violence by former partner,domestic and family violence,15,"Elena described intimidation and repeated uninvited visits by her former partner after separation.",supports,none,yes
+F13,prio-category,Short stay accommodation ends soon,departure 2026-10-09,8,"The booked room is available through 9 October 2026 only; no extension is currently available.",supports,none,yes
+F14,prio-documentation,Specialist DFV service documents safety and housing need,service letter,15,"In our assessment, a settled address separate from the former partner is needed for Elena's safety and continuity of care.",supports,none,yes
+F15,prio-documentation,No domestic violence order was available to the applicant,no order,17,"I have not obtained a domestic violence order.",supports,missing_doc,yes
+F16,prio-discretion,Applicant makes no request for a discretionary exception,no exception request,,,missing,none,no

@@ -90,3 +90,10 @@ be read with this note beside it.
 ## Approval
 Tarık approves this file; then the orchestrator commits it, reruns preflight, records the final
 `BASE_SHA`, starts the wake lock and wave 2a.
+
+## Addition requested by Tarık, 2026-10-03 14:20 ACST: Task-09 (wave 2c)
+After the 2b report, Tarık asked for the false-alarm fixes on Codex `gpt-6.1-sol`, to spare the
+Claude pool ("bunlari 6.1 sol a yaptir claude kotasini bitirmeyelim"). Task-09 fixes the date
+check, the pair rule and possibly-missed duplicates. Codex bee `gpt-6.1-sol`/`high`, timebox 90
+min, network on (new Jev calls), no Claude call. It is cut from main after Task-07 lands, because
+it changes A-0142 values that the screen tests read. GATE `uv run python scripts/gate.py`.

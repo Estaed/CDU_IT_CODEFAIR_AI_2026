@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wave 1 report · Readmark</title>
+<!-- Visual version of otopilot-2026-10-03-report.md (the .md stays the source of record). -->
+<style>
+:root, [data-theme="dark"] {
+  --canvas:#0D0D0F; --surface-1:#16161A; --surface-2:#212026; --surface-3:#2A2930;
+  --hairline:#3A3940; --hairline-strong:#4F4E53; --ink:#F2F2F2; --ink-muted:#A1A1AA; --ink-subtle:#71717A;
+  --primary:#FF5A1F; --on-primary:#0D0D0F; --primary-text:#FF7A45; --secondary:#A1A1B5;
+  --success:#3DD68C; --warning:#F5B83D; --danger:#F2555A; --chart-neutral:#4F4E53; color-scheme:dark;
+}
+[data-theme="light"] {
+  --canvas:#F4F4F5; --surface-1:#FFFFFF; --surface-2:#EFEFF1; --surface-3:#E7E7EA;
+  --hairline:#E4E4E7; --hairline-strong:#B4B4BB; --ink:#18181B; --ink-muted:#52525B; --ink-subtle:#8B8B94;
+  --primary:#D4400A; --on-primary:#FFFFFF; --primary-text:#C2410C; --secondary:#5F5F73;
+  --success:#15803D; --warning:#B45309; --danger:#D92D32; --chart-neutral:#B4B4BB; color-scheme:light;
+}
+:root {
+  --font-display:"Newsreader","Iowan Old Style",Georgia,serif;
+  --font-sans:"Manrope",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--canvas); color:var(--ink); font:500 15px/1.55 var(--font-sans); }
+main { max-width:1200px; margin:0 auto; padding:32px 24px 64px; }
+h1,h2 { font-family:var(--font-display); font-weight:600; letter-spacing:-0.01em; margin:0; }
+h1 { font-size:34px; line-height:1.15; }
+h2 { font-size:24px; margin-bottom:12px; }
+h1 .accent { color:var(--primary-text); }
+.num, code { font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:0.92em; }
+.muted { color:var(--ink-muted); }
+.eyebrow { font-size:12px; font-weight:600; color:var(--ink-muted); margin:0 0 8px; }
+section { margin-top:40px; }
+.card { background:var(--surface-1); border:1px solid var(--hairline); border-radius:16px; padding:20px; }
+.feature { border-color:var(--hairline-strong); }
+[data-theme="light"] .feature { border:1.5px solid var(--ink); box-shadow:4px 4px 0 var(--ink); }
+.topbar { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.ghost { background:none; border:0; color:var(--primary-text); font:600 14px var(--font-sans); cursor:pointer; padding:6px 0; }
+.lead { font-size:17px; margin:12px 0 0; max-width:760px; }
+.tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:24px; }
+.tile { background:var(--surface-1); border:1px solid var(--hairline); border-radius:10px; padding:14px 16px; }
+.tile .v { font:600 26px var(--font-mono); margin-top:4px; }
+.tile .v.key { color:var(--primary-text); }
+.tile .s { font-size:13px; color:var(--ink-muted); }
+
+/* next steps */
+.steps { list-style:none; margin:0; padding:0; }
+.steps li { display:grid; grid-template-columns:28px 1fr; gap:12px; padding:16px 0; border-top:1px solid var(--hairline); }
+.steps li:first-child { border-top:0; padding-top:4px; }
+.steps input { width:20px; height:20px; margin-top:3px; accent-color:var(--primary); cursor:pointer; }
+.steps .t { font-weight:700; }
+.steps li.done .t { color:var(--ink-muted); text-decoration:line-through; }
+.steps .how { margin:6px 0 0; color:var(--ink-muted); font-size:14px; }
+.pill { display:inline-block; border:1px solid currentColor; border-radius:9999px; padding:1px 10px; font-size:12px; font-weight:600; margin-left:8px; vertical-align:2px; }
+.pill.ok { color:var(--success); } .pill.wait { color:var(--warning); } .pill.no { color:var(--danger); }
+.progress { display:flex; gap:4px; margin:4px 0 16px; }
+.progress span { height:4px; flex:1; border-radius:9999px; background:var(--surface-3); }
+.progress span.on { background:var(--primary); }
+
+/* timeline */
+.tl { position:relative; margin-top:8px; }
+.tl-row { display:grid; grid-template-columns:150px 1fr; align-items:center; gap:12px; height:40px; }
+.tl-name { font-weight:600; font-size:14px; }
+.tl-name small { display:block; font-weight:500; color:var(--ink-muted); font-size:12px; }
+.tl-track { position:relative; height:100%; border-left:1px solid var(--hairline); }
+.bar { position:absolute; top:11px; height:18px; border-radius:6px; background:var(--chart-neutral); }
+.bar.key { background:var(--primary); }
+.bar.fix { background:transparent; border:1.5px dashed var(--secondary); }
+.tl-axis { display:grid; grid-template-columns:150px 1fr; gap:12px; margin-top:4px; }
+.ticks { position:relative; height:18px; font:12px var(--font-mono); color:var(--ink-muted); }
+.ticks span { position:absolute; transform:translateX(-50%); }
+.legend { display:flex; gap:20px; margin-top:12px; font-size:13px; color:var(--ink-muted); }
+.legend i { display:inline-block; width:14px; height:10px; border-radius:3px; margin-right:6px; vertical-align:0; }
+
+/* gallery */
+.viewer { display:grid; grid-template-columns:260px 1fr; gap:16px; }
+.shots { list-style:none; margin:0; padding:0; max-height:560px; overflow:auto; }
+.shots button { width:100%; text-align:left; background:none; border:0; border-radius:8px; color:var(--ink); padding:8px 10px; font:500 14px var(--font-sans); cursor:pointer; display:flex; gap:10px; }
+.shots button:hover { background:var(--surface-2); }
+.shots button[aria-current="true"] { background:var(--surface-3); }
+.shots button .n { font-family:var(--font-mono); color:var(--ink-muted); width:20px; }
+.frame { background:var(--surface-2); border-radius:10px; overflow:hidden; border:1px solid var(--hairline); }
+.frame img { display:block; width:100%; height:auto; }
+.cap { display:flex; justify-content:space-between; align-items:center; margin-top:10px; gap:12px; }
+.btn { background:var(--surface-2); color:var(--ink); border:0; border-radius:12px; padding:8px 14px; font:600 14px var(--font-sans); cursor:pointer; }
+.btn:hover { background:var(--surface-3); }
+button:focus-visible, input:focus-visible { outline:2px solid var(--primary); outline-offset:2px; }
+
+/* findings */
+.find { list-style:none; margin:0; padding:0; }
+.find li { display:grid; grid-template-columns:52px 1fr; gap:12px; padding:12px 0; border-top:1px solid var(--hairline); }
+.find li:first-child { border-top:0; }
+.score { font:600 15px var(--font-mono); }
+.find .was { color:var(--ink-muted); font-size:14px; margin-top:2px; }
+.two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { text-align:left; font-size:12px; font-weight:600; color:var(--ink-muted); padding:6px 8px; border-bottom:1px solid var(--hairline); }
+td { padding:8px; border-bottom:1px solid var(--hairline); vertical-align:top; }
+details summary { cursor:pointer; font-weight:600; }
+details p { color:var(--ink-muted); margin:8px 0 0; font-size:14px; }
+@media (max-width:820px) {
+  .tiles { grid-template-columns:repeat(2,1fr); } .viewer,.two { grid-template-columns:1fr; }
+  .shots { max-height:none; display:flex; overflow-x:auto; } .shots button { white-space:nowrap; }
+  .tl-row,.tl-axis { grid-template-columns:96px 1fr; }
+  .tablewrap { overflow-x:auto; } code { overflow-wrap:anywhere; } .topbar { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header class="topbar">
+  <div>
+    <p class="eyebrow">Readmark · otopilot · 3 October 2026</p>
+    <h1>Wave 1 is <span class="accent">built</span>. Three checks wait for you.</h1>
+    <p class="lead">All 5 tasks passed their tests on the first try. Two things are still open: you look at
+      3 items with your own eyes, then you approve the wave 2 plan.</p>
+  </div>
+  <button class="ghost" id="theme" type="button">Light mode</button>
+</header>
+
+<div class="tiles">
+  <div class="tile"><div class="s">Tasks green</div><div class="v"><span class="num">5/5</span></div></div>
+  <div class="tile"><div class="s">Eye checks open</div><div class="v key" id="open-count">3</div></div>
+  <div class="tile"><div class="s">Wall-clock time</div><div class="v">63 min</div><div class="s">10:43 → 11:46</div></div>
+  <div class="tile"><div class="s">Claude weekly quota</div><div class="v">+2%</div><div class="s">79% → 81% (plan said 10–16)</div></div>
+</div>
+
+<section>
+  <h2>Your next steps</h2>
+  <div class="card feature">
+    <div class="progress" id="prog"><span></span><span></span><span></span><span></span></div>
+    <ol class="steps" id="steps">
+      <li data-k="s1">
+        <input type="checkbox" aria-label="Done: check the Task-00 screen">
+        <div>
+          <div class="t">Check the Task-00 screen behaves right <span class="pill wait">eye check</span></div>
+          <p class="how">Judge the behaviour, not the look. Either click through the 15 screenshots below, or run
+            <code>uv run python -m readmark serve</code> and open the address it prints. The flow: claim → passage →
+            read all 5 required passages → set all 8 clause outcomes → sign → export.</p>
+        </div>
+      </li>
+      <li data-k="s2">
+        <input type="checkbox" aria-label="Done: check the clause list">
+        <div>
+          <div class="t">Check the 8 policy clauses <span class="pill wait">eye check</span></div>
+          <p class="how">Open <code>readmark/checklist/clauses.yaml</code>. Each clause quotes one sentence from the
+            policy PDF word for word. One open question: <code>prio-discretion</code> quotes only Priority §3.1, but
+            <code>docs/contracts.md</code> says it should also use "Discretionary decision making". Decide which is right.</p>
+        </div>
+      </li>
+      <li data-k="s3">
+        <input type="checkbox" aria-label="Done: skim the A-0142 case file">
+        <div>
+          <div class="t">Skim the demo case file A-0142 <span class="pill wait">eye check</span></div>
+          <p class="how">Open <code>data/cases/A-0142/case.md</code>. Read pages <span class="num">8, 23, 30, 51</span> and
+            three random filler pages. Ask one question: does this read like real NT housing paperwork? The pages
+            are now about <span class="num">225</span> words each (they were <span class="num">60</span>).</p>
+        </div>
+      </li>
+      <li data-k="s4">
+        <input type="checkbox" aria-label="Done: approve wave 2">
+        <div>
+          <div class="t">Approve or change the wave 2 plan</div>
+          <p class="how">Open <code>reports/otopilot-2026-10-03-wave2-plan.md</code>. Four tasks (Task-05..08) in two
+            steps. Wave 2 builds the B review layout and runs the real demo case.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <h2>What ran, and when</h2>
+  <div class="card">
+    <div class="tl" id="tl"></div>
+    <div class="tl-axis"><div></div><div class="ticks" id="ticks"></div></div>
+    <div class="legend">
+      <span><i style="background:var(--primary)"></i>Main product feature</span>
+      <span><i style="background:var(--chart-neutral)"></i>Data and design tasks</span>
+      <span><i style="border:1.5px dashed var(--secondary)"></i>Fixes after your OK</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>The Task-00 screen, step by step</h2>
+  <p class="muted" style="margin-top:-4px">Screenshots from the screen reviewer, <span class="num">1440</span> px wide.
+    Use ← and → to move. Taken before the fixes below.</p>
+  <div class="viewer">
+    <ul class="shots" id="shots"></ul>
+    <div>
+      <div class="frame"><img id="shot" alt=""></div>
+      <div class="cap">
+        <span id="shot-cap"></span>
+        <span><button class="btn" id="prev" type="button">Previous</button> <button class="btn" id="next" type="button">Next</button></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>What the reviewers found</h2>
+  <div class="two">
+    <div class="card">
+      <p class="eyebrow">Fixed after your OK at <span class="num">11:30</span> · commit <span class="num">fb10806</span></p>
+      <ul class="find">
+        <li><span class="score">76</span><div>After signing, the screen locks: you can no longer change outcomes or add disputes.
+          <div class="was">Before: you could still click, but the edits never reached the record, and nothing told you.</div></div></li>
+        <li><span class="score">70</span><div>The reading timer pauses while the decision dialog is open.
+          <div class="was">Before: time behind the dialog counted as reading time in the record.</div></div></li>
+        <li><span class="score">62</span><div>"No evidence in file" shows only when no claim cites the file for that clause.
+          <div class="was">Before: it showed on clauses that did have evidence.</div></div></li>
+        <li><span class="score">58</span><div>When all quotes are found, the screen now says the real reason: "Quotes found, but none contains 2026, 16".
+          <div class="was">Before: it said "quote not found", which was false.</div></div></li>
+      </ul>
+      <p class="muted" style="font-size:13px;margin:8px 0 0">Each fix has a new test. Each test failed on the old code first.</p>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Left open (all below the fix line of <span class="num">80</span>)</p>
+      <ul class="find">
+        <li><span class="score">60</span><div>A claim with no citations says "quote not found" but never becomes required reading.</div></li>
+        <li><span class="score">40</span><div><code>prio-discretion</code> quotes only one policy section. This is your step 2 above.</div></li>
+        <li><span class="score">40</span><div>The exported record mixes UTC times with local time, and lists disputes by claim id only.</div></li>
+        <li><span class="score">25</span><div>The exported record has its own CSS instead of using the theme file.</div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>All tasks</h2>
+  <div class="card tablewrap">
+    <table>
+      <thead><tr><th>Task</th><th>What it did</th><th>Who built it</th><th>Result</th><th>Commit</th></tr></thead>
+      <tbody>
+        <tr><td>Task-00</td><td>The review screen, end to end (the main feature)</td><td>Opus Workflow</td><td><span class="pill ok">green</span> <span class="pill wait">2 eye checks</span></td><td class="num">6e440c9</td></tr>
+        <tr><td>Task-01</td><td>Synthetic case files, first version</td><td>Codex bee</td><td><span class="pill ok">green</span> replaced by Task-04</td><td class="num">b84e938</td></tr>
+        <tr><td>Task-02</td><td>Held-out test case H-01</td><td>Codex bee</td><td><span class="pill ok">green</span></td><td class="num">6f23392</td></tr>
+        <tr><td>Task-03</td><td>Two look directions, A and B; you picked A</td><td>Main loop</td><td><span class="pill ok">green</span> eye check done</td><td class="num">c8ad26d</td></tr>
+        <tr><td>Task-04</td><td>Rewrote the case files to read like real paperwork</td><td>Codex bee</td><td><span class="pill ok">green</span> <span class="pill wait">1 eye check</span></td><td class="num">5a0965e</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Good to know</h2>
+  <div class="card">
+    <details><summary>Held-out case H-01 was partly seen in two logs</summary>
+      <p>The orchestrator never opened H-01, but a bee log showed part of its answer key, and the validator printed its trap
+        counts. No pipeline step saw them. Rule from now on: nobody writes H-01-specific prompts or tests, and the validator
+        output is cut to its last line.</p></details>
+    <details style="margin-top:12px"><summary>Codex bees could not commit</summary>
+      <p>The Codex sandbox blocked git in the worktree. The orchestrator made each commit itself and checked the diff stayed
+        inside the task's files.</p></details>
+    <details style="margin-top:12px"><summary>Why the first case files were rewritten</summary>
+      <p>Task-01's pages were thin (about 60 words) and about 10 sentences explained the evidence ("…in this synthetic file").
+        Task-04 rewrote them and added two validator checks: words per page, and a list of give-away phrases.</p></details>
+  </div>
+</section>
+
+<p class="muted" style="margin-top:40px;font-size:13px">Full detail: <code>otopilot-2026-10-03-report.md</code>. This page is a
+  view of it; the Markdown file is the record.</p>
+</main>
+
+<script>
+// theme
+const root = document.documentElement, tbtn = document.getElementById('theme');
+function setTheme(t){ root.dataset.theme = t; tbtn.textContent = t === 'dark' ? 'Light mode' : 'Dark mode'; localStorage.setItem('rm-theme', t); }
+setTheme(localStorage.getItem('rm-theme') || 'dark');
+tbtn.onclick = () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+
+// next steps, remembered in this browser
+const items = [...document.querySelectorAll('#steps li')], segs = [...document.querySelectorAll('#prog span')];
+function paint(){
+  let done = 0, eyeOpen = 0;
+  items.forEach((li, i) => { const on = li.querySelector('input').checked; li.classList.toggle('done', on);
+    segs[i].classList.toggle('on', on); if (on) done++; else if (i < 3) eyeOpen++; });
+  document.getElementById('open-count').textContent = eyeOpen;
+}
+items.forEach(li => { const box = li.querySelector('input'), k = 'rm-' + li.dataset.k;
+  box.checked = localStorage.getItem(k) === '1'; box.onchange = () => { localStorage.setItem(k, box.checked ? '1' : '0'); paint(); }; });
+paint();
+
+// timeline, minutes from 10:40
+const runs = [
+  ['Task-03', 'Main loop', 8, 19, ''], ['Task-01', 'Codex bee', 4, 24, ''], ['Task-00', 'Opus Workflow', 7, 45, 'key'],
+  ['Task-02', 'Codex bee', 27, 36, ''], ['Task-04', 'Codex bee', 42, 66, ''], ['Fixes', 'Main loop', 50, 68, 'fix']];
+const span = 70, tl = document.getElementById('tl');
+const pct = m => (m / span * 100) + '%';
+runs.forEach(([n, who, a, b, cls]) => {
+  tl.insertAdjacentHTML('beforeend', `<div class="tl-row"><div class="tl-name">${n}<small>${who}</small></div>
+    <div class="tl-track"><div class="bar ${cls}" style="left:${pct(a)};width:${pct(b - a)}"></div></div></div>`);
+});
+const ticks = document.getElementById('ticks');
+[0, 20, 40, 60].forEach(m => { const h = 10 + Math.floor((40 + m) / 60), mm = String((40 + m) % 60).padStart(2, '0');
+  ticks.insertAdjacentHTML('beforeend', `<span style="left:${pct(m)}">${h}:${mm}</span>`); });
+
+// screenshots
+const shots = [
+  ['01-initial', 'First screen'], ['02-initial-full', 'First screen, full page'], ['03-follow-claim-c10', 'Click a claim, see its passage'],
+  ['04-locked-banner', 'Sign-off locked: 5 passages, 8 clauses to go'], ['05-req-1-open', 'Required passage 1 open'],
+  ['06-req-2-policy-open', 'Passage 2 with its policy text'], ['07-locked-outcomes', 'Clause outcomes still locked'],
+  ['08-dispute-empty', 'Dispute with no reason is refused'], ['09-outcomes-set', 'All 8 outcomes set'],
+  ['10-dialog-empty', 'Decision dialog, empty'], ['11-dialog-filled', 'Decision dialog, filled'], ['12-record', 'Signed decision record'],
+  ['13-record-full', 'Record, full page'], ['14-export-html', 'Exported HTML record'], ['15-after-sign-edit', 'Edit after signing (shot taken before fix 76)']];
+const list = document.getElementById('shots'), img = document.getElementById('shot'), cap = document.getElementById('shot-cap');
+let cur = 0;
+shots.forEach(([f, t], i) => list.insertAdjacentHTML('beforeend',
+  `<li><button type="button" data-i="${i}"><span class="n">${i + 1}</span>${t}</button></li>`));
+function show(i){ cur = (i + shots.length) % shots.length; const [f, t] = shots[cur];
+  img.src = `screens/2026-10-03-wave1/task-00-r0-${f}-1440.png`; img.alt = t;
+  cap.innerHTML = `<span class="num">${cur + 1}/${shots.length}</span> · ${t}`;
+  list.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.i == cur)); }
+list.onclick = e => { const b = e.target.closest('button'); if (b) show(+b.dataset.i); };
+document.getElementById('prev').onclick = () => show(cur - 1);
+document.getElementById('next').onclick = () => show(cur + 1);
+document.addEventListener('keydown', e => { if (e.key === 'ArrowRight') show(cur + 1); if (e.key === 'ArrowLeft') show(cur - 1); });
+show(0);
+</script>
+</body>
+</html>

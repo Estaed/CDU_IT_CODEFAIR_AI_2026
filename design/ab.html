@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Readmark design A/B</title>
+<link rel="icon" href="data:,">
+<style>
+/* Deliberately plain: this page compares two designs and should look like neither. */
+body { margin: 0; background: #f6f6f6; color: #222; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1600px; margin: 0 auto; padding: 24px; }
+h1 { margin: 0 0 8px; font-size: 22px; }
+.note { max-width: 980px; margin: 0 0 16px; color: #444; }
+.note p { margin: 4px 0; }
+.mode { display: flex; align-items: center; gap: 8px; margin: 0 0 24px; font-size: 14px; }
+.mode button { padding: 6px 12px; border: 1px solid #bbb; border-radius: 6px; background: #fff; cursor: pointer; }
+.mode button[aria-pressed="true"] { background: #222; border-color: #222; color: #fff; }
+section { margin: 0 0 40px; }
+h2 { margin: 0 0 10px; font-size: 17px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+figure { margin: 0; }
+figcaption { margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #555; }
+img { display: block; width: 100%; border: 1px solid #ccc; }
+.diff { margin: 10px 0 0; color: #333; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Readmark review screen: design A/B</h1>
+  <div class="note">
+    <p><b>A</b> followed the <code>tasarim</code> skill (Tarik Base: dark first, with a light mode). <b>B</b> was drawn
+      blind on 2026-10-03, with no skill, no design file and no mock.</p>
+    <p>Both were built from the same functional brief and content (<code>design/ab-brief.md</code>) and driven through
+      the same five states with the same clicks by <code>design/shots/shoot.py</code> at 1280×900. Click a screenshot
+      to open it full size; the live pages are <a href="direction-A.html">direction-A.html</a> and
+      <a href="direction-B.html">direction-B.html</a>.</p>
+    <p>Tarık picks one. The pick becomes <code>design/screens.html</code> and sets <code>web/theme.css</code>.</p>
+  </div>
+  <div class="mode">A shown in:
+    <button type="button" data-mode="dark" aria-pressed="true">Dark</button>
+    <button type="button" data-mode="light" aria-pressed="false">Light</button>
+    <span>(B has one mode)</span>
+  </div>
+
+  <section>
+    <h2>1 · Start</h2>
+    <div class="pair">
+      <figure><figcaption>A</figcaption><a data-a="A-1-start" href="shots/A-1-start-dark.png"><img data-a="A-1-start" src="shots/A-1-start-dark.png" alt="A, start"></a></figure>
+      <figure><figcaption>B</figcaption><a href="shots/B-1-start.png"><img src="shots/B-1-start.png" alt="B, start"></a></figure>
+    </div>
+    <p class="diff">A shows reading progress as four segments above the four passage buttons and the three status lists as metric tiles; B uses a navy top bar, four passage chips and one summary strip with capitals in its labels.</p>
+  </section>
+
+  <section>
+    <h2>2 · Evidence item open</h2>
+    <div class="pair">
+      <figure><figcaption>A</figcaption><a data-a="A-2-item-open" href="shots/A-2-item-open-dark.png"><img data-a="A-2-item-open" src="shots/A-2-item-open-dark.png" alt="A, item open"></a></figure>
+      <figure><figcaption>B</figcaption><a href="shots/B-2-item-open.png"><img src="shots/B-2-item-open.png" alt="B, item open"></a></figure>
+    </div>
+    <p class="diff">Both open p. 8 first and list p. 23 as the next passage; A marks the selected item with an orange edge and sets the passage in the body face, B marks it in navy and sets passages and quotes in a serif.</p>
+  </section>
+
+  <section>
+    <h2>3 · Gate message (Sign decision with passages unopened)</h2>
+    <div class="pair">
+      <figure><figcaption>A</figcaption><a data-a="A-3-gate-message" href="shots/A-3-gate-message-dark.png"><img data-a="A-3-gate-message" src="shots/A-3-gate-message-dark.png" alt="A, gate message"></a></figure>
+      <figure><figcaption>B</figcaption><a href="shots/B-3-gate-message.png"><img src="shots/B-3-gate-message.png" alt="B, gate message"></a></figure>
+    </div>
+    <p class="diff">Both name the three unopened passages as buttons that open them; A uses a grey banner with an amber warning icon, B an amber box with a coloured left rule.</p>
+  </section>
+
+  <section>
+    <h2>4 · Decision record</h2>
+    <div class="pair">
+      <figure><figcaption>A</figcaption><a data-a="A-4-record" href="shots/A-4-record-dark.png"><img data-a="A-4-record" src="shots/A-4-record-dark.png" alt="A, decision record"></a></figure>
+      <figure><figcaption>B</figcaption><a href="shots/B-4-record.png"><img src="shots/B-4-record.png" alt="B, decision record"></a></figure>
+    </div>
+    <p class="diff">Same record contents; A sets the decision as a serif heading and the officer's outcomes as inverted chips, B sets the decision as a bold line with an icon and the outcomes as filled navy buttons.</p>
+  </section>
+
+  <section>
+    <h2>5 · Summary under audit, p. 23 opened from sentence 2</h2>
+    <div class="pair">
+      <figure><figcaption>A</figcaption><a data-a="A-5-audit-tab" href="shots/A-5-audit-tab-dark.png"><img data-a="A-5-audit-tab" src="shots/A-5-audit-tab-dark.png" alt="A, summary under audit"></a></figure>
+      <figure><figcaption>B</figcaption><a href="shots/B-5-audit-tab.png"><img src="shots/B-5-audit-tab.png" alt="B, summary under audit"></a></figure>
+    </div>
+    <p class="diff">Both mark each sentence with a numbered status tag and an underline (wavy for contradicted); A puts the summary in a grey block on graphite, B in a pale blue block on a light page.</p>
+  </section>
+</div>
+<script>
+document.querySelectorAll('.mode button').forEach(b => b.addEventListener('click', () => {
+  const mode = b.dataset.mode;
+  document.querySelectorAll('.mode button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  document.querySelectorAll('img[data-a]').forEach(img => { img.src = `shots/${img.dataset.a}-${mode}.png`; });
+  document.querySelectorAll('a[data-a]').forEach(a => { a.href = `shots/${a.dataset.a}-${mode}.png`; });
+}));
+</script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 # Task-03: Design A/B, Tarik Base against a blind direction
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `main-loop` · effort `high`
 > *Why:* Tarık wants to see whether the `tasarim` skill produces a better screen than an unguided
 > model before the look is built (2026-10-03). Design is eye work, which `Proje-Baslatma.md` §3.5
@@ -27,9 +28,9 @@ Tarık's choice sets `web/theme.css` and the eye-check source of truth (`design/
 the look wave.
 
 ## Acceptance
-- [ ] The gate exists check passes.
-- [ ] A covers every item in `design/ab-brief.md`, with the same content as B; quotes are verbatim.
-- [ ] A has no console errors, and its screenshots exist in both modes.
+- [x] The gate exists check passes.
+- [x] A covers every item in `design/ab-brief.md`, with the same content as B; quotes are verbatim.
+- [x] A has no console errors, and its screenshots exist in both modes.
 - [ ] (eye) Tarık opens `design/ab.html` and picks A or B in one sentence. That pick becomes
   `design/screens.html` in the next wave.
 

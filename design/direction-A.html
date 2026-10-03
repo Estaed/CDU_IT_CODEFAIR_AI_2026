@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Readmark · Applicant file A-0142 · direction A</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@500;600;700&family=Newsreader:opsz,wght@6..72,700&display=swap" rel="stylesheet">
+<style>
+/* Tarik Base tokens v3 (2026-09-27): values of tokens.css, inlined so this prototype is one file. */
+:root, [data-theme="dark"] {
+  --canvas: #0D0D0F; --surface-1: #16161A; --surface-2: #212026; --surface-3: #2A2930;
+  --hairline: #3A3940; --hairline-strong: #4F4E53; --edge: #4F4E53;
+  --ink: #F2F2F2; --ink-muted: #A1A1AA; --ink-subtle: #71717A;
+  --primary: #FF5A1F; --on-primary: #0D0D0F; --primary-hover: #FF7440; --primary-pressed: #E84A12;
+  --primary-text: #FF7A45; --secondary: #A1A1B5;
+  --success: #3DD68C; --warning: #F5B83D; --danger: #F2555A; --scrim: #000000B3;
+  --shadow-3: none; --shadow-hard: none; color-scheme: dark;
+}
+[data-theme="light"] {
+  --canvas: #F4F4F5; --surface-1: #FFFFFF; --surface-2: #EFEFF1; --surface-3: #E7E7EA;
+  --hairline: #E4E4E7; --hairline-strong: #B4B4BB; --edge: #18181B;
+  --ink: #18181B; --ink-muted: #52525B; --ink-subtle: #8B8B94;
+  --primary: #D4400A; --on-primary: #FFFFFF; --primary-hover: #BF3908; --primary-pressed: #A83206;
+  --primary-text: #C2410C; --secondary: #5F5F73;
+  --success: #15803D; --warning: #B45309; --danger: #D92D32; --scrim: #18181B66;
+  --shadow-3: 0 8px 24px #18181B1F; --shadow-hard: 4px 4px 0 #18181B; color-scheme: light;
+}
+:root {
+  --font-display: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --r-sm: 6px; --r-md: 10px; --r-lg: 16px; --r-xl: 24px; --r-button: 12px; --r-chip: 8px; --r-pill: 9999px;
+  --fast: 120ms ease-out; --base: 200ms ease-out; --slow: 320ms cubic-bezier(0.2, 0, 0, 1);
+}
+@media (prefers-reduced-motion: reduce) { :root { --fast: 0ms linear; --base: 0ms linear; --slow: 0ms linear; } }
+
+/* ---------- base ---------- */
+* { box-sizing: border-box; }
+html { background: var(--canvas); }
+body { margin: 0; background: var(--canvas); color: var(--ink); font: 500 16px/1.5 var(--font-sans); -webkit-font-smoothing: antialiased; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.i { width: 16px; height: 16px; flex: none; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 600 12px/1.3 var(--font-sans); color: var(--ink-muted); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.spacer { flex: 1; }
+
+/* ---------- header ---------- */
+.top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 32px; align-items: start; padding: 28px 0 24px; }
+h1 { font: 700 28px/1.1 var(--font-display); letter-spacing: -0.5px; margin: 6px 0 10px; }
+h1 .accent { color: var(--primary-text); }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--ink-muted); font-size: 14px; }
+.meta span { display: inline-flex; align-items: center; gap: 6px; }
+.meta .mono { color: var(--ink); font-size: 13px; }
+.reading { width: 280px; }
+.reading-head { display: flex; justify-content: space-between; align-items: baseline; }
+.count { font: 600 24px/1.1 var(--font-mono); letter-spacing: -0.5px; color: var(--primary-text); }
+.count.all { color: var(--success); }
+.segs, .req-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.segs { margin: 8px 0 6px; }
+.segs i { height: 6px; border-radius: var(--r-sm); background: var(--surface-3); transition: background var(--base); }
+.segs i.on { background: var(--primary); }
+.req-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 32px; padding: 0 4px; border: 1px solid var(--hairline); border-radius: var(--r-chip); background: transparent; color: var(--ink-muted); font: 600 12px/1 var(--font-mono); transition: background var(--fast); }
+.req-btn .i { width: 13px; height: 13px; }
+.req-btn:hover:not(:disabled) { background: var(--surface-2); color: var(--ink); }
+.req-btn.done { color: var(--ink); border-color: var(--hairline-strong); }
+.req-btn.done .i { color: var(--success); }
+.signbox { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; padding-top: 2px; }
+.hint { font-size: 12px; color: var(--ink-muted); }
+.btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--primary); color: var(--on-primary); font: 700 16px/1.2 var(--font-sans); border: 0; border-radius: var(--r-button); padding: 14px 24px; min-height: 48px; transition: background var(--fast); }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { background: var(--primary-pressed); }
+.btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--surface-2); color: var(--ink); font: 700 16px/1.2 var(--font-sans); border: 0; border-radius: var(--r-button); padding: 12px 20px; min-height: 44px; transition: background var(--fast); }
+.btn-secondary:hover { background: var(--surface-3); }
+.signed-badge { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: var(--r-button); background: var(--surface-2); font-weight: 700; }
+.signed-badge .mono { font-size: 14px; }
+
+/* ---------- gate banner ---------- */
+.banner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; background: var(--surface-2); border-radius: var(--r-md); padding: 14px 12px 14px 16px; margin-bottom: 20px; font-size: 14px; }
+.banner > .i { width: 20px; height: 20px; color: var(--warning); margin-top: 1px; }
+.banner.ok > .i { color: var(--success); }
+.banner-title { font-weight: 700; font-size: 15px; }
+.banner-sub { color: var(--ink-muted); margin-top: 2px; }
+.banner-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.banner-list button { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 1px solid var(--hairline-strong); border-radius: var(--r-chip); background: var(--surface-1); font-size: 14px; transition: background var(--fast); }
+.banner-list button:hover { background: var(--surface-3); }
+.banner-list b { font: 600 13px var(--font-mono); }
+.banner-list .c { color: var(--ink-muted); font-size: 12px; }
+.icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: var(--r-md); background: transparent; color: var(--ink-muted); }
+.icon-btn:hover { background: var(--surface-3); color: var(--ink); }
+
+/* ---------- view bar ---------- */
+.bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 0; border-top: 1px solid var(--hairline); }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: var(--r-button); padding: 4px; gap: 4px; }
+.seg button { display: inline-flex; align-items: center; gap: 8px; height: 36px; border: 0; background: transparent; color: var(--ink-muted); border-radius: 9px; padding: 0 14px; font: 600 14px var(--font-sans); transition: background var(--fast); }
+.seg button[aria-selected="true"] { background: var(--surface-3); color: var(--ink); }
+.seg .n { display: inline-flex; align-items: center; gap: 4px; font: 500 12px var(--font-sans); color: var(--ink-muted); }
+.seg .n .i { width: 12px; height: 12px; }
+.seg .n.bad { color: var(--danger); }
+.act { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 8px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink); font: 600 14px var(--font-sans); white-space: nowrap; transition: background var(--fast); }
+.act:hover { background: var(--surface-3); }
+.act.muted { color: var(--ink-muted); }
+.act.muted:hover { color: var(--ink); }
+
+/* ---------- layout ---------- */
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 448px; gap: 24px; align-items: start; }
+.pane { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); }
+
+/* ---------- evidence ---------- */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-md); padding: 12px; }
+.tile .v { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-top: 6px; font-size: 14px; color: var(--ink-muted); }
+.tile .v span { display: inline-flex; align-items: baseline; gap: 6px; }
+.tile .v b { font: 600 20px/1.1 var(--font-mono); color: var(--ink); }
+.keyrow { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 10px 0 16px; font-size: 13px; color: var(--ink-muted); }
+.keyrow .legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+details.key { position: relative; }
+details.key summary { list-style: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 8px; border-radius: var(--r-sm); font: 600 14px var(--font-sans); color: var(--ink); cursor: pointer; }
+details.key summary::-webkit-details-marker { display: none; }
+details.key summary:hover { background: var(--surface-3); }
+.keybox { position: absolute; right: 0; top: 38px; z-index: 5; width: 560px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 16px; background: var(--surface-3); border: 1px solid var(--hairline-strong); border-radius: var(--r-md); box-shadow: var(--shadow-3); }
+.keybox h5 { margin: 0 0 8px; font: 600 12px var(--font-sans); color: var(--ink-muted); }
+.keybox ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.group { background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); margin-bottom: 16px; overflow: hidden; }
+.g-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; padding: 16px 16px 14px; border-bottom: 1px solid var(--hairline); }
+.g-head h2 { font: 700 18px/1.3 var(--font-sans); letter-spacing: -0.2px; margin: 0; }
+.g-ref { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 14px; color: var(--ink-muted); }
+.g-sum { font-size: 12px; color: var(--ink-muted); white-space: nowrap; padding-top: 4px; }
+.g-sum .mono { color: var(--ink); }
+.item { position: relative; padding: 16px; border-top: 1px solid var(--hairline); cursor: pointer; transition: background var(--fast); }
+.item:first-child { border-top: 0; }
+.item:hover { background: color-mix(in srgb, var(--surface-2) 55%, var(--surface-1)); }
+.item.is-sel { background: var(--surface-2); }
+.item.is-sel::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--primary); }
+body.signed .item { cursor: default; }
+.q { margin: 0; padding-left: 12px; border-left: 2px solid var(--hairline-strong); font: 600 16px/1.5 var(--font-sans); }
+.q .gap { color: var(--ink-muted); font-weight: 500; }
+.cite { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 8px 0 0 14px; font-size: 13px; color: var(--ink-muted); }
+.cite .loc { font: 600 13px var(--font-mono); color: var(--ink); }
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border: 1px solid var(--hairline-strong); border-radius: var(--r-sm); font: 600 12px/1.3 var(--font-sans); color: var(--ink-muted); white-space: nowrap; }
+.tag .i { width: 12px; height: 12px; }
+.tag.hot { color: var(--primary-text); border-color: var(--primary-text); }
+.tag.done { color: var(--success); border-color: color-mix(in srgb, var(--success) 55%, transparent); }
+.tag.ai { color: var(--secondary); border-color: var(--secondary); }
+.claimline { display: flex; align-items: baseline; gap: 10px; margin-top: 12px; font-size: 15px; }
+.noteline { margin-top: 12px; font-size: 14px; color: var(--ink-muted); }
+.statusline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 10px; }
+.list-label { font: 600 12px/1.3 var(--font-sans); color: var(--ink-muted); }
+.pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border: 1px solid currentColor; border-radius: var(--r-pill); font: 600 12px/1.4 var(--font-sans); white-space: nowrap; }
+.pill .i { width: 13px; height: 13px; }
+.ok { color: var(--success); } .warn { color: var(--warning); } .bad { color: var(--danger); } .neutral { color: var(--ink-muted); }
+.contra { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; padding: 10px 12px; background: var(--surface-2); border-radius: var(--r-md); font-size: 14px; color: var(--ink-muted); }
+.contra .i { color: var(--danger); margin-top: 2px; }
+.contra q, .contra b { color: var(--ink); font-weight: 600; }
+.is-sel .contra, .is-sel .dispute { background: var(--surface-3); }
+.dispute { margin-top: 12px; padding: 12px; background: var(--surface-2); border-radius: var(--r-md); font-size: 14px; cursor: default; }
+.dispute label { display: block; margin-bottom: 6px; font: 700 14px/1.45 var(--font-sans); }
+.dispute .row { display: flex; gap: 8px; }
+.dispute input { flex: 1; min-height: 40px; padding: 8px 12px; background: var(--canvas); border: 2px solid transparent; border-radius: var(--r-md); font-size: 14px; }
+.dispute input:focus { outline: none; border-color: var(--primary); }
+.dispute .err { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: var(--danger); }
+.dispute.saved { display: flex; align-items: flex-start; gap: 10px; }
+.dispute.saved > .i { margin-top: 2px; color: var(--ink); }
+.dispute .who { font-weight: 700; }
+.g-out { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--hairline); }
+.oc-label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink-muted); }
+.oc-label .state { color: var(--ink); font-weight: 700; }
+.oc-label .state.unset { color: var(--ink-muted); font-weight: 500; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; height: 32px; padding: 0 12px; border: 1px solid var(--hairline-strong); border-radius: var(--r-chip); background: transparent; color: var(--ink); font: 600 14px var(--font-sans); transition: background var(--fast); }
+.chip small { font-size: 12px; font-weight: 500; color: var(--ink-muted); }
+.chip:hover:not(:disabled) { background: var(--surface-3); }
+.chip[aria-checked="true"] { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
+.chip[aria-checked="true"] small { color: inherit; }
+.chip:disabled:not([aria-checked="true"]) { color: var(--ink-subtle); }
+.chip.static { cursor: default; }
+
+/* ---------- source pane ---------- */
+.pane-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 10px 0 16px; }
+.ctx { padding: 2px 16px 14px; border-bottom: 1px solid var(--hairline); }
+.ctx-clause { font-size: 14px; font-weight: 700; }
+.ctx-claim { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; font-size: 14px; color: var(--ink-muted); }
+.plist { list-style: none; margin: 0; padding: 12px 16px; display: grid; gap: 6px; border-bottom: 1px solid var(--hairline); }
+.plist-h { font: 600 12px var(--font-sans); color: var(--ink-muted); }
+.pbtn { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 10px; align-items: center; width: 100%; padding: 10px 12px; border: 1px solid var(--hairline); border-radius: var(--r-md); background: transparent; text-align: left; transition: background var(--fast); }
+.pbtn:hover { background: var(--surface-2); }
+.pbtn.is-cur { background: var(--surface-2); border-color: var(--hairline-strong); }
+.pnum { width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid var(--hairline-strong); border-radius: var(--r-pill); font: 600 12px var(--font-mono); color: var(--ink-muted); }
+.pnum .i { width: 13px; height: 13px; }
+.pbtn.opened .pnum { border-color: var(--success); color: var(--success); }
+.pmain { font-size: 14px; }
+.pmain b { font: 600 13px var(--font-mono); }
+.pwhy { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; color: var(--ink-muted); }
+.pstate { text-align: right; font-size: 12px; color: var(--ink-muted); white-space: nowrap; }
+.pstate .ps { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.pstate .ps .i { width: 13px; height: 13px; }
+.pstate .when { display: block; margin-top: 2px; font-family: var(--font-mono); }
+.viewer { padding: 16px; }
+.v-doc { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.v-title { font: 700 16px/1.3 var(--font-sans); }
+.v-loc { margin-top: 2px; font-size: 13px; color: var(--ink-muted); }
+.v-why { margin-top: 8px; font-size: 13px; color: var(--ink-muted); }
+.v-page { margin-top: 12px; padding: 16px; background: var(--surface-2); border-radius: var(--r-md); font-size: 15px; line-height: 1.7; }
+mark { background: color-mix(in srgb, var(--warning) 30%, transparent); box-shadow: inset 0 -2px 0 var(--warning); color: inherit; border-radius: 3px; padding: 1px 2px; }
+.v-key { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: var(--ink-muted); }
+.v-key .sw { width: 14px; height: 10px; border-radius: 2px; background: color-mix(in srgb, var(--warning) 30%, transparent); box-shadow: inset 0 -2px 0 var(--warning); }
+.v-log { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; border: 1px solid var(--hairline); border-radius: var(--r-md); font-size: 13px; color: var(--ink-muted); }
+.v-log .mono { color: var(--ink); }
+.v-next { width: 100%; margin-top: 12px; }
+.empty { padding: 32px 24px 24px; text-align: center; }
+.circle { width: 88px; height: 88px; display: grid; place-items: center; margin: 0 auto 16px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--ink-muted); }
+.circle .i { width: 40px; height: 40px; }
+.empty h3 { margin: 0 0 6px; font: 700 18px/1.3 var(--font-sans); }
+.empty p { max-width: 340px; margin: 0 auto; font-size: 14px; color: var(--ink-muted); }
+.empty-req { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--hairline); text-align: left; }
+.empty-req ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.empty-req button { width: 100%; display: grid; grid-template-columns: 18px auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border: 1px solid var(--hairline); border-radius: var(--r-md); background: transparent; text-align: left; font-size: 14px; transition: background var(--fast); }
+.empty-req button:hover { background: var(--surface-2); }
+.empty-req b { font: 600 13px var(--font-mono); }
+.empty-req .c { font-size: 12px; color: var(--ink-muted); }
+.empty-req .st { color: var(--ink-muted); }
+.empty-req .st.done { color: var(--success); }
+
+/* ---------- decision record ---------- */
+.rec { padding: 16px; }
+.rec-head { display: flex; justify-content: space-between; align-items: center; }
+.rec-head h3 { display: flex; align-items: center; gap: 8px; margin: 0; font: 700 18px/1.3 var(--font-sans); }
+.rec-dec { margin: 14px 0 0; font: 700 28px/1.1 var(--font-display); letter-spacing: -0.5px; }
+dl.rec-dl { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 8px 12px; margin: 14px 0 0; font-size: 14px; }
+.rec-dl dt { color: var(--ink-muted); }
+.rec-dl dd { margin: 0; }
+.rec-reason { padding: 10px 12px; background: var(--surface-2); border-radius: var(--r-md); }
+.rec h4 { display: flex; justify-content: space-between; margin: 20px 0 4px; font: 600 12px var(--font-sans); color: var(--ink-muted); }
+.rec h4 .mono { color: var(--ink); }
+.rec-t { width: 100%; border-collapse: collapse; font-size: 13px; }
+.rec-t th { padding: 6px 0; border-bottom: 1px solid var(--hairline); text-align: left; font: 600 12px var(--font-sans); color: var(--ink-muted); }
+.rec-t th.r, .rec-t td.r { text-align: right; padding-left: 12px; }
+.rec-t td { padding: 8px 0; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+.rec-t td b { font: 600 13px var(--font-mono); }
+.rec-t .sub { font-size: 12px; color: var(--ink-muted); }
+.rec-disp { list-style: none; margin: 4px 0 0; padding: 0; font-size: 13px; }
+.rec-disp li { padding: 8px 0; border-bottom: 1px solid var(--hairline); }
+.rec-disp .c { display: flex; align-items: center; gap: 6px; color: var(--ink-muted); font-size: 12px; margin-bottom: 2px; }
+.rec-note { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 12px; color: var(--ink-muted); }
+
+/* ---------- summary under audit ---------- */
+.audit { padding: 20px; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); }
+.audit h2 { margin: 4px 0 8px; font: 700 18px/1.3 var(--font-sans); letter-spacing: -0.2px; }
+.prov { display: flex; gap: 8px; margin: 0 0 16px; font-size: 14px; color: var(--ink-muted); }
+.prov .i { margin-top: 3px; }
+.ai-doc { padding: 14px 16px; background: var(--surface-2); border-radius: var(--r-md); }
+.ai-doc-h { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: var(--ink-muted); }
+.ai-para { font-size: 16px; line-height: 2; }
+.s { text-decoration-line: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.s.s-ok { text-decoration-color: var(--success); }
+.s.s-bad { text-decoration-color: var(--danger); text-decoration-style: wavy; }
+.s.s-rec { text-decoration-color: var(--ink-muted); text-decoration-style: dotted; }
+.smark { display: inline-flex; align-items: center; gap: 2px; margin-right: 4px; padding: 0 4px; border: 1px solid currentColor; border-radius: var(--r-sm); font: 600 11px/1.45 var(--font-mono); vertical-align: 2px; }
+.smark .i { width: 11px; height: 11px; }
+.tally { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 14px; font-size: 13px; color: var(--ink-muted); }
+.tally b { font: 600 13px var(--font-mono); color: var(--ink); }
+.sec-h { margin: 24px 0 8px; font: 600 12px var(--font-sans); color: var(--ink-muted); }
+.sent-list { list-style: none; margin: 0; padding: 0; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); }
+.sent { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding: 16px; border-top: 1px solid var(--hairline); }
+.sent:first-child { border-top: 0; }
+.sent-n { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--hairline-strong); border-radius: var(--r-pill); font: 600 12px var(--font-mono); color: var(--ink-muted); }
+.sent-ai { display: flex; align-items: baseline; gap: 10px; font-size: 15px; }
+.evid { margin-top: 10px; padding: 12px; background: var(--surface-2); border-radius: var(--r-md); }
+.evid .rel { margin-bottom: 6px; font: 600 12px var(--font-sans); color: var(--ink-muted); }
+.evid .row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 8px; font-size: 13px; color: var(--ink-muted); }
+.evid .row .loc { font: 600 13px var(--font-mono); color: var(--ink); }
+.evid .why { margin-top: 8px; font-size: 13px; color: var(--ink-muted); }
+.snote { font-size: 13px; color: var(--ink-muted); }
+.omit { padding: 16px; background: var(--surface-1); border: 1px solid var(--hairline); border-radius: var(--r-lg); }
+
+/* ---------- dialog ---------- */
+dialog { width: min(520px, calc(100vw - 48px)); padding: 0; border: 1px solid var(--hairline-strong); border-radius: var(--r-xl); background: var(--surface-1); color: var(--ink); box-shadow: var(--shadow-3); }
+dialog::backdrop { background: var(--scrim); }
+.dlg { padding: 24px; }
+.dlg h2 { margin: 4px 0 6px; font: 700 18px/1.3 var(--font-sans); }
+.dlg > p { margin: 0; font-size: 14px; color: var(--ink-muted); }
+fieldset { margin: 18px 0 0; padding: 0; border: 0; }
+legend { padding: 0; margin-bottom: 6px; font: 700 14px/1.45 var(--font-sans); }
+.opts { display: grid; gap: 8px; }
+.opt { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--surface-2); border: 2px solid transparent; border-radius: var(--r-md); font-size: 15px; cursor: pointer; }
+.opt:has(input:checked) { border-color: var(--hairline-strong); background: var(--surface-3); }
+.opt input { width: 18px; height: 18px; margin: 0; accent-color: var(--primary); }
+.flabel { display: flex; align-items: baseline; gap: 8px; margin: 18px 0 6px; font: 700 14px/1.45 var(--font-sans); }
+.flabel .rq { font: 500 12px var(--font-sans); color: var(--ink-muted); }
+textarea { width: 100%; min-height: 104px; padding: 12px 14px; background: var(--surface-2); border: 2px solid transparent; border-radius: var(--r-md); font: 500 15px/1.5 var(--font-sans); resize: vertical; }
+textarea:focus { outline: none; border-color: var(--primary); }
+.helper { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: var(--ink-muted); }
+.helper.err { color: var(--danger); }
+.helper .i { width: 14px; height: 14px; }
+.dlg-ctx { margin-top: 16px; padding: 12px 14px; border: 1px solid var(--hairline); border-radius: var(--r-md); font-size: 13px; color: var(--ink-muted); }
+.dlg-ctx b { color: var(--ink); }
+.dlg-ctx ul { margin: 6px 0 0; padding-left: 18px; }
+.dlg-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
+
+footer { display: flex; align-items: center; gap: 8px; margin: 32px 0 0; padding: 16px 0 28px; border-top: 1px solid var(--hairline); font-size: 12px; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Priority housing review · Darwin</div>
+      <h1>Applicant file <span class="accent">A-0142</span></h1>
+      <div class="meta" id="meta"></div>
+    </div>
+    <div class="reading" id="reading"></div>
+    <div class="signbox" id="signbox"></div>
+  </header>
+  <div id="gate"></div>
+  <div class="bar">
+    <div class="seg" role="tablist" aria-label="View" id="tabs"></div>
+    <button class="act muted" id="themeBtn" type="button"></button>
+  </div>
+  <div class="grid">
+    <main id="left"></main>
+    <aside class="pane" id="pane" aria-label="Source pane"></aside>
+  </div>
+  <footer id="foot"></footer>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dlg">
+    <div class="eyebrow">Sign-off</div>
+    <h2 id="dlgTitle">Sign the decision for applicant file A-0142</h2>
+    <p>All 4 required passages are opened. The tool makes no recommendation: the decision and the reason are yours, and both go into the record.</p>
+    <fieldset>
+      <legend>Decision</legend>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="dec" value="approve">Approve priority housing</label>
+        <label class="opt"><input type="radio" name="dec" value="decline">Decline</label>
+        <label class="opt"><input type="radio" name="dec" value="request">Request more information</label>
+      </div>
+      <div class="helper" id="decHelp">Choose one.</div>
+    </fieldset>
+    <label class="flabel" for="reason">Reason <span class="rq">Required</span></label>
+    <textarea id="reason" placeholder="Why this decision, in your words. Name the passages you relied on."></textarea>
+    <div class="helper" id="reasonHelp">Write it so the applicant could read and challenge it.</div>
+    <div class="dlg-ctx" id="dlgCtx"></div>
+    <div class="dlg-actions">
+      <button type="button" class="btn-secondary" id="dlgCancel">Back to the file</button>
+      <button type="button" class="btn-primary" id="dlgSign">Sign decision</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+'use strict';
+
+/* Lucide icons, outline 1.75 */
+const PATHS = {
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
+  landmark: '<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+  flask: '<path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/>',
+  flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+  arrow: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  lock: '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  pen: '<path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>',
+  ring: '<circle cx="12" cy="12" r="7"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  searchx: '<path d="m13.5 8.5-5 5"/><path d="m8.5 8.5 5 5"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  arrows: '<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+  neq: '<line x1="5" x2="19" y1="9" y2="9"/><line x1="5" x2="19" y1="15" y2="15"/><line x1="19" x2="5" y1="5" y2="19"/>',
+  help: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+  slash: '<circle cx="12" cy="12" r="10"/><line x1="9" x2="15" y1="15" y2="9"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>'
+};
+const ic = n => `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PATHS[n]}</svg>`;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ---------- content: quotes verbatim from design/ab-brief.md ---------- */
+const P = {
+  s34: { short: '§3.4', name: 'Eligibility for Social Housing, Debts', title: 'Eligibility for Social Housing policy', loc: 'Clause 3.4 · Debts', kind: 'policy',
+    text: 'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing). The CEO (Housing) will seek to recover outstanding debts in line with the Debt Management policy.',
+    hl: ['The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).'] },
+  s3: { short: '§3', name: 'Eligibility for Social Housing, urban applicants', title: 'Eligibility for Social Housing policy', loc: 'Clause 3 · urban applicants', kind: 'policy',
+    text: 'If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.',
+    hl: ['If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.'] },
+  pr31: { short: '§3.1', name: 'Priority Housing, urgent need', title: 'Priority Housing policy', loc: 'Clause 3.1', kind: 'policy',
+    text: 'Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.', hl: [] },
+  p8: { short: 'p. 8', name: 'Rent ledger, statement 15 Jan 2026', title: 'Rent ledger (former public tenancy)', loc: 'Page 8 of 62 · statement 15 Jan 2026', kind: 'file',
+    text: 'Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00. Payment plan proposed at $100 per fortnight.', hl: ['Arrears balance $2,400.00.'] },
+  p23: { short: 'p. 23', name: 'Rent ledger, statement 4 Mar 2026', title: 'Rent ledger (former public tenancy)', loc: 'Page 23 of 62 · statement 4 Mar 2026', kind: 'file',
+    text: 'Lump-sum payment received from a support agency on behalf of the former tenant. Arrears cleared in full. Balance $0.00.', hl: ['Arrears cleared in full. Balance $0.00.'] },
+  p30: { short: 'p. 30', name: 'Previous tenancy record', title: 'Previous tenancy record', loc: 'Page 30 of 62', kind: 'file',
+    text: 'Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023. A rent debt remained outstanding at exit. No breach of the tenancy agreement recorded.',
+    hl: ['Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023.', 'No breach of the tenancy agreement recorded.'] },
+  p51: { short: 'p. 51', name: 'Letter from a support agency', title: 'Letter from a support agency', loc: 'Page 51 of 62', kind: 'file',
+    text: 'Ms K. and her two children are fleeing family violence and cannot safely return to their current address. Police attended the property on 2 February 2026.',
+    hl: ['Ms K. and her two children are fleeing family violence and cannot safely return to their current address.'] }
+};
+const REQ = ['s34', 'p8', 'p23', 'p51'];
+const REQ_ITEM = { s34: 'd2', p8: 'd1', p23: 'd1', p51: 'u1' };
+
+const CLAIM = {
+  supported: { t: 'Supported', i: 'check', c: 'ok' },
+  contradicted: { t: 'Contradicted by another passage', i: 'arrows', c: 'bad' },
+  disagrees: { t: 'Checker disagrees', i: 'neq', c: 'warn' },
+  notfound: { t: 'Quote not found', i: 'searchx', c: 'bad' }
+};
+const COVER = {
+  missed: { t: 'Possibly missed', i: 'help', c: 'warn' },
+  none: { t: 'No evidence in file', i: 'slash', c: 'neutral' }
+};
+const OUTCOME = {
+  met: { t: 'Met', i: 'check' },
+  notmet: { t: 'Not met', i: 'x' },
+  undecided: { t: 'Cannot decide yet', sub: 'request information', i: 'mail' }
+};
+const DECISION = { approve: 'Approve priority housing', decline: 'Decline', request: 'Request more information' };
+
+const GROUPS = [
+  { id: 'debts', name: 'Debts', ref: 'Eligibility for Social Housing §3.4', items: [
+    { id: 'd1', kind: 'claim', quote: ['Arrears balance $2,400.00.'], qpid: 'p8', claim: 'Rent arrears of $2,400 are outstanding', st: 'contradicted',
+      contra: { pid: 'p23', date: '4 Mar 2026', q: 'Arrears cleared in full. Balance $0.00.' },
+      passages: [{ pid: 'p8', why: 'Cited by the AI claim' }, { pid: 'p23', why: 'Later statement that contradicts the claim' }] },
+    { id: 'd2', kind: 'claim', quote: ['The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).'], qpid: 's34',
+      claim: 'Debt to the CEO (Housing) does not stop social housing', st: 'supported',
+      passages: [{ pid: 's34', why: 'Cited by the AI claim' }] }
+  ] },
+  { id: 'urgent', name: 'Urgent need documented', ref: 'Priority Housing §3.1', items: [
+    { id: 'u1', kind: 'cover', quote: ['Ms K. and her two children are fleeing family violence and cannot safely return to their current address.'], qpid: 'p51',
+      note: 'Scored highly relevant to urgent need, but the summary under audit never used it.', st: 'missed',
+      passages: [{ pid: 'p51', why: 'Scored highly relevant; not used by the summary' }, { pid: 'pr31', why: 'The clause this evidence is for' }] }
+  ] },
+  { id: 'tenancy', name: 'Previous tenancy', ref: 'Eligibility for Social Housing §3.5', items: [
+    { id: 't1', kind: 'claim', quote: ['Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023.', 'No breach of the tenancy agreement recorded.'], qpid: 'p30',
+      claim: 'Previous tenancy ended by agreement in June 2023 with no breach', st: 'supported',
+      passages: [{ pid: 'p30', why: 'Cited by the AI claim' }] }
+  ] },
+  { id: 'income', name: 'Income evidence', ref: 'Eligibility for Social Housing §3, urban income criteria', items: [
+    { id: 'i1', kind: 'cover', quote: ['If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.'], qpid: 's3',
+      note: 'No income statement anywhere in the 62 pages. The next step is to request one from the applicant.', st: 'none',
+      passages: [{ pid: 's3', why: 'What the clause requires' }] }
+  ] }
+];
+const ITEMS = {}, GROUP_OF = {};
+GROUPS.forEach(g => g.items.forEach(it => { ITEMS[it.id] = it; GROUP_OF[it.id] = g; }));
+
+const SENT = [
+  { n: 1, t: 'Ms K. applied for priority housing for herself and two children.', st: 'supported', rel: 'Supported by',
+    ev: { pid: 'p51', item: 'u1', q: 'Ms K. and her two children are fleeing family violence and cannot safely return to their current address.' } },
+  { n: 2, t: 'The rent ledger shows arrears of $2,400.', st: 'contradicted', rel: 'Contradicted by',
+    ev: { pid: 'p23', item: 'd1', q: 'Arrears cleared in full. Balance $0.00.' }, why: 'p. 8 shows $2,400.00 on 15 Jan 2026; the later statement on p. 23 shows it cleared.' },
+  { n: 3, t: 'Because of the outstanding debt, the applicant does not meet the criteria for priority housing.', st: 'contradicted', rel: 'Contradicted by',
+    ev: { pid: 's34', item: 'd2', q: 'The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).' } },
+  { n: 4, t: 'A previous tenancy ended in 2023.', st: 'supported', rel: 'Supported by',
+    ev: { pid: 'p30', item: 't1', q: 'Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023.' } },
+  { n: 5, t: 'Recommendation: decline.', st: 'rec' }
+];
+
+/* ---------- state ---------- */
+const S = { tab: 'evidence', sel: null, cur: null, opens: {}, outcomes: {}, disputes: {}, editing: null, editErr: false, gate: false, signed: null };
+let viewStart = null;
+const dlg = document.getElementById('dlg');
+
+const fmtT = d => { try { return new Intl.DateTimeFormat('en-AU', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZone: 'Australia/Darwin' }).format(d); } catch (e) { return d.toTimeString().slice(0, 8); } };
+const fmtD = d => { try { return new Intl.DateTimeFormat('en-AU', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Australia/Darwin' }).format(d); } catch (e) { return d.toDateString(); } };
+
+/* Time in view counts only while a passage is on screen: paused when the tab is hidden or the dialog is open. */
+function pauseView() { if (S.cur && viewStart != null) S.opens[S.cur].ms += Date.now() - viewStart; viewStart = null; }
+function resumeView() { if (S.cur && !S.signed && !document.hidden && !dlg.open) viewStart = Date.now(); }
+function secs(pid) { const o = S.opens[pid]; if (!o) return 0; let ms = o.ms; if (S.cur === pid && viewStart != null) ms += Date.now() - viewStart; return Math.floor(ms / 1000); }
+function openPassage(pid) {
+  pauseView();
+  S.cur = pid;
+  if (!S.opens[pid]) S.opens[pid] = { first: new Date(), ms: 0, count: 0 };
+  S.opens[pid].count++;
+  resumeView();
+}
+function openItem(id, pid) {
+  if (S.signed) return;
+  const it = ITEMS[id];
+  S.sel = id;
+  openPassage(pid || (it.passages.find(p => !S.opens[p.pid]) || it.passages[0]).pid);
+  render();
+}
+const reqDone = () => REQ.filter(p => S.opens[p]).length;
+const missing = () => REQ.filter(p => !S.opens[p]);
+
+/* ---------- small pieces ---------- */
+const srcTag = pid => P[pid].kind === 'policy' ? `<span class="tag">${ic('landmark')}Real NT policy</span>` : `<span class="tag">${ic('flask')}Synthetic file</span>`;
+const reqTag = pid => !REQ.includes(pid) ? '' : (S.opens[pid] ? `<span class="tag done">${ic('check')}Required · opened</span>` : `<span class="tag hot">${ic('ring')}Required</span>`);
+const pill = (kind, st) => { const d = (kind === 'claim' ? CLAIM : COVER)[st]; return `<span class="pill ${d.c}">${ic(d.i)}${d.t}</span>`; };
+const listLabel = kind => `<span class="list-label">${kind === 'claim' ? 'Claim check' : 'Coverage'}</span>`;
+function highlight(pid) {
+  let html = esc(P[pid].text);
+  P[pid].hl.forEach(h => { const e = esc(h); html = html.split(e).join(`<mark>${e}</mark>`); });
+  return html;
+}
+
+/* ---------- header ---------- */
+function renderHeader() {
+  document.getElementById('meta').innerHTML =
+    `<span>${ic('flask')}Synthetic file · <span class="mono">62</span> pages</span>
+     <span>${ic('landmark')}Checked against <span class="mono">5</span> NT public housing policies</span>
+     <span>${ic('user')}Clause outcomes are set by you</span>`;
+  const n = reqDone();
+  document.getElementById('reading').innerHTML =
+    `<div class="reading-head"><span class="eyebrow">Required reading</span><span class="count ${n === 4 ? 'all' : ''}" aria-live="polite">${n}/4</span></div>
+     <div class="segs" aria-hidden="true">${REQ.map(p => `<i class="${S.opens[p] ? 'on' : ''}"></i>`).join('')}</div>
+     <div class="req-row">${REQ.map(p => `<button class="req-btn ${S.opens[p] ? 'done' : ''}" data-act="open-req" data-arg="${p}" ${S.signed ? 'disabled' : ''}
+        title="${esc(P[p].name)}${S.opens[p] ? ' · opened ' + fmtT(S.opens[p].first) : ' · not opened'}">${ic(S.opens[p] ? 'check' : 'ring')}${P[p].short}</button>`).join('')}</div>`;
+  const sb = document.getElementById('signbox');
+  if (S.signed) {
+    sb.innerHTML = `<span class="signed-badge">${ic('lock')}Signed <span class="mono">${fmtT(S.signed.at)}</span></span><span class="hint">${esc(DECISION[S.signed.dec])}</span>`;
+  } else {
+    const m = missing().length;
+    sb.innerHTML = `<button class="btn-primary" id="signBtn" data-act="sign">${ic('pen')}Sign decision</button>
+      <span class="hint">${m ? `<span class="mono">${m}</span> required passage${m > 1 ? 's' : ''} not opened` : 'Ready to sign'}</span>`;
+  }
+  const bad = SENT.filter(s => s.st === 'contradicted').length;
+  document.getElementById('tabs').innerHTML =
+    `<button role="tab" aria-selected="${S.tab === 'evidence'}" data-act="tab" data-arg="evidence">Evidence by policy clause <span class="n"><span class="mono">4</span> clauses</span></button>
+     <button role="tab" aria-selected="${S.tab === 'audit'}" data-act="tab" data-arg="audit">Summary under audit <span class="n bad">${ic('arrows')}<span class="mono">${bad}</span> contradicted</span></button>`;
+  renderGate();
+}
+function renderGate() {
+  const el = document.getElementById('gate');
+  if (!S.gate || S.signed) { el.innerHTML = ''; return; }
+  const m = missing();
+  if (!m.length) {
+    el.innerHTML = `<div class="banner ok" role="status">${ic('check')}<div><div class="banner-title">All 4 required passages are opened. You can sign now.</div></div>
+      <button class="icon-btn" data-act="gate-close" aria-label="Dismiss">${ic('x')}</button></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="banner" role="alert">${ic('alert')}
+    <div><div class="banner-title">Not signed yet: ${m.length} of 4 required passages unopened</div>
+      <div class="banner-sub">Each one is a claim the AI got wrong, could not settle, or left out. Open them below; the button then opens the sign-off.</div>
+      <div class="banner-list">${m.map(p => `<button data-act="open-req" data-arg="${p}"><b>${P[p].short}</b>${esc(P[p].name)}<span class="c">${esc(GROUP_OF[REQ_ITEM[p]].name)}</span>${ic('arrow')}</button>`).join('')}</div></div>
+    <button class="icon-btn" data-act="gate-close" aria-label="Dismiss">${ic('x')}</button></div>`;
+}
+
+/* ---------- evidence tab ---------- */
+function renderEvidence() {
+  const all = GROUPS.flatMap(g => g.items);
+  const claims = all.filter(i => i.kind === 'claim'), covers = all.filter(i => i.kind === 'cover');
+  const cnt = (arr, st) => arr.filter(i => i.st === st).length;
+  const keyList = (obj, kind) => Object.keys(obj).map(k => `<li>${pill(kind, k)}</li>`).join('');
+  return `
+  <div class="tiles">
+    <div class="tile"><div class="eyebrow">Claim check · AI claims</div><div class="v"><span><b>${cnt(claims, 'contradicted')}</b>contradicted</span><span><b>${cnt(claims, 'supported')}</b>supported</span></div></div>
+    <div class="tile"><div class="eyebrow">Coverage · clauses</div><div class="v"><span><b>${cnt(covers, 'missed')}</b>possibly missed</span><span><b>${cnt(covers, 'none')}</b>no evidence in file</span></div></div>
+    <div class="tile"><div class="eyebrow">Outcome · set by you</div><div class="v"><span><b>${Object.keys(S.outcomes).length}</b>of 4 clauses</span></div></div>
+  </div>
+  <div class="keyrow">
+    <div class="legend">Quotes with a rule on the left are word for word from the file or a policy. <span class="tag ai">AI claim</span> marks text the AI wrote; check it against the quote.</div>
+    <details class="key"><summary>${ic('info')}Status key</summary>
+      <div class="keybox">
+        <div><h5>Claim check · on an AI claim</h5><ul>${keyList(CLAIM, 'claim')}</ul></div>
+        <div><h5>Coverage · of a clause</h5><ul>${keyList(COVER, 'cover')}</ul></div>
+        <div><h5>Outcome · set by you</h5><ul>${Object.keys(OUTCOME).map(k => `<li><span class="chip static">${ic(OUTCOME[k].i)}${OUTCOME[k].t}</span></li>`).join('')}</ul>
+          <div class="snote" style="margin-top:8px">Never pre-filled by the tool.</div></div>
+      </div></details>
+  </div>
+  ${GROUPS.map(groupHTML).join('')}`;
+}
+function groupHTML(g) {
+  const req = [...new Set(g.items.flatMap(i => i.passages.map(p => p.pid)).filter(p => REQ.includes(p)))];
+  const reqOpen = req.filter(p => S.opens[p]).length;
+  const oc = S.outcomes[g.id];
+  return `<article class="group" id="g-${g.id}">
+    <header class="g-head">
+      <div><h2>${esc(g.name)}</h2><div class="g-ref">${ic('landmark')}${esc(g.ref)}</div></div>
+      <div class="g-sum">${req.length ? `<span class="mono">${reqOpen}</span> of <span class="mono">${req.length}</span> required passage${req.length > 1 ? 's' : ''} opened` : 'No required reading'}</div>
+    </header>
+    <div>${g.items.map(itemHTML).join('')}</div>
+    <footer class="g-out">
+      <div class="oc-label">${ic('user')}Your outcome for this clause: <span class="state ${oc ? '' : 'unset'}">${oc ? esc(OUTCOME[oc].t) : 'not set'}</span></div>
+      <div class="chips" role="radiogroup" aria-label="Your outcome for ${esc(g.name)}">
+        ${Object.keys(OUTCOME).map(k => `<button class="chip" role="radio" aria-checked="${oc === k}" data-act="oc" data-arg="${g.id}:${k}" ${S.signed ? 'disabled' : ''}>${ic(OUTCOME[k].i)}${OUTCOME[k].t}${OUTCOME[k].sub ? ` <small>(${OUTCOME[k].sub})</small>` : ''}</button>`).join('')}
+      </div>
+    </footer>
+  </article>`;
+}
+function itemHTML(it) {
+  const sel = S.sel === it.id, d = S.disputes[it.id], n = it.passages.length;
+  const q = it.quote.map(esc).join(' <span class="gap">[…]</span> ');
+  let dispute = '';
+  if (S.editing === it.id) {
+    dispute = `<div class="dispute" data-noopen>
+      <label for="dr-${it.id}">Why do you dispute this claim? It goes into the decision record.</label>
+      <div class="row"><input id="dr-${it.id}" maxlength="240" value="${d ? esc(d.reason) : ''}" placeholder="Short reason">
+        <button class="btn-secondary" style="min-height:40px;padding:0 16px;font-size:14px" data-act="dsave" data-arg="${it.id}">Save dispute</button>
+        <button class="act muted" data-act="dcancel" data-arg="${it.id}">Cancel</button></div>
+      ${S.editErr ? `<div class="err">${ic('alert')}Write a reason first.</div>` : ''}</div>`;
+  } else if (d) {
+    dispute = `<div class="dispute saved" data-noopen>${ic('flag')}<div class="spacer"><span class="who">Disputed by you at <span class="mono">${fmtT(d.at)}</span>:</span> ${esc(d.reason)}</div>
+      ${S.signed ? '' : `<button class="act muted" data-act="dedit" data-arg="${it.id}">Edit</button><button class="act muted" data-act="dremove" data-arg="${it.id}">Withdraw</button>`}</div>`;
+  }
+  const lead = it.kind === 'claim'
+    ? `<div class="claimline"><span class="tag ai">AI claim</span><span>${esc(it.claim)}</span></div>`
+    : `<div class="noteline">${esc(it.note)}</div>`;
+  const contra = it.contra
+    ? `<div class="contra">${ic('arrows')}<span>The later statement on <b>${P[it.contra.pid].short}</b> (${it.contra.date}) reads <q>${esc(it.contra.q)}</q></span></div>` : '';
+  return `<div class="item ${sel ? 'is-sel' : ''}" id="it-${it.id}" data-item="${it.id}">
+    <blockquote class="q">“${q}”</blockquote>
+    <div class="cite"><span class="loc">${P[it.qpid].short}</span>${esc(P[it.qpid].name)} ${srcTag(it.qpid)} ${reqTag(it.qpid)}</div>
+    ${lead}
+    <div class="statusline">${listLabel(it.kind)}${pill(it.kind, it.st)}<span class="spacer"></span>
+      ${it.kind === 'claim' && !d && !S.signed && S.editing !== it.id ? `<button class="act muted" data-act="dispute" data-arg="${it.id}">${ic('flag')}Dispute</button>` : ''}
+      ${S.signed ? '' : `<button class="act" data-act="open-item" data-arg="${it.id}">${sel ? 'In the source pane' : 'Open ' + (n === 1 ? 'passage' : n + ' passages') + ic('arrow')}</button>`}
+    </div>
+    ${contra}${dispute}
+  </div>`;
+}
+
+/* ---------- summary under audit ---------- */
+function renderAudit() {
+  const cls = s => s.st === 'contradicted' ? 'bad' : s.st === 'supported' ? 'ok' : 'rec';
+  const mk = s => `<span class="smark ${cls(s) === 'rec' ? 'neutral' : cls(s)}">${ic(s.st === 'contradicted' ? 'arrows' : s.st === 'supported' ? 'check' : 'user')}${s.n}</span>`;
+  const para = SENT.map(s => `${mk(s)}<span class="s s-${cls(s)}">${esc(s.t)}</span>`).join(' ');
+  const rows = SENT.map(s => {
+    if (s.st === 'rec') return `<li class="sent"><div class="sent-n">${s.n}</div><div>
+      <div class="sent-ai"><span class="tag ai">AI summary</span><span>${esc(s.t)}</span></div>
+      <div class="statusline"><span class="list-label">Recommendation</span><span class="pill neutral">${ic('user')}Set aside: the officer decides</span></div>
+      <div class="snote" style="margin-top:8px">The tool makes no recommendation. Your outcome per clause and your signed decision are the only ones recorded.</div></div></li>`;
+    const p = P[s.ev.pid];
+    return `<li class="sent"><div class="sent-n">${s.n}</div><div>
+      <div class="sent-ai"><span class="tag ai">AI summary</span><span>${esc(s.t)}</span></div>
+      <div class="statusline">${listLabel('claim')}${pill('claim', s.st)}</div>
+      <div class="evid"><div class="rel">${s.rel}</div>
+        <blockquote class="q">“${esc(s.ev.q)}”</blockquote>
+        <div class="row"><span class="loc">${p.short}</span>${esc(p.name)} ${srcTag(s.ev.pid)} ${reqTag(s.ev.pid)}<span class="spacer"></span>
+          <button class="act" data-act="open-ref" data-arg="${s.ev.item}:${s.ev.pid}" ${S.signed ? 'disabled' : ''}>Open ${p.short}${ic('arrow')}</button></div>
+        ${s.why ? `<div class="why">${esc(s.why)}</div>` : ''}</div></div></li>`;
+  }).join('');
+  return `
+  <section class="audit">
+    <div class="eyebrow">Summary under audit</div>
+    <h2>Each sentence checked against the 62-page file and the policies</h2>
+    <p class="prov">${ic('info')}<span>Produced elsewhere by a general-purpose AI from a one-line prompt, “summarise this file”. This tool did not write it. Use it to see what a quick summary gets wrong; decide from the evidence.</span></p>
+    <div class="ai-doc"><div class="ai-doc-h"><span class="tag ai">AI summary</span>As received, unedited</div><div class="ai-para">${para}</div></div>
+    <div class="tally">
+      <span>Claim check <b>2</b> contradicted · <b>2</b> supported</span>
+      <span>Coverage <b>1</b> possibly missed</span>
+      <span>Recommendation set aside; you decide</span>
+    </div>
+  </section>
+  <div class="sec-h">Sentence by sentence</div>
+  <ol class="sent-list">${rows}</ol>
+  <div class="sec-h">Not mentioned in the summary</div>
+  <div class="omit">
+    <div class="statusline" style="margin-top:0">${listLabel('cover')}${pill('cover', 'missed')}<span class="snote">Urgent need documented · Priority Housing §3.1</span></div>
+    <blockquote class="q" style="margin-top:12px">“${esc(P.p51.hl[0])}”</blockquote>
+    <div class="cite"><span class="loc">p. 51</span>Letter from a support agency ${srcTag('p51')} ${reqTag('p51')}<span class="spacer"></span>
+      <button class="act" data-act="open-ref" data-arg="u1:p51" ${S.signed ? 'disabled' : ''}>Open p. 51${ic('arrow')}</button></div>
+    <div class="noteline">Scored highly relevant to urgent need. The summary never mentions the family violence letter.</div>
+  </div>`;
+}
+
+/* ---------- source pane ---------- */
+function renderPane() {
+  if (S.signed) return recordHTML();
+  if (!S.sel) return emptyHTML();
+  const it = ITEMS[S.sel], g = GROUP_OF[S.sel];
+  const list = it.passages.map((ps, i) => {
+    const p = P[ps.pid], o = S.opens[ps.pid], cur = S.cur === ps.pid;
+    return `<li><button class="pbtn ${cur ? 'is-cur' : ''} ${o ? 'opened' : ''}" data-act="open-pass" data-arg="${ps.pid}" aria-current="${cur}">
+      <span class="pnum">${o ? ic('check') : i + 1}</span>
+      <span class="pmain"><b>${p.short}</b> ${esc(p.name)}<span class="pwhy">${REQ.includes(ps.pid) ? reqTag(ps.pid) : ''}${esc(ps.why)}</span></span>
+      <span class="pstate">${cur ? '<span class="ps">In view</span>' : (o ? '<span class="ps">Reopen</span>' : `<span class="ps">Open${ic('arrow')}</span>`)}
+        <span class="when">${o ? 'opened ' + fmtT(o.first) : 'not opened'}</span></span>
+    </button></li>`;
+  }).join('');
+  let viewer = '';
+  if (S.cur) {
+    const p = P[S.cur], o = S.opens[S.cur], ps = it.passages.find(x => x.pid === S.cur);
+    const next = it.passages.find(x => !S.opens[x.pid]);
+    viewer = `<div class="viewer">
+      <div class="v-doc"><div><div class="v-title">${esc(p.title)}</div><div class="v-loc">${esc(p.loc)}</div></div>${srcTag(S.cur)}</div>
+      ${ps ? `<div class="v-why">${esc(ps.why)}</div>` : ''}
+      <div class="v-page">${highlight(S.cur)}</div>
+      <div class="v-key">${p.hl.length ? '<span class="sw"></span>Highlighted: the exact words quoted in the evidence row' : `${ic('info')}Clause wording only; nothing in the row quotes it`}</div>
+      <div class="v-log">${ic('clock')}Opened <span class="mono">${fmtT(o.first)}</span> · in view <span class="mono" id="inview">${secs(S.cur)}s</span></div>
+      ${next ? `<button class="btn-secondary v-next" data-act="open-pass" data-arg="${next.pid}">Open next passage: ${P[next.pid].short}${ic('arrow')}</button>` : ''}
+    </div>`;
+  }
+  const idx = it.passages.findIndex(x => x.pid === S.cur) + 1;
+  return `<div class="pane-head"><span class="eyebrow">Source · passage <span class="mono">${idx}</span> of <span class="mono">${it.passages.length}</span></span>
+      <button class="icon-btn" data-act="close-pane" aria-label="Close source pane">${ic('x')}</button></div>
+    <div class="ctx"><div class="ctx-clause">${esc(g.name)} · ${esc(g.ref)}</div>
+      <div class="ctx-claim">${it.kind === 'claim' ? `<span class="tag ai">AI claim</span><span>${esc(it.claim)}</span>` : `<span>${esc(it.note)}</span>`}</div></div>
+    <ol class="plist"><li class="plist-h">Passages for this item · each opens on its own</li>${list}</ol>
+    ${viewer}`;
+}
+function emptyHTML() {
+  return `<div class="empty">
+    <div class="circle">${ic('file')}</div>
+    <h3>No passage open</h3>
+    <p>Pick an evidence item. Its source passages open here one at a time, with the quoted words highlighted. Each opening is timed and goes into the decision record.</p>
+    <div class="empty-req">
+      <div class="eyebrow">Required before signing · <span class="mono">${reqDone()}</span> of <span class="mono">4</span> opened</div>
+      <ul>${REQ.map(p => `<li><button data-act="open-req" data-arg="${p}">
+        <span class="st ${S.opens[p] ? 'done' : ''}">${ic(S.opens[p] ? 'check' : 'ring')}</span><b>${P[p].short}</b><span>${esc(P[p].name)}</span>
+        <span class="c">${esc(GROUP_OF[REQ_ITEM[p]].name)}</span></button></li>`).join('')}</ul>
+    </div>
+  </div>`;
+}
+function recordHTML() {
+  const s = S.signed;
+  const opened = Object.keys(S.opens).sort((a, b) => S.opens[a].first - S.opens[b].first);
+  const disp = Object.keys(S.disputes);
+  return `<div class="rec">
+    <div class="rec-head"><h3>${ic('lock')}Decision record</h3><span class="tag done">${ic('check')}Signed</span></div>
+    <div class="rec-dec">${esc(DECISION[s.dec])}</div>
+    <dl class="rec-dl">
+      <dt>File</dt><dd>Applicant file A-0142 · synthetic, <span class="mono">62</span> pages</dd>
+      <dt>Reason</dt><dd><div class="rec-reason">${esc(s.reason)}</div></dd>
+      <dt>Signed</dt><dd><span class="mono">${fmtD(s.at)}, ${fmtT(s.at)}</span> ACST · delegated officer</dd>
+    </dl>
+    <h4><span>Clause outcomes · set by you</span></h4>
+    <table class="rec-t"><tbody>${GROUPS.map(g => `<tr><td>${esc(g.name)}<div class="sub">${esc(g.ref)}</div></td>
+      <td class="r">${S.outcomes[g.id] ? `<span class="chip static" aria-checked="true">${ic(OUTCOME[S.outcomes[g.id]].i)}${OUTCOME[S.outcomes[g.id]].t}</span>` : '<span class="sub">Not set</span>'}</td></tr>`).join('')}</tbody></table>
+    <h4><span>Passages opened · <span class="mono">${opened.length}</span></span><span>Required <span class="mono">${reqDone()}/4</span></span></h4>
+    <table class="rec-t"><thead><tr><th>Passage</th><th class="r">Opened</th><th class="r">In view</th></tr></thead><tbody>
+      ${opened.map(p => `<tr><td><b>${P[p].short}</b> ${esc(P[p].name)}<div class="sub">${P[p].kind === 'policy' ? 'Real NT policy' : 'Synthetic file'}${REQ.includes(p) ? ' · required' : ''}${S.opens[p].count > 1 ? ` · opened ${S.opens[p].count} times` : ''}</div></td>
+        <td class="r mono">${fmtT(S.opens[p].first)}</td><td class="r mono">${secs(p)}s</td></tr>`).join('')}
+    </tbody></table>
+    <h4><span>Disputes · <span class="mono">${disp.length}</span></span></h4>
+    ${disp.length ? `<ul class="rec-disp">${disp.map(id => `<li><div class="c">${ic('flag')}${esc(GROUP_OF[id].name)} · AI claim “${esc(ITEMS[id].claim)}” · <span class="mono">${fmtT(S.disputes[id].at)}</span></div>${esc(S.disputes[id].reason)}</li>`).join('')}</ul>` : '<div class="snote">No AI claims disputed.</div>'}
+    <div class="rec-note">${ic('info')}Opening a passage is recorded; it does not prove it was read.</div>
+  </div>`;
+}
+
+/* ---------- render ---------- */
+const leftEl = document.getElementById('left'), paneEl = document.getElementById('pane');
+let lastPaneKey = '';
+function render() {
+  const a = document.activeElement, focusKey = a && a.dataset && a.dataset.act ? a.dataset.act + '|' + (a.dataset.arg || '') : '';
+  renderHeader();
+  leftEl.innerHTML = S.tab === 'evidence' ? renderEvidence() : renderAudit();
+  paneEl.innerHTML = renderPane();
+  const paneKey = (S.signed ? 'rec' : '') + S.sel + S.cur;
+  if (paneKey !== lastPaneKey) { paneEl.scrollTop = 0; lastPaneKey = paneKey; }
+  document.body.classList.toggle('signed', !!S.signed);
+  if (S.editing) { const inp = document.getElementById('dr-' + S.editing); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); } }
+  else if (focusKey) { const [act, arg] = focusKey.split('|'); const el = document.querySelector(`[data-act="${act}"][data-arg="${arg}"]`) || (act === 'sign' ? document.getElementById('signBtn') : null); if (el) el.focus({ preventScroll: true }); }
+}
+
+/* ---------- sign-off ---------- */
+function setHelp(id, text, err) {
+  const el = document.getElementById(id);
+  el.className = 'helper' + (err ? ' err' : '');
+  el.innerHTML = (err ? ic('alert') : '') + text;
+}
+function trySign() {
+  if (S.signed) return;
+  if (missing().length) { S.gate = true; render(); window.scrollTo({ top: 0 }); return; }
+  const set = GROUPS.filter(g => S.outcomes[g.id]), unset = GROUPS.length - set.length, nd = Object.keys(S.disputes).length;
+  document.getElementById('dlgCtx').innerHTML = `<b>Goes into the record with your decision</b><ul>
+    <li>Clause outcomes: ${set.length ? set.map(g => `${esc(g.name)}: ${OUTCOME[S.outcomes[g.id]].t}`).join('; ') : 'none set'}${unset ? ` (${unset} not set)` : ''}</li>
+    <li>${Object.keys(S.opens).length} passages opened, all 4 required among them</li>
+    <li>${nd} disputed AI claim${nd === 1 ? '' : 's'}</li></ul>`;
+  setHelp('decHelp', 'Choose one.', false);
+  setHelp('reasonHelp', 'Write it so the applicant could read and challenge it.', false);
+  pauseView();
+  dlg.showModal();
+}
+document.getElementById('dlgCancel').addEventListener('click', () => dlg.close());
+dlg.addEventListener('close', () => { if (!S.signed) resumeView(); });
+document.getElementById('dlgSign').addEventListener('click', () => {
+  const dec = (dlg.querySelector('input[name=dec]:checked') || {}).value;
+  const reason = document.getElementById('reason').value.trim();
+  if (!dec) setHelp('decHelp', 'Choose a decision.', true);
+  if (!reason) setHelp('reasonHelp', 'Write a reason. It is required and goes into the record.', true);
+  if (!dec || !reason) { (dec ? document.getElementById('reason') : dlg.querySelector('input[name=dec]')).focus(); return; }
+  pauseView();
+  S.signed = { dec, reason, at: new Date() };
+  S.cur = null; S.sel = null; S.gate = false; S.editing = null;
+  dlg.close();
+  render();
+  window.scrollTo({ top: 0 });
+});
+dlg.addEventListener('change', e => { if (e.target.name === 'dec') setHelp('decHelp', 'Choose one.', false); });
+document.getElementById('reason').addEventListener('input', () => setHelp('reasonHelp', 'Write it so the applicant could read and challenge it.', false));
+
+/* ---------- events ---------- */
+function saveDispute(id) {
+  const inp = document.getElementById('dr-' + id), v = inp ? inp.value.trim() : '';
+  if (!v) { S.editErr = true; render(); return; }
+  S.disputes[id] = { reason: v, at: new Date() };
+  S.editing = null; S.editErr = false; render();
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (b && !b.disabled) {
+    const act = b.dataset.act, arg = b.dataset.arg;
+    switch (act) {
+      case 'open-item': openItem(arg); return;
+      case 'open-pass': openPassage(arg); render(); return;
+      case 'open-req': {
+        const item = REQ_ITEM[arg];
+        openItem(item, arg);
+        if (S.tab === 'evidence') { const el = document.getElementById('it-' + item); if (el) el.scrollIntoView({ block: 'nearest' }); }
+        return;
+      }
+      case 'open-ref': { const [item, pid] = arg.split(':'); openItem(item, pid); return; }
+      case 'close-pane': pauseView(); S.sel = null; S.cur = null; render(); return;
+      case 'oc': { const [g, v] = arg.split(':'); if (S.outcomes[g] === v) delete S.outcomes[g]; else S.outcomes[g] = v; render(); return; }
+      case 'dispute': case 'dedit': S.editing = arg; S.editErr = false; render(); return;
+      case 'dcancel': S.editing = null; S.editErr = false; render(); return;
+      case 'dsave': saveDispute(arg); return;
+      case 'dremove': delete S.disputes[arg]; render(); return;
+      case 'tab': S.tab = arg; S.editing = null; render(); return;
+      case 'sign': trySign(); return;
+      case 'gate-close': S.gate = false; render(); return;
+    }
+    return;
+  }
+  const row = e.target.closest('.item');
+  if (row && !e.target.closest('[data-noopen], a, input, button, details') && !S.signed && S.sel !== row.dataset.item) openItem(row.dataset.item);
+  const kd = document.querySelector('details.key[open]');
+  if (kd && !e.target.closest('details.key')) kd.open = false;
+});
+document.addEventListener('keydown', e => {
+  if (e.target.id && e.target.id.startsWith('dr-')) {
+    const id = e.target.id.slice(3);
+    if (e.key === 'Enter') { e.preventDefault(); saveDispute(id); }
+    if (e.key === 'Escape') { e.preventDefault(); S.editing = null; render(); }
+  }
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseView(); else resumeView(); });
+setInterval(() => { const el = document.getElementById('inview'); if (el && S.cur) el.textContent = secs(S.cur) + 's'; }, 500);
+
+/* ---------- theme: follows the system, ?theme=light|dark or the toggle overrides ---------- */
+const themeBtn = document.getElementById('themeBtn');
+function setTheme(t) {
+  document.documentElement.dataset.theme = t;
+  themeBtn.innerHTML = t === 'dark' ? `${ic('sun')}Light mode` : `${ic('moon')}Dark mode`;
+}
+const asked = new URLSearchParams(location.search).get('theme');
+setTheme(asked === 'light' || asked === 'dark' ? asked : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+themeBtn.addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+
+document.getElementById('foot').innerHTML = `${ic('info')}<span>Synthetic case file. Policy text from NT public housing policies. Opening a passage is recorded; it does not prove it was read.</span>`;
+render();
+})();
+</script>
+</body>
+</html>

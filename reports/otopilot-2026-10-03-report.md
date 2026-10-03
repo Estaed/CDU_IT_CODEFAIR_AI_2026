@@ -1,64 +1,117 @@
-# otopilot report, 2026-10-03: wave 1 (Task-00..03)
+# otopilot report, 2026-10-03: wave 1 (Task-00..03) and the Task-04 addition
 
 Plan: [otopilot-2026-10-03-plan.md](otopilot-2026-10-03-plan.md). BASE_SHA `5ac876e`. Orchestrator
-`claude-opus-5-5` (this session). Checkpoint report: rows are appended as each lane is gated.
+`claude-opus-5-5` (this session). Approved 10:40 ACST; first lane 10:43.
 
-## Wave 1 (started 10:43 ACST)
+## Outcomes
 
-| Task | Engine | Outcome | Attempts | Elapsed | Gate (exit) | Main SHA |
-|---|---|---|---|---|---|---|
-| Task-03 | main loop | green, eye check pending: 1 | 1 | 10:48–10:59 | exists check (0); `shoot.py` no console or page errors (0) | `3fed6dc` |
-| Task-00 | ultracode Workflow `wf_d1625a98-101` | running | | from 10:47 | | |
-| Task-01 | Codex bee `gpt-6-sol`/`high` | green, eye check pending: 1 | 1 | 10:44–11:04 (20 min) | `python scripts/validate_cases.py` lane (0), main (0) | `b84e938` |
+| Task | Wave | Engine | Outcome | Attempts | Elapsed | Gate (exit) | Main SHA |
+|---|---|---|---|---|---|---|---|
+| Task-03 | 1 | main loop | green; eye check done (Tarık picked A) | 1 | 10:48–10:59 | exists check (0); `design/shots/shoot.py` (0, no console or page errors) | `3fed6dc`, pick `c8ad26d` |
+| Task-01 | 1 | Codex bee `gpt-6-sol`/`high` | green, eye check pending: 1 (superseded by Task-04) | 1 | 10:44–11:04 | `python scripts/validate_cases.py` lane (0), main (0) | `b84e938` |
+| Task-02 | 2 | Codex bee `gpt-6-sol`/`high` | green | 1 | 11:07–11:16 | `python scripts/validate_cases.py data/heldout/H-01` lane (0), main (0) | `6f23392` |
+| Task-00 | 1 | ultracode Workflow `wf_d1625a98-101` | green, eye check pending: 2 | 1 (no fix round) | 10:47–11:25 (build ~95 min of agent time) | `uv run python scripts/gate.py` lane (0), main (0: ruff ok, 23 passed, replay smoke ok); `python scripts/validate_cases.py` on main with the stub (0) | `6e440c9` |
+| Task-04 | 3 | Codex bee `gpt-6-sol`/`high` | running | | from 11:22 | | |
 
-### Task-01 notes
-- Bee result `COMPLETE`, `COMMIT: NONE`: the Codex sandbox denied `index.lock` in the worktree's
-  git directory (outside its workspace), as the brief anticipated. The orchestrator made the single
-  commit in the lane (`95e74bd`, diff inside `OWNS` only) and integrated it with the status edits.
-- Validator summary: A-0142 pages n=60, facts n=15; E-01/E-02/E-03 pages n=12 each, facts n=9/11/12,
-  each with correct claims n=8 and mutations n=7 (one per type). Errors n=0.
-- Gold policy quotes checked against the PDFs (`.tmp/check_gold_quotes.py`, not committed):
-  n=32, not verbatim n=0. A-0142 gold matches the scenario exactly.
-- `uvx ruff check scripts/validate_cases.py` reports `I001` (import block) under the user-level ruff
-  config; ruff's default rules pass. Settled when Task-00's gate lands on main.
-- **First look for the eye check (Tarık decides):**
-  - Pages are thin: A-0142 is 24 KB for 60 pages, about 400 bytes (two short paragraphs) per page;
-    the E-files about 340 bytes per page.
-  - About 10 sentences across the four files comment on the evidence instead of being paperwork,
-    e.g. p. 8 "It is not a certificate of the balance at the date of the later housing
-    application", p. 51 "The letter is signed by the service coordinator in this synthetic file",
-    an intake checklist that "does not turn an absent document into a failed eligibility
-    criterion", E-02 "No approve or decline decision is pre-entered". They hand the reader the
-    traps, which weakens both the "real paperwork" criterion and the evaluation numbers.
-  - Because of this, Task-02's brief got one intent paragraph ("What realistic means here": no
-    sentence that comments on evidence, explains a trap or addresses the officer or an AI; real
-    page density). The task file is unchanged.
+Failure counts: none of the lanes had a red attempt.
 
-## Wave 2 (started 11:07 ACST)
+## Awaiting eye check
+- **Task-00, behaviour** (against `design/mock-v0.html`'s behaviour, not its look): run
+  `uv run python -m readmark serve` and open the printed localhost address, or look at the screen
+  lens's 30 screenshots in `reports/screens/2026-10-03-wave1/` (`task-00-r0-*`, 1280 and 1440 wide).
+  Lens note: the whole flow works at both widths; claim → passage, the lock banner names the 5
+  required passages and 8 unset clauses, passages open one at a time (0/5 → 5/5), dispute (empty
+  reason refused), outcomes, sign, record, export HTML and JSON; console errors none; no horizontal
+  overflow; 0 outcomes pre-filled.
+- **Task-00, `readmark/checklist/clauses.yaml`**: the eight clauses, each with its verbatim sentence
+  from the pinned PDF (ingest stops if a sentence is not found word for word). Spec lens note (40):
+  `prio-discretion` rests only on Priority §3.1, while `docs/contracts.md` names "Priority §3.1 +
+  Discretionary decision making".
+- **Task-01** (A-0142 pages 8, 23, 30, 51 and three filler pages): superseded by Task-04, which
+  rewrites these files; look after Task-04 lands.
 
-| Task | Engine | Outcome | Attempts | Elapsed | Gate (exit) | Main SHA |
-|---|---|---|---|---|---|---|
-| Task-02 | Codex bee `gpt-6-sol`/`high` | running | | from 11:07 | | |
+## Review panel (Task-00)
+Lenses: spec and screen (`opus`/`high`), one round. No finding reached 80, so no fix round ran
+(stop: "no finding at 80 or above"). Left, ranked:
 
-Task-02's worktree is cut from `BASE_SHA` (no `data/cases/**` in it), with main's
-`scripts/validate_cases.py` copied in untracked, as the plan says.
+| Score | Lens | Finding | Where |
+|---|---|---|---|
+| 76 | screen | After signing, the screen still accepts clause outcomes and disputes, but they never reach the record; nothing says the edit was not recorded | `web/app.js:333`, `:344` |
+| 70 | screen | Time in view keeps running while the decision dialog covers the passage, inflating the last passage's `seconds_in_view` in the record | `web/app.js:360` |
+| 62 | spec | Clause coverage shows "no evidence in file" on clauses that have supported claims (elig-property, prio-documentation, prio-discretion in the stub view) whenever the writer reported any missing sub-fact | `readmark/pipeline.py:228` |
+| 60 | spec | A found=true claim with no citations shows "quote not found" but never enters required reading (schema allows empty citations) | `readmark/writer/__init__.py:25` |
+| 58 | screen | Claim c15 shows "quote not found" although its three quotes are found; the real failure is a date from a document header (numbers check) | `readmark/pipeline.py:39` |
+| 40 | spec | `prio-discretion` anchors only in Priority §3.1 (see eye item) | `readmark/checklist/clauses.yaml:120` |
+| 40 | screen | Exported HTML record mixes UTC ISO times with the local signed time and lists disputes by claim id only | `readmark/record/__init__.py:122` |
+| 25 | spec | Exported HTML record has inline CSS outside `web/theme.css` | `readmark/record/__init__.py:216` |
 
-### Task-03 notes
-- Built in the main loop with the `tasarim` skill (Tarik Base, both modes). One check script for both
-  directions: `design/shots/shoot.py` drives A and B through the same five states with the same clicks;
-  15 screenshots in `design/shots/`.
-- Verbatim check (`.tmp/check_ab_quotes.py`, not committed): 18 of 21 quoted strings in
-  `design/ab-brief.md` appear verbatim in both A and B; the other 3 are the same in both and are not
-  quotes (a stretch of brief prose caught by the regex, the `hh:mm:ss` format template, and the
-  summary paragraph that both designs split into sentences).
-- Content parity: two additions not in B were removed from A (a "Models" row in the record, a checker
-  sentence in the status key).
-- Launch note: the recipe's `Start-Job` died with its PowerShell tool call (no persistent session in
-  this harness), so the Codex bee was relaunched detached with the same recipe body
-  (`readmark-lanes/run-codex-bee.ps1`) at 10:44; first attempt never started, not counted.
+The 76 and 70 touch the decision record, which the Blueprint makes the product's evidence; the
+calibration scale puts "loses or corrupts data" at 90+ (logged in `review-calibration.md`).
+
+**Fixed in the main loop after Tarık's OK (11:30), `fb10806`:**
+- 76: after sign-off, outcome buttons are disabled, dispute buttons are gone, and the click handler
+  ignores both. Screen test asserts it.
+- 70: the timer pauses when the dialog opens (and on tab return while it is open), resumes on
+  Cancel or Escape. Screen test waits 2 s behind the dialog and asserts the last passage's
+  `seconds_in_view` < 1.5; with the old behaviour it recorded 2.5 and the test failed.
+- 62: clause coverage is "no evidence in file" only when no claim cites the file for that clause;
+  sub-facts the writer could not find stay in `missing` and keep their own "No evidence in file"
+  row. New pipeline test; failed before the fix. `runs/stub/view.json` regenerated by replay
+  (4 clauses changed from `no_evidence_in_file` to `null`).
+- 58: the label stays "Quote not found" (Task-00 fixes that wording for both code checks), and
+  when every quote was found the screen now says why: "Quotes found, but none contains 2026, 16".
+- Each new test was run against the broken behaviour first and failed; gate after the fixes: 0
+  (ruff ok, 24 passed, replay smoke ok).
+- Left as reported: 60, 40, 40, 25.
+
+Builder notes worth knowing: policy text is never stored in `runs/` (length and SHA-256 only; the
+server reads text from the pinned PDFs on demand); the sign-off lock also requires all 8 clause
+outcomes, enforced by the server (422); claim status `contradicted` is reserved for wave 2's
+contradiction pairs; `eval` exits 2 ("arrives in wave 2"); no summary-under-audit tab yet; no web
+fonts (offline), noted in `theme.css`; ruff pinned to the classic default (`E4,E7,E9,F`) so Task-01's
+validator passes, as the brief's seam asked. Live run cost: one `claude -p` opus writer call (38 s),
+22 Jev calls.
+
+## Integration notes
+- **Codex sandbox and git:** both Codex bees reported `COMMIT: NONE` because the sandbox denied the
+  worktree's git index (it lives outside the workspace). The orchestrator made each single commit in
+  the lane (`95e74bd`, `4eefddc`), checked the diff stayed inside `OWNS`, and integrated.
+- **`.gitignore`:** `__pycache__/` and `runs/*/records/` added in Task-00's integration commit (the
+  builder flagged both; the file was outside its `OWNS`).
+- **Launch:** the recipe's `Start-Job` died with its PowerShell tool call, so bees run detached
+  through `readmark-lanes/run-codex-bee.ps1` (same body). Logged with `gardener.py` and patched in
+  `bee-recipes.md` (vault `3b309f9`).
+- **Held-out exposure (honest note):** the orchestrator never opened H-01, but two outputs showed
+  parts of it: the tail of the Task-02 bee log printed part of `gold.json` (applicant first name,
+  DFV letter on p15, an accommodation end date on p8, income evidence outstanding), and the
+  validator's summary printed H-01's trap counts (contradiction 2, exclusion_2yr 2, missing_doc 1,
+  stale_value 2). No pipeline stage saw either; the orchestrator should not write H-01-specific
+  prompts or tests. From now on the validator runs on main with `| tail -1`.
+
+## Task-01 first look, and Task-04
+- Task-01's files passed the gate, but were thin (words per page: A-0142 mean 60, E-files about 50)
+  and about 10 sentences commented on the evidence (p. 8 "It is not a certificate of the balance at
+  the date of the later housing application", p. 51 "…in this synthetic file", E-02 "No approve or
+  decline decision is pre-entered"). Gold matched the scenario exactly, and the 32 policy quotes in
+  the gold rationales are verbatim in the PDFs (`.tmp/check_gold_quotes.py`).
+- Task-02's brief got one intent paragraph ("write as real paperwork; no sentence that explains the
+  evidence"); H-01 came out at mean 212 words per page (`.tmp/page_density.py`, counts only).
+- Tarık asked for the fix (11:20); Task-04 rewrites the four files and adds two validator checks
+  (words per page; a meta-commentary pattern list) for `A-0142` and `E-*`.
+
+## Task-03 notes
+- Built in the main loop with the `tasarim` skill (Tarik Base, both modes). `design/shots/shoot.py`
+  drives A and B through the same five states with the same clicks; 15 screenshots.
+- Verbatim check (`.tmp/check_ab_quotes.py`): 18 of 21 quoted strings in `design/ab-brief.md`
+  appear verbatim in both A and B; the other 3 are the same in both and are not quotes.
+- Tarık's pick: A, "for now"; B looked like slop to him; A's look gets a polish pass later.
 
 ## Quota
 | When | Claude 5-hour | Claude weekly | Codex 5-hour | Codex weekly |
 |---|---|---|---|---|
 | 10:41 start | 1% | 79% | 0% | 0% |
 | 10:59 | — | 79% | 6% | — |
+| 11:26 after Task-00 | 12% | 80% | 14% | — |
+
+Task-00's whole Workflow (builder `opus`/`xhigh` ~95 min, two `opus`/`high` lenses, 518k sub-agent
+tokens) moved the Claude weekly window by about 1 point; the plan estimated 10–16.

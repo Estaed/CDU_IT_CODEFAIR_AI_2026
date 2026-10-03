@@ -1,6 +1,6 @@
 # Readmark synthetic cases — datasheet
 
-**Creation and composition.** Codex GPT-6 wrote `facts.csv` first, then each `case.md`, then `gold.json` and the mutations, using the five local NT public-housing PDFs and the fixed scenario. The work was completed on 3 October 2026. Applicants and case-specific organisations are invented; Darwin and Palmerston are real places. A-0142 is the demo; E-01 tests a breach termination, E-02 missing urgent-need documentation, and E-03 a possible discretion referral. The set contains cases n=4, pages n=96 and facts n=47.
+**Creation and composition.** Codex GPT-6 wrote `facts.csv` first, then each `case.md`, then `gold.json` and the mutations, using the five local NT public-housing PDFs and the fixed scenario. The case pages were rewritten as dated forms, letters, ledgers, records and declarations on 3 October 2026. Applicants and case-specific organisations are invented; Darwin and Palmerston are real places. A-0142 is the demo; E-01 tests a breach termination, E-02 missing urgent-need documentation, and E-03 a possible discretion referral. The set contains cases n=4, pages n=96 and facts n=47. Word counts per page, including document headers: A-0142 mean 221.1, minimum 161; E-01 mean 213.8, minimum 182; E-02 mean 214.8, minimum 183; E-03 mean 210.1, minimum 178.
 
 **Why these document types appear.** All types are permitted by `docs/contracts.md`; these policy sentences explain the evidence each carries:
 

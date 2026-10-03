@@ -1,5 +1,5 @@
 # Task-01: Grounded synthetic case files: demo A-0142 plus three short evaluation files
-**Status: DONE** — verified 2026-10-03, eye check pending: 1
+**Status: DONE** — verified 2026-10-03, eye check superseded by Task-04
 > **Execution:** agent `codex` · effort `high`
 > *Why:* the file the pipeline reads must be written by a different model family from the one that
 > reads it (Tarık, 2026-10-03), and the data is the weakest judging criterion.

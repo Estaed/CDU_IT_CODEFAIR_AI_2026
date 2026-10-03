@@ -1,5 +1,5 @@
 fact_id,clause_id,statement,value,page,quote,role,trap,decisive
-E03F01,elig-property,Applicant jointly owns an inaccessible dwelling,half-interest,4,"Title search shows a half interest in a residential dwelling at a fictional locality outside Darwin.",against,discretion,yes
+E03F01,elig-property,Applicant jointly owns an inaccessible dwelling,half-interest,4,"Title search shows a half interest in a residential dwelling at Marlow Creek, outside Darwin.",against,discretion,yes
 E03F02,elig-property,Dwelling cannot currently be occupied,uninhabitable,7,"The dwelling is unsafe to occupy because the entrance and wet areas cannot be used with the applicant's current mobility needs.",supports,discretion,yes
 E03F03,prio-category,GP documents serious medical need,medical,6,"The applicant now uses a wheelchair and needs step-free access to sleeping and bathing areas.",supports,none,yes
 E03F04,prio-documentation,Medical letter supports the urgent housing request,letter,6,"Delay in accessible accommodation would increase the risk of injury during transfers.",supports,none,yes
@@ -9,5 +9,5 @@ E03F07,elig-residency,Applicant is an Australian citizen resident in NT,citizen,
 E03F08,elig-income,Current income evidence is in the file,present,5,"Income statement for Oren Vale, issued on 8 July 2026 by Windward Assistance Office; gross support payment $590.00 per fortnight.",supports,none,yes
 E03F09,elig-debts,No CEO Housing debt is recorded,none,10,"Account search found no debt owed to the CEO (Housing).",supports,none,no
 E03F10,elig-former-tenancy,No former social housing tenancy is recorded,none,11,"No previous social housing tenancy was identified for this applicant.",supports,none,no
-E03F11,prio-category,Temporary room originally available through 12 July,2026-07-12,8,"Paperbark Access Service has arranged a temporary accessible room for Oren Vale through 12 July 2026 while an application is assessed.",stale,stale_value,no
+E03F11,prio-category,Temporary room originally available through 12 July,2026-07-12,8,"We have arranged a temporary accessible room for Oren Vale through 12 July 2026.",stale,stale_value,no
 E03F12,prio-category,Temporary room was extended through 24 July,2026-07-24,12,"The temporary room was extended through 24 July 2026, but no permanent accessible accommodation exists.",contradicts,contradiction,no

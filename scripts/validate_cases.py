@@ -38,6 +38,22 @@ DOCUMENT_HEADER = re.compile(
     r"^## Document: ([^|\n]+) \| ([^|\n]+) \| (\d{4}-\d{2}-\d{2})$"
 )
 PAGE_REF = re.compile(r"p([1-9]\d*)$")
+WORD = re.compile(r"\b[\w]+(?:['’\-][\w]+)*\b")
+META_COMMENTARY = [
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in (
+        r"synthetic",
+        r"fictional",
+        r"\btrap\b",
+        r"readmark",
+        r"\bAI\b",
+        r"assessing officer",
+        r"the officer should",
+        r"pre-entered",
+        r"pre-filled",
+        r"not a certificate",
+    )
+]
 
 # Catch common Australian phone, TFN and Medicare layouts without treating ISO dates as IDs.
 PII_PATTERNS = {
@@ -225,6 +241,20 @@ def scan_pii(paths: list[Path], errors: list[str]) -> None:
                     errors.append(f"{path}:{line_number}: possible {kind}")
 
 
+def check_paperwork(case_file: Path, pages: dict[int, str], errors: list[str]) -> str:
+    counts = [len(WORD.findall(body)) for body in pages.values()]
+    mean = sum(counts) / len(counts) if counts else 0
+    minimum = min(counts, default=0)
+    check(mean >= 180, f"{case_file}: mean words/page {mean:.1f} is below 180", errors)
+    for page, count in zip(pages, counts):
+        check(count >= 80, f"{case_file}: page {page} has {count} words (minimum 80)", errors)
+    if case_file.is_file():
+        for line_number, line in enumerate(case_file.read_text(encoding="utf-8-sig").splitlines(), 1):
+            if any(pattern.search(line) for pattern in META_COMMENTARY):
+                errors.append(f"{case_file}:{line_number}: meta commentary")
+    return f"words/page mean={mean:.1f} min={minimum}"
+
+
 def validate_case(directory: Path) -> tuple[list[str], str]:
     errors: list[str] = []
     case_id = directory.name
@@ -237,6 +267,9 @@ def validate_case(directory: Path) -> tuple[list[str], str]:
     read_gold(gold_file, case_id, len(pages), errors)
     counts = read_mutations(mutations_file, facts, case_id.startswith("E-"), errors)
     scan_pii([case_file, facts_file, gold_file, mutations_file], errors)
+    density_text = ""
+    if case_id == "A-0142" or case_id.startswith("E-"):
+        density_text = "; " + check_paperwork(case_file, pages, errors)
     if case_id == "A-0142":
         check(55 <= len(pages) <= 65, f"{directory}: A-0142 needs 55-65 pages", errors)
     elif case_id.startswith("E-"):
@@ -245,7 +278,7 @@ def validate_case(directory: Path) -> tuple[list[str], str]:
     trap_text = ", ".join(f"{kind} n={traps[kind]}" for kind in sorted(traps)) or "none"
     mutation_text = ", ".join(f"{kind} n={counts[kind]}" for kind in sorted(counts)) or "none"
     summary = (
-        f"{case_id}: pages n={len(pages)}; facts n={len(facts)}; "
+        f"{case_id}: pages n={len(pages)}; facts n={len(facts)}{density_text}; "
         f"traps [{trap_text}]; mutations [{mutation_text}]"
     )
     return errors, summary

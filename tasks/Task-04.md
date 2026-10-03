@@ -1,4 +1,5 @@
 # Task-04: Rewrite the Task-01 case files as real paperwork, and make the validator catch it
+**Status: DONE** — verified 2026-10-03, eye check pending: 1
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Task-01's files are thin (A-0142 averages 60 words a page, the E-files about 50) and about
 > ten sentences comment on the evidence instead of being paperwork, so they hand the reader the
@@ -43,12 +44,12 @@ catch rate meaningless and fails the eye check "reads like real NT housing paper
 test". A validator rule closes the class instead of this one instance.
 
 ## Acceptance
-- [ ] `python scripts/validate_cases.py` exits 0 and prints, per case, words per page (mean, min)
+- [x] `python scripts/validate_cases.py` exits 0 and prints, per case, words per page (mean, min)
   next to the existing counts.
-- [ ] A test of the new checks: a temporary copy of a case with one page cut to 20 words, and one
+- [x] A test of the new checks: a temporary copy of a case with one page cut to 20 words, and one
   with the line "This synthetic file is for testing.", each makes the validator exit 1 naming the
   file (run by hand, reported in the notes; the copies are not committed).
-- [ ] A-0142 pp. 8, 23, 30 and 51 still contain the `design/ab-brief.md` passages verbatim, and
+- [x] A-0142 pp. 8, 23, 30 and 51 still contain the `design/ab-brief.md` passages verbatim, and
   `gold.json` is unchanged in outcomes, decision and required reading for all four files.
 - [ ] (eye) Tarık skims pages 8, 23, 30, 51 and three random filler pages of A-0142. They read like
   real NT housing paperwork, not like a test.

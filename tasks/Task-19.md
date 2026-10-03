@@ -1,11 +1,12 @@
 # Task-19: Case home screen: cases in progress and completed
-> **Execution:** agent `ultracode` · effort `high`
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık wants a home screen that lists the cases, in progress and completed, with a layout
 > like Claude's or Codex's session list (look only, no chat), 2026-10-03. Today the server opens one
-> case, given by `--case`.
+> case, given by `--case`. Codex `gpt-6.1-sol`: the Claude weekly window stood at 91% at 22:20 on
+> 3 Oct, and Tarık asked to start wave 8 straight away.
 
 **Lane**
-- OWNS: `web/**`, `readmark/serve.py`, `readmark/record/**`, `tests/test_screen.py`, `tests/test_home.py`, `reports/screens/2026-10-04-wave8/**`
+- OWNS: `web/**`, `readmark/serve.py`, `readmark/record/**`, `tests/test_screen.py`, `tests/test_home.py`, `reports/screens/2026-10-03-wave8/**`
 - MUST NOT TOUCH: `readmark/checklist/**`, `readmark/ingest/**`, `readmark/pipeline.py`, `readmark/checks/**`, `readmark/jev/**`, `readmark/writer/**`, `readmark/audit/**`, `readmark/eval/**`, `readmark/schemas/**`, `runs/**` (except new records written by tests into temporary folders), `data/**` (Task-21), `design/**`, `docs/contracts.md`, `AGENTS.md`, `notes.md`
 - GATE: `uv run python scripts/gate.py` (from repo root)
 - DEPENDS ON: Task-17, Task-18
@@ -44,7 +45,7 @@ cases (Task-20) and the easy example (Task-21) live.
   going back to A-0142 still shows 2 decided.
 - [ ] `--case A-0142` still opens the case screen directly, and every existing screen test passes.
 - [ ] Screenshots of the home screen (in progress, completed and evaluation groups) at 1280 and
-  1440 in `reports/screens/2026-10-04-wave8/`. Tests write to `.tmp/shots/`, and the delivered set is
+  1440 in `reports/screens/2026-10-03-wave8/`. Tests write to `.tmp/shots/`, and the delivered set is
   copied once.
 - [ ] (eye) Tarık finds the home screen as calm as the case screen, and knows where to click
   first.

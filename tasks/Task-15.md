@@ -1,10 +1,11 @@
 # Task-15: The final look: a government question page with the file inside it
-> **Execution:** agent `ultracode` · effort `high`
+> **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık picked the final look on 2026-10-03: hybrid 6 in `reports/2026-10-03-ui-references.md`.
 > It is the Australian Government caseworker look of direction 1 (plain, few things on screen, the
 > work goes click by click), with the original page and its labelled highlight inside the question
 > page, so the answer-key idea stays. Blueprint → Decisions (final look) and `design/DESIGN.md`
-> record it.
+> record it. Codex `gpt-6.1-sol`: the Claude weekly window stood at 90% (measured 18:07), and
+> Tarık chose Codex over waiting for the reset (2026-10-03).
 
 **Lane**
 - OWNS: `web/**`, `readmark/serve.py`, `readmark/record/**`, `tests/test_screen.py`, `reports/screens/2026-10-03-wave6/**`

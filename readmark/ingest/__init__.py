@@ -42,6 +42,16 @@ def normalise(text: str) -> str:
     return " ".join(text.split())
 
 
+def passage_key(passage_id: str) -> tuple:
+    """File order for a passage id: 'A-0142:p8:3' sorts before 'A-0142:p23:1'. An id that does
+    not parse (a writer's invented one) sorts after the real ones, by its text."""
+    source, _, rest = passage_id.partition(":")
+    page, _, k = rest.partition(":")
+    if page[1:].isdigit() and k.isdigit():
+        return (source, 0, int(page[1:]), int(k), "")
+    return (source, 1, 0, 0, passage_id)
+
+
 def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 

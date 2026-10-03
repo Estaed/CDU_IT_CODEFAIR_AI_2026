@@ -63,6 +63,7 @@
    "claim": "The applicant states she is an Australian citizen.",
    "claim_id": "c01",
    "clause_id": "elig-residency",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -85,6 +86,7 @@
    "claim": "A copy of her Australian birth certificate was attached and sighted by the Darwin housing office on 16 February 2026.",
    "claim_id": "c02",
    "clause_id": "elig-residency",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -107,6 +109,7 @@
    "claim": "The application form declares that no household member owns or part owns residential property in Australia.",
    "claim_id": "c03",
    "clause_id": "elig-property",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -135,6 +138,7 @@
    "claim": "A statutory declaration made before an authorised witness on 16 February 2026 states that neither she nor any household member owns or part owns residential property.",
    "claim_id": "c04",
    "clause_id": "elig-property",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -157,6 +161,7 @@
    "claim": "Income details were not provided with the application and are marked as to follow.",
    "claim_id": "c06",
    "clause_id": "elig-income",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -179,6 +184,7 @@
    "claim": "The Income Confirmation Scheme form has not been signed.",
    "claim_id": "c07",
    "clause_id": "elig-income",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -201,6 +207,7 @@
    "claim": "Urban applicants must also meet income-based criteria set out in the Income and Assets policy.",
    "claim_id": "c09",
    "clause_id": "elig-income",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -229,8 +236,11 @@
    "claim": "A ledger dated 15 Jan 2026 shows a former tenancy debt to the CEO (Housing) of $2,400.00 with a proposed payment plan of $100 per fortnight.",
    "claim_id": "c10",
    "clause_id": "elig-debts",
-   "required": false,
-   "status": "supported",
+   "contradicted_by": [
+    "stub:p3:2"
+   ],
+   "required": true,
+   "status": "contradicted",
    "values_missing": []
   },
   {
@@ -257,8 +267,11 @@
    "claim": "A later ledger dated 4 Mar 2026 shows the arrears were cleared in full by a support agency payment, leaving a balance of $0.00, so the earlier ledger is out of date.",
    "claim_id": "c11",
    "clause_id": "elig-debts",
-   "required": false,
-   "status": "supported",
+   "contradicted_by": [
+    "stub:p2:2"
+   ],
+   "required": true,
+   "status": "contradicted",
    "values_missing": []
   },
   {
@@ -279,6 +292,7 @@
    "claim": "Policy says social housing is not withheld because of a debt owed to the CEO (Housing).",
    "claim_id": "c12",
    "clause_id": "elig-debts",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -307,6 +321,7 @@
    "claim": "Her previous tenancy at a Palmerston property ended by mutual agreement on 12 June 2023 with no breach recorded.",
    "claim_id": "c13",
    "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
    "required": true,
    "status": "supported",
    "values_missing": []
@@ -329,6 +344,7 @@
    "claim": "A rent debt was outstanding when that tenancy ended, which the officer may weigh when judging whether there was evidence to justify a termination.",
    "claim_id": "c14",
    "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
    "required": true,
    "status": "supported",
    "values_missing": []
@@ -363,6 +379,7 @@
    "claim": "The tenancy ended on 12 June 2023, more than 2 years before the application dated 2026-02-16.",
    "claim_id": "c15",
    "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
    "required": true,
    "status": "quote_not_found",
    "values_missing": [
@@ -388,6 +405,7 @@
    "claim": "The applicant claims priority under the domestic or family violence category.",
    "claim_id": "c16",
    "clause_id": "prio-category",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -410,6 +428,7 @@
    "claim": "A support agency states she and her two children are fleeing family violence and cannot safely return to their current address.",
    "claim_id": "c17",
    "clause_id": "prio-category",
+   "contradicted_by": [],
    "required": true,
    "status": "supported",
    "values_missing": []
@@ -432,6 +451,7 @@
    "claim": "Domestic or family violence is one of the listed urgent-need categories.",
    "claim_id": "c18",
    "clause_id": "prio-category",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -460,7 +480,8 @@
    "claim": "The supporting document is a letter from a case worker at Saltwater Lane Family Support.",
    "claim_id": "c19",
    "clause_id": "prio-documentation",
-   "required": true,
+   "contradicted_by": [],
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -482,7 +503,8 @@
    "claim": "The support letter does not name the case worker who signed it.",
    "claim_id": "c20",
    "clause_id": "prio-documentation",
-   "required": true,
+   "contradicted_by": [],
+   "required": false,
    "status": "checker_disagrees",
    "values_missing": []
   },
@@ -504,6 +526,7 @@
    "claim": "The letter says police attended the property on 2 February 2026, but no police report or reference is in the file.",
    "claim_id": "c21",
    "clause_id": "prio-documentation",
+   "contradicted_by": [],
    "required": true,
    "status": "checker_disagrees",
    "values_missing": []
@@ -526,6 +549,7 @@
    "claim": "Policy requires applicants to prove urgent need with supporting documentation, as set out in the Identification and Documentation policy.",
    "claim_id": "c23",
    "clause_id": "prio-documentation",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -548,6 +572,7 @@
    "claim": "Policy gives the CEO (Housing) some discretion for extreme situations when an eligibility criterion is unmet.",
    "claim_id": "c25",
    "clause_id": "prio-discretion",
+   "contradicted_by": [],
    "required": false,
    "status": "supported",
    "values_missing": []
@@ -570,6 +595,7 @@
    "claim": "The household includes two children aged 7 and 10.",
    "claim_id": "c26",
    "clause_id": "other",
+   "contradicted_by": [],
    "required": true,
    "status": "supported",
    "values_missing": []
@@ -582,12 +608,14 @@
     "c02"
    ],
    "clause_id": "elig-residency",
+   "contradictions": [],
    "coverage": null,
    "decides": "Australian citizen or permanent resident.",
    "missing": [],
    "policy_items": [],
    "policy_passage_id": "eligibility:p5:12",
    "policy_sentence": "Applicants must be an Australian citizen or have permanent residency status.",
+   "possibly_missed": [],
    "source": "Eligibility §3.2",
    "title": "Residency"
   },
@@ -597,6 +625,7 @@
     "c04"
    ],
    "clause_id": "elig-property",
+   "contradictions": [],
    "coverage": null,
    "decides": "Owns no residential property (a domestic or family violence exemption needs delegate approval).",
    "missing": [
@@ -608,6 +637,7 @@
    "policy_items": [],
    "policy_passage_id": "eligibility:p5:4",
    "policy_sentence": "Except in Remote Communities, Town Camps and CLAs, applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing.",
+   "possibly_missed": [],
    "source": "Eligibility §3.1.1",
    "title": "Residential property ownership"
   },
@@ -618,6 +648,7 @@
     "c09"
    ],
    "clause_id": "elig-income",
+   "contradictions": [],
    "coverage": null,
    "decides": "Whether income evidence is in the file. The Income and Assets policy is not bundled, so v1 does not test the thresholds.",
    "missing": [
@@ -629,6 +660,7 @@
    "policy_items": [],
    "policy_passage_id": "eligibility:p4:16",
    "policy_sentence": "If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.",
+   "possibly_missed": [],
    "source": "Eligibility §3",
    "title": "Income criteria for urban applicants"
   },
@@ -639,12 +671,20 @@
     "c12"
    ],
    "clause_id": "elig-debts",
+   "contradictions": [
+    {
+     "a": "stub:p2:2",
+     "b": "stub:p3:2",
+     "probability": 0.69
+    }
+   ],
    "coverage": null,
    "decides": "A debt to the CEO (Housing) does not withhold housing.",
    "missing": [],
    "policy_items": [],
    "policy_passage_id": "eligibility:p6:9",
    "policy_sentence": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).",
+   "possibly_missed": [],
    "source": "Eligibility §3.4",
    "title": "Debts"
   },
@@ -655,12 +695,14 @@
     "c15"
    ],
    "clause_id": "elig-former-tenancy",
+   "contradictions": [],
    "coverage": null,
    "decides": "A tenancy terminated for breach in the last 2 years means ineligible for 2 years.",
    "missing": [],
    "policy_items": [],
    "policy_passage_id": "eligibility:p6:11",
    "policy_sentence": "Former social housing tenants who have had their tenancy agreement terminated or have voluntarily vacated the premises leaving sufficient evidence to justify a termination (under breach of tenancy agreement conditions or satisfactory tenancy criteria), are ineligible to apply for social housing for a period of 2 years, which includes property under the management or ownership of the CEO (Housing).",
+   "possibly_missed": [],
    "source": "Eligibility §3.5",
    "title": "Unsatisfactory former tenancies"
   },
@@ -671,6 +713,7 @@
     "c18"
    ],
    "clause_id": "prio-category",
+   "contradictions": [],
    "coverage": null,
    "decides": "The applicant falls in one of the four urgent-need categories.",
    "missing": [],
@@ -682,6 +725,7 @@
    ],
    "policy_passage_id": "priority:p4:9",
    "policy_sentence": "The following categories are considered an urgent need for social housing:",
+   "possibly_missed": [],
    "source": "Priority §3",
    "title": "Urgent-need category"
   },
@@ -693,6 +737,7 @@
     "c23"
    ],
    "clause_id": "prio-documentation",
+   "contradictions": [],
    "coverage": null,
    "decides": "Urgent need is proven with supporting documentation (see the Identification and Documentation policy).",
    "missing": [
@@ -704,6 +749,7 @@
    "policy_items": [],
    "policy_passage_id": "priority:p4:19",
    "policy_sentence": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.",
+   "possibly_missed": [],
    "source": "Priority §3.1",
    "title": "Urgent need documented"
   },
@@ -712,6 +758,7 @@
     "c25"
    ],
    "clause_id": "prio-discretion",
+   "contradictions": [],
    "coverage": null,
    "decides": "Whether the \"some discretion for extreme situations\" applies.",
    "missing": [
@@ -723,6 +770,7 @@
    "policy_items": [],
    "policy_passage_id": "priority:p4:18",
    "policy_sentence": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations.",
+   "possibly_missed": [],
    "source": "Priority §3.1",
    "title": "Discretion for extreme situations"
   },
@@ -731,6 +779,7 @@
     "c26"
    ],
    "clause_id": "other",
+   "contradictions": [],
    "coverage": null,
    "decides": "Facts the writer found important that no clause names.",
    "missing": [
@@ -742,6 +791,7 @@
    "policy_items": [],
    "policy_passage_id": null,
    "policy_sentence": null,
+   "possibly_missed": [],
    "source": null,
    "title": "Not on the checklist"
   }
@@ -796,20 +846,65 @@
  "required_reading": [
   {
    "claim_ids": [
-    "c15"
+    "c10"
    ],
-   "passage_id": "stub:p4:1",
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p2:2",
    "rank": 1,
    "reasons": [
-    "quote_not_found"
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c11"
+   ],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p3:2",
+   "rank": 2,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c10"
+   ],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p2:1",
+   "rank": 3,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c11"
+   ],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p3:1",
+   "rank": 4,
+   "reasons": [
+    "contradicted"
    ]
   },
   {
    "claim_ids": [
     "c15"
    ],
-   "passage_id": "eligibility:p6:11",
-   "rank": 2,
+   "clause_ids": [
+    "elig-former-tenancy"
+   ],
+   "passage_id": "stub:p4:1",
+   "rank": 5,
    "reasons": [
     "quote_not_found"
    ]
@@ -818,8 +913,24 @@
    "claim_ids": [
     "c15"
    ],
+   "clause_ids": [
+    "elig-former-tenancy"
+   ],
+   "passage_id": "eligibility:p6:11",
+   "rank": 6,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "clause_ids": [
+    "elig-former-tenancy"
+   ],
    "passage_id": "stub:p1:1",
-   "rank": 3,
+   "rank": 7,
    "reasons": [
     "quote_not_found"
    ]
@@ -828,24 +939,17 @@
    "claim_ids": [
     "c21"
    ],
-   "passage_id": "stub:p5:2",
-   "rank": 4,
-   "reasons": [
-    "checker_disagrees"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c20"
+   "clause_ids": [
+    "prio-documentation"
    ],
-   "passage_id": "stub:p5:3",
-   "rank": 5,
+   "passage_id": "stub:p5:2",
+   "rank": 8,
    "reasons": [
     "checker_disagrees"
    ]
   }
  ],
- "schema_version": 1,
+ "schema_version": 2,
  "sources": {
   "eligibility:p4:16": {
    "doc_title": "Eligibility for Social Housing policy",
@@ -1088,5 +1192,19 @@
    "text": "Declared at Darwin on 16 February 2026 before an authorised witness."
   }
  },
- "suggested_reading": []
+ "suggested_reading": [
+  {
+   "claim_ids": [
+    "c20"
+   ],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "stub:p5:3",
+   "rank": 9,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  }
+ ]
 }

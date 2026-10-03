@@ -42,9 +42,12 @@ Every model response from our runs is in the replay cache (`runs/<case>/cache/`)
 every stage file from it, byte for byte:
 
 ```sh
-uv run python -m readmark run --case stub --replay   # rebuilds runs/stub/*.json
-uv run python -m readmark serve                      # http://localhost:8765/
+uv run python -m readmark run --case A-0142 --replay   # rebuilds runs/A-0142/*.json
+uv run python -m readmark serve --case A-0142          # http://localhost:8765/
 ```
+
+A-0142 is the demo file: a 60-page synthetic application. `stub` is a 6-page file the tests use;
+replay it the same way with `--case stub`.
 
 The review screen lets you follow a claim to its passage, see why sign-off is locked, open the
 required passages one at a time, set each clause outcome, dispute a claim, sign, and export the
@@ -61,9 +64,11 @@ it with real case data.
   environment or in a git-ignored `.env` at the repo root: `TYPESAFE_API_KEY=...`.
 
 ```sh
-uv run python -m readmark run --case stub                    # Claude writer, Jev checker
-uv run python -m readmark run --case stub --checker claude   # Claude as the checker as well
+uv run python -m readmark run --case A-0142                    # Claude writer, Jev checker
+uv run python -m readmark run --case A-0142 --checker claude   # Claude as the second key too
 ```
+
+The relevance scan and the contradiction pairs always run on Jev.
 
 New responses are added to the cache, so the same run can be replayed afterwards. Jev is not
 deterministic, so a fresh live run can give different verdicts from the cached ones.
@@ -75,8 +80,8 @@ uv run python scripts/gate.py
 ```
 
 The gate runs `ruff check`, `pytest` (including a headless browser test of the review screen) and
-a replay smoke test of the stub case with no API key, which validates `view.json` against
-`readmark/schemas/view.schema.json`. Exit 0 means clean.
+a replay smoke test of the stub and A-0142 with no API key, which validates each `view.json`
+against `readmark/schemas/view.schema.json`. Exit 0 means clean.
 
 ## How it works
 
@@ -93,9 +98,18 @@ a replay smoke test of the stub case with no API key, which validates `view.json
    date in a claim must appear in a cited quote. A failure shows as "quote not found".
 5. **Checker** (`readmark/jev/`): a second key on every claim (supports, contradicts, not enough
    information), from a different model family than the writer.
-6. **Gate** (`readmark/gate/`): passages behind failed checks become required reading, at most 8,
-   most decisive first.
-7. **View** (`runs/<case>/view.json`), served by `readmark/serve.py` to `web/`.
+6. **Relevance scan** (Jev, `scan.json`): every case passage is scored 0 to 4 against each
+   decisive clause, 20 passages per call. A passage at or above the threshold that no claim cites
+   is "possibly missed" under that clause. The threshold was set once on A-0142 with its gold
+   file, and `scan.json` records it and how it was chosen.
+7. **Contradiction pairs** (Jev, `pairs.json`): for each clause, up to five passages that matter
+   most to it (cited by its claims first, then high in the scan) are compared pair by pair. A
+   claim resting on one side of a contradicting pair is "contradicted by another passage". This
+   catches a real quote that is out of date, which every check against its own passage passes.
+8. **Gate** (`readmark/gate/`): passages behind failed checks and both sides of every
+   contradicting pair, then the strongest possibly missed passages, become required reading: at
+   most 8, most decisive first, one entry per passage with all its reasons. The rest are suggested.
+9. **View** (`runs/<case>/view.json`, schema version 2), served by `readmark/serve.py` to `web/`.
 
 `python -m readmark eval` (the evaluation) arrives in wave 2.
 

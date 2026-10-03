@@ -1,0 +1,469 @@
+{
+ "key": "ebad2239cb731e3d1fa5f071bc69a09cce6d445674964632399c5be37795b396",
+ "kind": "writer",
+ "response": {
+  "model": "claude-opus-5-5",
+  "output": {
+   "facts": [
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p16:1",
+       "quote": "I am an Australian citizen and have lived in the Northern Territory continuously since 2021."
+      }
+     ],
+     "claim": "Ms K. declares in a witnessed statutory declaration that she is an Australian citizen.",
+     "clause_id": "elig-residency",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p12:1",
+       "quote": "Australian passport sighted for Ms K.; name and date of birth matched the application. No identifier was copied into this file."
+      }
+     ],
+     "claim": "An Australian passport was sighted at intake and matched the application name and date of birth, but no copy or number was kept.",
+     "clause_id": "elig-residency",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p17:4",
+       "quote": "The utility account and passport sighting were compared with the application name."
+      },
+      {
+       "passage_id": "A-0142:p17:1",
+       "quote": "The names were consistent and the applicant reported being in Darwin when the application was lodged."
+      }
+     ],
+     "claim": "The intake officer compared the utility account and passport sighting with the application and found the names consistent.",
+     "clause_id": "elig-residency",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p6:1",
+       "quote": "I do not own or partly own any residential property in Australia."
+      }
+     ],
+     "claim": "Ms K. declares that she does not own or partly own any residential property in Australia.",
+     "clause_id": "elig-property",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p19:1",
+       "quote": "Search against the applicant's declared names returned no residential property interest in the Northern Territory register."
+      },
+      {
+       "passage_id": "A-0142:p18:3",
+       "quote": "Search names supplied: current name on the application and the declared earlier name."
+      }
+     ],
+     "claim": "A search under her current and earlier names returned no residential property interest on the Northern Territory register.",
+     "clause_id": "elig-property",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p18:3",
+       "quote": "Search scope: Northern Territory residential property register as at 11 March 2026."
+      },
+      {
+       "passage_id": "eligibility:p5:4",
+       "quote": "applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing"
+      }
+     ],
+     "claim": "The property search covered only the Northern Territory register, while the policy excludes property owned anywhere in Australia.",
+     "clause_id": "elig-property",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "The file has no property search outside the Northern Territory.",
+     "clause_id": "elig-property",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p6:3",
+       "quote": "The former tenancy was a rental arrangement, not an ownership interest."
+      }
+     ],
+     "claim": "The former Palmerston home was a rental tenancy, not an ownership interest.",
+     "clause_id": "elig-property",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "The file holds no current income statement or employer remittance advice.",
+     "clause_id": "elig-income",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p48:1",
+       "quote": "Current income statement: received date blank."
+      },
+      {
+       "passage_id": "A-0142:p58:1",
+       "quote": "Current income evidence is still outstanding; the intake team has not received an income statement or employer remittance advice."
+      }
+     ],
+     "claim": "Intake checklists record the current income evidence as not received.",
+     "clause_id": "elig-income",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p56:4",
+       "quote": "Please provide a current income statement or employer remittance advice."
+      },
+      {
+       "passage_id": "A-0142:p57:4",
+       "quote": "She asks for a safe delivery method and confirms that no statement accompanies this reply."
+      }
+     ],
+     "claim": "Intake asked for current income evidence and Ms K. replied without sending a statement.",
+     "clause_id": "elig-income",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p60:3",
+       "quote": "Items checked: application packet transferred with current-income request open."
+      }
+     ],
+     "claim": "The file was handed to the delegated officer with the income request still open.",
+     "clause_id": "elig-income",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "eligibility:p4:16",
+       "quote": "If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy."
+      }
+     ],
+     "claim": "Urban applicants must also meet income criteria set in the Income and Assets policy.",
+     "clause_id": "elig-income",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p8:3",
+       "quote": "Former tenancy debt owed to the CEO (Housing). Arrears balance $2,400.00."
+      }
+     ],
+     "claim": "The January statement shows a former-tenancy debt of $2,400.00 owed to the CEO (Housing), but a later statement supersedes it.",
+     "clause_id": "elig-debts",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p23:2",
+       "quote": "Support-agency remittance received 2 March 2026: $2,400.00 credit."
+      },
+      {
+       "passage_id": "A-0142:p23:3",
+       "quote": "Arrears cleared in full. Balance $0.00."
+      }
+     ],
+     "claim": "A support agency paid $2,400.00 on 2 March 2026 and the March statement shows the arrears cleared to $0.00.",
+     "clause_id": "elig-debts",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p24:4",
+       "quote": "Housing Accounts confirms that the posted closing balance is zero and encloses the new statement for the account holder."
+      }
+     ],
+     "claim": "Housing Accounts confirmed that the posted closing balance is zero.",
+     "clause_id": "elig-debts",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "eligibility:p6:9",
+       "quote": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing)."
+      }
+     ],
+     "claim": "Under the policy, a debt owed to the CEO (Housing) does not withhold housing in any case.",
+     "clause_id": "elig-debts",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:2",
+       "quote": "Tenancy at a Palmerston property ended by mutual agreement on 12 June 2023."
+      },
+      {
+       "passage_id": "A-0142:p30:2",
+       "quote": "No breach of the tenancy agreement recorded."
+      }
+     ],
+     "claim": "The signed closure entry records that the Palmerston tenancy ended by mutual agreement on 12 June 2023, with no breach recorded.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:3",
+       "quote": "No termination notice or tribunal order is attached to this signed record."
+      },
+      {
+       "passage_id": "A-0142:p32:4",
+       "quote": "The retrieved packet contains the agreed surrender and no attached breach notice."
+      },
+      {
+       "passage_id": "A-0142:p33:1",
+       "quote": "No termination order appears on the packet index."
+      }
+     ],
+     "claim": "No termination notice, tribunal order or breach notice is attached to the former-tenancy records.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:2",
+       "quote": "A rent debt remained outstanding at exit."
+      },
+      {
+       "passage_id": "eligibility:p6:11",
+       "quote": "have voluntarily vacated the premises leaving sufficient evidence to justify a termination"
+      }
+     ],
+     "claim": "A rent debt was still owed when she left, which bears on whether the vacating left evidence that could justify a termination.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p30:1",
+       "quote": "Closure date: 12 June 2023"
+      },
+      {
+       "passage_id": "A-0142:p1:2",
+       "quote": "Completed 2026-03-10"
+      },
+      {
+       "passage_id": "eligibility:p6:11",
+       "quote": "are ineligible to apply for social housing for a period of 2 years"
+      }
+     ],
+     "claim": "The tenancy closed on 12 June 2023, more than 2 years before the application dated 2026-03-10.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p31:1",
+       "quote": "I moved from the Palmerston tenancy after we agreed to close it on 12 June 2023."
+      }
+     ],
+     "claim": "Ms K.'s own declaration agrees that the tenancy was closed by agreement on 12 June 2023.",
+     "clause_id": "elig-former-tenancy",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:3",
+       "quote": "Ms K. and her two children are fleeing family violence and cannot safely return to their current address. Police attended the property on 2 February 2026."
+      }
+     ],
+     "claim": "A support service letter states that Ms K. and her two children are fleeing family violence and that police attended on 2 February 2026.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:3",
+       "quote": "cannot safely return to their current address"
+      },
+      {
+       "passage_id": "A-0142:p49:4",
+       "quote": "The family is staying away from the former home."
+      }
+     ],
+     "claim": "The support letter calls the home they fled their current address, while the rest of the file says the family has left it.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p36:1",
+       "quote": "The room is shared and crowded, and I cannot offer a written tenancy or an assured end date."
+      },
+      {
+       "passage_id": "A-0142:p34:1",
+       "quote": "I can accommodate them briefly, but I cannot provide a stable long-term room arrangement."
+      }
+     ],
+     "claim": "The family is in a crowded shared room with no written tenancy or assured end date, which bears on risk of homelessness.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p35:1",
+       "quote": "My children and I have moved twice since the February incident."
+      }
+     ],
+     "claim": "Ms K. declares that the family has moved twice since the February incident.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p47:4",
+       "quote": "Crisis accommodation enquiries are continuing through Wattle Quay Family Support."
+      }
+     ],
+     "claim": "The support service is still making crisis accommodation enquiries for the family.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p44:1",
+       "quote": "Ms K. reports anxiety and disrupted sleep following the family violence incident; a stable and safe home would support treatment."
+      }
+     ],
+     "claim": "The GP note reports anxiety and disrupted sleep but does not describe a serious medical condition.",
+     "clause_id": "prio-category",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p55:1",
+       "quote": "Current ledger, signed former-tenancy closure, family violence support letter and GP note are present in the intake packet."
+      }
+     ],
+     "claim": "The intake packet holds the family violence support letter and the GP note.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p51:4",
+       "quote": "Our service has worked with Ms K. since February and can confirm that the family needs a safe address away from the former home."
+      }
+     ],
+     "claim": "The support service confirms it has worked with Ms K. since February and that the family needs a safe address.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p34:4",
+       "quote": "The room is shared and crowded; there is no written tenancy or assured end date for the family."
+      }
+     ],
+     "claim": "The host's letters back up the temporary, insecure stay.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "The file holds no police record or protection order for the reported incident; the police attendance is known only from the support letter.",
+     "clause_id": "prio-documentation",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "priority:p4:19",
+       "quote": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority."
+      }
+     ],
+     "claim": "Under the policy, the applicant must prove urgent need with documentation, and the CEO (Housing) assesses it.",
+     "clause_id": "prio-documentation",
+     "found": true
+    },
+    {
+     "citations": [],
+     "claim": "Nothing in the file asks for, or records, use of the discretion for extreme situations.",
+     "clause_id": "prio-discretion",
+     "found": false
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "priority:p4:18",
+       "quote": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations."
+      }
+     ],
+     "claim": "Priority applicants must meet the eligibility criteria, subject to some discretion for extreme situations.",
+     "clause_id": "prio-discretion",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p46:3",
+       "quote": "Ms K. authorises appointment messages through the support worker. Do not post to the former home or disclose a temporary stay to an unverified caller."
+      }
+     ],
+     "claim": "Any request for further material must avoid the former home and go through the support worker's safe channel.",
+     "clause_id": "other",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p59:4",
+       "quote": "gives Ms K. the agreed delivery channel for the current income statement"
+      }
+     ],
+     "claim": "Intake has given Ms K. a safe delivery channel for the outstanding income statement.",
+     "clause_id": "other",
+     "found": true
+    },
+    {
+     "citations": [
+      {
+       "passage_id": "A-0142:p13:1",
+       "quote": "Birth certificate extracts for Niko K. and Elia K. were sighted."
+      },
+      {
+       "passage_id": "A-0142:p1:3",
+       "quote": "Household size is three."
+      }
+     ],
+     "claim": "The household is one adult and two dependent children, whose birth extracts were sighted.",
+     "clause_id": "other",
+     "found": true
+    }
+   ]
+  }
+ }
+}

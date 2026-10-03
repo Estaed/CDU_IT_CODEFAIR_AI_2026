@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "readmark/view.schema.json",
   "title": "Readmark review view (runs/<case>/view.json)",
-  "description": "Everything the review screen shows for one case. Three status lists stay separate: claim checks (claims[].status), clause coverage (clauses[].coverage) and the clause outcome, which only the officer sets on screen and which therefore never appears here. Policy passage text is absent (text: null); the server reads it from the pinned PDF on demand.",
+  "description": "Everything the review screen shows for one case. Three status lists stay separate: claim checks (claims[].status), clause coverage (clauses[].coverage) and the clause outcome, which only the officer sets on screen and which therefore never appears here. Policy passage text is absent (text: null); the server reads it from the pinned PDF on demand. Version 2 adds the cross-passage checks (Task-05): claims[].contradicted_by, clauses[].contradictions, clauses[].possibly_missed, and reading items with clause_ids and the possibly_missed reason. Every passage id named anywhere in the view has an entry in sources; JSON Schema cannot express that, so readmark.pipeline.validate_view checks it in code.",
   "type": "object",
   "required": ["schema_version", "case", "policies", "models", "clauses", "claims", "sources",
                "required_reading", "suggested_reading", "cap"],
   "additionalProperties": false,
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "case": {
       "type": "object",
       "required": ["case_id", "pages", "documents", "sha256", "synthetic"],
@@ -64,7 +64,8 @@
       "items": {
         "type": "object",
         "required": ["clause_id", "title", "source", "decides", "policy_sentence", "policy_items",
-                     "policy_passage_id", "claim_ids", "coverage", "missing"],
+                     "policy_passage_id", "claim_ids", "coverage", "missing", "contradictions",
+                     "possibly_missed"],
         "additionalProperties": false,
         "properties": {
           "clause_id": {"enum": ["elig-residency", "elig-property", "elig-income", "elig-debts",
@@ -77,7 +78,10 @@
           "policy_items": {"type": "array", "items": {"type": "string"}},
           "policy_passage_id": {"type": ["string", "null"]},
           "claim_ids": {"type": "array", "items": {"type": "string"}},
-          "coverage": {"enum": [null, "possibly_missed", "no_evidence_in_file"]},
+          "coverage": {
+            "description": "possibly_missed when possibly_missed is non-empty; else no_evidence_in_file when no claim cites the file for this clause; else null. Never an outcome.",
+            "enum": [null, "possibly_missed", "no_evidence_in_file"]
+          },
           "missing": {
             "type": "array",
             "items": {
@@ -85,6 +89,30 @@
               "required": ["claim_id", "statement"],
               "additionalProperties": false,
               "properties": {"claim_id": {"type": "string"}, "statement": {"type": "string"}}
+            }
+          },
+          "contradictions": {
+            "description": "Pairs of case passages that matter to this clause and that the checker called contradictory: one shows that a fact in the other is wrong or out of date. a is the earlier record; probability is the checker's for 'contradict'. Strongest first.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["a", "b", "probability"],
+              "additionalProperties": false,
+              "properties": {
+                "a": {"type": "string"},
+                "b": {"type": "string"},
+                "probability": {"type": ["number", "null"]}
+              }
+            }
+          },
+          "possibly_missed": {
+            "description": "Case passages the relevance scan scored at or above the threshold for this clause (0-4 scale; threshold and method in runs/<case>/scan.json) that no claim cites, most relevant first.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["passage_id", "score"],
+              "additionalProperties": false,
+              "properties": {"passage_id": {"type": "string"}, "score": {"type": "number"}}
             }
           }
         }
@@ -95,7 +123,7 @@
       "items": {
         "type": "object",
         "required": ["claim_id", "clause_id", "claim", "citations", "values_missing", "checker",
-                     "status", "required"],
+                     "contradicted_by", "status", "required"],
         "additionalProperties": false,
         "properties": {
           "claim_id": {"type": "string"},
@@ -132,7 +160,15 @@
               }
             ]
           },
-          "status": {"enum": ["supported", "checker_disagrees", "contradicted", "quote_not_found"]},
+          "contradicted_by": {
+            "description": "Passage ids that contradict a passage this claim rests on (its quote was found in one side of a contradicting pair, and it does not cite the other side). Empty when none.",
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "status": {
+            "description": "contradicted when contradicted_by is non-empty, and it ranks first; then quote_not_found (a quote not in its passage, a number or date in no quote, or no citation at all); then checker_disagrees; else supported.",
+            "enum": ["supported", "checker_disagrees", "contradicted", "quote_not_found"]
+          },
           "required": {"type": "boolean"}
         }
       }
@@ -170,15 +206,18 @@
       "properties": {"name": {"type": "string"}, "model": {"type": ["string", "null"]}}
     },
     "reading": {
+      "description": "One passage to open, carrying every reason it was flagged: a passage is never two items. claim_ids may be empty (the uncited side of a contradicting pair, a possibly missed passage); clause_ids never is.",
       "type": "object",
-      "required": ["rank", "passage_id", "claim_ids", "reasons"],
+      "required": ["rank", "passage_id", "claim_ids", "clause_ids", "reasons"],
       "additionalProperties": false,
       "properties": {
         "rank": {"type": "integer", "minimum": 1},
         "passage_id": {"type": "string"},
-        "claim_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "claim_ids": {"type": "array", "items": {"type": "string"}},
+        "clause_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
         "reasons": {"type": "array", "minItems": 1,
-                    "items": {"enum": ["contradicted", "quote_not_found", "checker_disagrees"]}}
+                    "items": {"enum": ["contradicted", "quote_not_found", "checker_disagrees",
+                                       "possibly_missed"]}}
       }
     }
   }

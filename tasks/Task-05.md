@@ -1,4 +1,5 @@
 # Task-05: Cross-passage checks on the real demo file: contradiction pairs, relevance scan, possibly missed
+**Status: DONE** — verified 2026-10-03
 > **Execution:** agent `ultracode` · effort `xhigh`
 > *Why:* a claim checked only against its own passage still passes the stale January ledger, and
 > nothing yet finds what the writer left out. These two Jev jobs are v1's "cited is not supported"
@@ -39,24 +40,24 @@ the omission map is half of what makes Readmark different from a citation tool. 
 (Task-07) and the summary under audit (Task-06) both build on this view and this run.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0; its replay smoke runs stub and A-0142 with no API
+- [x] `uv run python scripts/gate.py` exits 0; its replay smoke runs stub and A-0142 with no API
   keys and validates both `view.json` files against schema version 2.
-- [ ] `run --case A-0142 --replay` twice gives byte-identical `view.json`, with
+- [x] `run --case A-0142 --replay` twice gives byte-identical `view.json`, with
   `TYPESAFE_API_KEY` unset and `claude` not on PATH.
-- [ ] A test: with a fixed checker that calls the p.8 and p.23 ledger passages contradictory, a
+- [x] A test: with a fixed checker that calls the p.8 and p.23 ledger passages contradictory, a
   claim citing only p.8 ("arrears $2,400") is `contradicted`, `contradicted_by` names the p.23
   passage, and both passages are in required reading. Task-00's gap test now shows the gap closed.
-- [ ] A test: a passage scored above the threshold and cited by no claim is in its clause's
+- [x] A test: a passage scored above the threshold and cited by no claim is in its clause's
   `possibly_missed` and in required reading with the reason `possibly_missed`; one below it is not.
-- [ ] A test: when flags exceed the cap, required reading still has 8 or fewer entries and no
+- [x] A test: when flags exceed the cap, required reading still has 8 or fewer entries and no
   passage appears twice across required and suggested.
-- [ ] On A-0142 (replayed): under the Debts clause (`elig-debts`) the January (p.8) and March
+- [x] On A-0142 (replayed): under the Debts clause (`elig-debts`) the January (p.8) and March
   (p.23) ledger passages form a contradicting pair. If Jev does not call them contradictory, stop
   and report its verdict; never special-case the pair. Required reading has 8 or fewer passages.
-- [ ] `runs/A-0142/scan.json` records the threshold, how it was chosen and the number of passages
+- [x] `runs/A-0142/scan.json` records the threshold, how it was chosen and the number of passages
   scanned. The builder's report gives how many of A-0142's five gold required pages (p8, p23, p30,
   p51, p58) the required reading covers, with n.
-- [ ] `runs/A-0142/` and its cache hold no policy text beyond the quotes the screen shows: the
+- [x] `runs/A-0142/` and its cache hold no policy text beyond the quotes the screen shows: the
   existing grep test covers A-0142.
 
 ## Out of scope

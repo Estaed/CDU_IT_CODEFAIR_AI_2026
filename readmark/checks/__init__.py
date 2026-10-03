@@ -6,7 +6,11 @@
 A failure is shown as "quote not found" and is never dropped. Negation is deliberately not
 checked: "will not be withheld" against "not eligible" defeats any word count (notes, System).
 What these checks cannot see is a quote that is real but out of date: "arrears $2,400" citing
-the January ledger passes here, and only the checker or a contradiction pair can catch it.
+the January ledger passes here, and only the checker or a contradiction pair can catch it
+(``readmark.checks.cross``).
+
+``claim_reasons`` folds the three kinds of check into one claim status, in the order the screen
+ranks them: contradicted by another passage, quote not found, checker disagrees.
 """
 
 import re
@@ -75,9 +79,30 @@ def check_fact(fact: dict, passages_by_id: dict[str, dict]) -> dict:
     found_quotes = [c["quote"] for c, r in zip(fact.get("citations", []), citations, strict=True)
                     if r["quote_found"]]
     missing = values_missing(fact["claim"], found_quotes)
+    # A fact marked found must cite at least one passage (writer contract: 1 to n citations).
+    # One that arrives with none has nothing a reader can check, so it fails here and shows
+    # "quote not found"; it can never look supported.
     quotes_ok = bool(citations) and all(r["quote_found"] for r in citations)
     return {
         "citations": citations,
         "values_missing": missing,
         "passed": quotes_ok and not missing,
     }
+
+
+def claim_reasons(check: dict, verdict: dict | None, contradicted: list[str]) -> list[str]:
+    """Every check a claim failed, most decisive first. Its status is the first, or
+    "supported" when the list is empty.
+
+    A checker verdict of "contradicts" is the checker disagreeing with the claim on its own
+    passages; "contradicted" is reserved for a contradiction pair (another passage)."""
+    reasons = ["contradicted"] if contradicted else []
+    if not check["passed"]:
+        reasons.append("quote_not_found")
+    elif not verdict or verdict.get("verdict") != "supports":
+        reasons.append("checker_disagrees")
+    return reasons
+
+
+def claim_status(reasons: list[str]) -> str:
+    return reasons[0] if reasons else "supported"

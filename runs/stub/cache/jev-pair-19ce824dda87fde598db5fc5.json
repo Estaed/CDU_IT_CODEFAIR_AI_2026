@@ -1,0 +1,23 @@
+{
+ "key": "19ce824dda87fde598db5fc526cf78613cc4fe46563face8e183f39b9b2302fe",
+ "kind": "jev-pair",
+ "response": {
+  "answers": {
+   "relation": {
+    "choice": "agree",
+    "confidence": 0.61,
+    "probabilities": {
+     "agree": 0.75,
+     "contradict": 0.0,
+     "unrelated": 0.25
+    },
+    "type": "choice"
+   }
+  },
+  "model": "jev-1.13.0",
+  "usage": {
+   "input_tokens": 543,
+   "output_tokens": 42
+  }
+ }
+}

@@ -3,20 +3,65 @@
  "required": [
   {
    "claim_ids": [
-    "c15"
+    "c10"
    ],
-   "passage_id": "stub:p4:1",
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p2:2",
    "rank": 1,
    "reasons": [
-    "quote_not_found"
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c11"
+   ],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p3:2",
+   "rank": 2,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c10"
+   ],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p2:1",
+   "rank": 3,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c11"
+   ],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p3:1",
+   "rank": 4,
+   "reasons": [
+    "contradicted"
    ]
   },
   {
    "claim_ids": [
     "c15"
    ],
-   "passage_id": "eligibility:p6:11",
-   "rank": 2,
+   "clause_ids": [
+    "elig-former-tenancy"
+   ],
+   "passage_id": "stub:p4:1",
+   "rank": 5,
    "reasons": [
     "quote_not_found"
    ]
@@ -25,8 +70,24 @@
    "claim_ids": [
     "c15"
    ],
+   "clause_ids": [
+    "elig-former-tenancy"
+   ],
+   "passage_id": "eligibility:p6:11",
+   "rank": 6,
+   "reasons": [
+    "quote_not_found"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c15"
+   ],
+   "clause_ids": [
+    "elig-former-tenancy"
+   ],
    "passage_id": "stub:p1:1",
-   "rank": 3,
+   "rank": 7,
    "reasons": [
     "quote_not_found"
    ]
@@ -35,22 +96,29 @@
    "claim_ids": [
     "c21"
    ],
-   "passage_id": "stub:p5:2",
-   "rank": 4,
-   "reasons": [
-    "checker_disagrees"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c20"
+   "clause_ids": [
+    "prio-documentation"
    ],
-   "passage_id": "stub:p5:3",
-   "rank": 5,
+   "passage_id": "stub:p5:2",
+   "rank": 8,
    "reasons": [
     "checker_disagrees"
    ]
   }
  ],
- "suggested": []
+ "suggested": [
+  {
+   "claim_ids": [
+    "c20"
+   ],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "stub:p5:3",
+   "rank": 9,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  }
+ ]
 }

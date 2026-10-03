@@ -3,6 +3,7 @@
 import pytest
 
 from readmark import POLICIES_DIR
+from readmark.jev import date_order
 
 PDFS_PRESENT = all(
     (POLICIES_DIR / f).exists()
@@ -29,13 +30,43 @@ class FixedWriter:
 
 
 class FixedChecker:
-    """Says 'supports' unless a claim id is listed with another verdict."""
+    """Says 'supports' unless a claim id is listed with another verdict.
+
+    It also fills Jev's two cross-passage jobs, so a test never reaches the network: the scan
+    gives every passage 0 unless ``scores`` lists it (``{clause_id: {passage_id: score}}``), and
+    a pair is 'agree' unless ``contradict`` lists it (passage-id pairs, either order)."""
 
     name = "fixed"
     model_id = "fixed-checker"
 
-    def __init__(self, verdicts: dict[str, tuple[str, float]] | None = None):
+    def __init__(self, verdicts: dict[str, tuple[str, float]] | None = None,
+                 scores: dict[str, dict[str, float]] | None = None,
+                 contradict: list[tuple[str, str]] = ()):
         self.verdicts = verdicts or {}
+        self.scores = scores or {}
+        self.contradict = {frozenset(p) for p in contradict}
+        self.compared: list[tuple[str, str, str]] = []
+
+    def scan(self, clauses, passages):
+        return {
+            c["clause_id"]: {p["passage_id"]: self.scores.get(c["clause_id"], {})
+                             .get(p["passage_id"], 0.0) for p in passages}
+            for c in clauses
+        }
+
+    def compare(self, jobs):
+        out = []
+        for job in jobs:
+            a, b = sorted([job["a"], job["b"]], key=date_order)
+            hit = frozenset((a["passage_id"], b["passage_id"])) in self.contradict
+            self.compared.append((job["clause"]["clause_id"], a["passage_id"], b["passage_id"]))
+            out.append({
+                "clause_id": job["clause"]["clause_id"], "a": a["passage_id"],
+                "b": b["passage_id"], "verdict": "contradict" if hit else "agree",
+                "probabilities": {"agree": 0.1 if hit else 0.9,
+                                  "contradict": 0.9 if hit else 0.1, "unrelated": 0.0},
+            })
+        return out
 
     def check(self, items):
         return [

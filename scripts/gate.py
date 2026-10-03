@@ -2,8 +2,9 @@
 
 1. ruff check;
 2. pytest;
-3. replay smoke: the stub case from the replay cache with no API key in the environment, into a
-   temporary runs folder, and its view.json validated against readmark/schemas/view.schema.json.
+3. replay smoke: every committed case (the stub and the demo file A-0142) from its replay cache
+   with no API key in the environment, into a temporary runs folder, and each view.json
+   validated against readmark/schemas/view.schema.json (schema version 2).
 """
 
 import json
@@ -15,6 +16,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+SMOKE_CASES = ("stub", "A-0142")
 
 
 def step(name: str, cmd: list[str], env: dict | None = None) -> bool:
@@ -24,21 +26,23 @@ def step(name: str, cmd: list[str], env: dict | None = None) -> bool:
     return code == 0
 
 
-def replay_smoke() -> bool:
+def replay_smoke(case_id: str) -> bool:
     with tempfile.TemporaryDirectory() as tmp:
         runs = Path(tmp)
-        shutil.copytree(ROOT / "runs" / "stub" / "cache", runs / "stub" / "cache")
+        shutil.copytree(ROOT / "runs" / case_id / "cache", runs / case_id / "cache")
         env = {k: v for k, v in os.environ.items() if k != "TYPESAFE_API_KEY"}
         env["READMARK_RUNS_DIR"] = str(runs)
-        ok = step("replay smoke",
-                  [sys.executable, "-m", "readmark", "run", "--case", "stub", "--replay"], env)
+        ok = step(f"replay smoke {case_id}",
+                  [sys.executable, "-m", "readmark", "run", "--case", case_id, "--replay"], env)
         if not ok:
             return False
         sys.path.insert(0, str(ROOT))
         from readmark.pipeline import validate_view
 
-        validate_view(json.loads((runs / "stub" / "view.json").read_text(encoding="utf-8")))
-        print("== replay smoke: view.json matches readmark/schemas/view.schema.json", flush=True)
+        view = json.loads((runs / case_id / "view.json").read_text(encoding="utf-8"))
+        validate_view(view)
+        print(f"== replay smoke {case_id}: view.json (schema version {view['schema_version']}) "
+              "matches readmark/schemas/view.schema.json", flush=True)
         return True
 
 
@@ -46,7 +50,7 @@ def main() -> int:
     results = [
         step("ruff", [sys.executable, "-m", "ruff", "check"]),
         step("pytest", [sys.executable, "-m", "pytest"]),
-        replay_smoke(),
+        *(replay_smoke(case_id) for case_id in SMOKE_CASES),
     ]
     print("GATE " + ("CLEAN" if all(results) else "FAILED"))
     return 0 if all(results) else 1

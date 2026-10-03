@@ -2,7 +2,8 @@
 
 from conftest import fact
 
-from readmark.checks import check_fact, values_missing
+from readmark.checks import check_fact, claim_reasons, claim_status, values_missing
+from readmark.checks.cross import contradicted_by
 from readmark.gate import CAP, required_reading
 from readmark.ingest import case_passages
 
@@ -23,13 +24,20 @@ def test_citation_to_missing_passage_fails():
     assert result["passed"] is False and result["citations"][0]["passage_exists"] is False
 
 
-def test_stale_claim_citing_only_the_january_ledger_passes_the_code_check():
-    """The gap wave 2's contradiction pairs close, measured: the stub's January ledger (the
-    scenario's p.8) still says $2,400, so 'arrears $2,400' citing only it is a real quote with a
-    matching number. Code checks cannot see that the March ledger cleared it."""
+def test_stale_claim_citing_only_the_january_ledger_is_caught_by_the_pair_not_the_code_check():
+    """The gap Task-00 measured, now closed: the stub's January ledger (the scenario's p.8)
+    still says $2,400, so 'arrears $2,400' citing only it is a real quote with a matching number
+    and passes the code check. The contradiction pair with the March ledger (p.23) flags it."""
     f = fact("elig-debts", "The applicant has rent arrears of $2,400.",
              ("stub:p2:2", "Arrears balance $2,400.00."))
-    assert check_fact(f, PASSAGES)["passed"] is True
+    result = check_fact(f, PASSAGES)
+    assert result["passed"] is True  # code checks alone still cannot see it
+
+    pairs = [{"a": "stub:p2:2", "b": "stub:p3:2", "probability": 0.69}]
+    by = contradicted_by(result["citations"], pairs)
+    assert by == ["stub:p3:2"]
+    reasons = claim_reasons(result, {"verdict": "supports", "probability": 0.9}, by)
+    assert claim_status(reasons) == "contradicted"
 
 
 def test_number_or_date_absent_from_the_quotes_fails():

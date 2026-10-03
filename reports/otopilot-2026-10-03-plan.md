@@ -94,3 +94,10 @@ grant, resets 5-hour and weekly). The Codex lanes are unaffected.
 ## Approval
 Tarık approves this file; then the orchestrator commits it with the two task repairs, reruns
 preflight, records the final `BASE_SHA`, and starts wave 1.
+
+## Addition approved by Tarık, 2026-10-03 11:25 ACST: Task-04 (wave 3)
+Tarık asked for the Task-01 fix after the first look ("önerini yap ... sana bıraktım"). Task-04
+rewrites the four Task-01 case files as real paperwork and adds two validator checks (words per
+page, meta commentary) for `A-0142` and `E-*`. Codex bee `gpt-6-sol`/`high`, timebox 90 min, OWNS
+as Task-01's, GATE `python scripts/validate_cases.py`. Disjoint from Task-00, which is still
+running. Worktree cut from main after Task-02 (`6f23392` plus this commit).

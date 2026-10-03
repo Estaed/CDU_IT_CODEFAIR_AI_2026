@@ -7,3 +7,4 @@ validator.
 - [x] Task-01: Grounded synthetic case files: demo A-0142 plus three short evaluation files (codex)
 - [x] Task-02: Held-out case H-01, written blind (codex)
 - [x] Task-03: Design A/B, Tarik Base against a blind direction (main-loop)
+- [ ] Task-04: Rewrite the Task-01 case files as real paperwork, and make the validator catch it (codex)

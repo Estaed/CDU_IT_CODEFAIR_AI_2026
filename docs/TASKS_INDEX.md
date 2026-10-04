@@ -70,3 +70,7 @@ Wave 15 (2026-10-04). Width 1.
 Wave 16 (2026-10-04). Width 1. After Task-30.
 
 - [x] Task-31: Uploaded documents get their date, read by Claude and checked by code (codex)
+
+Wave 17 (2026-10-05). Width 1.
+
+- [ ] Task-32: Two pages that disagree reach Jev on a long file (main-loop)

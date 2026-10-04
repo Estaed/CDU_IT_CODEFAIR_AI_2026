@@ -53,7 +53,7 @@ Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 
 
 Wave 12 (2026-10-04). Width 1.
 
-- [ ] Task-27: Questions from the rules: Claude suggests, a person approves each one (codex)
+- [x] Task-27: Questions from the rules: Claude suggests, a person approves each one (codex)
 
 Wave 13 (2026-10-04). Width 1. No Claude calls (split on 4 Oct).
 
@@ -61,7 +61,7 @@ Wave 13 (2026-10-04). Width 1. No Claude calls (split on 4 Oct).
 
 Wave 14 (2026-10-04). By hand on the website, after the Claude reset; not for otopilot.
 
-- [x] Task-29: The Ochre Card case live on the website: questions from the rules, then the file (main-loop), eye check pending: 1
+- [x] Task-29: The Ochre Card case live on the website: questions from the rules, then the file (main-loop)
 
 Wave 15 (2026-10-04). Width 1.
 

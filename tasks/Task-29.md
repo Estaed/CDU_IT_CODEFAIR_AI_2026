@@ -65,7 +65,7 @@ real rulebook, used the way an officer would use it.
 - [x] No rule PDF is committed (`git ls-files data/policies` holds only lock files).
 - [x] Screenshots of W-01's case page with its intake note at 1280 and 1440 in
   `reports/screens/2026-10-05-wave13/`.
-- [ ] (eye) Tarık opens W-01: the intake note says what the file is in under ten seconds and hints
+- [x] (eye) Tarık opens W-01: the intake note says what the file is in under ten seconds and hints
   at no outcome.
 
 ## Out of scope

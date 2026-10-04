@@ -50,3 +50,7 @@ Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 
 - [x] Task-24: The case screen speaks its question list's language (codex)
 - [x] Task-25: A calmer tier for "possibly missed": flags for problems, "worth a look" for unused pages (codex)
 - [x] Task-26: Question-list coverage: Jev shows decisive policy rules no question covers (codex)
+
+Wave 12 (2026-10-04). Width 1.
+
+- [ ] Task-27: Questions from the rules: Claude suggests, a person approves each one (codex)

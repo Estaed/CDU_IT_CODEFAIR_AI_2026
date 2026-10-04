@@ -479,6 +479,7 @@ session list.
   adding one is a new entry with its verbatim policy sentence, and a person approves every list.
 - 2026-10-03: The AI suggests new questions from the policy text, and a person approves each before
   use. If the AI chose which rules matter, the trust problem would move into the questions.
+  **Moved into v1 on 2026-10-04 (Task-27):** the person still approves every question.
 - 2026-10-03: Jev's separate "supports" score as the unsure signal, instead of its verdict
   confidence. Task-08 measured AUC 0.899 and balanced accuracy 0.857 at 0.3 (n=300).
 - 2026-10-03: Claude and Jev as two checkers, two votes. Task-08 measured Claude 0.85 and Jev 0.83

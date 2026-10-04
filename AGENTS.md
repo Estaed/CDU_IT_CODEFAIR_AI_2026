@@ -93,6 +93,10 @@ Everything below ships in the 8 Oct ZIP. There is no development after submissio
   - quotes are verified against that transcription;
   - the page image is shown beside it.
 - **Search within a case:** across its documents and its policies.
+- **Questions from the rules** (Tarık, 2026-10-04):
+  - a new question list can start from uploaded rule PDFs;
+  - Claude suggests the decisive questions, each with a code-verified verbatim sentence;
+  - a person approves, edits or rejects each one, and only approved questions are used.
 
 ### Not in v1
 - Local models (MiniCheck, a local writer): only when Tarık asks.

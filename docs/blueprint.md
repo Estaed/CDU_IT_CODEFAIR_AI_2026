@@ -1,0 +1,177 @@
+# Blueprint — Readmark
+
+The plan v1 is built from. Binding until changed on purpose (PRINCIPLES #5); the `blueprint`
+skill amends it. Its Constraints live in `AGENTS.md`, because every session must see them.
+
+## What v1 is
+**Readmark** is for CDU IT Code Fair 2026, AI Challenge brief 6, team AIC014. The user is an NT
+**delegated officer** assessing an urban priority-housing application in Darwin.
+- **Input:**
+  - one applicant file, synthetic, about 60 pages;
+  - five real NT public-housing policies: Priority housing, Eligibility, Identification and
+    documentation, DFV, and Discretionary decision making;
+  - one real open dataset for context on the case header: NT urban public housing wait times
+    (CC BY, data to 31 Dec 2020).
+- **Evidence map, per decisive policy clause:**
+  - verbatim quotes first, then Claude's claims;
+  - claim checks: quote not found / checker disagrees / contradicted by another passage / supported;
+  - coverage: possibly missed / no evidence in file.
+- **Review screen:** the case file itself is the reading surface. Each code-verified quote is
+  highlighted on its page with the question it answers, like an exam answer key. Flagged questions
+  come first; clean ones fold into one line.
+- **Summary under audit:** a frozen plain summary goes through the same checks. Its result is an
+  evaluation number for the report and pitch, not a tab on the review screen.
+- **Required reading:** at most 8 flagged passages, opened one at a time, before sign-off.
+- **The officer** sets every clause outcome (met / not met / cannot decide yet) and the decision, and
+  can dispute any claim.
+- **Decision record:** passages opened, time in view, disputes, reason and models. It exports as
+  HTML or JSON.
+
+**Done means:**
+- the demo case runs end to end offline from the replay cache, and so does W-01;
+- the evaluation numbers are frozen by **7 Oct** for the teammate's report;
+- the ZIP (report, Python with remarks, README) is emailed by **8 Oct**;
+- the pitch is on 15 Oct.
+
+Unweighted rubric: datasets, creativity, technical, context and practicality, ethics, presentation.
+
+## Added before submission (Tarık, 2026-10-03: "teslim sonrası geliştirme yok, hepsi yapılacak")
+Everything below ships in the 8 Oct ZIP. There is no development after submission.
+- **Plain AI notes and the usability fixes:** `reports/2026-10-03-usability-notes.md`. A page counts
+  as opened after 3 s in view.
+- **Question lists:**
+  - each list holds its own policy bundle and its approved questions;
+  - a case names its list;
+  - the NT priority-housing list stays the default.
+- **Case home screen:**
+  - cases listed as in progress or completed;
+  - each case keeps its own record;
+  - the layout looks like Claude's or Codex's session list (look only, no chat).
+- **New case:**
+  - a case is a folder of several documents (PDF or text), uploaded together;
+  - the officer picks a question list;
+  - the pipeline runs live with visible progress;
+  - the case then joins the list.
+- **The second showcase case, W-01** (Tarık, 2026-10-04; it replaces the CDU easy example, which
+  is deleted):
+  - the NT Working with Children Clearance (Ochre Card): the Care and Protection of Children Act
+    2007 and its Screening Regulations 2010, real; NT legislation may be republished on its
+    stated conditions, but it stays git-ignored like the other rules;
+  - a synthetic 104-page candidate file with a criminal history, written as a close call;
+  - its question list comes from Task-27's flow, and the home screen shows only A-0142 and W-01
+    (the evaluation cases stay, hidden).
+- **An intake note on each case:** one or two neutral sentences on what the file is, labelled as
+  the receiving officer's note, never hinting at an outcome.
+- **Scanned pages:**
+  - Claude transcribes page images to text (OCR by vision);
+  - quotes are verified against that transcription;
+  - the page image is shown beside it.
+- **Search within a case:** across its documents and its policies.
+- **Questions from the rules** (Tarık, 2026-10-04):
+  - a new question list can start from uploaded rule PDFs;
+  - Claude suggests the decisive questions, each with a code-verified verbatim sentence;
+  - a person approves, edits or rejects each one, and only approved questions are used.
+
+## Not in v1
+- Local models (MiniCheck, a local writer): only when Tarık asks.
+- Chat with the documents or an agent.
+- Drafts addressed to the applicant: a request for information, and a decision letter.
+- A backlog queue, a supervisor view, and a check of the officer's reason.
+- Prompt-injection defence, and a formatted PDF record.
+- A team timing test. The time cost of the gate is stated as untested and becomes the pilot's first
+  measure.
+- The full list is in `notes.md` → *After v1*.
+
+## Riskiest assumption
+Readmark finds real errors in a summary we did not write, while keeping required reading at 8 or
+fewer on the demo file.
+- **How it will be tested:** the frozen summary under audit plus a held-out file that Codex writes
+  before the first pipeline run, which no Claude stage sees in advance.
+- **Result (2026-10-03, wave 3):**
+  - required reading stayed at 8 or fewer on every file;
+  - the mutation set: 20 of 21 planted errors caught, 1 false alarm in 24 correct claims;
+  - the held-out file H-01: every gold page is flagged or cited, 4 of 8 are forced;
+  - its summary audit: 1 real error and 4 real file-inconsistency flags among 14 (9 false alarms);
+  - the summary audit's precision is weak, so Task-12 improves it, and a new held-out file comes
+    later.
+
+## Stack
+Provisional until Task-00 writes `uv.lock`.
+
+| Package | Version | Why |
+|---|---|---|
+| Python | 3.13.5 (this machine) | All analysis code; the competition requires Python with remarks |
+| uv | 0.12.13 | Environment and lockfile |
+| Claude Code CLI, `claude -p --json-schema` | installed | Writer and summary under audit. Model `opus`. Subscription, no API key. Build time only; results go to the replay cache. Wrapper ported from the archive's `fair_turn/llm/claude_cli.py` (prompt on stdin, process-tree kill on timeout) |
+| TypeSafe Jev API, `jev-latest` | `jev-1.13.0` seen 2026-10-03 | Checker: second key, contradiction pairs, relevance scan (20 passages per call). `TYPESAFE_API_KEY` from env |
+| Codex CLI | 0.159.3 | Writes the synthetic case files and the held-out file: a different model family from the reader |
+| pypdf, FastAPI + uvicorn, pytest, ruff, Playwright | from lockfile | PDF text with pages; serving the UI and saving the record; gate; screenshots |
+
+**Rejected options:**
+- **Streamlit:** passage-by-passage opening, side-by-side highlight and the lock fight it.
+- **Claude Citations API:** cannot combine with structured output, and guarantees only valid pointers.
+- **Jev as writer:** writes no text, and its context is 32K.
+- **Cloud grounding APIs:** they send case text away.
+
+## Layout
+- **`readmark/`**: the Python package, one module per stage. Each stage reads and writes JSON under
+  `runs/<case>/<stage>.json`, which makes up the replay cache, the ablation and the demo. The stages:
+  - `ingest/`: PDF or text to numbered passages, and SHA-256 pins;
+  - `checklist/`: approved decisive clauses as YAML;
+  - `writer/`;
+  - `checks/`: quote present; numbers and dates appear in a cited quote, its passage, or its
+    document's header (title and date);
+  - `jev/`;
+  - `audit/`: summary under audit to claims to checks;
+  - `gate/`;
+  - `record/`;
+  - `eval/`;
+  - `serve.py`.
+- **Seams:**
+  - `writer` and `checker` each sit behind one small interface: today Claude and Jev, with Claude
+    also available as the checker, for the checker evaluation and the fallback;
+  - the stage JSON contract;
+  - `web/theme.css` as the single styling file, for the design A/B.
+- **`web/`**: static `index.html` and `app.js` reading `runs/<case>/view.json`. No build step.
+- **`data/policies/`**: PDFs the user downloads, git-ignored. `policies.lock.json` (version and
+  SHA-256) is committed.
+- **`data/cases/`**: synthetic files with their facts tables and gold labels.
+- **`data/benchmark/`**: the released CSV and its datasheet.
+- **`scripts/gate.py`**, **`python -m readmark run|serve|eval`**.
+
+## Verification
+- **Gate:** `uv run python scripts/gate.py` from the repo root runs `ruff check`, `pytest`, and a
+  replay smoke test: the demo case from the cache, with no keys, validating `view.json`. Clean means
+  exit 0. It runs for the first time at the end of Task-00.
+- **Eye check:** Tarık checks the review screen against its reference. Until he approves the
+  Task-15 screen, the reference is `reports/screens/ui-references/mock-6-gov-filepanel.png`, with
+  `design/DESIGN.md`; from then, that screen's screenshots in `design/screens/` are the reference.
+  `design/mock-v0.html` defines behaviour only. Playwright screenshots at 1280 and 1440 wide.
+  Intended deviations go in `design/deviations.md`.
+- **Numbers:** every evaluation number is written to `runs/eval/summary.json` with its n.
+
+## Decisions
+2026-10-03, all Tarık's unless marked.
+
+| Decision | Rejected option and why |
+|---|---|
+| Brief 6, user = urban delegated officer | Brief 1 (Fair Turn): archived on `archive/v2-weekly-plan`; Tarık could not own it |
+| Data: the real NT policy bundle plus synthetic case files, which Codex writes from a facts table first. Every document type is one the Identification and documentation policy asks for | AustLII material (its usage policy forbids AI input); fully synthetic (no real anchor); the Commonwealth Social Security Guide (loses the NT story) |
+| Claude writer, Jev checker, Claude as fallback checker; local models after v1 | Jev as writer (writes no text); MiniCheck in v1 (time) |
+| The officer sets every clause outcome; the AI only checks claims | AI pre-filled outcomes: anchoring, as in the oncology RCT where humans followed the AI on ECOG |
+| The summary under audit is Claude with a one-line "summarise this file" prompt, frozen with model id and prompt | A hand-written "plain AI" summary: staging |
+| Demo outcome = "cannot decide yet, request income evidence" | "Flips to accept": skips the urban income criteria |
+| Policy PDFs are not bundled: README links plus manual download, pinned by SHA-256 (Eko, delegated) | Bundling: NTG copyright, not CC BY |
+| HTML/JS UI with a Python server; the name Readmark | Streamlit |
+| Required reading capped at 8, most decisive first; the receipt says "opened", never "read" | Forcing every passage: annoyance, the weakest effect in the research |
+| Evaluation inside v1: summary under audit; mutation set per error type; held-out file; Jev against Claude-as-checker on several hundred SummEdits pairs (CC BY 4.0), with calibration; an ablation by layer; the position test if time allows | A team timing test: no team dependency |
+| Design A/B: A = Tarik Base via `tasarim`, B = a blind agent. Tarık picked A (2026-10-03, "for now"; a polish pass later) | B: looked like slop to Tarık |
+| Review screen layout (2026-10-03, after `reports/2026-10-03-ux-guided-review.md`): clause list on the left with a status per clause and a sign-off row, the selected clause and its source on the right, a case bar with both counters and the next action, plain language with no internal ids, a linked "before you can sign" summary, a dismissible first-run panel. Check: a first-time viewer names the next step within 10 s | A task-list home with one page per clause: loses the whole-case overview staff tools need, the most rework. C the current long page plus guidance: the long scroll stays |
+| Eye-check reference: once Tarık approves the Task-07 screen, its screenshots in `design/screens/` replace the planned `design/screens.html` (2026-10-03) | A separate static prototype: a second copy of the same screen to keep in step |
+| Review screen, after the wave 2 look (2026-10-03): the case file is the reading surface, with code-verified quotes highlighted on their page and labelled with their question (Tarık's idea, from IELTS answer keys); flagged questions first, clean ones folded to one line; "next flag" jumps between highlights; boxes and space instead of dense text | Evidence rows with the AI's sentence as the main surface: too much text, Tarık could not follow it. The rest of layout B stays |
+| The summary under audit leaves the screen and stays an evaluation number (2026-10-03) | A summary tab on screen: it shows that models err, but it does not help the officer decide |
+| The number and date check also accepts a value in the cited passage or its document's header, not only in the quote (2026-10-03, after labelling H-01's audit: 5 of 9 false alarms had the value there) | Quote only: the locator's short quotes left true dates and amounts unverified |
+| H-01 is no longer held-out once the checks change after its run. Its first-run numbers stay frozen and reported as such; later numbers on it are labelled "after changes". A new held-out file is written another time (2026-10-03) | Freezing the code for good after H-01: the system is still being settled |
+| Context data: the NT "Urban Public Housing Wait Times" open dataset (CC BY, data to 31 Dec 2020) shows one line on the case header, labelled with its source and age (2026-10-03, for the datasets criterion) | Leaving it out: the only real open dataset in v1 besides the policies |
+| Light mode is the default. The final look will follow comparable caseworker tools rather than Tarik Base, and the interface is the last job of v1 (2026-10-03) | Dark Tarik Base as the default |
+| Final look (2026-10-03, after `reports/2026-10-03-ui-references.md`): hybrid 6, the Australian Government caseworker look (AgDS / GOV.UK task list, header band, identity bar, big radios, one primary button), with one question per page. The question page holds a file viewer with a tab for each cited page, the labelled highlight in place, and "open in full file" for the whole file with next/previous highlight. Light only: dark mode is removed. Tarik Base is not used (`design/DESIGN.md`) | 2, a review workstation: too complex. 3, margin notes: generic and too empty. 4, a CRM stage bar: rejected. 1 alone: the original document was not visible. 5, a margin card beside the file: needs alignment code for the same gain |

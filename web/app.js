@@ -180,10 +180,13 @@ const railClauses = () => S.view.clauses.filter((c) => c.clause_id !== 'other'
 
 const shortName = (cl) => cl.clause_id === 'other' ? 'Background facts (no decision needed)' : cl.title;
 
-// Two case pages with different dates are a record that changed over time (a January balance,
-// a March receipt), not an inconsistency; the wording says which page is newer and nothing more.
+// Two dated pages of the same kind of record (a January and a March ledger statement) are a
+// record that changed over time, not an inconsistency; the wording says which page is newer and
+// nothing more. Records of different kinds (a statement against a police report) keep "disagree":
+// a later document of another kind does not replace an earlier one.
 const caseDate = (pid) => { const s = src(pid); return s && s.kind === 'case' ? s.doc_date || '' : ''; };
-const datedPair = (p) => caseDate(p.a) && caseDate(p.b) && caseDate(p.a) !== caseDate(p.b);
+const datedPair = (p) => caseDate(p.a) && caseDate(p.b) && caseDate(p.a) !== caseDate(p.b)
+  && src(p.a).doc_type && src(p.a).doc_type === src(p.b).doc_type;
 const updatedOverTime = (cl) => cl.contradictions.length > 0 && cl.contradictions.every(datedPair);
 
 function questionProblem(cl) {

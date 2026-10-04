@@ -354,3 +354,13 @@ footer { margin-top: 16px; padding: 16px 0 28px; border-top: 1px solid var(--lin
   .search-controls { flex-wrap: wrap; }
   .search-controls input { flex-basis: 100%; }
 }
+/* Uploaded rulebooks use the existing government form and question-page language. */
+.list-review { max-width: 900px; }
+.question-suggestion { border-top: 1px solid #bbb; padding: 24px 0; margin-top: 24px; }
+.question-suggestion h2 { font-size: 30px; margin: 0 0 16px; }
+.question-suggestion .rule-sentence { border-left: 4px solid #00698f; padding: 16px; margin: 16px 0; background: #f3f4f6; font-family: Georgia, serif; }
+.suggestion-actions { display: flex; gap: 24px; align-items: center; }
+.suggestion-editor { margin-top: 24px; }
+.suggestion-editor textarea { width: 100%; box-sizing: border-box; padding: 8px; font: inherit; border: 1px solid #555; }
+.review-choice { font-weight: bold; }
+.list-words { margin: 24px 0; }

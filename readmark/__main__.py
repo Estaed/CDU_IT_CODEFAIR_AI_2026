@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+from pathlib import Path
 
 from readmark import case_run_dir
 
@@ -21,7 +22,12 @@ def main(argv: list[str] | None = None) -> int:
     serve.add_argument("--port", type=int, default=8765)
 
     lists = sub.add_parser("lists", help="scan an approved question list for uncovered policy rules")
-    lists.add_argument("--coverage", required=True, metavar="LIST_ID")
+    action = lists.add_mutually_exclusive_group(required=True)
+    action.add_argument("--coverage", metavar="LIST_ID")
+    action.add_argument("--generate", type=Path, metavar="RULES_FOLDER")
+    lists.add_argument("--id")
+    lists.add_argument("--name")
+    lists.add_argument("--scope", help="one-sentence subject; defaults to the list name")
     lists.add_argument("--replay", action="store_true",
                        help="use the list's coverage-cache only; no keys, no network")
 
@@ -37,9 +43,22 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     if args.verb == "lists":
-        from readmark.checklist.coverage import run_coverage
+        if args.generate:
+            if not args.id or not args.name:
+                parser.error("--generate needs --id and --name")
+            from readmark.checklist.generate import generate_from_folder
 
-        result = run_coverage(args.coverage, replay=args.replay)
+            result = generate_from_folder(args.generate, args.id, args.name,
+                                          args.scope or args.name, replay=args.replay)
+            print(f"{args.id}: {len(result['suggestions'])} suggestions; none approved. "
+                  f"Open /?list={args.id} to review them.")
+            return 0
+        from readmark.checklist.coverage import run_coverage
+        from readmark.checklist.lists import generated_lists_dir
+
+        options = ({"lists_dir": generated_lists_dir()}
+                   if (generated_lists_dir() / args.coverage).is_dir() else {})
+        result = run_coverage(args.coverage, replay=args.replay, **options)
         print(f"{args.coverage}: {result['n_reported']} policy rules no question covers "
               f"(n={result['n_scanned']} scanned; {result['model']}; {result['date']})")
         return 0

@@ -10,6 +10,7 @@ import base64
 import binascii
 import csv
 import hashlib
+import html
 import json
 import math
 import re
@@ -38,6 +39,11 @@ from readmark.checklist import (
     set_case_question_list,
 )
 from readmark.checklist.coverage import read_coverage
+from readmark.checklist.coverage import run_coverage
+from readmark.checklist.generate import (
+    STATE_LOCK, check_question, create_draft, read_suggestions, save_review, suggest, write_json,
+)
+from readmark.checklist.lists import generated_lists_dir, question_list_folder
 from readmark.ingest import IngestError, case_passages, policy_passages, prepare_upload
 from readmark.pipeline import run
 from readmark.jev import JEV_MODEL, JEV_URL, SCAN_BATCH, SCAN_CRITERIA, render_case_passage
@@ -194,13 +200,15 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                opened_seconds: float = rec.OPENED_SECONDS,
                runs_root: Path | None = None, uploads_root: Path | None = None,
                lists_dir: Path = QUESTION_LISTS_DIR, pipeline_runner=None,
-               transcriber=None, searcher_factory=JevSearch) -> FastAPI:
+               transcriber=None, searcher_factory=JevSearch, coverage_runner=None) -> FastAPI:
     # opened_seconds is a parameter only so tests can run on a short clock; the CLI never sets it,
     # so the shipped screen and record always use rec.OPENED_SECONDS.
     root = runs_root if runs_root is not None else runs_dir()
     uploads = uploads_root if uploads_root is not None else DATA / "uploads"
     default_run = run_dir or (root / case_id if case_id else None)
     job_lock = Lock()
+    list_lock = STATE_LOCK
+    active_lists = set()
 
     def save_job(job: dict) -> None:
         path = uploads / job["case_id"] / "job.json"
@@ -219,6 +227,14 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
             if job["status"] == "running":
                 job.update(status="failed", message="The checks were interrupted; your files are kept.")
                 save_job(job)
+        for path in generated_lists_dir(lists_dir).glob("*/suggestions.json"):
+            job = json.loads(path.read_text(encoding="utf-8"))
+            if job["status"] == "running":
+                job.update(status="failed", message="The suggestions were interrupted; your files are kept.")
+                write_json(path, job)
+            elif job.get("coverage_note", "").startswith("Checking"):
+                job["coverage_note"] = "Coverage was interrupted. The approved list still works."
+                write_json(path, job)
         yield
 
     app = FastAPI(title="Readmark", docs_url=None, redoc_url=None, openapi_url=None,
@@ -293,6 +309,133 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
             job.update(status="failed", message=message)
         save_job(job)
 
+    def generated_job(list_id):
+        try:
+            return read_suggestions(list_id, lists_dir)
+        except IngestError:
+            raise HTTPException(404, "Unknown generated question list.") from None
+
+    def generate_questions(list_id, passage_id=None):
+        path = generated_lists_dir(lists_dir) / list_id / "suggestions.json"
+
+        def progress(stage):
+            with list_lock:
+                job = generated_job(list_id)
+                if stage not in job["steps"]:
+                    job["steps"].append(stage)
+                write_json(path, job)
+
+        try:
+            suggest(list_id, lists_dir=lists_dir, passage_id=passage_id, progress=progress)
+        except Exception as exc:
+            with list_lock:
+                job = generated_job(list_id)
+                # A failed second pass leaves the previously reviewed questions usable.
+                job.update(status="ready" if passage_id else "failed", message=str(exc)
+                           if isinstance(exc, IngestError) else
+                           "The AI could not suggest questions; your files are kept.")
+                write_json(path, job)
+        finally:
+            with list_lock:
+                active_lists.discard(list_id)
+
+    @app.post("/api/question-lists", status_code=202)
+    async def post_list(request: Request, background: BackgroundTasks):
+        body = bytearray()
+        async for chunk in request.stream():
+            body.extend(chunk)
+            if len(body) > MAX_UPLOAD_BYTES * 4 // 3 + 1024 * 1024:
+                raise HTTPException(413, "Choose files totalling no more than 25 MB.")
+        try:
+            payload = json.loads(body)
+            files = [(f["name"], base64.b64decode(f["content"], validate=True))
+                     for f in payload["files"]]
+            if sum(len(content) for _, content in files) > MAX_UPLOAD_BYTES:
+                raise HTTPException(413, "Choose files totalling no more than 25 MB.")
+            list_id = "rules-" + uuid4().hex
+            create_draft(list_id, payload["name"], payload["scope"], files,
+                         labels=payload.get("labels"), decisions=payload.get("decisions"),
+                         lists_dir=lists_dir)
+        except (ValueError, KeyError, TypeError, AttributeError, IngestError, binascii.Error):
+            raise HTTPException(422, "Enter a list name and scope, then add PDF or text rules.") from None
+        with list_lock:
+            active_lists.add(list_id)
+        background.add_task(generate_questions, list_id)
+        return {"list_id": list_id}
+
+    @app.get("/api/question-lists/{list_id}/suggestions")
+    def get_suggestions(list_id: str):
+        with list_lock:
+            job = generated_job(list_id)
+            spec = load_question_list(list_id, lists_dir, allow_draft=True)
+            return {**job, "policies": [{"key": p["key"], "title": p["title"]}
+                                       for p in spec["policies"]]}
+
+    @app.post("/api/question-lists/{list_id}/check")
+    def check_suggestion(list_id: str, payload: Annotated[dict, Body()]):
+        job = generated_job(list_id)
+        original = next((q for q in job["suggestions"]
+                         if q["clause_id"] == payload.get("clause_id")), None)
+        if original is None:
+            raise HTTPException(404, "Unknown suggested question.")
+        spec = load_question_list(list_id, lists_dir, allow_draft=True)
+        return check_question({**original, **payload}, policy_passages(question_list=spec))
+
+    def check_list_unused(list_id):
+        # Changing questions after a case has run would invalidate its view and officer record.
+        for selection in uploads.glob("*/question-list.json"):
+            if json.loads(selection.read_text(encoding="utf-8")).get("question_list") == list_id:
+                raise HTTPException(409, "This list is used by a case. Make a new list to change its questions.")
+
+    def scan_saved_list(list_id):
+        path = generated_lists_dir(lists_dir) / list_id / "suggestions.json"
+        note = "Coverage was skipped: offline or no second reader key. The list still works."
+        try:
+            if coverage_runner is not None or load_dotenv_key("TYPESAFE_API_KEY"):
+                result = (coverage_runner or run_coverage)(list_id,
+                    lists_dir=question_list_folder(list_id, lists_dir).parent)
+                note = f"{result['n_reported']} rules no question covers."
+        except Exception:
+            note = "Coverage could not finish. The approved list still works."
+        with list_lock:
+            job = generated_job(list_id)
+            job["coverage_note"] = note
+            write_json(path, job)
+            active_lists.discard(list_id)
+
+    @app.post("/api/question-lists/{list_id}/review")
+    def post_review(list_id: str, payload: Annotated[dict, Body()], background: BackgroundTasks):
+        with list_lock:
+            generated_job(list_id)
+            if list_id in active_lists:
+                raise HTTPException(409, "Wait until this list's current check finishes.")
+            check_list_unused(list_id)
+            try:
+                job = save_review(list_id, payload.get("suggestions"), lists_dir=lists_dir)
+            except IngestError as exc:
+                raise HTTPException(422, str(exc)) from None
+            if job["approved_count"]:
+                active_lists.add(list_id)
+                background.add_task(scan_saved_list, list_id)
+        return job
+
+    @app.post("/api/question-lists/{list_id}/suggest", status_code=202)
+    def post_suggest(list_id: str, payload: Annotated[dict, Body()], background: BackgroundTasks):
+        with list_lock:
+            job = generated_job(list_id)
+            check_list_unused(list_id)
+            if list_id in active_lists:
+                raise HTTPException(409, "Wait until this list's current check finishes.")
+            coverage = read_coverage(list_id, question_list_folder(list_id, lists_dir).parent)
+            if not coverage or payload.get("passage_id") not in {
+                    s["passage_id"] for s in coverage["suggestions"]}:
+                raise HTTPException(422, "Choose an uncovered rule from this list.")
+            active_lists.add(list_id)
+            job.update(status="running", steps=[], message=None)
+            write_json(generated_lists_dir(lists_dir) / list_id / "suggestions.json", job)
+        background.add_task(generate_questions, list_id, payload["passage_id"])
+        return {"list_id": list_id}
+
     @app.post("/api/cases", status_code=202)
     async def post_case(request: Request, background: BackgroundTasks):
         # JSON with base64 files avoids a new multipart dependency. Bound the body before
@@ -331,7 +474,8 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
             relative = f"originals/{doc_id}{suffix}"
             (destination / relative).write_bytes(content)
             documents.append({"doc_id": doc_id, "name": filename, "file": relative})
-        set_case_question_list(cid, list_id, case_dir=destination, lists_dir=lists_dir)
+        with list_lock:
+            set_case_question_list(cid, list_id, case_dir=destination, lists_dir=lists_dir)
         job = {"case_id": cid, "name": name, "question_list": list_id,
                "files": [doc["name"] for doc in documents], "status": "running",
                "steps": [], "message": None}
@@ -404,21 +548,26 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                        sorted(uploads.glob("*/job.json"))]
         question_lists = list_question_lists(lists_dir)
         for item in question_lists:
-            coverage = read_coverage(item["id"], lists_dir)
+            coverage = read_coverage(item["id"], question_list_folder(item["id"], lists_dir).parent)
             item["coverage_count"] = coverage["n_reported"] if coverage else None
+            item["generated"] = (generated_lists_dir(lists_dir) / item["id"]).is_dir()
+        drafts = [json.loads(p.read_text(encoding="utf-8")) for p in
+                  generated_lists_dir(lists_dir).glob("*/suggestions.json")]
         return {"cases": result, "question_lists": question_lists,
+                "list_drafts": [{"id": j["list_id"], "title": j["name"], "status": j["status"]}
+                                for j in drafts if j["list_id"] not in {i["id"] for i in question_lists}],
                 "uploads": [job for job in pending if job["status"] != "ready"]}
 
     @app.get("/api/question-lists/{list_id}/coverage")
     def get_list_coverage(list_id: str):
         try:
-            coverage = read_coverage(list_id, lists_dir)
+            coverage = read_coverage(list_id, question_list_folder(list_id, lists_dir).parent)
             spec = load_question_list(list_id, lists_dir)
         except IngestError:
             raise HTTPException(404, "Unknown question list.") from None
         if coverage is None:
             raise HTTPException(404, "Coverage has not been checked for this list.")
-        return {**coverage, "title": spec["title"]}
+        return {**coverage, "title": spec["title"], "generated": bool(spec.get("generation"))}
 
     @app.get("/api/question-lists/{list_id}/passages/{passage_id}")
     def get_list_policy_passage(list_id: str, passage_id: str):
@@ -442,6 +591,7 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         view(cid)
         spec = spec_for(cid)
         return {"id": spec["id"], "title": spec["title"], "policies": spec["policies"],
+                "generation": spec.get("generation"),
                 **rec.wording(spec)}
 
     @app.get("/api/view")
@@ -602,7 +752,22 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
             return JSONResponse({"problems": exc.problems}, status_code=422)
         except IngestError:
             raise HTTPException(503, "The pinned search source could not be read.") from None
-        rec.save(record, record_folder(cid))
+        spec = spec_for(cid)
+        if spec.get("generation"):
+            provenance = [{"title": c["title"], **c["provenance"]} for c in spec["clauses"]]
+            record["question_list"] = {"id": spec["id"], "title": spec["title"],
+                                       "questions": provenance}
+        _, html_path = rec.save(record, record_folder(cid))
+        if spec.get("generation"):
+            attribution = "".join(
+                f"<li>{html.escape(q['title'])}: Suggested by Claude "
+                f"({html.escape(q['suggested_by']['model'])}) on {q['suggested_by']['date']}; "
+                f"approved by a person on {q['approved_date']}.</li>" for q in provenance)
+            text = html_path.read_text(encoding="utf-8")
+            text = text.replace("<h4>Your answers to the questions</h4>",
+                f"<h4>Question list: {html.escape(spec['title'])}</h4><ul>{attribution}</ul>"
+                "<h4>Your answers to the questions</h4>")
+            html_path.write_text(text, encoding="utf-8", newline="\n")
         rid = record["record_id"]
         return {"record": record, "json_url": f"/api/records/{rid}.json?case={cid}",
                 "html_url": f"/api/records/{rid}.html?case={cid}"}

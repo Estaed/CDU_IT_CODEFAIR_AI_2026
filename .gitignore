@@ -4,6 +4,7 @@
 debug.log
 .env
 data/uploads/
+data/question-lists/
 runs/U-*/
 data/policies/*.pdf
 __pycache__/

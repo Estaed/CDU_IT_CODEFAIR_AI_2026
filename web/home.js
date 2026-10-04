@@ -18,7 +18,7 @@ async function showHome() {
   try {
     const response = await fetch('/api/cases');
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const { cases, question_lists, uploads = [] } = await response.json();
+    const { cases, question_lists, uploads = [], list_drafts = [] } = await response.json();
     let selected = cases.find((c) => !c.evaluation && !c.signed) || cases[0];
     const decided = (c) => {
       const draft = readCaseDraft(c.draft_key);
@@ -43,9 +43,11 @@ async function showHome() {
         ${group('Evaluation files', cases.filter((c) => c.evaluation), true)}
       </nav><section class="case-summary" id="caseSummary" aria-label="Selected case" data-testid="case-summary"></section></div>
       <section class="question-lists" aria-label="Question lists" data-testid="question-lists">
-        <h2>Question lists</h2><p>For the person who maintains the list. Jev suggests these may need a question. A person decides.</p>
+        <h2>Question lists</h2><button class="btn-secondary" data-new-list data-testid="new-list">New question list</button><p>For the person who maintains the list. Jev suggests these may need a question. A person decides.</p>
+        ${list_drafts.map((list) => `<div class="question-list-row"><a class="act" href="/?list=${esc(list.id)}">${esc(list.title)}</a><p class="note">${list.status === 'failed' ? 'Suggestions stopped' : 'Awaiting approval'}</p></div>`).join('')}
         ${question_lists.map((list) => `<div class="question-list-row"><h3>${esc(list.title)}</h3>
-          ${list.coverage_count == null ? '<p class="note">Policy coverage has not been checked.</p>' : `<a href="#coverage" class="act" data-coverage="${esc(list.id)}">${list.coverage_count} policy rules no question covers</a>`}</div>`).join('')}
+          ${list.coverage_count == null ? '<p class="note">Policy coverage has not been checked.</p>' : `<a href="#coverage" class="act" data-coverage="${esc(list.id)}">${list.coverage_count} policy rules no question covers</a>`}
+          ${list.generated ? `<p><a class="act" href="/?list=${esc(list.id)}">Review approved questions</a></p>` : ''}</div>`).join('')}
       </section>
       <footer>Synthetic case files. The officer sets every question outcome and decision.</footer>`;
     function summary() {
@@ -74,6 +76,7 @@ async function showHome() {
       document.querySelectorAll('[data-case]').forEach((row) => row.setAttribute('aria-pressed', String(row.dataset.case === c.case_id)));
     }
     $('home').addEventListener('click', (event) => {
+      if (event.target.closest('[data-new-list]')) { showNewList(); return; }
       const coverage = event.target.closest('[data-coverage]');
       if (coverage) {
         event.preventDefault();
@@ -109,7 +112,8 @@ async function showListCoverage(listId) {
       <p class="note">${data.n_reported} policy rules no question covers · ${data.n_scanned} paragraphs scanned · ${esc(fmtDate(data.date))}</p>
       ${data.suggestions.length ? `<ol class="coverage-suggestions">${data.suggestions.map((s) => `<li data-testid="coverage-suggestion"><h3>${esc(s.section)}</h3><blockquote>${esc(s.excerpt)}…</blockquote>
         <p class="note">Rule score ${s.scores.rule} / 4 · Question coverage ${s.scores.coverage} / 4</p>
-        <a href="#policy" class="act" data-list-policy="${esc(s.passage_id)}" data-list="${esc(listId)}" data-section="${esc(s.section)}">Open full policy paragraph</a></li>`).join('')}</ol>` : '<p>No uncovered rules were suggested. This does not prove the question list is complete.</p>'}</div>`;
+        <a href="#policy" class="act" data-list-policy="${esc(s.passage_id)}" data-list="${esc(listId)}" data-section="${esc(s.section)}">Open full policy paragraph</a>
+        ${data.generated ? `<p><button class="btn-secondary" data-suggest-rule="${esc(s.passage_id)}" data-list="${esc(listId)}">Suggest a question for this</button></p>` : ''}</li>`).join('')}</ol>` : '<p>No uncovered rules were suggested. This does not prove the question list is complete.</p>'}</div>`;
   } catch {
     dialog.querySelector('[role="status"]').outerHTML = '<p role="alert">The suggestions could not be loaded. Close and try again.</p>';
   }

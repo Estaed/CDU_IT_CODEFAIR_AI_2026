@@ -11,7 +11,7 @@ function uploadSurface(title) {
   $('officerLabel').textContent = 'Officer';
 }
 
-function showNewCase(lists) {
+function showNewCase(lists, draft = {}) {
   uploadSurface('New case');
   $('home').innerHTML = `<div class="upload-content"><a class="act" href="/?home=1">All cases</a>
     <h1>New case</h1><p>Add the documents for one case, then run the checks.</p>
@@ -20,6 +20,7 @@ function showNewCase(lists) {
       <input id="uploadName" name="name" maxlength="120" required autocomplete="off" data-testid="upload-name">
       <label class="flabel" for="uploadList">Question list</label>
       <select id="uploadList" name="question_list" required data-testid="upload-list">${lists.map((list) => `<option value="${esc(list.id)}"${list.id === 'nt-priority-housing' ? ' selected' : ''}>${esc(list.title)}</option>`).join('')}</select>
+      <p><button class="act" type="button" id="makeList" data-testid="make-list">Make a new list from the rules</button></p>
       <label class="flabel" for="uploadFiles">Documents</label>
       <div class="upload-drop" id="uploadDrop" data-testid="upload-drop">
         <p>Drop the files here or choose them together.</p>
@@ -36,6 +37,11 @@ function showNewCase(lists) {
     files = Array.from(chosen);
     $('uploadFileList').innerHTML = files.map((file) => `<li>${esc(file.name)} <span class="sub">(${Math.max(1, Math.round(file.size / 1024))} KB)</span></li>`).join('');
   }
+  $('uploadName').value = draft.name || '';
+  if (draft.listId) $('uploadList').value = draft.listId;
+  choose(draft.files || []);
+  $('makeList').onclick = () => showNewList({ name: $('uploadName').value,
+    listId: $('uploadList').value, files });
   $('uploadFiles').addEventListener('change', (event) => choose(event.target.files));
   const drop = $('uploadDrop');
   drop.addEventListener('dragover', (event) => { event.preventDefault(); drop.classList.add('dragging'); });

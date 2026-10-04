@@ -60,7 +60,10 @@ def implementation_pin() -> dict:
 NOT_RESULT_CODE = ("readmark/serve.py", "readmark/record/", "readmark/eval/discipline.py",
                    # Question-list coverage (Task-26) only advises whoever maintains a list; no
                    # case run reads it (orchestrator integration fix, 2026-10-04).
-                   "readmark/checklist/coverage.py", "readmark/jev/coverage.py")
+                   "readmark/checklist/coverage.py", "readmark/jev/coverage.py",
+                   # Suggesting questions from uploaded rules (Task-27) only drafts a new list;
+                   # no case run reads it (orchestrator integration fix, 2026-10-04).
+                   "readmark/checklist/generate.py")
 
 
 def is_coverage_file(path: str) -> bool:

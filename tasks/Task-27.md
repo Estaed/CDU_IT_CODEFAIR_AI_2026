@@ -1,4 +1,5 @@
 # Task-27: Questions from the rules: Claude suggests, a person approves each one
+**Status: BUILT** — gate clean 2026-10-04 (257 tests); open: live CDU run (Claude pool at 94%, after the 21:30 reset) and the eye check. Nit: a "not found" suggestion still shows an active Approve button (the server refuses it).
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık wants a new kind of case to start from its rulebook (2026-10-04: "kurallar pdflerini
 > de istesin oradan soru uretsin"). Today a list needs a hand-written `clauses.yaml`; this makes

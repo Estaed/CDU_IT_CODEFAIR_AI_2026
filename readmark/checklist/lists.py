@@ -6,11 +6,13 @@ from pathlib import Path
 
 import yaml
 
+from readmark import DATA
 from readmark.ingest import IngestError, case_path
 
 QUESTION_LISTS_DIR = Path(__file__).resolve().parent / "lists"
 DEFAULT_LIST_ID = "nt-priority-housing"
 CASE_LIST_FILE = "question-list.json"
+GENERATED_LISTS_DIR = DATA / "question-lists"
 _ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _KEY = re.compile(r"^[a-zA-Z0-9_-]+$")
 
@@ -26,6 +28,16 @@ def read_yaml(path: Path):
         return yaml.safe_load(path.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         raise IngestError(f"Cannot load {path}: {exc}") from exc
+
+
+def generated_lists_dir(lists_dir: Path = QUESTION_LISTS_DIR) -> Path:
+    return GENERATED_LISTS_DIR if lists_dir == QUESTION_LISTS_DIR else Path(lists_dir) / "_generated"
+
+
+def question_list_folder(list_id: str, lists_dir: Path = QUESTION_LISTS_DIR) -> Path:
+    list_id = _id(list_id)
+    committed = Path(lists_dir) / list_id
+    return committed if committed.exists() else generated_lists_dir(lists_dir) / list_id
 
 
 def validate_clauses(clauses, path: Path, policy_keys: set[str] | None = None) -> list[dict]:
@@ -51,9 +63,9 @@ def validate_clauses(clauses, path: Path, policy_keys: set[str] | None = None) -
 
 
 def load_question_list(list_id: str = DEFAULT_LIST_ID,
-                       lists_dir: Path = QUESTION_LISTS_DIR) -> dict:
+                       lists_dir: Path = QUESTION_LISTS_DIR, *, allow_draft: bool = False) -> dict:
     """Load metadata, inline pins and questions; never read policy text or call a model."""
-    folder = Path(lists_dir) / _id(list_id)
+    folder = question_list_folder(list_id, lists_dir)
     path = folder / "list.yaml"
     spec = read_yaml(path)
     if (not isinstance(spec, dict) or spec.get("id") != list_id
@@ -102,19 +114,27 @@ def load_question_list(list_id: str = DEFAULT_LIST_ID,
     if (not isinstance(labels, dict) or not set(labels) <= {"service", "case_noun", "officer"}
             or not all(isinstance(v, str) and v.strip() for v in labels.values())):
         raise IngestError(f"{path}: labels may set service, case_noun and officer as text")
+    clauses = read_yaml(folder / "clauses.yaml")
+    draft = clauses == [] and spec.get("generation") is not None
+    if draft and not allow_draft:
+        raise IngestError("This list has no approved questions yet.")
     return {
         "id": spec["id"], "title": spec["title"], "policies": policies, "decisions": decisions,
         "labels": labels, "scope": scope,
         "policies_dir": (folder / directory).resolve(),
-        "clauses": validate_clauses(read_yaml(folder / "clauses.yaml"),
-                                   folder / "clauses.yaml", keys),
+        "clauses": [] if draft else validate_clauses(clauses, folder / "clauses.yaml", keys),
+        "generation": spec.get("generation"),
     }
 
 
 def list_question_lists(lists_dir: Path = QUESTION_LISTS_DIR) -> list[dict]:
     """Return id/title pairs in id order; a malformed list fails loudly."""
     result = []
-    for path in sorted(Path(lists_dir).glob("*/list.yaml")):
+    paths = [*Path(lists_dir).glob("*/list.yaml"),
+             *generated_lists_dir(lists_dir).glob("*/list.yaml")]
+    for path in sorted(paths, key=lambda p: p.parent.name):
+        if read_yaml(path.parent / "clauses.yaml") == [] and read_yaml(path).get("generation"):
+            continue
         spec = load_question_list(path.parent.name, lists_dir)
         result.append({"id": spec["id"], "title": spec["title"]})
     return result

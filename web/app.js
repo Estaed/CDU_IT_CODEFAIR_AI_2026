@@ -1186,8 +1186,10 @@ fetch('/api/settings').then((r) => {
 }).then((settings) => {
   const home = new URLSearchParams(location.search).has('home');
   const upload = new URLSearchParams(location.search).get('upload');
+  const list = new URLSearchParams(location.search).get('list');
   activeCase = activeCase || settings.default_case;
-  if (upload) showUpload(upload);
+  if (list) showGeneratedList(list);
+  else if (upload) showUpload(upload);
   else if (home || !activeCase) showHome();
   else loadCase();
 }).catch((err) => {

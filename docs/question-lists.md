@@ -1,10 +1,14 @@
 # Question lists
 
-A person approves every question list before it is used. The AI does not write or approve
-the questions, choose an outcome, or turn missing evidence into a failed requirement.
+A person approves every question before it is used. The AI may suggest questions; a person
+approves, edits or rejects each one. The AI never approves a question, chooses an outcome,
+or turns missing evidence into a failed requirement.
 
 Each list lives in `readmark/checklist/lists/<id>/`. Adding a folder needs no code change.
 Use a lowercase id with hyphens. The default is `nt-priority-housing`.
+
+Uploaded lists live separately in git-ignored `data/question-lists/<id>/`, read alongside the
+committed lists. Drafts with zero approved questions are excluded from case selection.
 
 - `list.yaml` holds `id`, `title` and a `policies` array. Optional `decisions` maps `approve`,
   `decline` and `request_information` to the labels the officer sees. Optional `labels` sets the
@@ -78,8 +82,8 @@ in passing does not cover that process's own rules.
 
 Report a paragraph when **rule ≥ 3 and question coverage ≤ 1**. This asks for a clear
 rule and a clear gap; uncertain rules and partly covered rules are left out. These are
-advisory thresholds, not calibrated accuracy or a proof of completeness. No questions
-are generated, approved or changed, and no case flags, outcomes or records are affected.
+advisory thresholds, not calibrated accuracy or a proof of completeness. The coverage scan
+itself generates, approves or changes no questions and affects no case flags, outcomes or records.
 
 For a list with `scope`, score only those candidate paragraphs with the existing Jev relevance
 scan, in batches of 20, against one clause-like topic: `title` is the list title, `source` is
@@ -107,3 +111,53 @@ retain score distributions and model metadata. Requests and policy text are not 
 The home screen's **Question lists** section opens these suggestions. Full paragraphs are
 read on demand from the pinned local policy file in a separate policy dialog, with no
 case opening time or browser draft changes. A missing local policy shows a plain error.
+
+## Questions from uploaded rules
+
+Choose **New question list** on home, or **Make a new list from the rules** in New case.
+Provide a name, a one-sentence scope and one or more selectable-text PDF or UTF-8 text files.
+Optional screen words override the case noun, officer and three decision labels; blank words
+retain the existing defaults. Returning to New case selects the new list and preserves the
+case name and chosen documents while that browser page stays open.
+
+Code assigns safe rule filenames and policy keys, SHA-256 pins, actual page counts, UTC upload
+dates and version `uploaded <date>`. Originals, list metadata, suggestions and model responses
+stay in the ignored folder. Scanned, empty or unreadable rule pages fail plainly and retain
+the uploads. No policy text is copied into a committed list or a case replay.
+
+The existing Claude CLI wrapper (`opus`, structured schema) suggests at most ten questions,
+most decisive first. Each has the ordinary clause fields plus `why`. Rule text and scope are
+explicitly data, never instructions. `generation-cache/` uses the existing response-only
+`Cache`; replay uses the recorded model and UTC date and never calls Claude or reads a key.
+
+The review shows each question, its named rule and section, its verbatim sentence and optional
+items, its reason and its sentence check. Matching uses the same `anchor` function as case
+ingest: whitespace collapses, case and words remain exact, and each item must also match a
+paragraph in the named policy. A missing sentence cannot be approved. Edit and **Check changes**
+rerun that check; the server checks again when saving and never trusts a browser check result.
+
+Nothing is selected by default. **Approve** chooses a question for saving; **Reject** leaves it
+out. **Save approved questions** writes only approved questions to `clauses.yaml`. Each records
+`provenance.suggested_by` (Claude, actual model, date), `approved_by: person` and `approved_date`.
+Generated-list case records include the list name and this provenance in both JSON and HTML.
+The list cannot be changed once selected by an uploaded case: make a new list to preserve that
+case's fixed questions, view and officer record.
+
+After saving at least one question, the same Task-26 coverage scan runs in the background in
+the uploaded list's folder. Offline, with no second-reader key, or on a scan failure, a plain
+note states that coverage was skipped or could not finish; the approved list still works.
+Each uncovered paragraph offers **Suggest a question for this**. This requests one additional
+question, leaves it pending, and uses the same sentence check and explicit approval/save path.
+It never edits the committed lists. The ten-question cap applies to the first generation;
+each targeted second pass adds one suggestion.
+
+CLI generation does not approve questions:
+
+```console
+python -m readmark lists --generate <rules-folder> --id <id> --name "List name" --scope "One-sentence scope."
+python -m readmark lists --generate <rules-folder> --id <id> --name "List name" --replay
+```
+
+`--scope` defaults to the supplied name when omitted. Review the suggestions at `/?list=<id>`
+on the running server. A replay checks the original rule-file hashes before regenerating the
+same unapproved suggestions; approved questions cannot be overwritten by generation.

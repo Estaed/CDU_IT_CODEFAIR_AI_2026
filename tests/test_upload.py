@@ -21,6 +21,7 @@ from readmark import ROOT
 from readmark.checklist import case_question_list, load_question_list
 from readmark.ingest import IngestError, case_passages, prepare_upload
 from readmark.pipeline import run, validate_view
+from readmark.writer.dating import SCHEMA as DATE_SCHEMA
 
 SHOTS = ROOT / ".tmp/shots/wave9"
 
@@ -34,11 +35,17 @@ class UploadWriter(FixedWriter):
                                (p["passage_id"], p["text"])) for n, p in enumerate(passages)]}
 
 
+class UndatedDater:
+    def date_document(self, text):
+        return {"date": None, "quote": ""}
+
+
 @pytest.fixture
 def upload_app(tmp_path):
     lists, _, _ = make_tiny_list(tmp_path)
     return {"runs_root": tmp_path / "runs", "uploads_root": tmp_path / "uploads",
             "lists_dir": lists,
+            "dater": UndatedDater(),
             "pipeline_runner": partial(run, writer=UploadWriter(), checker_impl=FixedChecker())}
 
 
@@ -326,7 +333,7 @@ def test_upload_page_numbers_and_hash_pin(tmp_path):
     for n, (name, content) in enumerate(files, 1):
         (folder / name).write_bytes(content)
         docs.append({"doc_id": f"d{n:02d}", "name": name, "file": name})
-    case_file = prepare_upload("U-test", "Test case", docs, folder)
+    case_file = prepare_upload("U-test", "Test case", docs, folder, dater=UndatedDater())
     meta, passages = case_passages("U-test", case_file)
     assert meta["sha256"] == hashlib.sha256(case_file.read_bytes()).hexdigest()
     assert [p["page"] for p in passages] == [1, 2, 3]
@@ -338,6 +345,8 @@ def test_upload_page_numbers_and_hash_pin(tmp_path):
 
 def test_uploaded_run_replays_byte_identically_without_any_model_call(upload_app, monkeypatch):
     def generate(prompt, schema, model):
+        if schema == DATE_SCHEMA:
+            return {"model": "fake-claude", "output": {"date": None, "quote": ""}}
         case_file = next(upload_app["uploads_root"].glob("*/case.json"))
         cid = case_file.parent.name
         meta, passages = case_passages(cid, case_file)
@@ -356,6 +365,7 @@ def test_uploaded_run_replays_byte_identically_without_any_model_call(upload_app
     monkeypatch.setattr("readmark.writer.claude_cli.generate", generate)
     monkeypatch.setattr("readmark.jev.JevChecker._post", post)
     upload_app["pipeline_runner"] = run
+    upload_app["dater"] = None
     with serving(None, None, None, **upload_app) as base, sync_playwright() as p:
         request = p.request.new_context()
         cid = request.post(base + "/api/cases", data=payload()).json()["case_id"]
@@ -364,6 +374,7 @@ def test_uploaded_run_replays_byte_identically_without_any_model_call(upload_app
     out = upload_app["runs_root"] / cid
     before = {path.relative_to(out).as_posix(): path.read_bytes() for path in out.rglob("*") if path.is_file()}
     assert any(name.startswith("cache/writer-") for name in before)
+    assert sum(name.startswith("cache/dating-") for name in before) == 2
     assert any(name.startswith("cache/jev-") for name in before)
 
     def forbidden(*args, **kwargs):

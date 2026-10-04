@@ -48,6 +48,7 @@ from readmark.ingest import IngestError, case_passages, policy_passages, prepare
 from readmark.pipeline import run
 from readmark.jev import JEV_MODEL, JEV_URL, SCAN_BATCH, SCAN_CRITERIA, render_case_passage
 from readmark.writer.transcription import ClaudeTranscriber
+from readmark.writer.dating import ClaudeDater
 
 UPLOAD_STEPS = ["Splitting into passages", "The AI is reading", "Checking quotes",
                 "Second reader", "Ready"]
@@ -201,7 +202,7 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                opened_seconds: float = rec.OPENED_SECONDS,
                runs_root: Path | None = None, uploads_root: Path | None = None,
                lists_dir: Path = QUESTION_LISTS_DIR, pipeline_runner=None,
-               transcriber=None, searcher_factory=JevSearch, coverage_runner=None) -> FastAPI:
+               transcriber=None, dater=None, searcher_factory=JevSearch, coverage_runner=None) -> FastAPI:
     # opened_seconds is a parameter only so tests can run on a short clock; the CLI never sets it,
     # so the shipped screen and record always use rec.OPENED_SECONDS.
     root = runs_root if runs_root is not None else runs_dir()
@@ -285,8 +286,9 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                 if not shutil.which("claude"):
                     raise IngestError("The AI reader is unavailable; your files are kept.")
             reader = transcriber or ClaudeTranscriber(Cache(folder(cid) / "cache", replay=False))
+            date_reader = dater or ClaudeDater(Cache(folder(cid) / "cache", replay=False))
             case_file = prepare_upload(cid, job["name"], documents, uploads / cid,
-                                       transcriber=reader, progress=progress)
+                                       transcriber=reader, dater=date_reader, progress=progress)
             (pipeline_runner or run)(cid, case_file=case_file, lists_dir=lists_dir,
                                      out_dir=folder(cid), audit=False, progress=progress)
             if not (folder(cid) / "view.json").exists():

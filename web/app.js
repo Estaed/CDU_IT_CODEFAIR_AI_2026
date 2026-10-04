@@ -230,6 +230,21 @@ function fmtDate(d) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(d || '');
   return m ? `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}` : String(d || 'Date not recorded');
 }
+// Uploaded-date evidence comes from the pinned document, without changing frozen view files.
+function dateEvidence(s) {
+  if (!s?.doc_date) return '';
+  return s.date_quote || S.pages.find((p) => p.page === s.page)?.passages[0]?.date_quote || '';
+}
+function dateHtml(s, label = fmtDate(s?.doc_date)) {
+  const quote = dateEvidence(s);
+  return quote ? `<span data-testid="document-date" title="${esc(quote)}">${esc(label)}</span>` : esc(label);
+}
+function pairDateEvidence(pids) {
+  return [...new Set(pids.map((pid) => {
+    const s = src(pid), quote = dateEvidence(s);
+    return quote ? `${s.doc_title} · ${fmtDate(s.doc_date)}: ${quote}` : '';
+  }).filter(Boolean))].join('\n');
+}
 const fmtTime = (iso) => new Date(iso).toLocaleTimeString('en-AU', { hour12: false });
 const fmtStamp = (iso) => `${new Date(iso).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}, ${fmtTime(iso)}`;
 
@@ -324,7 +339,7 @@ function quoteHtml(claim, c, testid = 'quote') {
   const cur = S.current && S.current.pid === c.passage_id;
   return `<button class="quote ${c.quote_found ? '' : 'quote-bad'} ${cur ? 'is-cur' : ''}" data-act="open" data-arg="${esc(c.passage_id)}" data-claims="${esc(claim.claim_id)}" data-testid="${testid}" data-pid="${esc(c.passage_id)}"${S.signed ? ' disabled' : ''}>
     <span class="q">“${esc(c.quote)}”</span>
-    <span class="cite"><span class="loc">${esc(cap(loc(c.passage_id)))}</span><span>${esc(docLine(c.passage_id))}</span>${kindTag(c.passage_id)}
+    <span class="cite"><span class="loc">${esc(cap(loc(c.passage_id)))}</span><span title="${esc(dateEvidence(src(c.passage_id)))}">${esc(docLine(c.passage_id))}</span>${kindTag(c.passage_id)}
       ${c.quote_found ? '' : `<span class="qflag">${icon('x')}Not word for word in this passage</span>`}
       ${hasOpened(c.passage_id) ? `<span class="tag done">${icon('check')}Opened</span>` : ''}</span><span class="act">Open this page${icon('arrow')}</span></button>`;
 }
@@ -494,7 +509,7 @@ function clauseView(cl) {
     <div class="d-head"><h2 data-testid="clause-title">${esc(shortName(cl))}</h2>
       <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
-    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}" aria-hidden="true">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 && !updated ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
+    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}" aria-hidden="true">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 && !updated ? 'Pages in the file disagree' : flag)}</b></div><p title="${esc(pairDateEvidence(disagreeingPages))}">${warning}</p>${pairs}</div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'note' : 'notes'}. <button class="act" data-act="claims">Show AI notes</button></section>` : ''}
     <div class="question-split"><section class="reader" id="reader" aria-label="${esc(caseNoun())} pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
@@ -717,7 +732,7 @@ function pageHtml(page) {
   const text = page.passages.map((p, i) => pageParagraph(p, i ? paragraphAnnotations(page.passages[i - 1]) : [])).join('');
   const scan = page.transcribed;
   return `<article class="file-page" data-testid="file-page" data-page="${page.page}">
-    <header class="file-page-head">Page ${num(page.page)} · ${esc(p?.doc_title || 'Case file')} · ${esc(fmtDate(p?.doc_date))}</header>
+    <header class="file-page-head">Page ${num(page.page)} · ${esc(p?.doc_title || 'Case file')} · ${dateHtml(p)}</header>
     ${scan ? `<div class="scan-notice" data-testid="scan-notice"><strong>Read from a scanned image by Claude. Check the image.</strong><br>Quotes are verified against the transcription, not the image.</div>
       <div class="scan-columns"><figure class="scan-original"><figcaption>Original scanned page · <a href="${esc(page.image_url)}" target="_blank" rel="noopener">Open image at full size</a></figcaption>
       <img src="${esc(page.image_url)}" alt="Original scan of ${esc(p?.doc_title || 'case file')}, page ${page.page}" data-testid="scan-image"></figure>
@@ -781,7 +796,7 @@ function renderReader() {
   const tabs = `<div class="viewer-top"><div class="page-tabs" role="tablist" aria-label="Pages for this question">${visible.map((g) => {
     const opened = g.pids.some(hasOpened);
     const solelyMissed = g.missed && !g.pids.some((pid) => S.annotations.some((a) => a.pid === pid && a.cid === S.sel && a.quote)) && !clauseById(S.sel).contradictions.some((p) => g.pids.includes(p.a) || g.pids.includes(p.b));
-    return `<button role="tab" class="page-tab" aria-selected="${g.key === active?.key}" aria-controls="fileScroll" data-act="page-tab" data-arg="${esc(g.key)}" data-testid="page-tab" data-page="${g.page}" data-kind="${g.kind}"${S.signed ? ' disabled' : ''}>Page ${g.page}${opened ? ' ✓ opened' : ''}<span class="tab-note">${g.date ? esc(fmtDate(g.date).replace(/ \d{4}$/, '')) : 'Date not recorded'}</span>${solelyMissed ? '<span class="tab-note">Possibly missed</span>' : ''}</button>`;
+    return `<button role="tab" class="page-tab" aria-selected="${g.key === active?.key}" aria-controls="fileScroll" data-act="page-tab" data-arg="${esc(g.key)}" data-testid="page-tab" data-page="${g.page}" data-kind="${g.kind}" title="${esc(dateEvidence(src(g.pids[0])))}"${S.signed ? ' disabled' : ''}>Page ${g.page}${opened ? ' ✓ opened' : ''}<span class="tab-note">${g.date ? esc(fmtDate(g.date).replace(/ \d{4}$/, '')) : 'Date not recorded'}</span>${solelyMissed ? '<span class="tab-note">Possibly missed</span>' : ''}</button>`;
   }).join('')}${more.length ? `<button class="page-tab more-pages" data-act="more-pages" data-testid="more-pages" aria-expanded="${S.morePages}" aria-controls="morePages"${S.signed ? ' disabled' : ''}>More pages (${more.length})${more.includes(active) ? `<span class="tab-note">Page ${active.page} selected</span>` : ''}</button>` : ''}</div>
     ${more.length ? `<div class="more-page-list" id="morePages"${S.morePages ? '' : ' hidden'}>${[
       ["Cited by the AI's claims", more.filter((g) => g.cited)],
@@ -874,7 +889,7 @@ function comparePages(a, b, relation) {
   const pages = [...new Set([src(p.a).page, src(p.b).page])].map((n) => S.pages.find((p) => p.page === n));
   $('comparison').innerHTML = `<div class="dlg"><div class="dlg-head"><h2>Pages ${src(p.a).page} and ${src(p.b).page} ${updated ? 'differ over time' : 'disagree'}</h2>
     <button class="icon-btn" data-act="compare-close" aria-label="Close comparison">${icon('x')}</button></div>
-    <p class="note">${updated ? esc(updateWarning(p))
+    <p class="note" title="${esc(pairDateEvidence([p.a, p.b]))}">${updated ? esc(updateWarning(p))
       : 'Two records disagree. A later record may supersede an earlier one.'} Select a highlighted passage to open and record it.</p>
     <div class="comparison-pages">${pages.map(pageHtml).join('')}</div></div>`;
   // No duplicate HTML ids; labels in the dialog still refer to the same annotations.
@@ -932,7 +947,10 @@ function updateReaderVisibility() {
     S.readerPage = Number(page.dataset.page);
     if ($('pageJump')) $('pageJump').value = S.readerPage;
     const p = S.pages.find((x) => x.page === S.readerPage)?.passages[0];
-    if ($('fileContext')) $('fileContext').textContent = `${p?.doc_title || 'Case file'} · ${fmtDate(p?.doc_date)}`;
+    if ($('fileContext')) {
+      $('fileContext').textContent = `${p?.doc_title || 'Case file'} · ${fmtDate(p?.doc_date)}`;
+      $('fileContext').title = dateEvidence(p);
+    }
   }
 }
 function watchPassage() {

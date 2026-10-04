@@ -87,6 +87,9 @@ tests use.
   or reopen it with **Intake note**; it never recommends an outcome.
 - **New case:** upload several documents (PDF or text) and run the checks live.
 - **Scanned pages:** Claude reads the page image, and the image stays beside the text.
+- **Document dates:** Claude reads when each uploaded record was issued, signed or printed.
+  Code checks its quoted date; hover the date to see the evidence. Missing or unverified dates
+  stay unknown, and uploads still continue. Date responses join the case's offline replay cache.
 - **Search:** words always; meaning through Jev when online.
 - **Question-list coverage:** Jev shows decisive policy rules that no question covers
   (`python -m readmark lists --coverage <list-id>`).

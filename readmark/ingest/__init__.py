@@ -253,7 +253,7 @@ def case_passages(case_id: str, path: Path | None = None) -> tuple[dict, list[di
 
 
 def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path, *,
-                   transcriber=None, progress=None) -> Path:
+                   transcriber=None, dater=None, progress=None) -> Path:
     """Extract uploaded pages as data, never as case-file markup; keep every original."""
     extracted = []
     for doc in documents:
@@ -302,7 +302,18 @@ def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path
             [normalise(block) for block in re.split(r"\n\s*\n", page) if block.strip()]
             for page in pages
         ]
+        if dater is None:
+            from readmark import case_run_dir
+            from readmark.cache import Cache
+            from readmark.writer.dating import ClaudeDater
+
+            dater = ClaudeDater(Cache(case_run_dir(case_id) / "cache", False))
+        from readmark.writer.dating import verified_date
+
+        text = "\n\n".join(p for page in paragraphs for p in page)
+        dated = verified_date(dater.date_document(text), text)
         extracted.append({**doc, "sha256": sha256_file(path), "pages": paragraphs,
+                          **dated,
                           **({"scan_pages": scan_pages} if scan_pages else {})})
     target = folder / "case.json"
     target.write_text(dumps({"case_id": case_id, "title": title, "documents": extracted}),
@@ -326,7 +337,7 @@ def _uploaded_passages(case_id: str, path: Path) -> tuple[dict, list[dict]]:
         if not original.exists() or sha256_file(original) != doc["sha256"]:
             raise IngestError("An uploaded document has changed since these checks were made.")
         header = {"doc_id": doc["doc_id"], "doc_type": "uploaded document",
-                  "doc_title": doc["name"], "doc_date": None}
+                  "doc_title": doc["name"], "doc_date": doc.get("doc_date")}
         documents.append({**header, "page": page_no + 1})
         for doc_page, paragraphs in enumerate(doc["pages"], 1):
             page_no += 1
@@ -340,6 +351,8 @@ def _uploaded_passages(case_id: str, path: Path) -> tuple[dict, list[dict]]:
                 passages.append({"passage_id": f"{case_id}-{doc['doc_id']}:p{page_no}:{k}",
                                  "source": "case", "page": page_no, "k": k,
                                  **header, "doc_page": doc_page, "text": text, **scan})
+                if doc.get("doc_date") and doc.get("date_quote"):
+                    passages[-1]["date_quote"] = doc["date_quote"]
     return {"case_id": case_id, "title": data["title"], "pages": page_no,
             "documents": documents, "sha256": sha256_file(path)}, passages
 

@@ -64,6 +64,15 @@ cases and temporary lists. Ingest accepts `policy_passages(question_list=loaded_
 the version-2 output fields stay the same. Housing keeps its frozen writer and audit contracts.
 Other lists use the same writer interface with their own ids and a general officer context.
 
+For uploaded case documents, `prepare_upload(..., dater=...)` reads one date answer per document
+after text extraction and any scan transcription. The default `ClaudeDater` uses the same case-local
+response cache as transcription. Its prompt asks when the record was issued, signed or printed,
+never when a described event happened. `case.json` retains `doc_date` and its verified `date_quote`;
+passages carry that date into Jev's comparisons. A quote absent from that document, a date absent
+from its quote, an incomplete or ambiguous date, or a null answer leaves the document undated
+without stopping the upload. Dates on the review screen expose their quote in a tooltip. Existing
+uploads without those fields remain undated; no date is inferred from upload time or page order.
+
 ## Advisory policy coverage
 
 Run `python -m readmark lists --coverage <list-id>` once live with `TYPESAFE_API_KEY`.

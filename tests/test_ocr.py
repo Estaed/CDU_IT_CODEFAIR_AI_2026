@@ -14,7 +14,7 @@ from playwright.sync_api import expect, sync_playwright
 from pypdf import PdfReader, PdfWriter
 from test_checklist import make_tiny_list
 from test_screen import serving
-from test_upload import UploadWriter, payload, pdf_bytes, wait_job
+from test_upload import UndatedDater, UploadWriter, payload, pdf_bytes, wait_job
 
 from readmark import ROOT
 from readmark.cache import Cache, ReplayMiss
@@ -24,6 +24,7 @@ from readmark.ingest.scans import render_page, usable_text
 from readmark.pipeline import run
 from readmark.writer import claude_cli
 from readmark.writer.transcription import PROMPT, SCHEMA, ClaudeTranscriber
+from readmark.writer.dating import SCHEMA as DATE_SCHEMA, ClaudeDater
 
 FIXTURES = Path(__file__).parent / "fixtures/scanned"
 TEXT = "The student is enrolled.\n\nThe student explains the request."
@@ -52,7 +53,8 @@ def prepare_fixture(tmp_path, filename="scanned.pdf", transcriber=None, progress
     shutil.copyfile(FIXTURES / filename, tmp_path / "d01.pdf")
     return prepare_upload(CID, "Synthetic scanned extension file",
                           [{"doc_id": "d01", "name": filename, "file": "d01.pdf"}], tmp_path,
-                          transcriber=transcriber or FakeTranscriber(), progress=progress)
+                          transcriber=transcriber or FakeTranscriber(), dater=UndatedDater(),
+                          progress=progress)
 
 
 def test_scan_becomes_marked_passages_and_verified_quotes(tmp_path):
@@ -191,6 +193,9 @@ def test_uploaded_scan_pipeline_and_transcription_replay_byte_identically(tmp_pa
         if image_path is not None:
             assert schema == SCHEMA and model == "opus"
             return {"model": "fake-claude", "output": {"text": TEXT}}
+        if schema == DATE_SCHEMA:
+            assert all(block in prompt for block in TEXT.split("\n\n"))
+            return {"model": "fake-claude", "output": {"date": None, "quote": ""}}
         path = next(options["uploads_root"].glob("*/case.json"))
         meta, passages = case_passages(path.parent.name, path)
         from readmark.checklist import load_question_list
@@ -214,11 +219,12 @@ def test_uploaded_scan_pipeline_and_transcription_replay_byte_identically(tmp_pa
             ("scanned.pdf", (FIXTURES / "scanned.pdf").read_bytes())])).json()["case_id"]
         assert wait_job(request, base, cid)["status"] == "ready"
         request.dispose()
-    assert len(calls) == 2 and calls[0] is not None and calls[1] is None
+    assert len(calls) == 3 and calls[0] is not None and calls[1:] == [None, None]
     out = options["runs_root"] / cid
     before = {path.relative_to(out).as_posix(): path.read_bytes()
               for path in out.rglob("*") if path.is_file()}
     assert any(name.startswith("cache/transcription-") for name in before)
+    assert any(name.startswith("cache/dating-") for name in before)
     assert any(name.startswith("cache/writer-") for name in before)
     assert any(name.startswith("cache/jev-") for name in before)
     case_folder = options["uploads_root"] / cid
@@ -232,7 +238,8 @@ def test_uploaded_scan_pipeline_and_transcription_replay_byte_identically(tmp_pa
     # Re-extraction itself also replays the model transcription, before the pipeline replay.
     prepare_upload(cid, "Extension review", [{"doc_id": "d01", "name": "scanned.pdf",
                                              "file": "originals/d01.pdf"}], case_folder,
-                   transcriber=ClaudeTranscriber(Cache(out / "cache", replay=True)))
+                   transcriber=ClaudeTranscriber(Cache(out / "cache", replay=True)),
+                   dater=ClaudeDater(Cache(out / "cache", replay=True)))
     assert (case_folder / "case.json").read_bytes() == case_bytes
     monkeypatch.setattr("readmark.ingest.DATA", options["uploads_root"].parent)
     run(cid, replay=True, lists_dir=lists, out_dir=out, audit=False)
@@ -254,6 +261,7 @@ def test_scanned_upload_progress_verified_view_and_offline_review(width, tmp_pat
     reader = PausedTranscriber()
     options = {"runs_root": tmp_path / "runs", "uploads_root": tmp_path / "uploads",
                "lists_dir": lists, "transcriber": reader,
+               "dater": UndatedDater(),
                "pipeline_runner": partial(run, writer=UploadWriter(), checker_impl=FixedChecker())}
     errors = []
     SHOTS.mkdir(parents=True, exist_ok=True)

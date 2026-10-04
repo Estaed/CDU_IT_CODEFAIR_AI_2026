@@ -49,10 +49,13 @@ def fake_claude(prompt, schema, model):
 
 @pytest.fixture
 def app_options(tmp_path, monkeypatch):
+    from test_upload import UndatedDater
+
     monkeypatch.setattr("readmark.writer.claude_cli.generate", fake_claude)
     monkeypatch.setattr("readmark.serve.load_dotenv_key", lambda key: None)
     return {"lists_dir": tmp_path / "lists", "runs_root": tmp_path / "runs",
             "uploads_root": tmp_path / "uploads",
+            "dater": UndatedDater(),
             "pipeline_runner": partial(run, writer=UploadWriter(), checker_impl=FixedChecker())}
 
 

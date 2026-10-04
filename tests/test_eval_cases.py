@@ -166,7 +166,7 @@ def complete_outputs():
 
 
 def assert_replay_unchanged(actual, expected):
-    """Only H-01's implementation list may lose the two deleted CDU source paths."""
+    """Only H-01's implementation list may reflect retired CDU files and the new upload dater."""
     if actual.name not in {"cases.json", "summary.json"}:
         assert actual.read_bytes() == expected.read_bytes()
         return
@@ -177,8 +177,8 @@ def assert_replay_unchanged(actual, expected):
     baseline_pin = baseline_cases["cases"]["H-01"]["heldout_discipline"]
     retired = {"readmark/checklist/lists/cdu-extension/clauses.yaml",
                "readmark/checklist/lists/cdu-extension/list.yaml"}
-    assert replay_pin["changed_result_files"] == [p for p in baseline_pin["changed_result_files"]
-                                                 if p not in retired]
+    assert replay_pin["changed_result_files"] == sorted(
+        (set(baseline_pin["changed_result_files"]) - retired) | {"readmark/writer/dating.py"})
     baseline_pin["changed_result_files"] = replay_pin["changed_result_files"]
     # Every other field, including every number and denominator, must remain exactly equal.
     assert replay == baseline

@@ -182,7 +182,7 @@ def test_a0142_debts_update_screenshots(width, tmp_path):
         page.get_by_test_id("intro-dismiss").click()
         page.locator('[data-testid="clause-row"][data-clause="elig-debts"]').click()
         expect(page.get_by_test_id("question-warning")).to_contain_text("A later page updates this")
-        expect(page.get_by_test_id("question-warning")).to_contain_text("the newer record")
+        expect(page.get_by_test_id("question-warning")).to_contain_text("the newest record")
         assert page.locator('[data-outcome]:checked').count() == 0
         assert not page.evaluate("document.documentElement.scrollWidth > innerWidth")
         page.screenshot(path=str(SHOTS / f"debts-warning-{width}.png"), full_page=True)
@@ -191,3 +191,25 @@ def test_a0142_debts_update_screenshots(width, tmp_path):
         page.screenshot(path=str(SHOTS / f"debts-comparison-{width}.png"))
         browser.close()
     assert errors == []
+
+
+def test_one_record_over_time_is_one_sentence_and_one_comparison(tmp_path):
+    """A-0142 Debts: six updated pairs across pages 30, 8, 23 and 24 describe one account."""
+    from playwright.sync_api import expect, sync_playwright
+
+    from test_screen import A0142_RUN
+
+    with serving("A-0142", A0142_RUN, tmp_path / "records") as base, sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1280, "height": 900})
+        page.goto(base)
+        page.get_by_test_id("intro-dismiss").click()
+        page.locator('[data-testid="clause-row"][data-clause="elig-debts"]').click()
+        warning = page.get_by_test_id("question-warning")
+        expect(warning.locator("p")).to_have_text(
+            "Pages 30 (12 Jun 2023), 8 (15 Jan 2026), 23 (4 Mar 2026) and 24 (5 Mar 2026) record "
+            "the same matter over time; page 24 (5 Mar 2026) is the newest record. "
+            "Compare them before you decide.")
+        expect(page.get_by_test_id("compare-pages")).to_have_count(1)
+        expect(page.get_by_test_id("compare-pages")).to_have_text("Compare pages 8 and 23")
+        browser.close()

@@ -194,6 +194,20 @@ function updateWarning(pair) {
     ? `Page ${src(p.a).page}${whenOf(p.a)} and page ${src(p.b).page}${whenOf(p.b)} differ; the later page is the newer record. Open both before you decide.`
     : `Pages ${src(p.a).page} and ${src(p.b).page} record a change over time; open both before you decide.`;
 }
+// One record seen at three or more times: its pages oldest first and which is newest, never a
+// judgement of what changed. Undated pages are listed by page number and no page is called newest.
+function chainWarning(chain) {
+  const pids = [...chain.pids.values()];
+  if (pids.length === 2) return updateWarning(chain.primary);
+  const dated = pids.every((pid) => src(pid).doc_date);
+  pids.sort((x, y) => (dated ? src(x).doc_date.localeCompare(src(y).doc_date) : 0) || src(x).page - src(y).page);
+  const names = pids.map((pid) => `${src(pid).page}${dated ? whenOf(pid) : ''}`);
+  const list = `Pages ${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+  const newest = pids.at(-1);
+  return dated && src(newest).doc_date !== src(pids.at(-2)).doc_date
+    ? `${list} record the same matter over time; page ${src(newest).page}${whenOf(newest)} is the newest record. Compare them before you decide.`
+    : `${list} record the same matter over time; compare them before you decide.`;
+}
 
 function questionProblem(cl) {
   if (cl.contradictions.length) return allUpdates(cl) ? 'A later page updates this' : 'Two pages disagree';
@@ -437,8 +451,24 @@ function clauseView(cl) {
     if (!uniquePairs.has(key) || p.relation === 'contradict') uniquePairs.set(key, orderedPair(p));
   });
   const pagePairs = [...uniquePairs.values()];
-  const pairs = pagePairs.length ? `<div class="comparison-links" data-testid="pairs">
-    ${pagePairs.map((p) => `<button class="btn-secondary compare-btn" data-act="compare" data-arg="${esc(p.a)}" data-other="${esc(p.b)}" data-relation="${esc(p.relation)}" data-testid="compare-pages"${S.signed ? ' disabled' : ''}>Compare pages ${src(p.a).page} and ${src(p.b).page}${icon('arrows')}</button>`).join('')}
+  // Updates that share a page are one record changing over time (a closure entry, a January and a
+  // March statement, a receipt): one sentence and one comparison, from its strongest pair, not one
+  // per pair. The order of pagePairs follows the view's, strongest first.
+  const chains = [];
+  pagePairs.filter((p) => p.relation === 'updated').forEach((p) => {
+    const pages = [src(p.a).page, src(p.b).page];
+    const joined = chains.filter((c) => pages.some((n) => c.pids.has(n)));
+    const chain = joined[0] || { primary: p, pids: new Map() };
+    if (!joined.length) chains.push(chain);
+    joined.slice(1).forEach((other) => {
+      other.pids.forEach((pid, n) => chain.pids.set(n, chain.pids.get(n) || pid));
+      chains.splice(chains.indexOf(other), 1);
+    });
+    [p.a, p.b].forEach((pid) => { if (!chain.pids.has(src(pid).page)) chain.pids.set(src(pid).page, pid); });
+  });
+  const shownPairs = pagePairs.filter((p) => p.relation !== 'updated' || chains.some((c) => c.primary === p));
+  const pairs = shownPairs.length ? `<div class="comparison-links" data-testid="pairs">
+    ${shownPairs.map((p) => `<button class="btn-secondary compare-btn" data-act="compare" data-arg="${esc(p.a)}" data-other="${esc(p.b)}" data-relation="${esc(p.relation)}" data-testid="compare-pages"${S.signed ? ' disabled' : ''}>Compare pages ${src(p.a).page} and ${src(p.b).page}${icon('arrows')}</button>`).join('')}
     </div>` : '';
   const o = st.outcome;
   const flag = questionFlag(cl);
@@ -449,8 +479,9 @@ function clauseView(cl) {
   const pageNames = disagreeingPages.map((pid, i) => `${i ? 'page' : 'Page'} ${src(pid).page}${whenOf(pid)}`);
   const pageList = `${pageNames.slice(0, -1).join(', ')} and ${pageNames.at(-1)}`;
   const openAll = `open ${pageNames.length === 2 ? 'both' : 'each page'} before you decide.`;
-  const warning = pagePairs.some((p) => p.relation === 'updated') ? pagePairs.map((p) => p.relation === 'updated'
-      ? updateWarning(p) : `Page ${src(p.a).page}${whenOf(p.a)} and page ${src(p.b).page}${whenOf(p.b)} disagree; open both before you decide.`).map(esc).join('<br>')
+  const warning = chains.length ? [
+    ...pagePairs.filter((p) => p.relation !== 'updated').map((p) => `Page ${src(p.a).page}${whenOf(p.a)} and page ${src(p.b).page}${whenOf(p.b)} disagree; open both before you decide.`),
+    ...chains.map(chainWarning)].map(esc).join('<br>')
     : pagePairs.length ? `${esc(pageList)} disagree; ${openAll}`
     : flag.includes('evidence not found') || flag === 'Evidence not found' ? 'Missing evidence does not mean “not met”; decide whether the file lets you answer this question.'
     : flag === 'Checker disagrees' ? 'The quote is in the file, but the second checker could not confirm the claim; open the passage and judge.'

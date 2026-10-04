@@ -43,6 +43,13 @@
   does with good, wrong and missing answers. **The live run on W-01 is the orchestrator's**, after
   integration (the Claude pool resets at 21:30); leave a one-line command for it.
 
+### 4. A committed case in upload form (added 2026-10-04, Tarık: "30→31→W-01 tek koşu")
+- Task-29 commits W-01 as an uploaded case, but `case_path` only reads `data/cases/<id>/case.md`
+  and upload ids. Make `case_path` return `data/cases/<id>/case.json` when that file exists, so
+  `_uploaded_passages` reads it with document files relative to that folder (W-01's 24 PDFs are
+  already there; nothing is copied). Passage ids then carry `W-01`, so the orchestrator runs W-01
+  once live under that id after this task; no `data/**` file is written here.
+
 ## Acceptance
 - [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
 - [ ] Every committed case, `runs/eval/` and A-0142's replay are byte-for-byte unchanged.
@@ -51,6 +58,8 @@
   continues); a replayed upload making no call.
 - [ ] Undated uploads keep today's behaviour exactly.
 - [ ] A one-line command runs the live dater on W-01's 24 PDFs and prints each date with its quote.
+- [ ] A test with a temporary cases folder shows a `case.json` case loading by its own id (passage
+  ids carry that id; a changed PDF still fails the hash check), and a `case.md` case loading as before.
 
 ## Out of scope
 - Document types or titles; changing any case document, gold file or committed run.

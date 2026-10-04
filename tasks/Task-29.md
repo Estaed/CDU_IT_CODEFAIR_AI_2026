@@ -32,6 +32,25 @@
   - required reading (8 or fewer) and flags per question;
   - whether the T1 contradiction (`03-p4` against `10-p1`) and the T3 address omission are flagged.
 
+## Progress (2026-10-04)
+- **Part 1 done.** List `rules-4ffb667293fe4ebaa5a50aa7d7e34c7b` (10 questions approved, 10 of 10
+  sentences found; the uploaded rule PDFs match `data/policies/nt-wwcc/policies.lock.json` by
+  SHA-256). Upload `U-0f471da80da6452597aaf0f295bde79a` ran before Task-30/31.
+- **Order (Tarık: "30→31→W-01 tek koşu"):** passage ids carry the case id and W-01 had no
+  `case.json` loader, so the upload cannot be renamed. Task-31 §4 adds the loader; after Task-30
+  and Task-31, build `data/cases/W-01/case.json` (files pointing at the existing PDFs, id W-01),
+  run W-01 once live, then move list and run, measure, remove the `U-*` copies.
+- **Pre-30/31 measurement of the upload** (redo on the final run):
+  - 10 of 10 answer-key clause_ids map to a question (main-loop mapping; q04 bundles
+    nature-gravity, relevance-to-work, victim-age and time-elapsed);
+  - required 8 (cap 8), suggested 289;
+  - T3 flagged: claim c57 ("five-year address history leaves out the Katherine tenancy"),
+    02-p2 and 22-p1 required (checker disagrees);
+  - T1 half: Claude claims c21 (police, 10-p1) and c22 (statement contradicts police, 03-p4) with
+    verified quotes, but Jev's pair scan did not flag 03-p4 against 10-p1 and 03-p4 is not required.
+- **Gap to report (no code change here):** "Quote not found" also covers a claim value missing
+  from a found quote (c20 "March 2021", c47 "over 18"); 3 of the 8 required passages carry it.
+
 ## Why
 The pitch shows two very different NT decisions on the same engine, and Task-27 gets its first
 real rulebook, used the way an officer would use it.

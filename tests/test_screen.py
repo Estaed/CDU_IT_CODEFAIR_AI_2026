@@ -126,6 +126,12 @@ def serving(case_id, run_dir, records_dir, opened_seconds=FAST_OPEN, runs_root=N
 
 def test_list_wording_defaults_partial_overrides_and_frozen_record():
     assert rec.wording({}) == {"labels": rec.LABELS, "decisions": rec.DECISIONS}
+    assert rec.wording({"id": "nt-priority-housing", "title": "NT priority housing"}) == \
+        {"labels": rec.LABELS, "decisions": rec.DECISIONS}
+    # Blank words on any other list never borrow housing's service or approve wording.
+    other = rec.wording({"id": "nt-wwcc", "title": "NT Working with Children Clearance"})
+    assert other["labels"]["service"] == "NT Working with Children Clearance"
+    assert other["decisions"]["approve"] == "Approve"
     spec = {"labels": {"case_noun": "Review request", "officer": "Reviewer"},
             "decisions": {"approve": "Accept request"}}
     words = rec.wording(spec)

@@ -321,9 +321,9 @@ def test_policy_dialog_and_passage_cache_follow_each_cases_question_list(
             page = browser.new_page()
             page.goto(base + "/?case=A-0142")
             page.get_by_test_id("intro-dismiss").click()
-            # A non-housing list without optional wording still uses the original labels.
+            # A non-housing list without optional wording shows its own title, not housing.
             expect(page.locator("#caseNoun")).to_have_text(rec.LABELS["case_noun"])
-            expect(page.locator("#serviceDescription")).to_have_text(rec.LABELS["service"])
+            expect(page.locator("#serviceDescription")).to_have_text("Assessment extensions")
             expect(page.locator("#officerLabel")).to_have_text(rec.LABELS["officer"])
             expect(page.get_by_test_id("wait-context")).to_be_hidden()
             page.get_by_test_id("about-btn").click()
@@ -349,7 +349,7 @@ def test_policy_dialog_and_passage_cache_follow_each_cases_question_list(
             }""")
             expect(page.get_by_test_id("form-helper")).to_have_text(
                 "Write it so the applicant could read and challenge it.")
-            for key, label in rec.DECISIONS.items():
+            for key, label in (rec.DECISIONS | {"approve": "Approve"}).items():
                 expect(page.locator("label").filter(has=page.get_by_test_id(
                     f"decision-{key}"))).to_have_text(label)
             browser.close()

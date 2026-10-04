@@ -115,7 +115,8 @@ case opening time or browser draft changes. A missing local policy shows a plain
 Choose **New question list** on home, or **Make a new list from the rules** in New case.
 Provide a name, a one-sentence scope and one or more selectable-text PDF or UTF-8 text files.
 Optional screen words override the case noun, officer and three decision labels; blank words
-retain the existing defaults. Returning to New case selects the new list and preserves the
+retain the defaults, except that a list other than housing shows its own title as the service
+and a plain "Approve", never housing's wording. Returning to New case selects the new list and preserves the
 case name and chosen documents while that browser page stays open.
 
 Code assigns safe rule filenames and policy keys, SHA-256 pins, actual page counts, UTC upload

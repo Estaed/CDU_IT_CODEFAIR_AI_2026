@@ -40,9 +40,14 @@ STYLE_FILES = ("theme.css",)
 
 
 def wording(question_list: dict) -> dict:
-    """Merge optional list wording with the existing housing labels, key by key."""
-    return {"labels": LABELS | question_list.get("labels", {}),
-            "decisions": DECISIONS | question_list.get("decisions", {})}
+    """Merge optional list wording with the defaults, key by key. Only the housing list keeps
+    the housing words; another list with blank words gets its own title and a plain Approve."""
+    labels, decisions = LABELS, DECISIONS
+    if question_list.get("title") and question_list.get("id") != "nt-priority-housing":
+        labels = LABELS | {"service": question_list["title"]}
+        decisions = DECISIONS | {"approve": "Approve"}
+    return {"labels": labels | question_list.get("labels", {}),
+            "decisions": decisions | question_list.get("decisions", {})}
 
 
 class RecordError(ValueError):

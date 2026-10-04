@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- Source of pipeline.gif: python D:/TarikOS/.brain/scripts/gif_yap.py html docs/img/pipeline.html --out docs/img/pipeline.gif --height 580 -->
+<html><head><meta charset="utf-8"><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1100px; height: 580px; background: #fff; font-family: Arial, Helvetica, sans-serif;
+         color: #313131; padding: 32px 40px; }
+  h1 { font-size: 28px; color: #1a2b4a; }
+  .rule { height: 6px; width: 120px; background: #e66a50; margin: 12px 0 22px; }
+  .row { display: grid; grid-template-columns: 56px 230px 1fr; align-items: center; height: 76px;
+         border: 1px solid #ddd; border-left: 6px solid #ddd; margin-top: -1px; padding-right: 20px; }
+  .n { font-size: 22px; font-weight: bold; color: #767676; text-align: center; }
+  .t { font-size: 24px; font-weight: bold; color: #767676; }
+  .t small { display: block; font-size: 15px; font-weight: bold; letter-spacing: .04em; color: #767676; margin-bottom: 3px; }
+  .d { font-size: 21px; color: #767676; line-height: 1.3; }
+  .row.done { border-left-color: #00698f; }
+  .row.done .n, .row.done .t { color: #313131; } .row.done .d { color: #555; }
+  .row.done .t small { color: #00698f; }
+  .row.on { border-left-color: #00698f; background: #eef6f9; }
+  .row.on .n, .row.on .t { color: #00698f; } .row.on .d { color: #313131; } .row.on .t small { color: #00698f; }
+  .row.human.on { background: #1a2b4a; border-left-color: #e66a50; }
+  .row.human.on .n, .row.human.on .t, .row.human.on .d, .row.human.on .t small { color: #fff; }
+</style></head><body>
+<h1>How Readmark checks an AI summary before the officer signs</h1>
+<div class="rule"></div>
+<div id="rows"></div>
+<script>
+const stages = [
+  ["INGEST", "Case file", "PDF pages become numbered passages, policies too"],
+  ["WRITER", "Claude", "Claims for each question, each with a verbatim quote"],
+  ["CODE", "Quote check", "Plain code: the quote is in the file, numbers and dates match"],
+  ["CHECKER", "Jev", "A second model family judges every claim, finds unused and conflicting pages"],
+  ["GATE", "Required pages", "Failed checks and conflicts: at most 8 passages to open"],
+  ["OFFICER", "You decide", "Open the pages, set each outcome, sign. No recommendation."],
+];
+document.getElementById('rows').innerHTML = stages.map((s, i) =>
+  `<div class="row${i === 5 ? ' human' : ''}" data-i="${i}"><div class="n">${i + 1}</div>` +
+  `<div class="t"><small>${s[0]}</small>${s[1]}</div><div class="d">${s[2]}</div></div>`).join('');
+window.STEPS = 6;
+window.step = (n) => document.querySelectorAll('.row').forEach(r => {
+  const i = +r.dataset.i;
+  r.classList.toggle('on', i === n);
+  r.classList.toggle('done', i < n);
+});
+step(5);
+</script>
+</body></html>

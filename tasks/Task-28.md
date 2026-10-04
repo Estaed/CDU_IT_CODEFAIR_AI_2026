@@ -1,4 +1,5 @@
 # Task-28: Two showcase cases, a short case note, and a polish pass on the look
+**Status: DONE** — 2026-10-04, main `34a36d3`, gate clean (254 passed, 8 skipped); eye check pending: 1.
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık wants the app to hold two examples for the pitch and for showing friends: the NT
 > housing case and a new Ochre Card case (2026-10-04: "2 tane olsun biri ochre card digeri konut").

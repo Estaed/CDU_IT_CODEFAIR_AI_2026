@@ -57,7 +57,7 @@ Wave 12 (2026-10-04). Width 1.
 
 Wave 13 (2026-10-04). Width 1. No Claude calls (split on 4 Oct).
 
-- [ ] Task-28: Two showcase cases (housing, Ochre Card), an intake note, and a polish pass (codex)
+- [x] Task-28: Two showcase cases (housing, Ochre Card), an intake note, and a polish pass (codex), eye check pending: 1
 
 Wave 14 (2026-10-04). By hand on the website, after the Claude reset; not for otopilot.
 

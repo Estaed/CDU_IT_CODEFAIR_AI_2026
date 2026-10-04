@@ -59,7 +59,7 @@ and `notes.md` keeps a one-line link.
   HTML or JSON.
 
 **Done means:**
-- the demo case runs end to end offline from the replay cache, and so does the easy example;
+- the demo case runs end to end offline from the replay cache, and so does W-01;
 - the evaluation numbers are frozen by **7 Oct** for the teammate's report;
 - the ZIP (report, Python with remarks, README) is emailed by **8 Oct**;
 - the pitch is on 15 Oct.
@@ -83,11 +83,16 @@ Everything below ships in the 8 Oct ZIP. There is no development after submissio
   - the officer picks a question list;
   - the pipeline runs live with visible progress;
   - the case then joins the list.
-- **The easy example:**
-  - the real CDU "Higher Education Assessment (Coursework) Policy and Procedure" (assessment
-    extensions);
-  - a synthetic student's extension file, where about half the questions are clean;
-  - it is for understanding the system, and it is also an internal test against a real rule.
+- **The second showcase case, W-01** (Tarık, 2026-10-04; it replaces the CDU easy example, which
+  is deleted):
+  - the NT Working with Children Clearance (Ochre Card): the Care and Protection of Children Act
+    2007 and its Screening Regulations 2010, real; NT legislation may be republished on its
+    stated conditions, but it stays git-ignored like the other rules;
+  - a synthetic 104-page candidate file with a criminal history, written as a close call;
+  - its question list comes from Task-27's flow, and the home screen shows only A-0142 and W-01
+    (the evaluation cases stay, hidden).
+- **An intake note on each case:** one or two neutral sentences on what the file is, labelled as
+  the receiving officer's note, never hinting at an outcome.
 - **Scanned pages:**
   - Claude transcribes page images to text (OCR by vision);
   - quotes are verified against that transcription;

@@ -54,3 +54,7 @@ Waves 7–10 (2026-10-03 → 6 Oct): everything before submission. Wave 7 width 
 Wave 12 (2026-10-04). Width 1.
 
 - [ ] Task-27: Questions from the rules: Claude suggests, a person approves each one (codex)
+
+Wave 13 (2026-10-04). Width 1. Waits for Tarik's go and the Claude reset.
+
+- [ ] Task-28: Two showcase cases (housing, Ochre Card), an intake note, and a polish pass (codex)

@@ -180,8 +180,14 @@ const railClauses = () => S.view.clauses.filter((c) => c.clause_id !== 'other'
 
 const shortName = (cl) => cl.clause_id === 'other' ? 'Background facts (no decision needed)' : cl.title;
 
+// Two case pages with different dates are a record that changed over time (a January balance,
+// a March receipt), not an inconsistency; the wording says which page is newer and nothing more.
+const caseDate = (pid) => { const s = src(pid); return s && s.kind === 'case' ? s.doc_date || '' : ''; };
+const datedPair = (p) => caseDate(p.a) && caseDate(p.b) && caseDate(p.a) !== caseDate(p.b);
+const updatedOverTime = (cl) => cl.contradictions.length > 0 && cl.contradictions.every(datedPair);
+
 function questionProblem(cl) {
-  if (cl.contradictions.length) return 'Two pages disagree';
+  if (cl.contradictions.length) return updatedOverTime(cl) ? 'A later page updates this' : 'Two pages disagree';
   const claims = cl.claim_ids.map(claimById).filter(Boolean);
   if (claims.some((c) => c.status === 'quote_not_found')) return 'Quote not found';
   if (claims.some((c) => c.status === 'contradicted')) return 'Two pages disagree';
@@ -424,10 +430,15 @@ function clauseView(cl) {
   const o = st.outcome;
   const flag = questionFlag(cl);
   const worth = questionTier(cl) === 'worth';
+  const updated = updatedOverTime(cl);
   const disagreeingPages = [...new Map(cl.contradictions.flatMap((p) => [p.a, p.b])
     .map((pid) => [src(pid).page, pid])).values()];
+  if (updated) disagreeingPages.sort((x, y) => caseDate(x).localeCompare(caseDate(y)) || src(x).page - src(y).page);
   const pageNames = disagreeingPages.map((pid, i) => `${i ? 'page' : 'Page'} ${src(pid).page}${whenOf(pid)}`);
-  const warning = pagePairs.length ? `${pageNames.slice(0, -1).join(', ')} and ${pageNames.at(-1)} disagree; open ${pageNames.length === 2 ? 'both' : 'each page'} before you decide.`
+  const pageList = `${pageNames.slice(0, -1).join(', ')} and ${pageNames.at(-1)}`;
+  const openAll = `open ${pageNames.length === 2 ? 'both' : 'each page'} before you decide.`;
+  const warning = pagePairs.length && updated ? `${pageList} differ; the later page is the newer record. ${openAll[0].toUpperCase()}${openAll.slice(1)}`
+    : pagePairs.length ? `${pageList} disagree; ${openAll}`
     : flag.includes('evidence not found') || flag === 'Evidence not found' ? 'Missing evidence does not mean “not met”; decide whether the file lets you answer this question.'
     : flag === 'Checker disagrees' ? 'The quote is in the file, but the second checker could not confirm the claim; open the passage and judge.'
     : flag === 'Quote not found' ? 'An AI note has no verified quote; open “What the AI noted” to see what could not be checked.'
@@ -439,7 +450,7 @@ function clauseView(cl) {
     <div class="d-head"><h2 data-testid="clause-title">${esc(shortName(cl))}</h2>
       <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
-    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}" aria-hidden="true">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
+    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}" aria-hidden="true">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? (updated ? 'Later pages update this' : 'Pages in the file disagree') : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'note' : 'notes'}. <button class="act" data-act="claims">Show AI notes</button></section>` : ''}
     <div class="question-split"><section class="reader" id="reader" aria-label="${esc(caseNoun())} pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
@@ -642,7 +653,7 @@ function pageParagraph(p, previous = []) {
     const a = group.find((item) => item.id === S.current?.annotation) || primary;
     const flagged = group.some((item) => item.flagged);
     const repeated = previous.some((b) => labelKey(b) === labelKey(primary));
-    const label = `${shortName(clauseById(a.cid))}${primary.kind === 'missed' ? ' · Possibly missed' : primary.kind === 'pair' ? ' · Two pages disagree' : S.fullFile && flagged ? ' · Check' : ''}`;
+    const label = `${shortName(clauseById(a.cid))}${primary.kind === 'missed' ? ' · Possibly missed' : primary.kind === 'pair' ? ` · ${updatedOverTime(clauseById(a.cid)) ? 'A later page updates this' : 'Two pages disagree'}` : S.fullFile && flagged ? ' · Check' : ''}`;
     return `<button class="evidence-label ${repeated ? 'evidence-marker' : ''} ${flagged ? 'flag-label' : ''} ${S.current?.annotation === a.id ? 'current-label' : ''}" id="${a.id}" aria-label="${esc(label)}"
     data-act="annotation" data-arg="${a.id}" data-evidence="${group.map((item) => item.id).join(' ')}" data-flag-evidence="${group.filter((item) => item.flagged).map((item) => item.id).join(' ')}" data-testid="highlight-label" data-clause="${esc(a.cid)}" data-pid="${esc(a.pid)}"
     data-flag="${flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${repeated ? icon(flagged ? 'flag' : 'check') : `${S.fullFile ? icon(flagged ? 'flag' : 'check') : ''}${esc(label)}${S.fullFile && isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}`}</button>`;
@@ -809,9 +820,12 @@ function comparePages(a, b) {
   closePassage();
   render();
   const pages = [...new Set([src(a).page, src(b).page])].map((n) => S.pages.find((p) => p.page === n));
-  $('comparison').innerHTML = `<div class="dlg"><div class="dlg-head"><h2>Pages ${src(a).page} and ${src(b).page} disagree</h2>
+  const dated = datedPair({ a, b });
+  const [older, newer] = caseDate(a) <= caseDate(b) ? [a, b] : [b, a];
+  $('comparison').innerHTML = `<div class="dlg"><div class="dlg-head"><h2>Pages ${src(a).page} and ${src(b).page} ${dated ? 'differ over time' : 'disagree'}</h2>
     <button class="icon-btn" data-act="compare-close" aria-label="Close comparison">${icon('x')}</button></div>
-    <p class="note">Two records disagree. A later record may supersede an earlier one. Select a highlighted passage to open and record it.</p>
+    <p class="note">${dated ? `Page ${src(newer).page}${whenOf(newer)} is newer than page ${src(older).page}${whenOf(older)}. A later record may supersede an earlier one.`
+      : 'Two records disagree. A later record may supersede an earlier one.'} Select a highlighted passage to open and record it.</p>
     <div class="comparison-pages">${pages.map(pageHtml).join('')}</div></div>`;
   // No duplicate HTML ids; labels in the dialog still refer to the same annotations.
   $('comparison').querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));

@@ -46,7 +46,7 @@ still describe Jev's answer; only which pairs are asked changes.
 - [x] Tests cover a co-cited pair that falls outside the top 5 still being compared, and a pair
   already asked not being asked twice.
 - [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] (eye) Tarık opens W-01's "Allegations and patterns of behaviour" question: the two pages are
+- [x] (eye) Tarık opens W-01's "Allegations and patterns of behaviour" question: the two pages are
   shown as disagreeing, with both quotes, and the wording hints at no outcome.
 
 ## Out of scope

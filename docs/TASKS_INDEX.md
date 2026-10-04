@@ -73,4 +73,4 @@ Wave 16 (2026-10-04). Width 1. After Task-30.
 
 Wave 17 (2026-10-05). Width 1.
 
-- [x] Task-32: Two pages that disagree reach Jev on a long file (main-loop), eye check pending: 1
+- [x] Task-32: Two pages that disagree reach Jev on a long file (main-loop)

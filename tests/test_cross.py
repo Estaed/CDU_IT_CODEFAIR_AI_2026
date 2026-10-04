@@ -12,7 +12,7 @@ from readmark.checks.cross import (
 from readmark.gate import CAP, required_reading
 from readmark.ingest import case_passages
 from readmark.cache import Cache
-from readmark.jev import JevChecker
+from readmark.jev import CheckerError, JevChecker
 from readmark.pipeline import run, validate_view
 
 A_RUN = ROOT / "runs" / "A-0142"
@@ -129,6 +129,34 @@ def test_semantic_dedup_uses_confirmed_facts_and_replays_without_network(tmp_pat
     checker.cache.replay = True
     assert checker.deduplicate(jobs) == result
     assert len(bodies) == 2
+
+
+def test_large_dedup_is_batched_and_an_oversized_batch_keeps_its_passages(tmp_path, monkeypatch):
+    # A 104-page upload hit Jev's max_tokens_exceeded; calls now stay under a choice budget.
+    monkeypatch.setattr('readmark.jev.DEDUP_CHOICES', 10)
+    clause = {'clause_id': 'risk', 'title': 'Risk', 'decides': 'Risk to children'}
+    passages = [{'passage_id': f'X:p{n}:1', 'text': f'Fact {n}.', 'doc_type': 'letter',
+                 'doc_title': 'Record', 'doc_date': '2026-03-20'} for n in range(8)]
+    checker = JevChecker(Cache(tmp_path / 'cache', replay=False))
+    bodies = []
+
+    def post(body):
+        bodies.append(body)
+        if len(bodies) == 1:
+            raise CheckerError('Jev returned HTTP 400: max_tokens_exceeded')
+        if body['questions'][next(iter(body['questions']))]['type'] == 'choice':
+            return {'model': 'fixed-jev', 'answers': {
+                k: {'choice': 'P000'} for k in body['questions']}}
+        return {'model': 'fixed-jev', 'answers': {k: {'noul': 0.99} for k in body['questions']}}
+
+    checker._post = post
+    result = checker.deduplicate([{'clause': clause, 'anchors': passages[:2],
+                                   'candidates': passages[2:]}])
+    choices = [sum(len(q['criteria']) - 1 for q in b['questions'].values())
+               for b in bodies if 'criteria' in next(iter(b['questions'].values()))]
+    assert choices == [2 + 3 + 4, 5, 6, 7]  # earlier passages offered per batch, budget 10
+    # The oversized first batch (P002-P004) stays visible; later batches still merge.
+    assert set(result['risk']) == {'X:p5:1', 'X:p6:1', 'X:p7:1'}
 
 
 @needs_pdfs

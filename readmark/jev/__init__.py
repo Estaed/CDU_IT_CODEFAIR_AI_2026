@@ -44,6 +44,11 @@ JEV_QUESTIONS = {
 SCAN_BATCH = 20
 SCAN_CRITERIA = ["0", "1", "2", "3", "4"]
 
+# Fact deduplication: Jev returns a probability for every choice, so output grows with the total
+# number of choices in a call. Measured 4 Oct on a 104-page upload: 6 questions x 236 choices
+# passed, about 2,800 choices hit max_tokens_exceeded. A-0142's largest call has 1,442.
+DEDUP_CHOICES = 1500
+
 # Contradiction pairs. A first, neutral wording ("agree, contradict or unrelated on the facts that
 # bear on the topic") read a January and a March ledger as consistent over time (agree, 0.85):
 # true of the history, but it misses what the officer needs, a value that another record shows
@@ -239,11 +244,39 @@ class JevChecker:
     # -- Fact deduplication --------------------------------------------------------------------
 
     def _deduplicate_clause(self, job: dict) -> tuple[dict, str]:
+        # Each candidate's question lists every earlier passage, so one call grows with the
+        # square of the candidates. A 104-page upload (132 candidates) hit Jev's token limit;
+        # batches stay under DEDUP_CHOICES, so every showcase and eval call is byte-identical.
         anchors, candidates = job['anchors'], job['candidates']
         ordered = [*anchors, *candidates]
         keys = {p['passage_id']: f'P{n:03d}' for n, p in enumerate(ordered)}
+        batches, choices = [[]], 0
+        for n in range(len(anchors), len(ordered)):
+            if batches[-1] and choices + n > DEDUP_CHOICES:
+                batches.append([])
+                choices = 0
+            batches[-1].append(n)
+            choices += n
+        duplicates, models = {}, set()
+        for batch in batches:
+            if not batch:
+                continue
+            try:
+                found, model = self._deduplicate_batch(job, ordered, keys, batch[0],
+                                                       ordered[batch[0]:batch[-1] + 1])
+            except CheckerError as exc:
+                if 'max_tokens_exceeded' not in str(exc):
+                    raise
+                # Conservative: a batch Jev cannot read keeps all its passages visible.
+                continue
+            duplicates.update(found)
+            models.add(model)
+        return duplicates, ', '.join(sorted(models)) or JEV_MODEL
+
+    def _deduplicate_batch(self, job: dict, ordered: list[dict], keys: dict, offset: int,
+                           batch: list[dict]) -> tuple[dict, str]:
         questions = {}
-        for n, p in enumerate(candidates, start=len(anchors)):
+        for n, p in enumerate(batch, start=offset):
             prior = [keys[q['passage_id']] for q in ordered[:n]]
             if not prior:
                 continue

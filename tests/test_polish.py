@@ -28,6 +28,10 @@ def test_only_ready_showcases_are_listed_but_evaluation_cases_are_addressable():
     app = create_app()
     expected = {cid for cid in ("A-0142", "W-01")
                 if (ROOT / "runs" / cid / "view.json").exists()}
+    # A finished local upload is listed by design; the gate must not depend on what was uploaded.
+    expected |= {job.parent.name for job in (ROOT / "data/uploads").glob("U-*/job.json")
+                 if (ROOT / "runs" / job.parent.name / "view.json").exists()
+                 and json.loads(job.read_text(encoding="utf-8"))["status"] == "ready"}
     assert {c["case_id"] for c in endpoint(app, "/api/cases")()["cases"]} == expected
     assert {"E-01", "E-02", "E-03", "H-01"} <= set(ALL_CASES)
     for cid in ("E-01", "E-02", "E-03", "H-01", "stub"):

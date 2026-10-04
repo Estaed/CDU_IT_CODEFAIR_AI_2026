@@ -1,4 +1,5 @@
 # Task-31: Uploaded documents get their date, read by Claude and checked by code
+**Status: DONE** — 2026-10-04, gate clean. The orchestrator corrected the dating prompt after the live W-01 run (copy and reissue dates never count: 16 of 24 dated, 0 copy dates) and added §4 (`case_path` reads `data/cases/<id>/case.json`).
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Every uploaded document is stored with `doc_date: None` (`readmark/ingest`,
 > `_uploaded_passages`), so Jev reads it as "dated None" and `date_order` falls back to page order.

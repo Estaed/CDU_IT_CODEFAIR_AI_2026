@@ -185,7 +185,10 @@ def case_path(case_id: str) -> Path:
     # Only the reserved held-out id uses the sealed directory. Its labels are never ingested.
     if case_id == "H-01":
         return DATA / "heldout" / case_id / "case.md"
-    return CASES_DIR / case_id / "case.md"
+    # A case committed in upload form (W-01: its PDFs beside a case.json) loads by its own id, with
+    # document files relative to its folder and their hashes checked like an upload's.
+    uploaded = CASES_DIR / case_id / "case.json"
+    return uploaded if uploaded.is_file() else CASES_DIR / case_id / "case.md"
 
 
 def case_passages(case_id: str, path: Path | None = None) -> tuple[dict, list[dict]]:
@@ -252,6 +255,9 @@ def case_passages(case_id: str, path: Path | None = None) -> tuple[dict, list[di
     return meta, passages
 
 
+DATING_THREADS = 6  # as many Claude calls at once as Jev's own pool (readmark.jev)
+
+
 def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path, *,
                    transcriber=None, dater=None, progress=None) -> Path:
     """Extract uploaded pages as data, never as case-file markup; keep every original."""
@@ -302,19 +308,29 @@ def prepare_upload(case_id: str, title: str, documents: list[dict], folder: Path
             [normalise(block) for block in re.split(r"\n\s*\n", page) if block.strip()]
             for page in pages
         ]
-        if dater is None:
-            from readmark import case_run_dir
-            from readmark.cache import Cache
-            from readmark.writer.dating import ClaudeDater
-
-            dater = ClaudeDater(Cache(case_run_dir(case_id) / "cache", False))
-        from readmark.writer.dating import verified_date
-
-        text = "\n\n".join(p for page in paragraphs for p in page)
-        dated = verified_date(dater.date_document(text), text)
         extracted.append({**doc, "sha256": sha256_file(path), "pages": paragraphs,
-                          **dated,
                           **({"scan_pages": scan_pages} if scan_pages else {})})
+    if dater is None:
+        from readmark import case_run_dir
+        from readmark.cache import Cache
+        from readmark.writer.dating import ClaudeDater
+
+        dater = ClaudeDater(Cache(case_run_dir(case_id) / "cache", False))
+    from concurrent.futures import ThreadPoolExecutor
+
+    from readmark.writer.dating import verified_date
+
+    # One date call per document, run side by side. Measured live on W-01 (n=24): one after
+    # another took about 8 minutes (16-29 s a call); six at a time took 268 s, because concurrent
+    # CLI calls slow each other (54-57 s each with six running). Each call is independent and
+    # cached by its own body, so the order of answers never changes the result.
+    texts = ["\n\n".join(p for page in doc["pages"] for p in page) for doc in extracted]
+    if progress and extracted:
+        progress("Reading document dates")
+    with ThreadPoolExecutor(max_workers=DATING_THREADS) as pool:
+        answers = list(pool.map(dater.date_document, texts))
+    for doc, text, answer in zip(extracted, texts, answers, strict=True):
+        doc.update(verified_date(answer, text))
     target = folder / "case.json"
     target.write_text(dumps({"case_id": case_id, "title": title, "documents": extracted}),
                       encoding="utf-8", newline="\n")

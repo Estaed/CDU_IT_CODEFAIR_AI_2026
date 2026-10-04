@@ -128,8 +128,8 @@ def test_two_documents_progress_home_and_highlights(width, upload_app, monkeypat
         release.set()
         expect(page.get_by_test_id("upload-status")).to_have_text("Ready", timeout=15000)
         job = page.request.get(base + f"/api/uploads/{cid}").json()
-        assert job["steps"] == ["Splitting into passages", "The AI is reading", "Checking quotes",
-                                "Second reader", "Ready"]
+        assert job["steps"] == ["Splitting into passages", "Reading document dates",
+                                "The AI is reading", "Checking quotes", "Second reader", "Ready"]
         assert page.get_by_test_id("upload-steps").locator("li > span:first-child").all_text_contents() == job["steps"]
         page.get_by_role("link", name="All cases", exact=True).click()
         row = page.get_by_role("region", name="In progress").locator(f'[data-case="{cid}"]')

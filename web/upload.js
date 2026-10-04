@@ -111,6 +111,7 @@ async function showUpload(cid) {
       if ($('uploadStatus').textContent !== text) $('uploadStatus').textContent = text;
       const steps = [...UPLOAD_STEPS];
       if (job.steps.includes('Reading scanned pages')) steps.splice(1, 0, 'Reading scanned pages');
+      if (job.steps.includes('Reading document dates')) steps.splice(steps.indexOf('The AI is reading'), 0, 'Reading document dates');
       $('uploadSteps').innerHTML = steps.map((step) => {
         const done = job.steps.includes(step) && (step !== current || job.status === 'ready');
         const state = done ? 'Done' : step === current ? job.status === 'failed' ? 'Stopped' : 'In progress' : 'Waiting';

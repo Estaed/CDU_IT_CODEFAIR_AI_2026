@@ -70,7 +70,7 @@ def test_scan_becomes_marked_passages_and_verified_quotes(tmp_path):
     assert all(p["doc_page"] == 1 and p["page"] == 1 for p in passages)
     assert quote_present("The student is enrolled.", passages[0]["text"])
     assert not quote_present("The student is not enrolled.", passages[0]["text"])
-    assert progress == ["Reading scanned pages"]
+    assert progress == ["Reading scanned pages", "Reading document dates"]
     assert len(reader.calls) == 1
     assert hashlib.sha256(reader.calls[0].read_bytes()).hexdigest() == passages[0]["image_sha256"]
 
@@ -281,7 +281,7 @@ def test_scanned_upload_progress_verified_view_and_offline_review(width, tmp_pat
         expect(page.get_by_test_id("upload-status")).to_have_text("Ready", timeout=15000)
         job = wait_job(page.request, base, cid)
         assert job["steps"] == ["Splitting into passages", "Reading scanned pages",
-                                "The AI is reading", "Checking quotes", "Second reader", "Ready"]
+                                "Reading document dates", "The AI is reading", "Checking quotes", "Second reader", "Ready"]
         view = page.request.get(base + f"/api/view?case={cid}").json()
         assert all(c["status"] == "supported" for c in view["claims"])
         assert all(q["quote_found"] for c in view["claims"] for q in c["citations"])

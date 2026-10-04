@@ -65,8 +65,8 @@ Wave 14 (2026-10-04). By hand on the website, after the Claude reset; not for ot
 
 Wave 15 (2026-10-04). Width 1.
 
-- [ ] Task-30: Jev tells a record that was updated from two records that disagree (codex)
+- [x] Task-30: Jev tells a record that was updated from two records that disagree (codex), eye check pending: 1
 
 Wave 16 (2026-10-04). Width 1. After Task-30.
 
-- [ ] Task-31: Uploaded documents get their date, read by Claude and checked by code (codex)
+- [x] Task-31: Uploaded documents get their date, read by Claude and checked by code (codex)

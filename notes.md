@@ -484,6 +484,10 @@ session list.
   confidence. Task-08 measured AUC 0.899 and balanced accuracy 0.857 at 0.3 (n=300).
 - 2026-10-03: Claude and Jev as two checkers, two votes. Task-08 measured Claude 0.85 and Jev 0.83
   balanced accuracy on SummEdits (n=300); their errors were not compared.
+- 2026-10-05: Date all uploaded documents in one Claude call instead of one call each. Measured on
+  W-01 (n=24): one after another about 8 minutes; six at a time 268 s, since concurrent CLI calls
+  slow each other (54-57 s each). W-01's text is 258k characters, which fits one request; code would
+  still verify each quote in its own document. Six test fakes assume the per-document request.
 
 ## Sources
 - [Landscape survey, 2026-10-03](reports/2026-10-03-landscape-verified-summaries.md): products,

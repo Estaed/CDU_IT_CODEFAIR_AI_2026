@@ -1,4 +1,5 @@
 # Task-30: Jev tells a record that was updated from two records that disagree
+**Status: DONE** — 2026-10-04, main `8aaaa03` + `73aec1e`, gate clean; eye check pending: 1 (A-0142 Debts). Retry used for required reading (pages, update chains); the orchestrator collapsed one record over time into one sentence.
 > **Execution:** agent `codex` · effort `high`
 > *Why:* Tarık opened A-0142 → Debts and saw "Two pages disagree" for the January ledger
 > ($2,400 owed) and the March ledger ($0, paid on 2 March). That is a record updated over time,

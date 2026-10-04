@@ -55,6 +55,10 @@ Wave 12 (2026-10-04). Width 1.
 
 - [ ] Task-27: Questions from the rules: Claude suggests, a person approves each one (codex)
 
-Wave 13 (2026-10-04). Width 1. Waits for Tarik's go and the Claude reset.
+Wave 13 (2026-10-04). Width 1. No Claude calls (split on 4 Oct).
 
 - [ ] Task-28: Two showcase cases (housing, Ochre Card), an intake note, and a polish pass (codex)
+
+Wave 14 (2026-10-04). By hand on the website, after the Claude reset; not for otopilot.
+
+- [ ] Task-29: The Ochre Card case live on the website: questions from the rules, then the file (main-loop)

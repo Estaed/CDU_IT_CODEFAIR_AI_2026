@@ -1,0 +1,26 @@
+{
+ "cases": {
+  "count": 5,
+  "n": 5
+ },
+ "facts": {
+  "count": 63,
+  "n": 63
+ },
+ "files": [
+  "facts.csv",
+  "gold.csv",
+  "mutations.csv",
+  "DATASHEET.md"
+ ],
+ "gold_clause_labels": {
+  "count": 40,
+  "n": 40
+ },
+ "licence": "CC BY 4.0 (original synthetic material)",
+ "mutation_claims": {
+  "count": 45,
+  "n": 45
+ },
+ "part": "benchmark"
+}

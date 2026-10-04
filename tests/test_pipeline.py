@@ -35,8 +35,9 @@ def test_fabricated_quote_reaches_view_as_quote_not_found_and_is_required(tmp_pa
     assert claim["citations"][0]["quote"] == "Arrears remain outstanding and unpaid."
     required = {i["passage_id"]: i for i in view["required_reading"]}
     assert claim["claim_id"] in required["stub:p3:2"]["claim_ids"]
-    # The other claims all passed, so nothing else is required.
-    assert list(required) == ["stub:p3:2"]
+    # Failed checks rank first; unused slots retain other cited evidence without new errors.
+    assert next(iter(required)) == "stub:p3:2"
+    assert all(r["reasons"] == ["cited"] for pid, r in required.items() if pid != "stub:p3:2")
     on_disk = json.loads((tmp_path / "view.json").read_text(encoding="utf-8"))
     validate_view(on_disk)
     assert on_disk == view

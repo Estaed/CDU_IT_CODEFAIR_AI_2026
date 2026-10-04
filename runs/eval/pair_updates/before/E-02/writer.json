@@ -1,0 +1,311 @@
+{
+ "facts": [
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p3:1",
+     "quote": "Australian citizenship document sighted; current Darwin residence was confirmed from the utility account."
+    },
+    {
+     "passage_id": "E-02:p3:3",
+     "quote": "The citizenship original matched the application."
+    }
+   ],
+   "claim": "Intake sighted an original Australian citizenship document for the applicant, and it matched the application.",
+   "claim_id": "c01",
+   "clause_id": "elig-residency",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p3:3",
+     "quote": "both originals were returned"
+    }
+   ],
+   "claim": "Intake kept no copy of the citizenship document: the original was returned after sighting.",
+   "claim_id": "c02",
+   "clause_id": "elig-residency",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p4:1",
+     "quote": "I do not own or partly own residential property in Australia."
+    },
+    {
+     "passage_id": "E-02:p4:3",
+     "quote": "Sera declares no title, partial share or contract to buy residential property in Australia."
+    }
+   ],
+   "claim": "The applicant declares she does not own or partly own residential property in Australia, and has no contract to buy any.",
+   "claim_id": "c03",
+   "clause_id": "elig-property",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The only property evidence is the applicant's own witnessed declaration. The file holds no independent property or title search.",
+   "claim_id": "c04",
+   "clause_id": "elig-property",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p5:2",
+     "quote": "Income statement for Sera Len, issued on 3 August 2026 by Windward Assistance Office; gross support payment $610.00 per fortnight."
+    }
+   ],
+   "claim": "An income statement shows a gross support payment of $610.00 per fortnight, issued on 3 August 2026.",
+   "claim_id": "c05",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p5:4",
+     "quote": "Payment summary: current support payment $610.00; additional regular component $0.00; gross total $610.00."
+    }
+   ],
+   "claim": "The income statement shows no additional regular payment component.",
+   "claim_id": "c06",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p10:1",
+     "quote": "Received: identity document sighting, utility account, property declaration and income statement."
+    }
+   ],
+   "claim": "Intake recorded the income statement as received.",
+   "claim_id": "c07",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file holds no evidence of assets or savings for the urban income and assets criteria.",
+   "claim_id": "c08",
+   "clause_id": "elig-income",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p7:3",
+     "quote": "The account search returned no debt owed to the CEO (Housing) for this applicant."
+    },
+    {
+     "passage_id": "E-02:p7:2",
+     "quote": "Balance carried to the applicant's housing account query: $0.00."
+    }
+   ],
+   "claim": "A housing account search found no debt owed to the CEO (Housing) and a balance of $0.00.",
+   "claim_id": "c09",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p7:2",
+     "quote": "Search scope: accounts held by the CEO (Housing) under the declared current name."
+    },
+    {
+     "passage_id": "E-02:p7:4",
+     "quote": "If the applicant supplies an earlier name or a former tenancy reference, Housing Accounts can run a separate search under that detail and issue a new dated result."
+    }
+   ],
+   "claim": "The debt search covered only the applicant's declared current name, so a debt under an earlier name would not show.",
+   "claim_id": "c10",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "eligibility:p6:9",
+     "quote": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing)."
+    }
+   ],
+   "claim": "Under the policy, a debt to the CEO (Housing) would not withhold housing anyway.",
+   "claim_id": "c11",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p8:1",
+     "quote": "No former public or community housing tenancy was identified for this applicant."
+    }
+   ],
+   "claim": "A housing history search found no former public or community housing tenancy for the applicant.",
+   "claim_id": "c12",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p8:3",
+     "quote": "The housing-history register returned no former public or community tenancy under Sera's declared name. The current private room is outside that register."
+    }
+   ],
+   "claim": "The tenancy history search covered only the applicant's declared name, and her current private room is outside that register.",
+   "claim_id": "c13",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p2:1",
+     "quote": "I expect to lose the room I rent on 21 August 2026 and need priority housing."
+    },
+    {
+     "passage_id": "priority:p4:11",
+     "quote": "At risk of homelessness;"
+    }
+   ],
+   "claim": "The applicant asks for priority because she expects to lose her rented room on 21 August 2026, which points to the at-risk-of-homelessness category.",
+   "claim_id": "c14",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p1:3",
+     "quote": "She says her rented room may end on 21 August and requests priority consideration."
+    },
+    {
+     "passage_id": "E-02:p2:1",
+     "quote": "I expect to lose the room I rent on 21 August 2026 and need priority housing."
+    }
+   ],
+   "claim": "The application form says only that the room may end, while the statutory declaration says she expects to lose it.",
+   "claim_id": "c15",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p9:1",
+     "quote": "I have not received a notice to vacate. The host said an extension may be possible but did not confirm a new date."
+    }
+   ],
+   "claim": "In her later reply, the applicant says she has no notice to vacate and the host said an extension may be possible. This weakens the claimed loss of housing.",
+   "claim_id": "c16",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p2:3",
+     "quote": "She has asked for a written date but has received none so far."
+    }
+   ],
+   "claim": "The applicant asked the host for a written end date and has not received one.",
+   "claim_id": "c17",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file makes no claim of domestic or family violence, serious medical or social problems, or a young person leaving care.",
+   "claim_id": "c18",
+   "clause_id": "prio-category",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p6:1",
+     "quote": "Please provide a room termination notice or a letter from a support service that confirms the date and circumstances of the move."
+    }
+   ],
+   "claim": "Intake asked for a room termination notice or a support-service letter to confirm the move.",
+   "claim_id": "c19",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p10:1",
+     "quote": "Priority support document: no received date entered."
+    },
+    {
+     "passage_id": "E-02:p12:1",
+     "quote": "Priority support document field remains blank at transfer."
+    }
+   ],
+   "claim": "No priority support document had been received when the file was transferred for delegated review.",
+   "claim_id": "c20",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file holds no termination notice, host note or support-service letter. The applicant's own declaration is the only evidence of urgent need.",
+   "claim_id": "c21",
+   "clause_id": "prio-documentation",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p11:1",
+     "quote": "We offer Sera Len an appointment to explain the room arrangement and discuss what written material the host or a support service can provide."
+    }
+   ],
+   "claim": "Intake offered the applicant an interview about the room arrangement.",
+   "claim_id": "c22",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file has no record that the interview took place or of what it found.",
+   "claim_id": "c23",
+   "clause_id": "prio-documentation",
+   "found": false
+  },
+  {
+   "citations": [],
+   "claim": "The file describes no extreme situation that might call for the CEO's discretion.",
+   "claim_id": "c24",
+   "clause_id": "prio-discretion",
+   "found": false
+  },
+  {
+   "citations": [],
+   "claim": "The file has nothing dated after the expected room end date, so it does not show whether the applicant left the room or got an extension.",
+   "claim_id": "c25",
+   "clause_id": "other",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-02:p1:1",
+     "quote": "The application seeks urban housing in Darwin for one adult"
+    }
+   ],
+   "claim": "The application is for one adult seeking a small dwelling in Darwin.",
+   "claim_id": "c26",
+   "clause_id": "other",
+   "found": true
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "name": "claude"
+}

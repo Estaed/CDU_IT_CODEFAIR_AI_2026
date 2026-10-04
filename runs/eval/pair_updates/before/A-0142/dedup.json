@@ -1,0 +1,19 @@
+{
+ "duplicate_probability_minimum": 0.9,
+ "duplicates": {
+  "elig-debts": {},
+  "elig-former-tenancy": {},
+  "elig-income": {},
+  "elig-property": {},
+  "elig-residency": {},
+  "prio-category": {},
+  "prio-discretion": {},
+  "prio-documentation": {
+   "A-0142:p34:6": "A-0142:p36:6",
+   "A-0142:p36:5": "A-0142:p34:5",
+   "A-0142:p44:4": "A-0142:p43:4"
+  }
+ },
+ "method": "Keep the strongest distinct clause facts; discard only repetitions of a cited or stronger passage, with binary duplicate probability >= 0.9. Chosen after the demo audit; the held-out evaluation remains its honest test.",
+ "model": "jev-1.13.0"
+}

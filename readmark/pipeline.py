@@ -54,7 +54,7 @@ from readmark.jev import SCAN_BATCH, make_checker
 from readmark.writer import OTHER, ClaudeWriter
 
 VIEW_SCHEMA = SCHEMAS_DIR / "view.schema.json"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 4
 
 
 def section_label(heading: str | None) -> str | None:
@@ -96,7 +96,7 @@ def named_passage_ids(view: dict) -> set[str]:
             ids |= {pair["a"], pair["b"]}
         ids |= {m["passage_id"] for m in clause["possibly_missed"]}
     for item in [*view["required_reading"], *view["suggested_reading"]]:
-        ids.add(item["passage_id"])
+        ids.update(item.get("passage_ids", [item["passage_id"]]))
     for claim in (view.get("audit") or {}).get("claims", []):
         ids |= {c["passage_id"] for c in claim["citations"]}
         ids |= set(claim["contradicted_by"])
@@ -134,7 +134,7 @@ def build_view(case_meta: dict, case: list[dict], policy: list[dict], clauses: l
                 "status": claim_status(cross["reasons"][fact["claim_id"]]),
             }
         )
-    required = {i["passage_id"] for i in gate["required"]}
+    required = {pid for i in gate["required"] for pid in i.get("passage_ids", [i["passage_id"]])}
     for claim in claims:
         claim["required"] = any(c["passage_id"] in required for c in claim["citations"])
 
@@ -212,7 +212,7 @@ def validate_view(view: dict, question_list: dict | None = None) -> None:
         source["properties"]["doc_date"]["type"] = ["string", "null"]
     if question_list is not None and question_list["id"] != DEFAULT_LIST_ID:
         # The on-disk schema describes the frozen housing demo. Bind its list-specific
-        # constraints to the approved list while keeping every version-2 field unchanged.
+        # constraints to the approved list while keeping the common view fields unchanged.
         schema["properties"]["policies"]["minItems"] = len(question_list["policies"])
         schema["properties"]["policies"]["maxItems"] = len(question_list["policies"])
         schema["properties"]["clauses"]["items"]["properties"]["clause_id"]["enum"] = [
@@ -222,6 +222,17 @@ def validate_view(view: dict, question_list: dict | None = None) -> None:
     unsourced = named_passage_ids(view) - set(view["sources"])
     if unsourced:
         raise jsonschema.ValidationError(f"passage ids with no sources entry: {sorted(unsourced)}")
+    reading_pages = set()
+    for item in [*view["required_reading"], *view["suggested_reading"]]:
+        page = item["passage_id"].rsplit(":", 1)[0]
+        if page in reading_pages or any(pid.rsplit(":", 1)[0] != page
+                                        for pid in item["passage_ids"]):
+            raise jsonschema.ValidationError("Reading items must name distinct pages.")
+        if item["passage_id"] not in item["passage_ids"] or set(item["passage_ids"]) != {
+            p["passage_id"] for p in item["passages"]
+        }:
+            raise jsonschema.ValidationError("Reading page members must match its passages.")
+        reading_pages.add(page)
 
 
 def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
@@ -353,6 +364,7 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         contradictions=[{**p, "clause_id": cid} for cid in clause_ids
                         for p in contradictions[cid]],
         possibly_missed=[{**m, "clause_id": cid} for cid in clause_ids for m in missed[cid]],
+        passages=passages,
     )
 
     # 9. Summary under audit: the map's claims, pairs and required passages go in; nothing
@@ -377,7 +389,8 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
         record = audit_summary(
             case_id, input_path.read_text(encoding="utf-8"), map_claims,
             set(case_by_id), auditor=auditor or ClaudeAuditor(cache), checker=checker_impl,
-            pairs=all_pairs, required={i["passage_id"] for i in gate["required"]}, cache=cache)
+            pairs=all_pairs, required={pid for i in gate["required"] for pid in i["passage_ids"]},
+            cache=cache)
         # The fixed view enum cannot name an exemption. The audit stage explicitly labels
         # these sentences, while the view keeps a null checker judgment and no flag.
         record['nothing_to_check'] = [

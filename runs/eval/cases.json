@@ -32,54 +32,54 @@
     "by_kind": {
      "audit-cover": {
       "count": 1,
-      "n": 380
+      "n": 578
      },
      "audit-locate": {
       "count": 1,
-      "n": 380
+      "n": 578
      },
      "audit-split": {
       "count": 1,
-      "n": 380
+      "n": 578
      },
      "jev": {
-      "count": 135,
-      "n": 380
+      "count": 170,
+      "n": 578
      },
      "jev-dedup": {
       "count": 8,
-      "n": 380
+      "n": 578
      },
      "jev-dedup-confirm": {
       "count": 8,
-      "n": 380
+      "n": 578
      },
      "jev-pair": {
-      "count": 80,
-      "n": 380
+      "count": 243,
+      "n": 578
      },
      "jev-scan": {
       "count": 144,
-      "n": 380
+      "n": 578
      },
      "summary": {
       "count": 1,
-      "n": 380
+      "n": 578
      },
      "writer": {
       "count": 1,
-      "n": 380
+      "n": 578
      }
     },
     "claude": 5,
-    "jev": 375,
+    "jev": 573,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 380
+    "n": 578
    },
    "required_reading": {
     "count": 8,
     "n": 8,
-    "unit": "passages; n is the maximum allowed"
+    "unit": "pages; n is the maximum allowed"
    },
    "summary_audit": {
     "by_status": {
@@ -116,9 +116,9 @@
     "prompt": "Summarise this file."
    },
    "trap_touch_rate": {
-    "count": 3,
+    "count": 6,
     "n": 6,
-    "rate": 0.5
+    "rate": 1.0
    },
    "traps": [
     {
@@ -148,26 +148,32 @@
      "fact_id": "A03",
      "missing_evidence_flag": false,
      "required": [],
-     "suggested": [],
-     "touched": false,
+     "suggested": [
+      "A-0142:p30:2"
+     ],
+     "touched": true,
      "trap": "policy_misread"
     },
     {
      "clause_id": "prio-category",
      "fact_id": "A04",
      "missing_evidence_flag": false,
-     "required": [],
+     "required": [
+      "A-0142:p51:3"
+     ],
      "suggested": [],
-     "touched": false,
+     "touched": true,
      "trap": "omission"
     },
     {
      "clause_id": "prio-documentation",
      "fact_id": "A05",
      "missing_evidence_flag": false,
-     "required": [],
+     "required": [
+      "A-0142:p51:4"
+     ],
      "suggested": [],
-     "touched": false,
+     "touched": true,
      "trap": "omission"
     },
     {
@@ -183,17 +189,16 @@
   },
   "E-01": {
    "all_flagged_gold_page_coverage": {
-    "count": 2,
+    "count": 4,
     "covered": [
-     "p5",
-     "p7"
-    ],
-    "missed": [
      "p1",
+     "p5",
+     "p7",
      "p8"
     ],
+    "missed": [],
     "n": 4,
-    "rate": 0.5
+    "rate": 1.0
    },
    "gold_page_coverage": {
     "count": 2,
@@ -212,56 +217,58 @@
     "by_kind": {
      "audit-locate": {
       "count": 1,
-      "n": 153
+      "n": 276
      },
      "jev": {
       "count": 47,
-      "n": 153
+      "n": 276
      },
      "jev-dedup": {
       "count": 6,
-      "n": 153
+      "n": 276
      },
      "jev-dedup-confirm": {
       "count": 6,
-      "n": 153
+      "n": 276
      },
      "jev-pair": {
-      "count": 60,
-      "n": 153
+      "count": 183,
+      "n": 276
      },
      "jev-scan": {
       "count": 32,
-      "n": 153
+      "n": 276
      },
      "writer": {
       "count": 1,
-      "n": 153
+      "n": 276
      }
     },
     "claude": 2,
-    "jev": 151,
+    "jev": 274,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 153
+    "n": 276
    },
    "required_reading": {
     "count": 8,
     "n": 8,
-    "unit": "passages; n is the maximum allowed"
+    "unit": "pages; n is the maximum allowed"
    },
    "trap_touch_rate": {
-    "count": 0,
+    "count": 3,
     "n": 3,
-    "rate": 0.0
+    "rate": 1.0
    },
    "traps": [
     {
      "clause_id": "elig-former-tenancy",
      "fact_id": "E01F01",
      "missing_evidence_flag": false,
-     "required": [],
+     "required": [
+      "E-01:p7:1"
+     ],
      "suggested": [],
-     "touched": false,
+     "touched": true,
      "trap": "exclusion_2yr"
     },
     {
@@ -269,8 +276,10 @@
      "fact_id": "E01F02",
      "missing_evidence_flag": false,
      "required": [],
-     "suggested": [],
-     "touched": false,
+     "suggested": [
+      "E-01:p1:1"
+     ],
+     "touched": true,
      "trap": "exclusion_2yr"
     },
     {
@@ -278,25 +287,26 @@
      "fact_id": "E01F03",
      "missing_evidence_flag": false,
      "required": [],
-     "suggested": [],
-     "touched": false,
+     "suggested": [
+      "E-01:p8:3"
+     ],
+     "touched": true,
      "trap": "policy_misread"
     }
    ]
   },
   "E-02": {
    "all_flagged_gold_page_coverage": {
-    "count": 3,
+    "count": 4,
     "covered": [
      "p2",
+     "p6",
      "p9",
      "p10"
     ],
-    "missed": [
-     "p6"
-    ],
+    "missed": [],
     "n": 4,
-    "rate": 0.75
+    "rate": 1.0
    },
    "gold_page_coverage": {
     "count": 3,
@@ -315,47 +325,47 @@
     "by_kind": {
      "audit-locate": {
       "count": 1,
-      "n": 130
+      "n": 217
      },
      "jev": {
       "count": 51,
-      "n": 130
+      "n": 217
      },
      "jev-dedup": {
       "count": 2,
-      "n": 130
+      "n": 217
      },
      "jev-dedup-confirm": {
       "count": 2,
-      "n": 130
+      "n": 217
      },
      "jev-pair": {
-      "count": 41,
-      "n": 130
+      "count": 128,
+      "n": 217
      },
      "jev-scan": {
       "count": 32,
-      "n": 130
+      "n": 217
      },
      "writer": {
       "count": 1,
-      "n": 130
+      "n": 217
      }
     },
     "claude": 2,
-    "jev": 128,
+    "jev": 215,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 130
+    "n": 217
    },
    "required_reading": {
     "count": 8,
     "n": 8,
-    "unit": "passages; n is the maximum allowed"
+    "unit": "pages; n is the maximum allowed"
    },
    "trap_touch_rate": {
-    "count": 2,
+    "count": 3,
     "n": 4,
-    "rate": 0.5
+    "rate": 0.75
    },
    "traps": [
     {
@@ -383,8 +393,10 @@
      "fact_id": "E02F03",
      "missing_evidence_flag": false,
      "required": [],
-     "suggested": [],
-     "touched": false,
+     "suggested": [
+      "E-02:p6:1"
+     ],
+     "touched": true,
      "trap": "missing_doc"
     },
     {
@@ -413,64 +425,63 @@
     "rate": 1.0
    },
    "gold_page_coverage": {
-    "count": 3,
+    "count": 5,
     "covered": [
      "p4",
+     "p6",
      "p7",
+     "p9",
      "p12"
     ],
-    "missed": [
-     "p6",
-     "p9"
-    ],
+    "missed": [],
     "n": 5,
-    "rate": 0.6
+    "rate": 1.0
    },
    "live_responses": {
     "by_kind": {
      "audit-locate": {
       "count": 1,
-      "n": 167
+      "n": 289
      },
      "jev": {
-      "count": 68,
-      "n": 167
+      "count": 74,
+      "n": 289
      },
      "jev-dedup": {
       "count": 5,
-      "n": 167
+      "n": 289
      },
      "jev-dedup-confirm": {
       "count": 5,
-      "n": 167
+      "n": 289
      },
      "jev-pair": {
-      "count": 55,
-      "n": 167
+      "count": 171,
+      "n": 289
      },
      "jev-scan": {
       "count": 32,
-      "n": 167
+      "n": 289
      },
      "writer": {
       "count": 1,
-      "n": 167
+      "n": 289
      }
     },
     "claude": 2,
-    "jev": 165,
+    "jev": 287,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 167
+    "n": 289
    },
    "required_reading": {
     "count": 8,
     "n": 8,
-    "unit": "passages; n is the maximum allowed"
+    "unit": "pages; n is the maximum allowed"
    },
    "trap_touch_rate": {
-    "count": 4,
+    "count": 6,
     "n": 6,
-    "rate": 0.6667
+    "rate": 1.0
    },
    "traps": [
     {
@@ -499,18 +510,22 @@
      "clause_id": "prio-discretion",
      "fact_id": "E03F05",
      "missing_evidence_flag": false,
-     "required": [],
+     "required": [
+      "E-03:p9:1"
+     ],
      "suggested": [],
-     "touched": false,
+     "touched": true,
      "trap": "discretion"
     },
     {
      "clause_id": "prio-discretion",
      "fact_id": "E03F06",
      "missing_evidence_flag": false,
-     "required": [],
+     "required": [
+      "E-03:p12:1"
+     ],
      "suggested": [],
-     "touched": false,
+     "touched": true,
      "trap": "discretion"
     },
     {
@@ -539,21 +554,20 @@
   },
   "H-01": {
    "all_flagged_gold_page_coverage": {
-    "count": 7,
+    "count": 8,
     "covered": [
      "p3",
      "p5",
+     "p6",
      "p12",
      "p13",
      "p14",
      "p15",
      "p17"
     ],
-    "missed": [
-     "p6"
-    ],
+    "missed": [],
     "n": 8,
-    "rate": 0.875
+    "rate": 1.0
    },
    "first_run": {
     "all_flagged_gold_page_coverage": {
@@ -792,15 +806,15 @@
    "gold_page_coverage": {
     "count": 4,
     "covered": [
-     "p3",
      "p5",
      "p12",
+     "p14",
      "p17"
     ],
     "missed": [
+     "p3",
      "p6",
      "p13",
-     "p14",
      "p15"
     ],
     "n": 8,
@@ -817,16 +831,21 @@
      "readmark/checklist/lists/nt-priority-housing/list.yaml",
      "readmark/checklist/writer.py",
      "readmark/checks/__init__.py",
+     "readmark/checks/cross.py",
      "readmark/checks/supports.py",
      "readmark/eval/__init__.py",
      "readmark/eval/cases.py",
      "readmark/eval/checker.py",
+     "readmark/eval/pair_retry.py",
+     "readmark/eval/pair_updates.py",
      "readmark/eval/round2.py",
      "readmark/eval/supports.py",
+     "readmark/gate/__init__.py",
      "readmark/ingest/__init__.py",
      "readmark/ingest/scans.py",
      "readmark/jev/__init__.py",
      "readmark/pipeline.py",
+     "readmark/schemas/view.schema.json",
      "readmark/writer/claude_cli.py",
      "readmark/writer/transcription.py",
      "tests/test_eval_cases.py",
@@ -870,7 +889,7 @@
      "count": 1,
      "n": 1
     },
-    "scored_view_sha256": "36fe1222779d6237f20bed7ca782e7d4a8c56145b8ba349d8bb4edcc022b23af",
+    "scored_view_sha256": "075bf3a109efd78243fd24c6a8e061c880e91856aa5639722707ba815d72042f",
     "seal_read_after_run": true,
     "started_at": "2026-10-03T06:16:01.666461+00:00",
     "tuned_after_run": true
@@ -880,54 +899,54 @@
     "by_kind": {
      "audit-cover": {
       "count": 1,
-      "n": 297
+      "n": 451
      },
      "audit-locate": {
       "count": 1,
-      "n": 297
+      "n": 451
      },
      "audit-split": {
       "count": 1,
-      "n": 297
+      "n": 451
      },
      "jev": {
-      "count": 187,
-      "n": 297
+      "count": 210,
+      "n": 451
      },
      "jev-dedup": {
       "count": 6,
-      "n": 297
+      "n": 451
      },
      "jev-dedup-confirm": {
       "count": 5,
-      "n": 297
+      "n": 451
      },
      "jev-pair": {
-      "count": 62,
-      "n": 297
+      "count": 193,
+      "n": 451
      },
      "jev-scan": {
       "count": 32,
-      "n": 297
+      "n": 451
      },
      "summary": {
       "count": 1,
-      "n": 297
+      "n": 451
      },
      "writer": {
       "count": 1,
-      "n": 297
+      "n": 451
      }
     },
     "claude": 5,
-    "jev": 292,
+    "jev": 446,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 297
+    "n": 451
    },
    "required_reading": {
     "count": 8,
     "n": 8,
-    "unit": "passages; n is the maximum allowed"
+    "unit": "pages; n is the maximum allowed"
    },
    "summary_audit": {
     "by_status": {
@@ -964,9 +983,9 @@
     "prompt": "Summarise this file."
    },
    "trap_touch_rate": {
-    "count": 3,
+    "count": 6,
     "n": 7,
-    "rate": 0.4286
+    "rate": 0.8571
    },
    "traps": [
     {
@@ -985,8 +1004,10 @@
      "fact_id": "F04",
      "missing_evidence_flag": false,
      "required": [],
-     "suggested": [],
-     "touched": false,
+     "suggested": [
+      "H-01:p6:2"
+     ],
+     "touched": true,
      "trap": "stale_value"
     },
     {
@@ -1015,9 +1036,11 @@
      "clause_id": "elig-former-tenancy",
      "fact_id": "F10",
      "missing_evidence_flag": false,
-     "required": [],
+     "required": [
+      "H-01:p12:2"
+     ],
      "suggested": [],
-     "touched": false,
+     "touched": true,
      "trap": "exclusion_2yr"
     },
     {
@@ -1025,8 +1048,10 @@
      "fact_id": "F11",
      "missing_evidence_flag": false,
      "required": [],
-     "suggested": [],
-     "touched": false,
+     "suggested": [
+      "H-01:p13:2"
+     ],
+     "touched": true,
      "trap": "exclusion_2yr"
     },
     {

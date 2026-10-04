@@ -326,7 +326,7 @@
    "claim_id": "a11",
    "clause_id": "other",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -386,7 +386,7 @@
    "claim_id": "a13",
    "clause_id": "prio-category",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -409,7 +409,7 @@
    "claim_id": "a14",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -614,7 +614,7 @@
    "claim_id": "a21",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -643,7 +643,7 @@
    "claim_id": "a22",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -666,7 +666,7 @@
    "claim_id": "a23",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -1297,7 +1297,7 @@
    "claim_id": "a46",
    "clause_id": "other",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -1326,7 +1326,7 @@
    "claim_id": "a47",
    "clause_id": "elig-income",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "checker_disagrees",
    "values_missing": []
   },
@@ -1632,7 +1632,7 @@
    "claim_id": "a59",
    "clause_id": "elig-property",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -1898,7 +1898,7 @@
    "claim_id": "a69",
    "clause_id": "elig-debts",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "checker_disagrees",
    "values_missing": []
   },
@@ -1921,7 +1921,7 @@
    "claim_id": "a70",
    "clause_id": "elig-debts",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -1985,7 +1985,7 @@
    "claim_id": "a72",
    "clause_id": "elig-debts",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -2103,7 +2103,7 @@
    "claim_id": "a76",
    "clause_id": "elig-debts",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "quote_not_found",
    "values_missing": [
     "January 2026"
@@ -2296,7 +2296,7 @@
    "claim_id": "a83",
    "clause_id": "elig-income",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -2458,7 +2458,7 @@
    "claim_id": "a89",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -2499,7 +2499,7 @@
    "claim_id": "a90",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "checker_disagrees",
    "values_missing": []
   },
@@ -2528,7 +2528,7 @@
    "claim_id": "a91",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "checker_disagrees",
    "values_missing": []
   },
@@ -2557,7 +2557,7 @@
    "claim_id": "a92",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -2638,7 +2638,7 @@
    "claim_id": "a95",
    "clause_id": "elig-income",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "checker_disagrees",
    "values_missing": []
   }

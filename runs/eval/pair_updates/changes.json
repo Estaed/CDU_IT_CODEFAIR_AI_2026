@@ -1,0 +1,1391 @@
+{
+ "evaluation_number_changes": [
+  {
+   "after": 3,
+   "after_n": 5,
+   "before": 2,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 0.6,
+   "after_n": 5,
+   "before": 0.4,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 5,
+   "before": 2,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].gold_page_coverage.count"
+  },
+  {
+   "after": 0.6,
+   "after_n": 5,
+   "before": 0.4,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 5,
+   "before": 1,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].new_gold_pages.count"
+  },
+  {
+   "after": 6,
+   "after_n": 8,
+   "before": 3,
+   "before_n": 8,
+   "path": "parts.ablation.cases.A-0142[3].required_reading.count"
+  },
+  {
+   "after": 3,
+   "after_n": 5,
+   "before": 4,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].gold_page_coverage.count"
+  },
+  {
+   "after": 0.6,
+   "after_n": 5,
+   "before": 0.8,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 5,
+   "before": 2,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].new_gold_pages.count"
+  },
+  {
+   "after": 0,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 0.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].gold_page_coverage.count"
+  },
+  {
+   "after": 0.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].new_gold_pages.count"
+  },
+  {
+   "after": 0,
+   "after_n": 8,
+   "before": 4,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-02[3].required_reading.count"
+  },
+  {
+   "after": 2,
+   "after_n": 4,
+   "before": 3,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 0.5,
+   "after_n": 4,
+   "before": 0.75,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 4,
+   "before": 3,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].gold_page_coverage.count"
+  },
+  {
+   "after": 0.5,
+   "after_n": 4,
+   "before": 0.75,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 4,
+   "before": 1,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].new_gold_pages.count"
+  },
+  {
+   "after": 6,
+   "after_n": 8,
+   "before": 8,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-02[4].required_reading.count"
+  },
+  {
+   "after": 7,
+   "after_n": 8,
+   "before": 8,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-03[3].required_reading.count"
+  },
+  {
+   "after": 3,
+   "after_n": 5,
+   "before": 4,
+   "before_n": 5,
+   "path": "parts.cases.cases.A-0142.gold_page_coverage.count"
+  },
+  {
+   "after": 0.6,
+   "after_n": 5,
+   "before": 0.8,
+   "before_n": 5,
+   "path": "parts.cases.cases.A-0142.gold_page_coverage.rate"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.audit-cover.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.audit-split.n"
+  },
+  {
+   "after": 170,
+   "after_n": 578,
+   "before": 135,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev.count"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 243,
+   "after_n": 578,
+   "before": 80,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.summary.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 573,
+   "after_n": 578,
+   "before": 375,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.jev"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 183,
+   "after_n": 276,
+   "before": 60,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 274,
+   "after_n": 276,
+   "before": 151,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.jev"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.n"
+  },
+  {
+   "after": 2,
+   "after_n": 4,
+   "before": 3,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 0.5,
+   "after_n": 4,
+   "before": 0.75,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 4,
+   "before": 3,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.gold_page_coverage.count"
+  },
+  {
+   "after": 0.5,
+   "after_n": 4,
+   "before": 0.75,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.gold_page_coverage.rate"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 128,
+   "after_n": 217,
+   "before": 41,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 215,
+   "after_n": 217,
+   "before": 128,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.jev"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.n"
+  },
+  {
+   "after": 6,
+   "after_n": 8,
+   "before": 8,
+   "before_n": 8,
+   "path": "parts.cases.cases.E-02.required_reading.count"
+  },
+  {
+   "after": 1,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.trap_touch_rate.count"
+  },
+  {
+   "after": 0.25,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.trap_touch_rate.rate"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 74,
+   "after_n": 289,
+   "before": 68,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev.count"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 171,
+   "after_n": 289,
+   "before": 55,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 287,
+   "after_n": 289,
+   "before": 165,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.jev"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.n"
+  },
+  {
+   "after": 3,
+   "after_n": 6,
+   "before": 4,
+   "before_n": 6,
+   "path": "parts.cases.cases.E-03.trap_touch_rate.count"
+  },
+  {
+   "after": 0.5,
+   "after_n": 6,
+   "before": 0.6667,
+   "before_n": 6,
+   "path": "parts.cases.cases.E-03.trap_touch_rate.rate"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.audit-cover.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.audit-split.n"
+  },
+  {
+   "after": 210,
+   "after_n": 451,
+   "before": 187,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev.count"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 193,
+   "after_n": 451,
+   "before": 62,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.summary.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 446,
+   "after_n": 451,
+   "before": 292,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.jev"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.n"
+  },
+  {
+   "after": 3,
+   "after_n": 5,
+   "before": 4,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.A-0142.after.gold_page_coverage.count"
+  },
+  {
+   "after": 0.6,
+   "after_n": 5,
+   "before": 0.8,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.A-0142.after.gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 4,
+   "before": 3,
+   "before_n": 4,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-02.after.gold_page_coverage.count"
+  },
+  {
+   "after": 0.5,
+   "after_n": 4,
+   "before": 0.75,
+   "before_n": 4,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-02.after.gold_page_coverage.rate"
+  },
+  {
+   "after": 6,
+   "after_n": 8,
+   "before": 8,
+   "before_n": 8,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-02.after.required_reading.count"
+  },
+  {
+   "after": 1,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[0].checker.n"
+  },
+  {
+   "after": 1.0,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[0].checker.probability"
+  },
+  {
+   "after": 0.01,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[0].checker.supports"
+  },
+  {
+   "after": 1,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[1].checker.n"
+  },
+  {
+   "after": 0.85,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[1].checker.probability"
+  },
+  {
+   "after": 0.07,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[1].checker.supports"
+  },
+  {
+   "after": 684,
+   "after_n": 684,
+   "before": 0,
+   "before_n": 0,
+   "path": "parts.jev_supports.response_cache.new_model_calls.count"
+  },
+  {
+   "after": 684,
+   "after_n": 684,
+   "before": 0,
+   "before_n": 0,
+   "path": "parts.jev_supports.response_cache.new_model_calls.n"
+  }
+ ],
+ "pair_changes": [
+  {
+   "after": {
+    "a": "A-0142:p8:3",
+    "b": "A-0142:p23:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.0,
+     "contradict": 0.01,
+     "unrelated": 0.0,
+     "updated": 0.99
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "A-0142:p8:3",
+    "b": "A-0142:p23:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.52,
+     "contradict": 0.48,
+     "unrelated": 0.0
+    },
+    "verdict": "agree"
+   },
+   "case": "A-0142"
+  },
+  {
+   "after": {
+    "a": "A-0142:p8:3",
+    "b": "A-0142:p23:3",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.0,
+     "contradict": 0.0,
+     "unrelated": 0.0,
+     "updated": 1.0
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "A-0142:p8:3",
+    "b": "A-0142:p23:3",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.42,
+     "contradict": 0.58,
+     "unrelated": 0.0
+    },
+    "verdict": "contradict"
+   },
+   "case": "A-0142"
+  },
+  {
+   "after": {
+    "a": "A-0142:p8:3",
+    "b": "A-0142:p24:4",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.0,
+     "contradict": 0.01,
+     "unrelated": 0.0,
+     "updated": 0.99
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "A-0142:p8:3",
+    "b": "A-0142:p24:4",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.52,
+     "contradict": 0.48,
+     "unrelated": 0.0
+    },
+    "verdict": "agree"
+   },
+   "case": "A-0142"
+  },
+  {
+   "after": {
+    "a": "A-0142:p30:2",
+    "b": "A-0142:p23:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.12,
+     "contradict": 0.01,
+     "unrelated": 0.04,
+     "updated": 0.83
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "A-0142:p30:2",
+    "b": "A-0142:p23:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.84,
+     "contradict": 0.13,
+     "unrelated": 0.03
+    },
+    "verdict": "agree"
+   },
+   "case": "A-0142"
+  },
+  {
+   "after": {
+    "a": "A-0142:p30:2",
+    "b": "A-0142:p23:3",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.0,
+     "contradict": 0.0,
+     "unrelated": 0.0,
+     "updated": 1.0
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "A-0142:p30:2",
+    "b": "A-0142:p23:3",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.84,
+     "contradict": 0.16,
+     "unrelated": 0.0
+    },
+    "verdict": "agree"
+   },
+   "case": "A-0142"
+  },
+  {
+   "after": {
+    "a": "A-0142:p30:2",
+    "b": "A-0142:p24:4",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.01,
+     "contradict": 0.0,
+     "unrelated": 0.0,
+     "updated": 0.99
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "A-0142:p30:2",
+    "b": "A-0142:p24:4",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.82,
+     "contradict": 0.18,
+     "unrelated": 0.0
+    },
+    "verdict": "agree"
+   },
+   "case": "A-0142"
+  },
+  {
+   "after": {
+    "a": "E-02:p1:1",
+    "b": "E-02:p9:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.66,
+     "contradict": 0.21,
+     "unrelated": 0.0,
+     "updated": 0.13
+    },
+    "verdict": "agree"
+   },
+   "before": {
+    "a": "E-02:p1:1",
+    "b": "E-02:p9:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.42,
+     "contradict": 0.58,
+     "unrelated": 0.0
+    },
+    "verdict": "contradict"
+   },
+   "case": "E-02"
+  },
+  {
+   "after": {
+    "a": "E-02:p1:3",
+    "b": "E-02:p9:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.63,
+     "contradict": 0.2,
+     "unrelated": 0.0,
+     "updated": 0.17
+    },
+    "verdict": "agree"
+   },
+   "before": {
+    "a": "E-02:p1:3",
+    "b": "E-02:p9:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.42,
+     "contradict": 0.58,
+     "unrelated": 0.0
+    },
+    "verdict": "contradict"
+   },
+   "case": "E-02"
+  },
+  {
+   "after": {
+    "a": "E-02:p2:1",
+    "b": "E-02:p9:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.67,
+     "contradict": 0.19,
+     "unrelated": 0.0,
+     "updated": 0.14
+    },
+    "verdict": "agree"
+   },
+   "before": {
+    "a": "E-02:p2:1",
+    "b": "E-02:p9:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.37,
+     "contradict": 0.63,
+     "unrelated": 0.0
+    },
+    "verdict": "contradict"
+   },
+   "case": "E-02"
+  },
+  {
+   "after": {
+    "a": "E-03:p7:1",
+    "b": "E-03:p1:3",
+    "clause_id": "elig-property",
+    "probabilities": {
+     "agree": 0.5,
+     "contradict": 0.43,
+     "unrelated": 0.01,
+     "updated": 0.06
+    },
+    "verdict": "agree"
+   },
+   "before": {
+    "a": "E-03:p7:1",
+    "b": "E-03:p1:3",
+    "clause_id": "elig-property",
+    "probabilities": {
+     "agree": 0.42,
+     "contradict": 0.57,
+     "unrelated": 0.01
+    },
+    "verdict": "contradict"
+   },
+   "case": "E-03"
+  },
+  {
+   "after": {
+    "a": "E-03:p7:1",
+    "b": "E-03:p4:2",
+    "clause_id": "elig-property",
+    "probabilities": {
+     "agree": 0.34,
+     "contradict": 0.28,
+     "unrelated": 0.37,
+     "updated": 0.01
+    },
+    "verdict": "unrelated"
+   },
+   "before": {
+    "a": "E-03:p7:1",
+    "b": "E-03:p4:2",
+    "clause_id": "elig-property",
+    "probabilities": {
+     "agree": 0.26,
+     "contradict": 0.54,
+     "unrelated": 0.2
+    },
+    "verdict": "contradict"
+   },
+   "case": "E-03"
+  },
+  {
+   "after": {
+    "a": "E-03:p8:1",
+    "b": "E-03:p12:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.01,
+     "contradict": 0.07,
+     "unrelated": 0.0,
+     "updated": 0.92
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "E-03:p8:1",
+    "b": "E-03:p12:1",
+    "clause_id": "prio-category",
+    "probabilities": {
+     "agree": 0.38,
+     "contradict": 0.62,
+     "unrelated": 0.0
+    },
+    "verdict": "contradict"
+   },
+   "case": "E-03"
+  },
+  {
+   "after": {
+    "a": "E-03:p8:5",
+    "b": "E-03:p12:1",
+    "clause_id": "prio-documentation",
+    "probabilities": {
+     "agree": 0.24,
+     "contradict": 0.03,
+     "unrelated": 0.0,
+     "updated": 0.73
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "E-03:p8:5",
+    "b": "E-03:p12:1",
+    "clause_id": "prio-documentation",
+    "probabilities": {
+     "agree": 0.85,
+     "contradict": 0.15,
+     "unrelated": 0.0
+    },
+    "verdict": "agree"
+   },
+   "case": "E-03"
+  },
+  {
+   "after": {
+    "a": "H-01:p5:1",
+    "b": "H-01:p3:2",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.32,
+     "contradict": 0.13,
+     "unrelated": 0.01,
+     "updated": 0.54
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "H-01:p5:1",
+    "b": "H-01:p3:2",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.52,
+     "contradict": 0.47,
+     "unrelated": 0.01
+    },
+    "verdict": "agree"
+   },
+   "case": "H-01"
+  },
+  {
+   "after": {
+    "a": "H-01:p5:1",
+    "b": "H-01:p17:4",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.01,
+     "contradict": 0.01,
+     "unrelated": 0.0,
+     "updated": 0.98
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "H-01:p5:1",
+    "b": "H-01:p17:4",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.37,
+     "contradict": 0.62,
+     "unrelated": 0.01
+    },
+    "verdict": "contradict"
+   },
+   "case": "H-01"
+  },
+  {
+   "after": {
+    "a": "H-01:p5:2",
+    "b": "H-01:p3:2",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.37,
+     "contradict": 0.21,
+     "unrelated": 0.01,
+     "updated": 0.41
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "H-01:p5:2",
+    "b": "H-01:p3:2",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.35,
+     "contradict": 0.64,
+     "unrelated": 0.01
+    },
+    "verdict": "contradict"
+   },
+   "case": "H-01"
+  },
+  {
+   "after": {
+    "a": "H-01:p5:2",
+    "b": "H-01:p17:4",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.03,
+     "contradict": 0.03,
+     "unrelated": 0.0,
+     "updated": 0.94
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "H-01:p5:2",
+    "b": "H-01:p17:4",
+    "clause_id": "elig-income",
+    "probabilities": {
+     "agree": 0.45,
+     "contradict": 0.54,
+     "unrelated": 0.01
+    },
+    "verdict": "contradict"
+   },
+   "case": "H-01"
+  },
+  {
+   "after": {
+    "a": "H-01:p8:4",
+    "b": "H-01:p17:1",
+    "clause_id": "prio-documentation",
+    "probabilities": {
+     "agree": 0.37,
+     "contradict": 0.48,
+     "unrelated": 0.08,
+     "updated": 0.07
+    },
+    "verdict": "contradict"
+   },
+   "before": {
+    "a": "H-01:p8:4",
+    "b": "H-01:p17:1",
+    "clause_id": "prio-documentation",
+    "probabilities": {
+     "agree": 0.48,
+     "contradict": 0.47,
+     "unrelated": 0.05
+    },
+    "verdict": "agree"
+   },
+   "case": "H-01"
+  },
+  {
+   "after": {
+    "a": "stub:p2:1",
+    "b": "stub:p3:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.04,
+     "contradict": 0.0,
+     "unrelated": 0.01,
+     "updated": 0.95
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "stub:p2:1",
+    "b": "stub:p3:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.8,
+     "contradict": 0.19,
+     "unrelated": 0.01
+    },
+    "verdict": "agree"
+   },
+   "case": "stub"
+  },
+  {
+   "after": {
+    "a": "stub:p2:2",
+    "b": "stub:p3:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.0,
+     "contradict": 0.0,
+     "unrelated": 0.0,
+     "updated": 1.0
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "stub:p2:2",
+    "b": "stub:p3:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.31,
+     "contradict": 0.69,
+     "unrelated": 0.0
+    },
+    "verdict": "contradict"
+   },
+   "case": "stub"
+  },
+  {
+   "after": {
+    "a": "stub:p3:1",
+    "b": "stub:p3:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.31,
+     "contradict": 0.01,
+     "unrelated": 0.01,
+     "updated": 0.67
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "stub:p3:1",
+    "b": "stub:p3:2",
+    "clause_id": "elig-debts",
+    "probabilities": {
+     "agree": 0.91,
+     "contradict": 0.08,
+     "unrelated": 0.01
+    },
+    "verdict": "agree"
+   },
+   "case": "stub"
+  },
+  {
+   "after": {
+    "a": "stub:p1:3",
+    "b": "stub:p1:5",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.56,
+     "contradict": 0.0,
+     "unrelated": 0.44,
+     "updated": 0.0
+    },
+    "verdict": "agree"
+   },
+   "before": {
+    "a": "stub:p1:3",
+    "b": "stub:p1:5",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.45,
+     "contradict": 0.0,
+     "unrelated": 0.55
+    },
+    "verdict": "unrelated"
+   },
+   "case": "stub"
+  },
+  {
+   "after": {
+    "a": "stub:p1:5",
+    "b": "stub:p6:1",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.55,
+     "contradict": 0.0,
+     "unrelated": 0.45,
+     "updated": 0.0
+    },
+    "verdict": "agree"
+   },
+   "before": {
+    "a": "stub:p1:5",
+    "b": "stub:p6:1",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.41,
+     "contradict": 0.0,
+     "unrelated": 0.59
+    },
+    "verdict": "unrelated"
+   },
+   "case": "stub"
+  },
+  {
+   "after": {
+    "a": "stub:p5:2",
+    "b": "stub:p3:2",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.41,
+     "contradict": 0.0,
+     "unrelated": 0.09,
+     "updated": 0.5
+    },
+    "verdict": "updated"
+   },
+   "before": {
+    "a": "stub:p5:2",
+    "b": "stub:p3:2",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.98,
+     "contradict": 0.0,
+     "unrelated": 0.02
+    },
+    "verdict": "agree"
+   },
+   "case": "stub"
+  },
+  {
+   "after": {
+    "a": "stub:p6:1",
+    "b": "stub:p3:2",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.4,
+     "contradict": 0.01,
+     "unrelated": 0.52,
+     "updated": 0.07
+    },
+    "verdict": "unrelated"
+   },
+   "before": {
+    "a": "stub:p6:1",
+    "b": "stub:p3:2",
+    "clause_id": "prio-discretion",
+    "probabilities": {
+     "agree": 0.82,
+     "contradict": 0.01,
+     "unrelated": 0.17
+    },
+    "verdict": "agree"
+   },
+   "case": "stub"
+  }
+ ]
+}

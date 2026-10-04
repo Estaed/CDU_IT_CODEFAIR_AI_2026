@@ -20,7 +20,7 @@
    "claim_id": "m01",
    "clause_id": "other",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -90,7 +90,7 @@
    "claim_id": "m03",
    "clause_id": "prio-documentation",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },
@@ -142,7 +142,7 @@
    "claim_id": "m05",
    "clause_id": "elig-residency",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -229,7 +229,7 @@
    "claim_id": "m08",
    "clause_id": "elig-former-tenancy",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -252,7 +252,7 @@
    "claim_id": "m09",
    "clause_id": "other",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "checker_disagrees",
    "values_missing": []
   },
@@ -311,12 +311,9 @@
    "claim": "The applicant does not expect to lose the rented room.",
    "claim_id": "m11",
    "clause_id": "prio-category",
-   "contradicted_by": [
-    "E-02:p1:1",
-    "E-02:p1:3"
-   ],
+   "contradicted_by": [],
    "required": true,
-   "status": "contradicted",
+   "status": "checker_disagrees",
    "values_missing": []
   },
   {
@@ -384,11 +381,9 @@
    "claim": "A support service, rather than the applicant, reported a 21 August room end date.",
    "claim_id": "m13",
    "clause_id": "prio-documentation",
-   "contradicted_by": [
-    "E-02:p9:1"
-   ],
+   "contradicted_by": [],
    "required": true,
-   "status": "contradicted",
+   "status": "checker_disagrees",
    "values_missing": []
   },
   {

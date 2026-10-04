@@ -1,0 +1,210 @@
+{
+ "model": "jev-1.13.0",
+ "name": "jev",
+ "verdicts": [
+  {
+   "claim_id": "c01",
+   "probability": 0.42,
+   "supports": 0.06,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c02",
+   "probability": 0.96,
+   "supports": 0.74,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c03",
+   "probability": 0.95,
+   "supports": 0.82,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c04",
+   "probability": 0.96,
+   "supports": 0.84,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c05",
+   "probability": 1.0,
+   "supports": 0.97,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c06",
+   "probability": 0.84,
+   "supports": 0.9,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c08",
+   "probability": 0.63,
+   "supports": 0.44,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c10",
+   "probability": 1.0,
+   "supports": 0.88,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c11",
+   "probability": 1.0,
+   "supports": 0.91,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c12",
+   "probability": 0.29,
+   "supports": 0.26,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c13",
+   "probability": 0.99,
+   "supports": 0.88,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c14",
+   "probability": 0.8,
+   "supports": 0.04,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c15",
+   "probability": 1.0,
+   "supports": 0.93,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c16",
+   "probability": 1.0,
+   "supports": 0.99,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c17",
+   "probability": 0.96,
+   "supports": 0.82,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c18",
+   "probability": 0.9,
+   "supports": 0.6,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c19",
+   "probability": 1.0,
+   "supports": 0.92,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c20",
+   "probability": 0.74,
+   "supports": 0.56,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c21",
+   "probability": 0.77,
+   "supports": 0.76,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c22",
+   "probability": 0.86,
+   "supports": 0.67,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c23",
+   "probability": 0.59,
+   "supports": 0.44,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c24",
+   "probability": 0.27,
+   "supports": 0.45,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c25",
+   "probability": 1.0,
+   "supports": 0.77,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c26",
+   "probability": 0.83,
+   "supports": 0.76,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c27",
+   "probability": 0.98,
+   "supports": 0.83,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c28",
+   "probability": 0.71,
+   "supports": 0.37,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c29",
+   "probability": 1.0,
+   "supports": 0.98,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c30",
+   "probability": 1.0,
+   "supports": 0.96,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c31",
+   "probability": 0.51,
+   "supports": 0.11,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c33",
+   "probability": 1.0,
+   "supports": 0.98,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c35",
+   "probability": 1.0,
+   "supports": 0.98,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c36",
+   "probability": 0.51,
+   "supports": 0.28,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c37",
+   "probability": 0.84,
+   "supports": 0.55,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c38",
+   "probability": 0.96,
+   "supports": 0.74,
+   "verdict": "supports"
+  }
+ ]
+}

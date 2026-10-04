@@ -62,14 +62,16 @@ def a0142_screen(request, tmp_path):
     view = json.loads((A0142_RUN / "view.json").read_text(encoding="utf-8"))
     if request.param == "one-flag-supported":
         sole_flags = {r["claim_ids"][0] for r in view["required_reading"]
-                      if len(r["claim_ids"]) == 1 and r["reasons"] == ["checker_disagrees"]}
+                      if len(r["claim_ids"]) == 1
+                      and set(r["reasons"]) - {"cited"} == {"checker_disagrees"}}
         flagged = [c for c in view["claims"] if c["status"] != "supported"]
         claim = next((c for c in flagged if c["claim_id"] in sole_flags), flagged[0])
         claim["status"] = "supported"
         # A sole checker-disagreement gate item disappears when that check becomes supported.
         view["required_reading"] = [r for r in view["required_reading"]
                                     if not (r["claim_ids"] == [claim["claim_id"]]
-                                            and r["reasons"] == ["checker_disagrees"])]
+                                            and set(r["reasons"]) - {"cited"}
+                                            == {"checker_disagrees"})]
         for rank, item in enumerate(view["required_reading"], 1):
             item["rank"] = rank
     run = tmp_path / "run"
@@ -275,7 +277,7 @@ def test_record_cannot_be_signed_past_the_lock():
     problems = " ".join(err.value.problems)
     assert "Set an outcome for" in problems
     if VIEW["required_reading"]:
-        assert "Open required passage" in problems
+        assert "Open required page" in problems
 
 
 @pytest.mark.parametrize("seconds", [0, 2.99, -1, float("nan"), float("inf"), True])
@@ -592,7 +594,8 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
         # before taking the counter snapshot, so a threshold crossing cannot race the click.
         wait_until_opened(page)
         before = page.locator("#passageCount").inner_text()
-        page.get_by_test_id("compare-pages").click()
+        # A question can contain several model-identified updates; open its strongest pair.
+        page.get_by_test_id("compare-pages").first.click()
         comparison = page.locator("#comparison")
         expect(comparison).to_be_visible()
         pair = debts["contradictions"][0]
@@ -653,8 +656,8 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
         assert len({position for position, _ in seen}) == len(expected)
         assert set(visited) == {annotation for annotation, _ in expected}
         assert {pid for _, pid in seen} == {pid for _, pid in expected}
-        distinct = list(dict.fromkeys(pid for _, pid in seen))
-        assert distinct[:len(required)] == required
+        distinct = list(dict.fromkeys(pid.rsplit(":", 1)[0] for _, pid in seen))
+        assert distinct[:len(required)] == [pid.rsplit(":", 1)[0] for pid in required]
         expect(page.locator("#passageCount")).to_have_text(str(len(required)))
         page.get_by_test_id("previous-flag").click()
         expect(page.get_by_test_id("flag-position")).to_have_text(seen[-2][0])
@@ -736,13 +739,17 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
         browser.close()
     assert errors == []
     by_pid = {p["passage_id"]: p for p in record["passages_opened"]}
-    assert set(required) <= set(by_pid)
+    assert {pid.rsplit(":", 1)[0] for pid in required} <= {
+        pid.rsplit(":", 1)[0] for pid in by_pid}
     for pid in required:
-        assert by_pid[pid]["opened_at"] and isinstance(by_pid[pid]["seconds_in_view"], int | float)
-        assert by_pid[pid]["seconds_in_view"] > 0
+        opening = next(p for key, p in by_pid.items()
+                       if key.rsplit(":", 1)[0] == pid.rsplit(":", 1)[0])
+        assert opening["opened_at"] and isinstance(opening["seconds_in_view"], int | float)
+        assert opening["seconds_in_view"] >= FAST_OPEN
     for passage in by_pid.values():
         assert passage["opened_at"] and isinstance(passage["seconds_in_view"], int | float)
-        assert passage["required"] == (passage["passage_id"] in required)
+        assert passage["required"] == (passage["passage_id"].rsplit(":", 1)[0]
+                                       in {pid.rsplit(":", 1)[0] for pid in required})
     assert "decision_label" not in record and "required_reading" not in record
     assert "integrity" in record
     assert record["decision"] == "request_information"
@@ -908,9 +915,14 @@ def test_every_question_has_real_page_tabs_and_saves_to_next_undecided(width, tm
                 # A wrapped strip can put the passage below the viewport; timing starts in view.
                 current.scroll_into_view_if_needed()
                 wait_until_opened(page)
-                opening = page.evaluate("S.opened[S.current.pid]")
+                # The current paragraph can share a page already timed through another one.
+                opening = page.evaluate("""() => {
+                    const [pid, o] = Object.entries(S.opened).find(([pid, o]) =>
+                        o.opened_at && pageKey(src(pid)) === pageKey(src(S.current.pid)));
+                    return {...o, seconds: secondsInView(pid)};
+                }""")
                 assert datetime.fromisoformat(opening["opened_at"])
-                assert page.evaluate("secondsInView(S.current.pid)") > 0
+                assert opening["seconds"] >= FAST_OPEN
                 # Case highlights are exact substrings of a code-verified citation.
                 for mark in page.get_by_test_id("verified-highlight").all():
                     text = mark.inner_text()
@@ -922,6 +934,10 @@ def test_every_question_has_real_page_tabs_and_saves_to_next_undecided(width, tm
             # Photograph the first page of each real question, including every flag state.
             tabs.first.click()
             screenshot(page, width, f"question-{cid}")
+            # One row per required page, even when the page has several flagged paragraphs.
+            for passage in page.get_by_test_id("flagged-item").all():
+                passage.click()
+                wait_until_opened(page)
         assert page.locator("#passageCount").inner_text() == str(len(view["required_reading"]))
         # Saving follows the task-list order, wrapping to the next undecided question.
         ordered = page.evaluate("railClauses().filter(c => c.clause_id !== 'other').map(c => c.clause_id)")
@@ -944,8 +960,8 @@ def test_every_question_has_real_page_tabs_and_saves_to_next_undecided(width, tm
         assert exported_json == rec.for_export(page.evaluate("S.signed.record"))
         record = page.evaluate("S.signed.record")
         assert all(p["opened_at"] and p["seconds_in_view"] > 0 for p in record["passages_opened"])
-        assert {r["passage_id"] for r in view["required_reading"]} <= {
-            p["passage_id"] for p in record["passages_opened"]}
+        assert {r["passage_id"].rsplit(":", 1)[0] for r in view["required_reading"]} <= {
+            p["passage_id"].rsplit(":", 1)[0] for p in record["passages_opened"]}
         browser.close()
     assert errors == []
 
@@ -1001,7 +1017,7 @@ def test_polish_question_words_identity_more_pages_and_warning_pairs(case_id, wi
                     polish_screenshot(page, width, "more-pages")
                     photographed_more = True
                 page.get_by_test_id("more-pages").click()
-            if case_id == "E-02" and cid == "prio-category":
+            if case_id == "E-02" and cid == "prio-category" and clause["contradictions"]:
                 links = page.get_by_test_id("compare-pages")
                 expected = {tuple(sorted((view["sources"][pair["a"]]["page"],
                                           view["sources"][pair["b"]]["page"])))
@@ -1029,6 +1045,14 @@ def test_polish_question_words_identity_more_pages_and_warning_pairs(case_id, wi
                         "els => els.map(el => Number(el.dataset.page))")) == set(pair)
                     expect(page.locator("#passageCount")).to_have_text(before)
                     comparison.locator('[data-act="compare-close"]').click()
+            elif case_id == "E-02" and cid == "prio-category":
+                # Expectations and an unconfirmed extension can coexist; Jev now says agree.
+                expect(page.get_by_test_id("compare-pages")).to_have_count(0)
+                # A scan/missing-evidence warning may remain; it must not invent a disagreement.
+                warning = page.get_by_test_id("question-warning")
+                if warning.count():
+                    expect(warning).not_to_contain_text("disagree")
+                    expect(warning).not_to_contain_text("updates this")
             for passage in page.get_by_test_id("flagged-item").all():
                 passage.click()
                 wait_until_opened(page)
@@ -1304,10 +1328,18 @@ def test_plain_notes_sign_states_and_readable_exports(case_id, width, tmp_path):
                 shot("plain-notes")
             details.locator("summary").click()
             for item in page.get_by_test_id("flagged-item").all():
-                source = view["sources"][item.get_attribute("data-pid")]
-                expect(item.locator(".ploc")).to_have_text(f"Page {source['page']}")
+                pid = item.get_attribute("data-pid")
+                source = view["sources"][pid]
+                same_page = sum(cid in r["clause_ids"] and
+                                view["sources"][r["passage_id"]]["page"] == source["page"]
+                                for r in view["required_reading"])
+                label = f"Page {source['page']}"
+                if same_page > 1:
+                    label += f", paragraph {pid.split(':')[-1]}"
+                expect(item.locator(".ploc")).to_have_text(label)
                 item.click()
                 wait_until_opened(page)
+                expect(item.locator(".ploc")).to_have_text(label)
                 tab = page.locator(f'[data-testid="page-tab"][data-page="{source["page"]}"]')
                 if tab.count():
                     expect(tab).to_contain_text(f"Page {source['page']}")
@@ -1495,6 +1527,10 @@ def test_required_passage_rows_distinguish_paragraphs_on_every_replay(case_id, t
                 row.click()
                 expect(page.get_by_test_id("source")).to_have_attribute("data-pid", pid)
                 assert_scrolled_to(page, pid)
+                if same_page > 1:
+                    wait_until_opened(page)
+                    page.wait_for_function("() => !S.progressDirty")
+                    expect(row.locator(".ploc")).to_have_text(label)
                 tab = page.locator(f'[data-testid="page-tab"][data-page="{source["page"]}"]')
                 expect(tab).to_have_count(1)
                 expect(tab).to_have_attribute("aria-selected", "true")

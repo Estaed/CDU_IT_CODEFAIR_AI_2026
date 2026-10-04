@@ -1,0 +1,246 @@
+{
+ "c01": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p3:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p3:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c02": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p3:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c03": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p4:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p4:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c05": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p5:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c06": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p5:4",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c07": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p10:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c09": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p7:3",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p7:2",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c10": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p7:2",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p7:4",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c11": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "eligibility:p6:9",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c12": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p8:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c13": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p8:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c14": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p2:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "priority:p4:11",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c15": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p1:3",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p2:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c16": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p9:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c17": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p2:3",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c19": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p6:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c20": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p10:1",
+    "quote_found": true
+   },
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p12:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c22": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p11:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ },
+ "c26": {
+  "citations": [
+   {
+    "passage_exists": true,
+    "passage_id": "E-02:p1:1",
+    "quote_found": true
+   }
+  ],
+  "passed": true,
+  "values_missing": []
+ }
+}

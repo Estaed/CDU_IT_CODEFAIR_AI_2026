@@ -1,0 +1,228 @@
+{
+ "model": "jev-1.13.0",
+ "name": "jev",
+ "verdicts": [
+  {
+   "claim_id": "c01",
+   "probability": 0.89,
+   "supports": 0.78,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c02",
+   "probability": 0.38,
+   "supports": 0.26,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c03",
+   "probability": 1.0,
+   "supports": 0.96,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c05",
+   "probability": 0.7,
+   "supports": 0.18,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c06",
+   "probability": 1.0,
+   "supports": 0.98,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c07",
+   "probability": 0.42,
+   "supports": 0.27,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c08",
+   "probability": 0.24,
+   "supports": 0.19,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c09",
+   "probability": 0.41,
+   "supports": 0.22,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c10",
+   "probability": 0.27,
+   "supports": 0.19,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c12",
+   "probability": 0.52,
+   "supports": 0.09,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c13",
+   "probability": 0.88,
+   "supports": 0.72,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c14",
+   "probability": 0.6,
+   "supports": 0.2,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c15",
+   "probability": 0.25,
+   "supports": 0.16,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c16",
+   "probability": 0.3,
+   "supports": 0.39,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c17",
+   "probability": 0.67,
+   "supports": 0.74,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c18",
+   "probability": 0.66,
+   "supports": 0.37,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c19",
+   "probability": 0.97,
+   "supports": 0.83,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c20",
+   "probability": 1.0,
+   "supports": 0.94,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c21",
+   "probability": 0.23,
+   "supports": 0.25,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c22",
+   "probability": 0.29,
+   "supports": 0.28,
+   "verdict": "contradicts"
+  },
+  {
+   "claim_id": "c23",
+   "probability": 1.0,
+   "supports": 0.98,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c24",
+   "probability": 0.78,
+   "supports": 0.47,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c25",
+   "probability": 1.0,
+   "supports": 0.97,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c26",
+   "probability": 0.95,
+   "supports": 0.87,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c27",
+   "probability": 0.99,
+   "supports": 0.96,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c28",
+   "probability": 1.0,
+   "supports": 0.98,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c29",
+   "probability": 1.0,
+   "supports": 0.96,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c30",
+   "probability": 1.0,
+   "supports": 0.93,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c31",
+   "probability": 1.0,
+   "supports": 0.95,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c32",
+   "probability": 0.73,
+   "supports": 0.09,
+   "verdict": "not_enough_information"
+  },
+  {
+   "claim_id": "c33",
+   "probability": 0.79,
+   "supports": 0.45,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c34",
+   "probability": 0.99,
+   "supports": 0.8,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c36",
+   "probability": 0.98,
+   "supports": 0.85,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c37",
+   "probability": 0.99,
+   "supports": 0.57,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c39",
+   "probability": 0.67,
+   "supports": 0.58,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c40",
+   "probability": 0.64,
+   "supports": 0.83,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c41",
+   "probability": 1.0,
+   "supports": 0.94,
+   "verdict": "supports"
+  }
+ ]
+}

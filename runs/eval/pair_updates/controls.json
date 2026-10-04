@@ -1,0 +1,191 @@
+[
+ {
+  "a": "A-0142:p8:3",
+  "b": "A-0142:p23:3",
+  "case": "A-0142",
+  "clause_id": "elig-debts",
+  "expected": "updated"
+ },
+ {
+  "a": "E-01:p2:1",
+  "b": "E-01:p10:4",
+  "case": "E-01",
+  "clause_id": "elig-former-tenancy",
+  "expected": "contradict"
+ },
+ {
+  "a": "E-02:p2:1",
+  "b": "E-02:p9:1",
+  "case": "E-02",
+  "clause_id": "prio-category",
+  "expected": "contradict"
+ },
+ {
+  "a": "E-02:p1:1",
+  "b": "E-02:p9:1",
+  "case": "E-02",
+  "clause_id": "prio-category",
+  "expected": "contradict"
+ },
+ {
+  "a": "E-02:p1:3",
+  "b": "E-02:p9:1",
+  "case": "E-02",
+  "clause_id": "prio-category",
+  "expected": "contradict"
+ },
+ {
+  "a": "E-03:p7:1",
+  "b": "E-03:p1:3",
+  "case": "E-03",
+  "clause_id": "elig-property",
+  "expected": "contradict"
+ },
+ {
+  "a": "E-03:p7:4",
+  "b": "E-03:p4:2",
+  "case": "E-03",
+  "clause_id": "elig-property",
+  "expected": "contradict"
+ },
+ {
+  "a": "E-03:p7:1",
+  "b": "E-03:p4:2",
+  "case": "E-03",
+  "clause_id": "elig-property",
+  "expected": "contradict"
+ },
+ {
+  "a": "E-03:p8:1",
+  "b": "E-03:p12:1",
+  "case": "E-03",
+  "clause_id": "prio-category",
+  "expected": "contradict"
+ },
+ {
+  "a": "H-01:p5:2",
+  "b": "H-01:p3:2",
+  "case": "H-01",
+  "clause_id": "elig-income",
+  "expected": "contradict"
+ },
+ {
+  "a": "H-01:p5:1",
+  "b": "H-01:p17:4",
+  "case": "H-01",
+  "clause_id": "elig-income",
+  "expected": "contradict"
+ },
+ {
+  "a": "H-01:p5:2",
+  "b": "H-01:p17:4",
+  "case": "H-01",
+  "clause_id": "elig-income",
+  "expected": "contradict"
+ },
+ {
+  "a": "H-01:p2:3",
+  "b": "H-01:p17:3",
+  "case": "H-01",
+  "clause_id": "elig-former-tenancy",
+  "expected": "contradict"
+ },
+ {
+  "a": "H-01:p12:1",
+  "b": "H-01:p2:3",
+  "case": "H-01",
+  "clause_id": "elig-former-tenancy",
+  "expected": "contradict"
+ },
+ {
+  "a": "stub:p2:2",
+  "b": "stub:p3:2",
+  "case": "stub",
+  "clause_id": "elig-debts",
+  "expected": "updated"
+ },
+ {
+  "a": "A-0142:p12:1",
+  "b": "A-0142:p12:3",
+  "case": "A-0142",
+  "clause_id": "elig-residency",
+  "expected": "agree"
+ },
+ {
+  "a": "E-01:p3:1",
+  "b": "E-01:p3:3",
+  "case": "E-01",
+  "clause_id": "elig-residency",
+  "expected": "agree"
+ },
+ {
+  "a": "E-02:p3:1",
+  "b": "E-02:p3:3",
+  "case": "E-02",
+  "clause_id": "elig-residency",
+  "expected": "agree"
+ },
+ {
+  "a": "E-03:p3:1",
+  "b": "E-03:p3:3",
+  "case": "E-03",
+  "clause_id": "elig-residency",
+  "expected": "agree"
+ },
+ {
+  "a": "H-01:p4:1",
+  "b": "H-01:p4:2",
+  "case": "H-01",
+  "clause_id": "elig-residency",
+  "expected": "agree"
+ },
+ {
+  "a": "stub:p1:3",
+  "b": "stub:p1:4",
+  "case": "stub",
+  "clause_id": "elig-property",
+  "expected": "agree"
+ },
+ {
+  "a": "A-0142:p12:1",
+  "b": "A-0142:p16:1",
+  "case": "A-0142",
+  "clause_id": "elig-residency",
+  "expected": "agree"
+ },
+ {
+  "a": "E-01:p4:1",
+  "b": "E-01:p4:3",
+  "case": "E-01",
+  "clause_id": "elig-property",
+  "expected": "agree"
+ },
+ {
+  "a": "E-02:p4:1",
+  "b": "E-02:p4:3",
+  "case": "E-02",
+  "clause_id": "elig-property",
+  "expected": "agree"
+ },
+ {
+  "a": "E-03:p1:3",
+  "b": "E-03:p4:2",
+  "case": "E-03",
+  "clause_id": "elig-property",
+  "expected": "agree"
+ },
+ {
+  "a": "H-01:p4:1",
+  "b": "H-01:p4:4",
+  "case": "H-01",
+  "clause_id": "elig-residency",
+  "expected": "agree"
+ },
+ {
+  "a": "stub:p1:3",
+  "b": "stub:p6:1",
+  "case": "stub",
+  "clause_id": "elig-property",
+  "expected": "agree"
+ }
+]

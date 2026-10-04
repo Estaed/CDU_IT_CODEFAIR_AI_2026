@@ -1,0 +1,1796 @@
+{
+ "audit": null,
+ "cap": 8,
+ "case": {
+  "case_id": "E-03",
+  "documents": [
+   {
+    "doc_date": "2026-07-09",
+    "doc_title": "Urban priority application, E-03",
+    "doc_type": "form",
+    "page": 1
+   },
+   {
+    "doc_date": "2026-07-09",
+    "doc_title": "Household and accommodation needs",
+    "doc_type": "form",
+    "page": 2
+   },
+   {
+    "doc_date": "2026-07-09",
+    "doc_title": "Identity and residence sighting",
+    "doc_type": "other",
+    "page": 3
+   },
+   {
+    "doc_date": "2026-07-10",
+    "doc_title": "Property title search result",
+    "doc_type": "other",
+    "page": 4
+   },
+   {
+    "doc_date": "2026-07-08",
+    "doc_title": "Income statement",
+    "doc_type": "other",
+    "page": 5
+   },
+   {
+    "doc_date": "2026-07-08",
+    "doc_title": "GP mobility and housing note",
+    "doc_type": "medical",
+    "page": 6
+   },
+   {
+    "doc_date": "2026-07-08",
+    "doc_title": "Dwelling access assessment",
+    "doc_type": "letter",
+    "page": 7
+   },
+   {
+    "doc_date": "2026-07-09",
+    "doc_title": "Temporary accessible room",
+    "doc_type": "letter",
+    "page": 8
+   },
+   {
+    "doc_date": "2026-07-10",
+    "doc_title": "Request for discretionary review",
+    "doc_type": "letter",
+    "page": 9
+   },
+   {
+    "doc_date": "2026-07-10",
+    "doc_title": "Housing account search",
+    "doc_type": "ledger",
+    "page": 10
+   },
+   {
+    "doc_date": "2026-07-10",
+    "doc_title": "Prior social housing search",
+    "doc_type": "tenancy-record",
+    "page": 11
+   },
+   {
+    "doc_date": "2026-07-11",
+    "doc_title": "Delegated review referral",
+    "doc_type": "form",
+    "page": 12
+   }
+  ],
+  "pages": 12,
+  "sha256": "a87569534520ca6a7b8131b6e580e701adbe697e811f62d80db7de6fee68d712",
+  "synthetic": true
+ },
+ "claims": [
+  {
+   "checker": {
+    "claim_id": "c01",
+    "probability": 1.0,
+    "supports": 0.98,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p3:1",
+     "quote": "Australian citizenship document sighted",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p3:3",
+     "quote": "The citizenship original matched the application.",
+     "quote_found": true
+    }
+   ],
+   "claim": "An Australian citizenship document was sighted and matched the application.",
+   "claim_id": "c01",
+   "clause_id": "elig-residency",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c02",
+    "probability": 1.0,
+    "supports": 0.98,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p3:1",
+     "quote": "Darwin residence confirmed by a current utility account",
+     "quote_found": true
+    }
+   ],
+   "claim": "Darwin residence was confirmed by a current utility account.",
+   "claim_id": "c02",
+   "clause_id": "elig-residency",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c03",
+    "probability": 0.92,
+    "supports": 0.85,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "Title search shows a half interest in a residential dwelling at Marlow Creek, outside Darwin.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "The register classifies the property as residential. Search status: current at the date above.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A current title search shows the applicant owns a half interest in a residential dwelling at Marlow Creek, outside Darwin.",
+   "claim_id": "c03",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c04",
+    "probability": 1.0,
+    "supports": 0.95,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "The applicant declared the interest on the housing form before this search was requested.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p1:3",
+     "quote": "A half interest in another dwelling is declared.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant declared the property interest on the application before the title search was requested.",
+   "claim_id": "c04",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c05",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:4",
+     "quote": "No transfer or discharge is shown in the current entry.",
+     "quote_found": true
+    }
+   ],
+   "claim": "No transfer or discharge of the property interest is shown on the title.",
+   "claim_id": "c05",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c06",
+    "probability": 1.0,
+    "supports": 0.95,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "eligibility:p5:4",
+     "quote": "applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing",
+     "quote_found": true
+    }
+   ],
+   "claim": "The policy makes applicants who own or partly own residential property anywhere in Australia ineligible, outside remote communities, town camps and CLAs.",
+   "claim_id": "c06",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c07",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:1",
+     "quote": "The dwelling is unsafe to occupy because the entrance and wet areas cannot be used with the applicant's current mobility needs.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:4",
+     "quote": "A wheelchair cannot pass into the bathing area as it stands.",
+     "quote_found": true
+    }
+   ],
+   "claim": "An access assessment found the dwelling unsafe to occupy because its entrance and wet areas cannot be used with the applicant's current mobility needs.",
+   "claim_id": "c07",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c08",
+    "probability": 0.87,
+    "supports": 0.7,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:5",
+     "quote": "We did not carry out structural design or cost an alteration.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The access assessment did not cost or design any alteration, so whether the dwelling could be modified is unknown.",
+   "claim_id": "c08",
+   "clause_id": "elig-property",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c11",
+    "probability": 0.98,
+    "supports": 0.89,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p5:2",
+     "quote": "issued on 8 July 2026 by Windward Assistance Office; gross support payment $590.00 per fortnight",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p5:4",
+     "quote": "additional regular component $0.00; gross total $590.00",
+     "quote_found": true
+    }
+   ],
+   "claim": "An income statement issued 8 July 2026 shows a gross support payment of $590.00 per fortnight with no additional component.",
+   "claim_id": "c11",
+   "clause_id": "elig-income",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c12",
+    "probability": 0.71,
+    "supports": 0.18,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "eligibility:p4:16",
+     "quote": "applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy",
+     "quote_found": true
+    }
+   ],
+   "claim": "Urban applicants must also meet income criteria in the Income and Assets policy, which is not in the file, so the threshold cannot be tested here.",
+   "claim_id": "c12",
+   "clause_id": "elig-income",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c14",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p10:3",
+     "quote": "Account search found no debt owed to the CEO (Housing).",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p10:2",
+     "quote": "Balance carried to this query: $0.00.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A housing account search found no debt owed to the CEO (Housing) and a $0.00 balance.",
+   "claim_id": "c14",
+   "clause_id": "elig-debts",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c15",
+    "probability": 0.76,
+    "supports": 0.47,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p10:4",
+     "quote": "A separate search can be made if Oren provides an earlier name or a former-tenancy reference.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The debt search covered only the declared name; an earlier name was not searched.",
+   "claim_id": "c15",
+   "clause_id": "elig-debts",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c16",
+    "probability": 0.98,
+    "supports": 0.93,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p11:1",
+     "quote": "No previous social housing tenancy was identified for this applicant.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p11:3",
+     "quote": "The housing-history register returned no former public or community tenancy under Oren's declared name.",
+     "quote_found": true
+    }
+   ],
+   "claim": "No previous public or community social housing tenancy was found under the applicant's declared name.",
+   "claim_id": "c16",
+   "clause_id": "elig-former-tenancy",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c17",
+    "probability": 0.55,
+    "supports": 0.1,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p6:1",
+     "quote": "The applicant now uses a wheelchair and needs step-free access to sleeping and bathing areas.",
+     "quote_found": true
+    }
+   ],
+   "claim": "A GP states the applicant now uses a wheelchair and needs step-free access to sleeping and bathing areas.",
+   "claim_id": "c17",
+   "clause_id": "prio-category",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c18",
+    "probability": 0.28,
+    "supports": 0.25,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p6:2",
+     "quote": "Delay in accessible accommodation would increase the risk of injury during transfers.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The GP states that delay in accessible accommodation would increase the risk of injury during transfers.",
+   "claim_id": "c18",
+   "clause_id": "prio-category",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c19",
+    "probability": 1.0,
+    "supports": 0.94,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p8:1",
+     "quote": "We have arranged a temporary accessible room for Oren Vale through 12 July 2026. We cannot guarantee the room beyond the current short booking.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant's temporary accessible room was booked only through 12 July 2026 with no guarantee beyond it.",
+   "claim_id": "c19",
+   "clause_id": "prio-category",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c20",
+    "probability": 0.51,
+    "supports": 0.24,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:1",
+     "quote": "The temporary room was extended through 24 July 2026, but no permanent accessible accommodation exists.",
+     "quote_found": true
+    }
+   ],
+   "claim": "An intake checklist records the temporary room extended through 24 July 2026 and no permanent accessible accommodation, which bears on risk of homelessness.",
+   "claim_id": "c20",
+   "clause_id": "prio-category",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c22",
+    "probability": 0.52,
+    "supports": 0.39,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:1",
+     "quote": "The file contains the title search, GP note, dwelling access letter and request for a manager's review.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p8:2",
+     "quote": "Paperbark Access Service | Correspondence reference E03-08 | 2026-07-09",
+     "quote_found": true
+    }
+   ],
+   "claim": "The file contains a GP note, an access assessment of the dwelling and a support service letter on temporary accommodation.",
+   "claim_id": "c22",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c23",
+    "probability": 0.98,
+    "supports": 0.68,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p6:5",
+     "quote": "No full clinical history, prescription chart or unrelated family information is enclosed.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The GP note is a limited letter with no diagnosis or clinical history enclosed.",
+   "claim_id": "c23",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c24",
+    "probability": 0.26,
+    "supports": 0.2,
+    "verdict": "contradicts"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p8:5",
+     "quote": "any extension requires a new booking and a fresh dated confirmation",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:1",
+     "quote": "The temporary room was extended through 24 July 2026",
+     "quote_found": true
+    }
+   ],
+   "claim": "The room extension appears only on the staff checklist; the service said any extension needs a fresh dated confirmation, and none is in the file.",
+   "claim_id": "c24",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c25",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "priority:p4:19",
+     "quote": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The policy requires applicants to prove urgent need with supporting documentation.",
+   "claim_id": "c25",
+   "clause_id": "prio-documentation",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c26",
+    "probability": 0.49,
+    "supports": 0.16,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p9:1",
+     "quote": "Please refer this unusual property and medical situation to a manager for a documented discretionary decision.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The applicant asked for a manager's documented discretionary decision on the property and medical situation.",
+   "claim_id": "c26",
+   "clause_id": "prio-discretion",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c27",
+    "probability": 1.0,
+    "supports": 0.97,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:1",
+     "quote": "No authorised discretionary decision is attached.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:3",
+     "quote": "authorised decision field blank",
+     "quote_found": true
+    }
+   ],
+   "claim": "No authorised discretionary decision is attached and the decision field is blank.",
+   "claim_id": "c27",
+   "clause_id": "prio-discretion",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c28",
+    "probability": 0.99,
+    "supports": 0.89,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "priority:p4:18",
+     "quote": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The policy gives the CEO (Housing) some discretion for extreme situations where eligibility is not met.",
+   "claim_id": "c28",
+   "clause_id": "prio-discretion",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c29",
+    "probability": 0.29,
+    "supports": 0.17,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:5",
+     "quote": "Search clerk F. Ansel.",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:7",
+     "quote": "Yours sincerely, F. Ansel, access assessor.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The same name, F. Ansel, appears as the title-search clerk and as the access assessor who found the dwelling unsafe.",
+   "claim_id": "c29",
+   "clause_id": "other",
+   "contradicted_by": [],
+   "required": false,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c30",
+    "probability": 0.45,
+    "supports": 0.43,
+    "verdict": "supports"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:2",
+     "quote": "Marlow Access Assessments",
+     "quote_found": true
+    },
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p4:2",
+     "quote": "residential dwelling at Marlow Creek",
+     "quote_found": true
+    }
+   ],
+   "claim": "The access assessor's firm shares the name of the property's locality, Marlow Creek.",
+   "claim_id": "c30",
+   "clause_id": "other",
+   "contradicted_by": [],
+   "required": true,
+   "status": "supported",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c31",
+    "probability": 0.93,
+    "supports": 0.03,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p12:5",
+     "quote": "Checked by R. Vale, senior intake clerk.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The intake checklist was checked by a senior clerk who shares the applicant's surname, a possible conflict of interest.",
+   "claim_id": "c31",
+   "clause_id": "other",
+   "contradicted_by": [],
+   "required": true,
+   "status": "checker_disagrees",
+   "values_missing": []
+  },
+  {
+   "checker": {
+    "claim_id": "c32",
+    "probability": 0.73,
+    "supports": 0.08,
+    "verdict": "not_enough_information"
+   },
+   "citations": [
+    {
+     "passage_exists": true,
+     "passage_id": "E-03:p7:5",
+     "quote": "The access visit covered the sole entrance, the route to the sleeping area and the wet-area doorway.",
+     "quote_found": true
+    }
+   ],
+   "claim": "The access letter does not name the address it assessed, so it is not shown to be the Marlow Creek dwelling on the title.",
+   "claim_id": "c32",
+   "clause_id": "other",
+   "contradicted_by": [],
+   "required": false,
+   "status": "checker_disagrees",
+   "values_missing": []
+  }
+ ],
+ "clauses": [
+  {
+   "claim_ids": [
+    "c01",
+    "c02"
+   ],
+   "clause_id": "elig-residency",
+   "contradictions": [],
+   "coverage": null,
+   "decides": "Australian citizen or permanent resident.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p5:12",
+   "policy_sentence": "Applicants must be an Australian citizen or have permanent residency status.",
+   "possibly_missed": [],
+   "source": "Eligibility §3.2",
+   "title": "Residency"
+  },
+  {
+   "claim_ids": [
+    "c03",
+    "c04",
+    "c05",
+    "c06",
+    "c07",
+    "c08"
+   ],
+   "clause_id": "elig-property",
+   "contradictions": [
+    {
+     "a": "E-03:p7:1",
+     "b": "E-03:p1:3",
+     "probability": 0.57
+    },
+    {
+     "a": "E-03:p7:4",
+     "b": "E-03:p4:2",
+     "probability": 0.57
+    },
+    {
+     "a": "E-03:p7:1",
+     "b": "E-03:p4:2",
+     "probability": 0.54
+    }
+   ],
+   "coverage": "possibly_missed",
+   "decides": "Owns no residential property (a domestic or family violence exemption needs delegate approval).",
+   "missing": [
+    {
+     "claim_id": "c09",
+     "statement": "The file contains no claim of domestic or family violence, so the DFV property exemption has no basis in the file."
+    },
+    {
+     "claim_id": "c10",
+     "statement": "The file holds nothing on whether the half interest could be sold, its value, or the co-owner's position."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p5:4",
+   "policy_sentence": "Except in Remote Communities, Town Camps and CLAs, applicants and tenants who own or partly own residential property anywhere in Australia are ineligible for social housing.",
+   "possibly_missed": [
+    {
+     "passage_id": "E-03:p1:1",
+     "score": 3.58
+    },
+    {
+     "passage_id": "E-03:p9:4",
+     "score": 1.83
+    }
+   ],
+   "source": "Eligibility §3.1.1",
+   "title": "Residential property ownership"
+  },
+  {
+   "claim_ids": [
+    "c11",
+    "c12"
+   ],
+   "clause_id": "elig-income",
+   "contradictions": [],
+   "coverage": "possibly_missed",
+   "decides": "Whether income evidence is in the file. The Income and Assets policy is not bundled, so v1 does not test the thresholds.",
+   "missing": [
+    {
+     "claim_id": "c13",
+     "statement": "The file holds no asset statement covering the value of the half property interest for the income and assets test."
+    }
+   ],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p4:16",
+   "policy_sentence": "If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy.",
+   "possibly_missed": [
+    {
+     "passage_id": "E-03:p5:3",
+     "score": 3.16
+    },
+    {
+     "passage_id": "E-03:p5:5",
+     "score": 2.64
+    },
+    {
+     "passage_id": "E-03:p5:1",
+     "score": 2.55
+    }
+   ],
+   "source": "Eligibility §3",
+   "title": "Income criteria for urban applicants"
+  },
+  {
+   "claim_ids": [
+    "c14",
+    "c15"
+   ],
+   "clause_id": "elig-debts",
+   "contradictions": [],
+   "coverage": null,
+   "decides": "A debt to the CEO (Housing) does not withhold housing.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p6:9",
+   "policy_sentence": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing).",
+   "possibly_missed": [],
+   "source": "Eligibility §3.4",
+   "title": "Debts"
+  },
+  {
+   "claim_ids": [
+    "c16"
+   ],
+   "clause_id": "elig-former-tenancy",
+   "contradictions": [],
+   "coverage": null,
+   "decides": "A tenancy terminated for breach in the last 2 years means ineligible for 2 years.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "eligibility:p6:11",
+   "policy_sentence": "Former social housing tenants who have had their tenancy agreement terminated or have voluntarily vacated the premises leaving sufficient evidence to justify a termination (under breach of tenancy agreement conditions or satisfactory tenancy criteria), are ineligible to apply for social housing for a period of 2 years, which includes property under the management or ownership of the CEO (Housing).",
+   "possibly_missed": [],
+   "source": "Eligibility §3.5",
+   "title": "Unsatisfactory former tenancies"
+  },
+  {
+   "claim_ids": [
+    "c17",
+    "c18",
+    "c19",
+    "c20"
+   ],
+   "clause_id": "prio-category",
+   "contradictions": [
+    {
+     "a": "E-03:p8:1",
+     "b": "E-03:p12:1",
+     "probability": 0.62
+    }
+   ],
+   "coverage": "possibly_missed",
+   "decides": "The applicant falls in one of the four urgent-need categories.",
+   "missing": [
+    {
+     "claim_id": "c21",
+     "statement": "The latest recorded temporary room end date has passed, and the file holds nothing on the applicant's accommodation after it."
+    }
+   ],
+   "policy_items": [
+    "Young person in the care of the Chief Executive Officer Territory Families, Housing and Communities transitioning to independence;",
+    "At risk of homelessness;",
+    "Serious medical or social problems; and",
+    "Domestic or family violence."
+   ],
+   "policy_passage_id": "priority:p4:9",
+   "policy_sentence": "The following categories are considered an urgent need for social housing:",
+   "possibly_missed": [
+    {
+     "passage_id": "E-03:p1:1",
+     "score": 2.45
+    },
+    {
+     "passage_id": "E-03:p7:6",
+     "score": 2.44
+    },
+    {
+     "passage_id": "E-03:p2:3",
+     "score": 1.93
+    },
+    {
+     "passage_id": "E-03:p2:1",
+     "score": 1.84
+    }
+   ],
+   "source": "Priority §3",
+   "title": "Urgent-need category"
+  },
+  {
+   "claim_ids": [
+    "c22",
+    "c23",
+    "c24",
+    "c25"
+   ],
+   "clause_id": "prio-documentation",
+   "contradictions": [],
+   "coverage": "possibly_missed",
+   "decides": "Urgent need is proven with supporting documentation (see the Identification and Documentation policy).",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "priority:p4:19",
+   "policy_sentence": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority.",
+   "possibly_missed": [
+    {
+     "passage_id": "E-03:p7:6",
+     "score": 2.99
+    },
+    {
+     "passage_id": "E-03:p6:4",
+     "score": 2.36
+    },
+    {
+     "passage_id": "E-03:p1:1",
+     "score": 1.93
+    }
+   ],
+   "source": "Priority §3.1",
+   "title": "Urgent need documented"
+  },
+  {
+   "claim_ids": [
+    "c26",
+    "c27",
+    "c28"
+   ],
+   "clause_id": "prio-discretion",
+   "contradictions": [],
+   "coverage": "possibly_missed",
+   "decides": "Whether the \"some discretion for extreme situations\" applies.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": "priority:p4:18",
+   "policy_sentence": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations.",
+   "possibly_missed": [
+    {
+     "passage_id": "E-03:p1:1",
+     "score": 2.33
+    },
+    {
+     "passage_id": "E-03:p7:6",
+     "score": 2.3
+    },
+    {
+     "passage_id": "E-03:p9:4",
+     "score": 2.2
+    }
+   ],
+   "source": "Priority §3.1",
+   "title": "Discretion for extreme situations"
+  },
+  {
+   "claim_ids": [
+    "c29",
+    "c30",
+    "c31",
+    "c32"
+   ],
+   "clause_id": "other",
+   "contradictions": [],
+   "coverage": null,
+   "decides": "Facts the writer found important that no clause names.",
+   "missing": [],
+   "policy_items": [],
+   "policy_passage_id": null,
+   "policy_sentence": null,
+   "possibly_missed": [],
+   "source": null,
+   "title": "Not on the checklist"
+  }
+ ],
+ "models": {
+  "checker": {
+   "model": "jev-1.13.0",
+   "name": "jev"
+  },
+  "writer": {
+   "model": "claude-opus-5-5",
+   "name": "claude"
+  }
+ },
+ "policies": [
+  {
+   "approved": "2016-11-23",
+   "file": "discretionary-decision-making-policy.pdf",
+   "sha256": "275b445c9e0e2241064c28a90ff5a5f260f5c05ec17290fc10848d228014ffdd",
+   "title": "Discretionary Decision Making",
+   "version": "2.02"
+  },
+  {
+   "approved": "2024-02-29",
+   "file": "domestic-family-violence-policy.pdf",
+   "sha256": "5209d377b63a291af8386245c539aa0ded413581adb2af7e60bb0332314d5bde",
+   "title": "Domestic and Family Violence",
+   "version": "2.01"
+  },
+  {
+   "approved": "2024-06-27",
+   "file": "eligibility-for-social-housing-policy.pdf",
+   "sha256": "f628d219bf38bea1a8156364f8d2b665eae4d6c37e097e6e4869fb0dd7f64fbf",
+   "title": "Eligibility for Social Housing",
+   "version": "7.1"
+  },
+  {
+   "approved": "2024-08-29",
+   "file": "identification-and-documentation-policy.pdf",
+   "sha256": "ce59a9a3b24a6a7f2e8a505a3588c86b93ea321cd39048a12b1072797fa97404",
+   "title": "Identification and Documentation",
+   "version": "4.02"
+  },
+  {
+   "approved": "2024-03-26",
+   "file": "priority-housing-policy.pdf",
+   "sha256": "ea6c52753092bb22a71689862fe8e9a06bc80f604f3ae6b74b5302da4eab12d5",
+   "title": "Priority Housing",
+   "version": "2.04"
+  }
+ ],
+ "required_reading": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-category"
+   ],
+   "passage_id": "E-03:p8:1",
+   "rank": 1,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c24"
+   ],
+   "clause_ids": [
+    "prio-category",
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p12:1",
+   "rank": 2,
+   "reasons": [
+    "contradicted",
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property"
+   ],
+   "passage_id": "E-03:p7:1",
+   "rank": 3,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property"
+   ],
+   "passage_id": "E-03:p1:3",
+   "rank": 4,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property"
+   ],
+   "passage_id": "E-03:p7:4",
+   "rank": 5,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property"
+   ],
+   "passage_id": "E-03:p4:2",
+   "rank": 6,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c24"
+   ],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p8:5",
+   "rank": 7,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c31"
+   ],
+   "clause_ids": [
+    "other"
+   ],
+   "passage_id": "E-03:p12:5",
+   "rank": 8,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  }
+ ],
+ "schema_version": 2,
+ "sources": {
+  "E-03:p10:2": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Housing account search",
+   "doc_type": "ledger",
+   "exists": true,
+   "kind": "case",
+   "page": 10,
+   "passage_id": "E-03:p10:2",
+   "text": "Applicant name searched: Oren Vale. Search scope: CEO (Housing) debtor accounts under the declared name. Date and place: 10 July 2026, Darwin housing intake. Matched debtor accounts: zero. Matched payment arrangements: zero. Balance carried to this query: $0.00. The search term was copied from the signed application and checked before the result was entered."
+  },
+  "E-03:p10:3": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Housing account search",
+   "doc_type": "ledger",
+   "exists": true,
+   "kind": "case",
+   "page": 10,
+   "passage_id": "E-03:p10:3",
+   "text": "Account search found no debt owed to the CEO (Housing)."
+  },
+  "E-03:p10:4": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Housing account search",
+   "doc_type": "ledger",
+   "exists": true,
+   "kind": "case",
+   "page": 10,
+   "passage_id": "E-03:p10:4",
+   "text": "No transaction ledger is attached because no matching account was identified. A separate search can be made if Oren provides an earlier name or a former-tenancy reference. This result states the register position at the date and within the scope shown above; it does not alter any later transaction. The original search entry is retained in the accounts register and a copy is sent to housing intake."
+  },
+  "E-03:p11:1": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Prior social housing search",
+   "doc_type": "tenancy-record",
+   "exists": true,
+   "kind": "case",
+   "page": 11,
+   "passage_id": "E-03:p11:1",
+   "text": "No previous social housing tenancy was identified for this applicant."
+  },
+  "E-03:p11:3": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Prior social housing search",
+   "doc_type": "tenancy-record",
+   "exists": true,
+   "kind": "case",
+   "page": 11,
+   "passage_id": "E-03:p11:3",
+   "text": "Person searched or former tenant: Oren Vale. Record type: Prior social housing search. The housing-history register returned no former public or community tenancy under Oren's declared name."
+  },
+  "E-03:p12:1": {
+   "doc_date": "2026-07-11",
+   "doc_title": "Delegated review referral",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 12,
+   "passage_id": "E-03:p12:1",
+   "text": "The file contains the title search, GP note, dwelling access letter and request for a manager's review. No authorised discretionary decision is attached. The temporary room was extended through 24 July 2026, but no permanent accessible accommodation exists."
+  },
+  "E-03:p12:3": {
+   "doc_date": "2026-07-11",
+   "doc_title": "Delegated review referral",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 12,
+   "passage_id": "E-03:p12:3",
+   "text": "Applicant: Oren Vale Items checked: title, GP note, access report and referral received; authorised decision field blank. Staff entry fields: document title, original issue date, date received, person receiving it and filing location. Each received document was matched to the application name before the box was marked. A blank received-date field remains blank until an item arrives; the request correspondence is filed under its own date."
+  },
+  "E-03:p12:5": {
+   "doc_date": "2026-07-11",
+   "doc_title": "Delegated review referral",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 12,
+   "passage_id": "E-03:p12:5",
+   "text": "Handover fields: packet count verified; restricted contact preference carried forward; outstanding item copied into the follow-up register; receiving desk initials recorded. The checklist records what intake has received and what must still be requested. Completed by I. Meren, Darwin housing intake, on 2026-07-11. Checked by R. Vale, senior intake clerk. A copy of the received-items list may be supplied to the applicant through the authorised channel."
+  },
+  "E-03:p1:1": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Urban priority application, E-03",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "E-03:p1:1",
+   "text": "Oren Vale applies for accessible urban housing in Darwin. The application declares a half interest in a dwelling that Oren cannot use with current mobility needs and requests consideration of the medical circumstances."
+  },
+  "E-03:p1:3": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Urban priority application, E-03",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 1,
+   "passage_id": "E-03:p1:3",
+   "text": "Subject: Oren Vale. Section: Urban priority application, E-03. Household or account name as shown on the application: Oren Vale. Locality for service: Darwin, Northern Territory. Oren Vale lives alone and requests a dwelling with step-free sleeping and bathing access. A half interest in another dwelling is declared."
+  },
+  "E-03:p2:1": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Household and accommodation needs",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "E-03:p2:1",
+   "text": "Oren Vale is a sole adult applicant. The request specifies step-free access and a bathing area suitable for assisted transfers."
+  },
+  "E-03:p2:3": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Household and accommodation needs",
+   "doc_type": "form",
+   "exists": true,
+   "kind": "case",
+   "page": 2,
+   "passage_id": "E-03:p2:3",
+   "text": "Subject: Oren Vale. Section: Household and accommodation needs. Household or account name as shown on the application: Oren Vale. Locality for service: Darwin, Northern Territory. Oren needs a level entry, circulation space for a wheelchair and a bathing area allowing safe assisted transfers."
+  },
+  "E-03:p3:1": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Identity and residence sighting",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "E-03:p3:1",
+   "text": "Australian citizenship document sighted; Darwin residence confirmed by a current utility account."
+  },
+  "E-03:p3:3": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Identity and residence sighting",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 3,
+   "passage_id": "E-03:p3:3",
+   "text": "Name on record: Oren Vale. Item: Identity and residence sighting. The citizenship original matched the application. A current utility account showed Darwin residence; both documents were returned after sighting."
+  },
+  "E-03:p4:2": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Property title search result",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 4,
+   "passage_id": "E-03:p4:2",
+   "text": "Name searched: Oren Vale. Title search shows a half interest in a residential dwelling at Marlow Creek, outside Darwin. Co-owner interest: remaining half. The register classifies the property as residential. Search status: current at the date above. The applicant declared the interest on the housing form before this search was requested."
+  },
+  "E-03:p4:4": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Property title search result",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 4,
+   "passage_id": "E-03:p4:4",
+   "text": "Search fields: current registered proprietor names checked; share fractions checked; instrument date checked; residential classification checked. No transfer or discharge is shown in the current entry. A later change of title would require a new dated search. The applicant was given a copy of the result for review."
+  },
+  "E-03:p4:5": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Property title search result",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 4,
+   "passage_id": "E-03:p4:5",
+   "text": "Issued by the title-search desk on 10 July 2026. Search clerk F. Ansel. Register reference TR-E03-04. No identity-document number or private correspondence address appears in this extract."
+  },
+  "E-03:p5:1": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Income statement",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "E-03:p5:1",
+   "text": "Windward Assistance Office | Income statement | Issued 8 July 2026"
+  },
+  "E-03:p5:2": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Income statement",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "E-03:p5:2",
+   "text": "Income statement for Oren Vale, issued on 8 July 2026 by Windward Assistance Office; gross support payment $590.00 per fortnight."
+  },
+  "E-03:p5:3": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Income statement",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "E-03:p5:3",
+   "text": "Recipient name: Oren Vale. Payment frequency: fortnightly. Gross amount for the current period: $590.00. Amount before any ordinary withholding or recovery: $590.00. This statement covers the current payment at the issue date. A later rate change, suspension or adjustment will appear on a new dated statement; previous statements remain records of their own issue periods."
+  },
+  "E-03:p5:4": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Income statement",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "E-03:p5:4",
+   "text": "Payment summary: current support payment $590.00; additional regular component $0.00; gross total $590.00. The recipient asked for a statement suitable for presenting with a housing application. The payment destination and any banking details are omitted from this copy. A fresh statement can be requested from Windward Assistance Office if the current payment amount changes after this issue date."
+  },
+  "E-03:p5:5": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Income statement",
+   "doc_type": "other",
+   "exists": true,
+   "kind": "case",
+   "page": 5,
+   "passage_id": "E-03:p5:5",
+   "text": "Prepared by Windward Assistance Office payment records desk. Statement reference WA-E03-05. Issuing clerk N. Elwood. A copy was supplied to Oren Vale on 8 July 2026. The recipient may request a fresh dated statement if the payment changes before the housing application is finalised."
+  },
+  "E-03:p6:1": {
+   "doc_date": "2026-07-08",
+   "doc_title": "GP mobility and housing note",
+   "doc_type": "medical",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "E-03:p6:1",
+   "text": "The applicant now uses a wheelchair and needs step-free access to sleeping and bathing areas."
+  },
+  "E-03:p6:2": {
+   "doc_date": "2026-07-08",
+   "doc_title": "GP mobility and housing note",
+   "doc_type": "medical",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "E-03:p6:2",
+   "text": "Delay in accessible accommodation would increase the risk of injury during transfers."
+  },
+  "E-03:p6:4": {
+   "doc_date": "2026-07-08",
+   "doc_title": "GP mobility and housing note",
+   "doc_type": "medical",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "E-03:p6:4",
+   "text": "Patient: Oren Vale. Reason for letter: GP mobility and housing note. The GP observed mobility limits and discussed transfer safety. Oren consented to a limited housing-related letter."
+  },
+  "E-03:p6:5": {
+   "doc_date": "2026-07-08",
+   "doc_title": "GP mobility and housing note",
+   "doc_type": "medical",
+   "exists": true,
+   "kind": "case",
+   "page": 6,
+   "passage_id": "E-03:p6:5",
+   "text": "The patient discussed daily functioning and the physical or emotional demands of the present accommodation during consultation. This limited note records matters relevant to sleeping, moving safely and maintaining a routine. It was prepared with the patient's consent for the housing office. No full clinical history, prescription chart or unrelated family information is enclosed."
+  },
+  "E-03:p7:1": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Dwelling access assessment",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 7,
+   "passage_id": "E-03:p7:1",
+   "text": "The dwelling is unsafe to occupy because the entrance and wet areas cannot be used with the applicant's current mobility needs."
+  },
+  "E-03:p7:2": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Dwelling access assessment",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 7,
+   "passage_id": "E-03:p7:2",
+   "text": "Marlow Access Assessments | Correspondence reference E03-07 | 2026-07-08"
+  },
+  "E-03:p7:4": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Dwelling access assessment",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 7,
+   "passage_id": "E-03:p7:4",
+   "text": "The access assessor saw stairs at the only entrance and a narrow wet-area doorway. A wheelchair cannot pass into the bathing area as it stands."
+  },
+  "E-03:p7:5": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Dwelling access assessment",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 7,
+   "passage_id": "E-03:p7:5",
+   "text": "The access visit covered the sole entrance, the route to the sleeping area and the wet-area doorway. Measurements and photographs are retained in the assessment record; this letter reports the observations relevant to present wheelchair use. We did not carry out structural design or cost an alteration. A builder would need a separate inspection before any modification could be specified."
+  },
+  "E-03:p7:6": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Dwelling access assessment",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 7,
+   "passage_id": "E-03:p7:6",
+   "text": "Oren Vale was present for the access discussion and described the difficulty of transfers in the current layout. The assessment was signed on the date above and a copy supplied to Oren. If the entrance or wet area is changed later, the new arrangement will need another site visit. Questions about the observed access barriers may be directed to the assessor who signed this letter."
+  },
+  "E-03:p7:7": {
+   "doc_date": "2026-07-08",
+   "doc_title": "Dwelling access assessment",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 7,
+   "passage_id": "E-03:p7:7",
+   "text": "Yours sincerely, F. Ansel, access assessor. Signed for Marlow Access Assessments. Copy retained by the sender under reference E03-07."
+  },
+  "E-03:p8:1": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Temporary accessible room",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 8,
+   "passage_id": "E-03:p8:1",
+   "text": "We have arranged a temporary accessible room for Oren Vale through 12 July 2026. We cannot guarantee the room beyond the current short booking."
+  },
+  "E-03:p8:2": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Temporary accessible room",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 8,
+   "passage_id": "E-03:p8:2",
+   "text": "Paperbark Access Service | Correspondence reference E03-08 | 2026-07-09"
+  },
+  "E-03:p8:5": {
+   "doc_date": "2026-07-09",
+   "doc_title": "Temporary accessible room",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 8,
+   "passage_id": "E-03:p8:5",
+   "text": "Our service checked the temporary room booking against its own register before writing. The period available is the one stated above; any extension requires a new booking and a fresh dated confirmation. We can answer questions about the booking with the applicant's consent. We cannot promise a permanent room or a further period on the strength of the present confirmation."
+  },
+  "E-03:p9:1": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Request for discretionary review",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 9,
+   "passage_id": "E-03:p9:1",
+   "text": "Please refer this unusual property and medical situation to a manager for a documented discretionary decision."
+  },
+  "E-03:p9:4": {
+   "doc_date": "2026-07-10",
+   "doc_title": "Request for discretionary review",
+   "doc_type": "letter",
+   "exists": true,
+   "kind": "case",
+   "page": 9,
+   "passage_id": "E-03:p9:4",
+   "text": "Oren asks a manager to consider the property interest alongside the medical and access reports and to provide the decision in writing."
+  },
+  "eligibility:p4:16": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "eligibility:p4:16",
+   "section": "§3 Policy detail",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p5:12": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 5,
+   "passage_id": "eligibility:p5:12",
+   "section": "§3.2 Residency",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p5:4": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 5,
+   "passage_id": "eligibility:p5:4",
+   "section": "§3.1.1 Residential property ownership",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p6:11": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 6,
+   "passage_id": "eligibility:p6:11",
+   "section": "§3.5 Unsatisfactory Former Tenancies",
+   "text": null,
+   "version": "7.1"
+  },
+  "eligibility:p6:9": {
+   "doc_title": "Eligibility for Social Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 6,
+   "passage_id": "eligibility:p6:9",
+   "section": "§3.4 Debts",
+   "text": null,
+   "version": "7.1"
+  },
+  "priority:p4:18": {
+   "doc_title": "Priority Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "priority:p4:18",
+   "section": "§3.1 Applying for priority housing",
+   "text": null,
+   "version": "2.04"
+  },
+  "priority:p4:19": {
+   "doc_title": "Priority Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "priority:p4:19",
+   "section": "§3.1 Applying for priority housing",
+   "text": null,
+   "version": "2.04"
+  },
+  "priority:p4:9": {
+   "doc_title": "Priority Housing policy",
+   "exists": true,
+   "kind": "policy",
+   "page": 4,
+   "passage_id": "priority:p4:9",
+   "section": "§3 Policy detail",
+   "text": null,
+   "version": "2.04"
+  }
+ },
+ "suggested_reading": [
+  {
+   "claim_ids": [
+    "c32"
+   ],
+   "clause_ids": [
+    "other"
+   ],
+   "passage_id": "E-03:p7:5",
+   "rank": 9,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property",
+    "prio-category",
+    "prio-discretion",
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p1:1",
+   "rank": 10,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-income"
+   ],
+   "passage_id": "E-03:p5:3",
+   "rank": 11,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-documentation",
+    "prio-category",
+    "prio-discretion"
+   ],
+   "passage_id": "E-03:p7:6",
+   "rank": 12,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-income"
+   ],
+   "passage_id": "E-03:p5:5",
+   "rank": 13,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-income"
+   ],
+   "passage_id": "E-03:p5:1",
+   "rank": 14,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p6:4",
+   "rank": 15,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-discretion",
+    "elig-property"
+   ],
+   "passage_id": "E-03:p9:4",
+   "rank": 16,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-category"
+   ],
+   "passage_id": "E-03:p2:3",
+   "rank": 17,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-category"
+   ],
+   "passage_id": "E-03:p2:1",
+   "rank": 18,
+   "reasons": [
+    "possibly_missed"
+   ]
+  }
+ ]
+}

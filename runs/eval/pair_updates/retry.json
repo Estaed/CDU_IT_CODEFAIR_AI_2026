@@ -1,0 +1,1841 @@
+{
+ "cases": {
+  "A-0142": {
+   "base": {
+    "coverage": {
+     "count": 4,
+     "covered": [
+      "p8",
+      "p23",
+      "p51",
+      "p58"
+     ],
+     "missed": [
+      "p30"
+     ],
+     "n": 5,
+     "rate": 0.8
+    },
+    "gold": [
+     "p8",
+     "p23",
+     "p30",
+     "p51",
+     "p58"
+    ],
+    "pages": [
+     "p8",
+     "p23",
+     "p16",
+     "p4",
+     "p19",
+     "p56",
+     "p51",
+     "p58"
+    ],
+    "traps": {
+     "count": 3,
+     "n": 6,
+     "rate": 0.5
+    }
+   },
+   "first_attempt": {
+    "coverage": {
+     "count": 3,
+     "covered": [
+      "p8",
+      "p23",
+      "p30"
+     ],
+     "missed": [
+      "p51",
+      "p58"
+     ],
+     "n": 5,
+     "rate": 0.6
+    },
+    "gold": [
+     "p8",
+     "p23",
+     "p30",
+     "p51",
+     "p58"
+    ],
+    "pages": [
+     "p8",
+     "p23",
+     "p30",
+     "p24",
+     "p16",
+     "p4",
+     "p19"
+    ],
+    "traps": {
+     "count": 3,
+     "n": 6,
+     "rate": 0.5
+    }
+   },
+   "retry": {
+    "coverage": {
+     "count": 4,
+     "covered": [
+      "p8",
+      "p23",
+      "p51",
+      "p58"
+     ],
+     "missed": [
+      "p30"
+     ],
+     "n": 5,
+     "rate": 0.8
+    },
+    "gold": [
+     "p8",
+     "p23",
+     "p30",
+     "p51",
+     "p58"
+    ],
+    "pages": [
+     "p8",
+     "p23",
+     "p16",
+     "p4",
+     "p19",
+     "p56",
+     "p51",
+     "p58"
+    ],
+    "traps": {
+     "count": 6,
+     "n": 6,
+     "rate": 1.0
+    }
+   }
+  },
+  "E-01": {
+   "base": {
+    "coverage": {
+     "count": 2,
+     "covered": [
+      "p5",
+      "p7"
+     ],
+     "missed": [
+      "p1",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "gold": [
+     "p1",
+     "p5",
+     "p7",
+     "p8"
+    ],
+    "pages": [
+     "p2",
+     "p10",
+     "p7",
+     "p6",
+     "p9",
+     "p5"
+    ],
+    "traps": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    }
+   },
+   "first_attempt": {
+    "coverage": {
+     "count": 2,
+     "covered": [
+      "p5",
+      "p7"
+     ],
+     "missed": [
+      "p1",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "gold": [
+     "p1",
+     "p5",
+     "p7",
+     "p8"
+    ],
+    "pages": [
+     "p2",
+     "p10",
+     "p7",
+     "p6",
+     "p9",
+     "p5"
+    ],
+    "traps": {
+     "count": 0,
+     "n": 3,
+     "rate": 0.0
+    }
+   },
+   "retry": {
+    "coverage": {
+     "count": 2,
+     "covered": [
+      "p5",
+      "p7"
+     ],
+     "missed": [
+      "p1",
+      "p8"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "gold": [
+     "p1",
+     "p5",
+     "p7",
+     "p8"
+    ],
+    "pages": [
+     "p2",
+     "p10",
+     "p7",
+     "p6",
+     "p9",
+     "p5",
+     "p12",
+     "p3"
+    ],
+    "traps": {
+     "count": 3,
+     "n": 3,
+     "rate": 1.0
+    }
+   }
+  },
+  "E-02": {
+   "base": {
+    "coverage": {
+     "count": 3,
+     "covered": [
+      "p2",
+      "p9",
+      "p10"
+     ],
+     "missed": [
+      "p6"
+     ],
+     "n": 4,
+     "rate": 0.75
+    },
+    "gold": [
+     "p2",
+     "p6",
+     "p9",
+     "p10"
+    ],
+    "pages": [
+     "p2",
+     "p9",
+     "p1",
+     "p10",
+     "p5",
+     "p12"
+    ],
+    "traps": {
+     "count": 2,
+     "n": 4,
+     "rate": 0.5
+    }
+   },
+   "first_attempt": {
+    "coverage": {
+     "count": 2,
+     "covered": [
+      "p9",
+      "p10"
+     ],
+     "missed": [
+      "p2",
+      "p6"
+     ],
+     "n": 4,
+     "rate": 0.5
+    },
+    "gold": [
+     "p2",
+     "p6",
+     "p9",
+     "p10"
+    ],
+    "pages": [
+     "p10",
+     "p5",
+     "p12",
+     "p9"
+    ],
+    "traps": {
+     "count": 1,
+     "n": 4,
+     "rate": 0.25
+    }
+   },
+   "retry": {
+    "coverage": {
+     "count": 3,
+     "covered": [
+      "p2",
+      "p9",
+      "p10"
+     ],
+     "missed": [
+      "p6"
+     ],
+     "n": 4,
+     "rate": 0.75
+    },
+    "gold": [
+     "p2",
+     "p6",
+     "p9",
+     "p10"
+    ],
+    "pages": [
+     "p10",
+     "p5",
+     "p12",
+     "p9",
+     "p2",
+     "p3",
+     "p7",
+     "p8"
+    ],
+    "traps": {
+     "count": 3,
+     "n": 4,
+     "rate": 0.75
+    }
+   }
+  },
+  "E-03": {
+   "base": {
+    "coverage": {
+     "count": 3,
+     "covered": [
+      "p4",
+      "p7",
+      "p12"
+     ],
+     "missed": [
+      "p6",
+      "p9"
+     ],
+     "n": 5,
+     "rate": 0.6
+    },
+    "gold": [
+     "p4",
+     "p6",
+     "p7",
+     "p9",
+     "p12"
+    ],
+    "pages": [
+     "p8",
+     "p12",
+     "p7",
+     "p1",
+     "p4"
+    ],
+    "traps": {
+     "count": 4,
+     "n": 6,
+     "rate": 0.6667
+    }
+   },
+   "first_attempt": {
+    "coverage": {
+     "count": 3,
+     "covered": [
+      "p4",
+      "p7",
+      "p12"
+     ],
+     "missed": [
+      "p6",
+      "p9"
+     ],
+     "n": 5,
+     "rate": 0.6
+    },
+    "gold": [
+     "p4",
+     "p6",
+     "p7",
+     "p9",
+     "p12"
+    ],
+    "pages": [
+     "p8",
+     "p12",
+     "p7",
+     "p4",
+     "p1"
+    ],
+    "traps": {
+     "count": 3,
+     "n": 6,
+     "rate": 0.5
+    }
+   },
+   "retry": {
+    "coverage": {
+     "count": 5,
+     "covered": [
+      "p4",
+      "p6",
+      "p7",
+      "p9",
+      "p12"
+     ],
+     "missed": [],
+     "n": 5,
+     "rate": 1.0
+    },
+    "gold": [
+     "p4",
+     "p6",
+     "p7",
+     "p9",
+     "p12"
+    ],
+    "pages": [
+     "p8",
+     "p12",
+     "p7",
+     "p4",
+     "p1",
+     "p5",
+     "p6",
+     "p9"
+    ],
+    "traps": {
+     "count": 6,
+     "n": 6,
+     "rate": 1.0
+    }
+   }
+  },
+  "H-01": {
+   "base": {
+    "coverage": {
+     "count": 4,
+     "covered": [
+      "p3",
+      "p5",
+      "p12",
+      "p17"
+     ],
+     "missed": [
+      "p6",
+      "p13",
+      "p14",
+      "p15"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "gold": [
+     "p3",
+     "p5",
+     "p6",
+     "p12",
+     "p13",
+     "p14",
+     "p15",
+     "p17"
+    ],
+    "pages": [
+     "p2",
+     "p17",
+     "p5",
+     "p3",
+     "p12",
+     "p8"
+    ],
+    "traps": {
+     "count": 3,
+     "n": 7,
+     "rate": 0.4286
+    }
+   },
+   "first_attempt": {
+    "coverage": {
+     "count": 4,
+     "covered": [
+      "p3",
+      "p5",
+      "p12",
+      "p17"
+     ],
+     "missed": [
+      "p6",
+      "p13",
+      "p14",
+      "p15"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "gold": [
+     "p3",
+     "p5",
+     "p6",
+     "p12",
+     "p13",
+     "p14",
+     "p15",
+     "p17"
+    ],
+    "pages": [
+     "p5",
+     "p17",
+     "p2",
+     "p3",
+     "p12",
+     "p8"
+    ],
+    "traps": {
+     "count": 3,
+     "n": 7,
+     "rate": 0.4286
+    }
+   },
+   "retry": {
+    "coverage": {
+     "count": 4,
+     "covered": [
+      "p5",
+      "p12",
+      "p14",
+      "p17"
+     ],
+     "missed": [
+      "p3",
+      "p6",
+      "p13",
+      "p15"
+     ],
+     "n": 8,
+     "rate": 0.5
+    },
+    "gold": [
+     "p3",
+     "p5",
+     "p6",
+     "p12",
+     "p13",
+     "p14",
+     "p15",
+     "p17"
+    ],
+    "pages": [
+     "p5",
+     "p17",
+     "p2",
+     "p12",
+     "p8",
+     "p14",
+     "p1",
+     "p9"
+    ],
+    "traps": {
+     "count": 6,
+     "n": 7,
+     "rate": 0.8571
+    }
+   }
+  },
+  "stub": {
+   "base": {
+    "coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [],
+     "n": 0,
+     "rate": null
+    },
+    "gold": [],
+    "pages": [
+     "p2",
+     "p3",
+     "p5"
+    ],
+    "traps": {
+     "count": 0,
+     "n": 0,
+     "rate": null
+    }
+   },
+   "first_attempt": {
+    "coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [],
+     "n": 0,
+     "rate": null
+    },
+    "gold": [],
+    "pages": [
+     "p2",
+     "p3",
+     "p5"
+    ],
+    "traps": {
+     "count": 0,
+     "n": 0,
+     "rate": null
+    }
+   },
+   "retry": {
+    "coverage": {
+     "count": 0,
+     "covered": [],
+     "missed": [],
+     "n": 0,
+     "rate": null
+    },
+    "gold": [],
+    "pages": [
+     "p2",
+     "p3",
+     "p5",
+     "p1",
+     "p4",
+     "p6"
+    ],
+    "traps": {
+     "count": 0,
+     "n": 0,
+     "rate": null
+    }
+   }
+  }
+ },
+ "evaluation_number_changes": [
+  {
+   "after": 3,
+   "after_n": 5,
+   "before": 2,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 0.6,
+   "after_n": 5,
+   "before": 0.4,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 5,
+   "before": 2,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].gold_page_coverage.count"
+  },
+  {
+   "after": 0.6,
+   "after_n": 5,
+   "before": 0.4,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 5,
+   "before": 1,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[3].new_gold_pages.count"
+  },
+  {
+   "after": 5,
+   "after_n": 8,
+   "before": 3,
+   "before_n": 8,
+   "path": "parts.ablation.cases.A-0142[3].required_reading.count"
+  },
+  {
+   "after": 1,
+   "after_n": 5,
+   "before": 0,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].lost_gold_pages.count"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-01[4].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-01[4].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 0.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].gold_page_coverage.count"
+  },
+  {
+   "after": 0.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[3].new_gold_pages.count"
+  },
+  {
+   "after": 0,
+   "after_n": 8,
+   "before": 4,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-02[3].required_reading.count"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 3,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.75,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 4,
+   "before": 1,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].new_gold_pages.count"
+  },
+  {
+   "after": 3,
+   "after_n": 8,
+   "before": 4,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-03[2].required_reading.count"
+  },
+  {
+   "after": 4,
+   "after_n": 8,
+   "before": 8,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-03[3].required_reading.count"
+  },
+  {
+   "after": 5,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.ablation.cases.E-03[4].gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.ablation.cases.E-03[4].gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 5,
+   "before": 0,
+   "before_n": 5,
+   "path": "parts.ablation.cases.E-03[4].new_gold_pages.count"
+  },
+  {
+   "after": 5,
+   "after_n": 8,
+   "before": 4,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].gold_page_coverage.count"
+  },
+  {
+   "after": 0.625,
+   "after_n": 8,
+   "before": 0.5,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 8,
+   "before": 1,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].lost_gold_pages.count"
+  },
+  {
+   "after": 7,
+   "after_n": 8,
+   "before": 8,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].required_reading.count"
+  },
+  {
+   "after": 8,
+   "after_n": 8,
+   "before": 7,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[4].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 8,
+   "before": 0.875,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[4].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 1,
+   "after_n": 8,
+   "before": 0,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[4].lost_gold_pages.count"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.audit-cover.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.audit-split.n"
+  },
+  {
+   "after": 170,
+   "after_n": 578,
+   "before": 135,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev.count"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 243,
+   "after_n": 578,
+   "before": 80,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.summary.n"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 573,
+   "after_n": 578,
+   "before": 375,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.jev"
+  },
+  {
+   "after": 578,
+   "after_n": 578,
+   "before": 380,
+   "before_n": 380,
+   "path": "parts.cases.cases.A-0142.live_responses.n"
+  },
+  {
+   "after": 6,
+   "after_n": 6,
+   "before": 3,
+   "before_n": 6,
+   "path": "parts.cases.cases.A-0142.trap_touch_rate.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 6,
+   "before": 0.5,
+   "before_n": 6,
+   "path": "parts.cases.cases.A-0142.trap_touch_rate.rate"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-01.all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-01.all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 183,
+   "after_n": 276,
+   "before": 60,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 274,
+   "after_n": 276,
+   "before": 151,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.jev"
+  },
+  {
+   "after": 276,
+   "after_n": 276,
+   "before": 153,
+   "before_n": 153,
+   "path": "parts.cases.cases.E-01.live_responses.n"
+  },
+  {
+   "after": 3,
+   "after_n": 3,
+   "before": 0,
+   "before_n": 3,
+   "path": "parts.cases.cases.E-01.trap_touch_rate.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 3,
+   "before": 0.0,
+   "before_n": 3,
+   "path": "parts.cases.cases.E-01.trap_touch_rate.rate"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 3,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.75,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 128,
+   "after_n": 217,
+   "before": 41,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 215,
+   "after_n": 217,
+   "before": 128,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.jev"
+  },
+  {
+   "after": 217,
+   "after_n": 217,
+   "before": 130,
+   "before_n": 130,
+   "path": "parts.cases.cases.E-02.live_responses.n"
+  },
+  {
+   "after": 3,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.trap_touch_rate.count"
+  },
+  {
+   "after": 0.75,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.trap_touch_rate.rate"
+  },
+  {
+   "after": 5,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.cases.cases.E-03.gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.cases.cases.E-03.gold_page_coverage.rate"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 74,
+   "after_n": 289,
+   "before": 68,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev.count"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 171,
+   "after_n": 289,
+   "before": 55,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 287,
+   "after_n": 289,
+   "before": 165,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.jev"
+  },
+  {
+   "after": 289,
+   "after_n": 289,
+   "before": 167,
+   "before_n": 167,
+   "path": "parts.cases.cases.E-03.live_responses.n"
+  },
+  {
+   "after": 6,
+   "after_n": 6,
+   "before": 4,
+   "before_n": 6,
+   "path": "parts.cases.cases.E-03.trap_touch_rate.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 6,
+   "before": 0.6667,
+   "before_n": 6,
+   "path": "parts.cases.cases.E-03.trap_touch_rate.rate"
+  },
+  {
+   "after": 8,
+   "after_n": 8,
+   "before": 7,
+   "before_n": 8,
+   "path": "parts.cases.cases.H-01.all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 8,
+   "before": 0.875,
+   "before_n": 8,
+   "path": "parts.cases.cases.H-01.all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.audit-cover.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.audit-locate.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.audit-split.n"
+  },
+  {
+   "after": 210,
+   "after_n": 451,
+   "before": 187,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev.count"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-dedup.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-dedup-confirm.n"
+  },
+  {
+   "after": 193,
+   "after_n": 451,
+   "before": 62,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-pair.count"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-pair.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.jev-scan.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.summary.n"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.by_kind.writer.n"
+  },
+  {
+   "after": 446,
+   "after_n": 451,
+   "before": 292,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.jev"
+  },
+  {
+   "after": 451,
+   "after_n": 451,
+   "before": 297,
+   "before_n": 297,
+   "path": "parts.cases.cases.H-01.live_responses.n"
+  },
+  {
+   "after": 6,
+   "after_n": 7,
+   "before": 3,
+   "before_n": 7,
+   "path": "parts.cases.cases.H-01.trap_touch_rate.count"
+  },
+  {
+   "after": 0.8571,
+   "after_n": 7,
+   "before": 0.4286,
+   "before_n": 7,
+   "path": "parts.cases.cases.H-01.trap_touch_rate.rate"
+  },
+  {
+   "after": 5,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-03.after.gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-03.after.gold_page_coverage.rate"
+  },
+  {
+   "after": 1,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[0].checker.n"
+  },
+  {
+   "after": 1.0,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[0].checker.probability"
+  },
+  {
+   "after": 0.01,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[0].checker.supports"
+  },
+  {
+   "after": 1,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[1].checker.n"
+  },
+  {
+   "after": 0.85,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[1].checker.probability"
+  },
+  {
+   "after": 0.07,
+   "after_n": 1,
+   "before": null,
+   "before_n": null,
+   "path": "parts.jev_supports.mutation_changes[1].checker.supports"
+  },
+  {
+   "after": 684,
+   "after_n": 684,
+   "before": 0,
+   "before_n": 0,
+   "path": "parts.jev_supports.response_cache.new_model_calls.count"
+  },
+  {
+   "after": 684,
+   "after_n": 684,
+   "before": 0,
+   "before_n": 0,
+   "path": "parts.jev_supports.response_cache.new_model_calls.n"
+  }
+ ],
+ "first_attempt_to_retry": [
+  {
+   "after": 5,
+   "after_n": 8,
+   "before": 6,
+   "before_n": 8,
+   "path": "parts.ablation.cases.A-0142[3].required_reading.count"
+  },
+  {
+   "after": 4,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].gold_page_coverage.count"
+  },
+  {
+   "after": 0.8,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].gold_page_coverage.rate"
+  },
+  {
+   "after": 1,
+   "after_n": 5,
+   "before": 0,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].lost_gold_pages.count"
+  },
+  {
+   "after": 2,
+   "after_n": 5,
+   "before": 0,
+   "before_n": 5,
+   "path": "parts.ablation.cases.A-0142[4].new_gold_pages.count"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-01[4].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-01[4].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].gold_page_coverage.count"
+  },
+  {
+   "after": 0.75,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.ablation.cases.E-02[4].new_gold_pages.count"
+  },
+  {
+   "after": 8,
+   "after_n": 8,
+   "before": 6,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-02[4].required_reading.count"
+  },
+  {
+   "after": 3,
+   "after_n": 8,
+   "before": 4,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-03[2].required_reading.count"
+  },
+  {
+   "after": 4,
+   "after_n": 8,
+   "before": 7,
+   "before_n": 8,
+   "path": "parts.ablation.cases.E-03[3].required_reading.count"
+  },
+  {
+   "after": 5,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.ablation.cases.E-03[4].gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.ablation.cases.E-03[4].gold_page_coverage.rate"
+  },
+  {
+   "after": 2,
+   "after_n": 5,
+   "before": 0,
+   "before_n": 5,
+   "path": "parts.ablation.cases.E-03[4].new_gold_pages.count"
+  },
+  {
+   "after": 5,
+   "after_n": 8,
+   "before": 4,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].gold_page_coverage.count"
+  },
+  {
+   "after": 0.625,
+   "after_n": 8,
+   "before": 0.5,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].gold_page_coverage.rate"
+  },
+  {
+   "after": 0,
+   "after_n": 8,
+   "before": 1,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].lost_gold_pages.count"
+  },
+  {
+   "after": 7,
+   "after_n": 8,
+   "before": 8,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[3].required_reading.count"
+  },
+  {
+   "after": 8,
+   "after_n": 8,
+   "before": 7,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[4].all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 8,
+   "before": 0.875,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[4].all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 1,
+   "after_n": 8,
+   "before": 0,
+   "before_n": 8,
+   "path": "parts.ablation.cases.H-01[4].lost_gold_pages.count"
+  },
+  {
+   "after": 4,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.cases.cases.A-0142.gold_page_coverage.count"
+  },
+  {
+   "after": 0.8,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.cases.cases.A-0142.gold_page_coverage.rate"
+  },
+  {
+   "after": 6,
+   "after_n": 6,
+   "before": 3,
+   "before_n": 6,
+   "path": "parts.cases.cases.A-0142.trap_touch_rate.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 6,
+   "before": 0.5,
+   "before_n": 6,
+   "path": "parts.cases.cases.A-0142.trap_touch_rate.rate"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-01.all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-01.all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 3,
+   "before": 0,
+   "before_n": 3,
+   "path": "parts.cases.cases.E-01.trap_touch_rate.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 3,
+   "before": 0.0,
+   "before_n": 3,
+   "path": "parts.cases.cases.E-01.trap_touch_rate.rate"
+  },
+  {
+   "after": 4,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.gold_page_coverage.count"
+  },
+  {
+   "after": 0.75,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.gold_page_coverage.rate"
+  },
+  {
+   "after": 8,
+   "after_n": 8,
+   "before": 6,
+   "before_n": 8,
+   "path": "parts.cases.cases.E-02.required_reading.count"
+  },
+  {
+   "after": 3,
+   "after_n": 4,
+   "before": 1,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.trap_touch_rate.count"
+  },
+  {
+   "after": 0.75,
+   "after_n": 4,
+   "before": 0.25,
+   "before_n": 4,
+   "path": "parts.cases.cases.E-02.trap_touch_rate.rate"
+  },
+  {
+   "after": 5,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.cases.cases.E-03.gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.cases.cases.E-03.gold_page_coverage.rate"
+  },
+  {
+   "after": 6,
+   "after_n": 6,
+   "before": 3,
+   "before_n": 6,
+   "path": "parts.cases.cases.E-03.trap_touch_rate.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 6,
+   "before": 0.5,
+   "before_n": 6,
+   "path": "parts.cases.cases.E-03.trap_touch_rate.rate"
+  },
+  {
+   "after": 8,
+   "after_n": 8,
+   "before": 7,
+   "before_n": 8,
+   "path": "parts.cases.cases.H-01.all_flagged_gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 8,
+   "before": 0.875,
+   "before_n": 8,
+   "path": "parts.cases.cases.H-01.all_flagged_gold_page_coverage.rate"
+  },
+  {
+   "after": 6,
+   "after_n": 7,
+   "before": 3,
+   "before_n": 7,
+   "path": "parts.cases.cases.H-01.trap_touch_rate.count"
+  },
+  {
+   "after": 0.8571,
+   "after_n": 7,
+   "before": 0.4286,
+   "before_n": 7,
+   "path": "parts.cases.cases.H-01.trap_touch_rate.rate"
+  },
+  {
+   "after": 4,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.A-0142.after.gold_page_coverage.count"
+  },
+  {
+   "after": 0.8,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.A-0142.after.gold_page_coverage.rate"
+  },
+  {
+   "after": 3,
+   "after_n": 4,
+   "before": 2,
+   "before_n": 4,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-02.after.gold_page_coverage.count"
+  },
+  {
+   "after": 0.75,
+   "after_n": 4,
+   "before": 0.5,
+   "before_n": 4,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-02.after.gold_page_coverage.rate"
+  },
+  {
+   "after": 8,
+   "after_n": 8,
+   "before": 6,
+   "before_n": 8,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-02.after.required_reading.count"
+  },
+  {
+   "after": 5,
+   "after_n": 5,
+   "before": 3,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-03.after.gold_page_coverage.count"
+  },
+  {
+   "after": 1.0,
+   "after_n": 5,
+   "before": 0.6,
+   "before_n": 5,
+   "path": "parts.jev_supports.headline_comparisons.required_reading.E-03.after.gold_page_coverage.rate"
+  }
+ ]
+}

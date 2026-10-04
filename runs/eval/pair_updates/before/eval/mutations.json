@@ -1,0 +1,202 @@
+{
+ "cases": {
+  "E-01": {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "entity_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "negation": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "number_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "omission": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "policy_misread": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "stale_value": {
+     "count": 0,
+     "n": 1,
+     "rate": 0.0
+    }
+   },
+   "catch_rate": {
+    "count": 6,
+    "n": 7,
+    "rate": 0.8571
+   },
+   "false_alarm_rate": {
+    "count": 0,
+    "n": 8,
+    "rate": 0.0
+   }
+  },
+  "E-02": {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "entity_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "negation": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "number_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "omission": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "policy_misread": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "stale_value": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    }
+   },
+   "catch_rate": {
+    "count": 7,
+    "n": 7,
+    "rate": 1.0
+   },
+   "false_alarm_rate": {
+    "count": 0,
+    "n": 8,
+    "rate": 0.0
+   }
+  },
+  "E-03": {
+   "by_mutation_type": {
+    "date_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "entity_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "negation": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "number_swap": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "omission": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "policy_misread": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    },
+    "stale_value": {
+     "count": 1,
+     "n": 1,
+     "rate": 1.0
+    }
+   },
+   "catch_rate": {
+    "count": 7,
+    "n": 7,
+    "rate": 1.0
+   },
+   "false_alarm_rate": {
+    "count": 1,
+    "n": 8,
+    "rate": 0.125
+   }
+  }
+ },
+ "overall": {
+  "by_mutation_type": {
+   "date_swap": {
+    "count": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "entity_swap": {
+    "count": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "negation": {
+    "count": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "number_swap": {
+    "count": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "omission": {
+    "count": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "policy_misread": {
+    "count": 3,
+    "n": 3,
+    "rate": 1.0
+   },
+   "stale_value": {
+    "count": 2,
+    "n": 3,
+    "rate": 0.6667
+   }
+  },
+  "catch_rate": {
+   "count": 20,
+   "n": 21,
+   "rate": 0.9524
+  },
+  "false_alarm_rate": {
+   "count": 1,
+   "n": 24,
+   "rate": 0.0417
+  }
+ },
+ "part": "mutations",
+ "rule": "Caught means final status is not supported. False alarms use supported gold claims only."
+}

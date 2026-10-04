@@ -28,6 +28,7 @@ from readmark.eval.discipline import (
     finish_heldout,
     start_heldout,
 )
+from readmark.eval.supports import cache_inventory
 from readmark.writer import ClaudeWriter
 
 EVAL = ROOT / "runs" / "eval"
@@ -289,8 +290,14 @@ def test_supports_comparison_keeps_baselines_and_reports_every_lost_catch():
     labels = load(EVAL / 'audit_labels.json')
     assert comparison['first_run_h01'] == cases['H-01']['first_run'] == first
     assert labels['first_run'] == comparison['before']['audit_labels']['first_run']
-    assert comparison['response_cache']['unchanged']
-    assert comparison['response_cache']['new_model_calls']['count'] == 0
+    # Task-30 adds live pair responses; every frozen response must still be byte-identical.
+    assert comparison['response_cache']['original_responses_unchanged']
+    inventory = cache_inventory()
+    assert all(inventory[path] == digest
+               for path, digest in comparison['before']['cache_sha256'].items())
+    added = inventory.keys() - comparison['before']['cache_sha256'].keys()
+    assert comparison['response_cache']['new_model_calls'] == {
+        **comparison['response_cache']['new_model_calls'], 'count': len(added), 'n': len(added)}
     for cid, old_rows in comparison['before']['mutations'].items():
         new = load(ROOT / 'runs' / cid / 'mutations.json')['claims']
         lost = {c['claim_id'] for old, c in zip(old_rows, new, strict=True)

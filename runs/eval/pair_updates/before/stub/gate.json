@@ -1,0 +1,54 @@
+{
+ "cap": 8,
+ "required": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p2:2",
+   "rank": 1,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-debts"
+   ],
+   "passage_id": "stub:p3:2",
+   "rank": 2,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c21"
+   ],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "stub:p5:2",
+   "rank": 3,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c20"
+   ],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "stub:p5:3",
+   "rank": 4,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  }
+ ],
+ "suggested": []
+}

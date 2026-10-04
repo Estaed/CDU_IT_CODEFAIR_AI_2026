@@ -113,7 +113,7 @@
    "claim_id": "m04",
    "clause_id": "elig-former-tenancy",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "supported",
    "values_missing": []
   },

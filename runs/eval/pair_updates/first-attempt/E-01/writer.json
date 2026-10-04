@@ -1,0 +1,413 @@
+{
+ "facts": [
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p3:1",
+     "quote": "Australian citizenship document sighted"
+    }
+   ],
+   "claim": "An Australian citizenship document was sighted for the applicant.",
+   "claim_id": "c01",
+   "clause_id": "elig-residency",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p3:3",
+     "quote": "The citizenship original matched the application name."
+    },
+    {
+     "passage_id": "E-01:p3:3",
+     "quote": "the document was returned after sighting"
+    }
+   ],
+   "claim": "The citizenship original matched the name on the application and was returned after sighting, so no copy is held on file.",
+   "claim_id": "c02",
+   "clause_id": "elig-residency",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p4:1",
+     "quote": "I do not own or partly own residential property in Australia."
+    },
+    {
+     "passage_id": "E-01:p4:6",
+     "quote": "Witness: E. North, authorised witness."
+    }
+   ],
+   "claim": "The applicant made a witnessed statutory declaration saying they own no residential property in Australia, in whole or in part.",
+   "claim_id": "c03",
+   "clause_id": "elig-property",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p4:3",
+     "quote": "Talen declares no title, share or purchase contract for residential property."
+    },
+    {
+     "passage_id": "E-01:p4:3",
+     "quote": "The former public tenancy was rental accommodation."
+    }
+   ],
+   "claim": "The declaration says the applicant holds no title, share or purchase contract, and that the former public tenancy was rented.",
+   "claim_id": "c04",
+   "clause_id": "elig-property",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file has no independent land title or property search to back up the applicant's own declaration.",
+   "claim_id": "c05",
+   "clause_id": "elig-property",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p9:2",
+     "quote": "Income statement for Talen Vey, issued on 16 June 2026 by Windward Assistance Office; gross support payment $565.00 per fortnight."
+    }
+   ],
+   "claim": "An income statement issued on 16 June 2026 shows a gross support payment of $565.00 per fortnight.",
+   "claim_id": "c06",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p9:4",
+     "quote": "additional regular component $0.00; gross total $565.00"
+    }
+   ],
+   "claim": "The income statement lists no additional regular income component.",
+   "claim_id": "c07",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p11:1",
+     "quote": "The intake team marked identity, residence, property, income evidence and priority support letter as received."
+    }
+   ],
+   "claim": "The intake team marked income evidence as received.",
+   "claim_id": "c08",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "eligibility:p4:16",
+     "quote": "If applying for urban social housing or private rental bond assistance, applicants must also qualify under additional income based criteria which are specified in the Income and Assets policy."
+    }
+   ],
+   "claim": "For urban housing, the policy says applicants must also meet income criteria that are set out in the separate Income and Assets policy.",
+   "claim_id": "c09",
+   "clause_id": "elig-income",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file has no statement of the applicant's assets, such as savings or bank balances.",
+   "claim_id": "c10",
+   "clause_id": "elig-income",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p8:3",
+     "quote": "Former-tenancy balance at exit was $680.00; a repayment arrangement remains active."
+    }
+   ],
+   "claim": "The applicant owes $680.00 on the former tenancy account, and a repayment arrangement is active.",
+   "claim_id": "c11",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p8:2",
+     "quote": "Period covered: tenancy exit to 12 June 2026."
+    },
+    {
+     "passage_id": "E-01:p8:2",
+     "quote": "No instalment falls within the transaction window of this extract."
+    },
+    {
+     "passage_id": "E-01:p8:2",
+     "quote": "Closing amount shown for the period: $680.00 debit."
+    }
+   ],
+   "claim": "No instalment was posted between the tenancy exit and 12 June 2026, so the balance is unchanged at $680.00.",
+   "claim_id": "c12",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "eligibility:p6:9",
+     "quote": "The provision of social housing will not be withheld based on a debt owed to the CEO (Housing)."
+    }
+   ],
+   "claim": "The policy says social housing will not be withheld because of a debt owed to the CEO (Housing).",
+   "claim_id": "c13",
+   "clause_id": "elig-debts",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p7:1",
+     "quote": "The former public tenancy was terminated for breach on 14 November 2025 following repeated unauthorised occupancy."
+    }
+   ],
+   "claim": "The applicant's former public tenancy was terminated for breach on 14 November 2025 after repeated unauthorised occupancy.",
+   "claim_id": "c14",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p1:1",
+     "quote": "Application received on 18 June 2026 for urban priority housing in Darwin."
+    },
+    {
+     "passage_id": "E-01:p7:1",
+     "quote": "terminated for breach on 14 November 2025"
+    },
+    {
+     "passage_id": "eligibility:p6:11",
+     "quote": "are ineligible to apply for social housing for a period of 2 years"
+    }
+   ],
+   "claim": "The application was received on 18 June 2026, about seven months after the termination and inside the 2-year ineligibility period.",
+   "claim_id": "c15",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p10:4",
+     "quote": "The archive sent the signed termination entry and confirmed that no later closure agreement is indexed under the former tenancy."
+    }
+   ],
+   "claim": "The archive confirmed the signed termination entry and found no later closure agreement replacing it.",
+   "claim_id": "c16",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p12:1",
+     "quote": "I understand the archive entry records termination for breach."
+    },
+    {
+     "passage_id": "E-01:p12:1",
+     "quote": "I have no correction to the termination record to enclose."
+    }
+   ],
+   "claim": "The applicant accepts that the record shows termination for breach and has no correction to offer.",
+   "claim_id": "c17",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p2:1",
+     "quote": "The form describes the tenancy as closed without giving the formal end reason."
+    }
+   ],
+   "claim": "The applicant's housing history form describes the tenancy only as closed, with no end reason, which leaves out the breach shown in the tenancy record.",
+   "claim_id": "c18",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p11:1",
+     "quote": "The former-tenancy entry is flagged for delegated review."
+    }
+   ],
+   "claim": "The intake team flagged the former tenancy entry for review by a delegate.",
+   "claim_id": "c19",
+   "clause_id": "elig-former-tenancy",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p5:1",
+     "quote": "The temporary room ends on 30 June 2026 and no replacement tenancy has been secured."
+    }
+   ],
+   "claim": "The applicant's temporary room ends on 30 June 2026, and no replacement tenancy has been secured.",
+   "claim_id": "c20",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p6:1",
+     "quote": "The applicant says a return to couch surfing is likely when the room booking ends."
+    }
+   ],
+   "claim": "The applicant says they will probably return to couch surfing once the room booking ends.",
+   "claim_id": "c21",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "priority:p4:11",
+     "quote": "At risk of homelessness;"
+    }
+   ],
+   "claim": "The policy lists being at risk of homelessness as one of the urgent-need categories.",
+   "claim_id": "c22",
+   "clause_id": "prio-category",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file says nothing about where the applicant has lived since the room booking ended on 30 June 2026, so the at-risk evidence may be out of date.",
+   "claim_id": "c23",
+   "clause_id": "prio-category",
+   "found": false
+  },
+  {
+   "citations": [],
+   "claim": "The file makes no claim of domestic or family violence, serious medical or social problems, or leaving care.",
+   "claim_id": "c24",
+   "clause_id": "prio-category",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p5:2",
+     "quote": "We inspected the temporary room booking and confirm it ends on 30 June 2026."
+    },
+    {
+     "passage_id": "E-01:p5:3",
+     "quote": "Banksia Reach Support | Correspondence reference E01-05 | 2026-06-17"
+    }
+   ],
+   "claim": "A support service letter dated 2026-06-17 confirms, from a check of the booking, that the room ends on 30 June 2026.",
+   "claim_id": "c25",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p5:6",
+     "quote": "any extension requires a new booking and a fresh dated confirmation"
+    }
+   ],
+   "claim": "The support service says any extension of the room needs a new booking and a freshly dated confirmation.",
+   "claim_id": "c26",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p11:1",
+     "quote": "The intake team marked identity, residence, property, income evidence and priority support letter as received."
+    }
+   ],
+   "claim": "The intake team marked the priority support letter as received.",
+   "claim_id": "c27",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "priority:p4:19",
+     "quote": "Applicants must prove their urgent need for priority housing and are required to provide documentation that supports their claim for priority."
+    }
+   ],
+   "claim": "The policy says applicants must prove urgent need with supporting documents.",
+   "claim_id": "c28",
+   "clause_id": "prio-documentation",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p12:1",
+     "quote": "I ask that my current loss of accommodation also be considered."
+    }
+   ],
+   "claim": "The applicant asks that their current loss of accommodation be considered alongside the termination record.",
+   "claim_id": "c29",
+   "clause_id": "prio-discretion",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "priority:p4:18",
+     "quote": "Priority housing applicants must meet the eligibility criteria for social housing, although the CEO (Housing) has some discretion for extreme situations."
+    }
+   ],
+   "claim": "The policy says priority applicants must meet the eligibility criteria, although the CEO (Housing) has some discretion for extreme situations.",
+   "claim_id": "c30",
+   "clause_id": "prio-discretion",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "Beyond the end of the room booking, the file shows no circumstances such as health, violence, dependants or rough sleeping that could support an extreme-situation claim.",
+   "claim_id": "c31",
+   "clause_id": "prio-discretion",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p1:1",
+     "quote": "Applicant: Talen Vey, one adult, requesting a small dwelling."
+    }
+   ],
+   "claim": "The applicant is a single adult asking for a small dwelling in Darwin.",
+   "claim_id": "c32",
+   "clause_id": "other",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "E-01:p3:1",
+     "quote": "the applicant states continuous residence in Darwin since 2020"
+    }
+   ],
+   "claim": "The applicant states they have lived continuously in Darwin since 2020.",
+   "claim_id": "c33",
+   "clause_id": "other",
+   "found": true
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "name": "claude"
+}

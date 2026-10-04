@@ -3,6 +3,8 @@ list that stays capped with one task per passage, and the scan threshold's recor
 
 import json
 
+import pytest
+
 from conftest import FixedChecker, FixedWriter, fact, needs_pdfs
 
 from readmark import CASES_DIR, ROOT
@@ -27,12 +29,13 @@ def clause(view: dict, clause_id: str) -> dict:
 
 
 @needs_pdfs
-def test_claim_citing_only_the_january_ledger_is_contradicted_by_march(tmp_path):
+@pytest.mark.parametrize("relation", ["contradict", "updated"])
+def test_claim_citing_only_the_january_ledger_is_contradicted_by_march(tmp_path, relation):
     both = fact("elig-debts", "The arrears of $2,400 were later cleared in full.",
                 (JANUARY, "Arrears balance $2,400.00."), (MARCH, "Arrears cleared in full."))
     checker = FixedChecker(scores={"elig-debts": {JANUARY: HIGH, MARCH: HIGH}},
                            verdicts={f'c01@{MARCH}': ('contradicts', 0.9)},
-                           contradict=[(JANUARY, MARCH)])
+                           **{relation: [(JANUARY, MARCH)]})
     view = run("A-0142", writer=FixedWriter([STALE, both]), checker_impl=checker,
                out_dir=tmp_path)
 
@@ -42,7 +45,7 @@ def test_claim_citing_only_the_january_ledger_is_contradicted_by_march(tmp_path)
     # A claim that already cites both sides has weighed them; the pair names nothing for it.
     assert weighed["contradicted_by"] == [] and weighed["status"] == "supported"
     assert clause(view, "elig-debts")["contradictions"] == [
-        {"a": JANUARY, "b": MARCH, "probability": 0.9}]
+        {"a": JANUARY, "b": MARCH, "relation": relation, "probability": 0.9}]
 
     required = {i["passage_id"]: i for i in view["required_reading"]}
     assert {JANUARY, MARCH} <= set(required)
@@ -244,12 +247,14 @@ def test_scan_threshold_is_its_recorded_method_applied_to_a0142():
     assert choose_threshold(scan["scores"], gold["required_reading"]) == SCAN_THRESHOLD
 
 
-def test_a0142_debts_clause_holds_the_ledger_contradiction():
-    """The replayed demo run: Jev itself called the January and March ledgers contradictory
+def test_a0142_debts_clause_holds_the_ledger_update():
+    """The replayed demo run: Jev itself called the January and March ledgers updated
     under the Debts clause (nothing in the code names that pair)."""
     view = json.loads((A_RUN / "view.json").read_text(encoding="utf-8"))
     pairs = clause(view, "elig-debts")["contradictions"]
     assert ("p8", "p23") in {(page_of(p["a"]), page_of(p["b"])) for p in pairs}
+    assert next(p for p in pairs if p["a"] == JANUARY and p["b"] == MARCH)["relation"] == "updated"
+    assert {JANUARY, MARCH} <= {p["passage_id"] for p in view["required_reading"]}
     assert len(view["required_reading"]) <= CAP
     listed = [i["passage_id"] for i in view["required_reading"] + view["suggested_reading"]]
     assert len(listed) == len(set(listed))

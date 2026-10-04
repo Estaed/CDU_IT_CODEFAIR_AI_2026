@@ -120,7 +120,8 @@ function secondsInView(pid) {
   const live = S.current && S.current.pid === pid && S.since !== null ? (performance.now() - S.since) / 1000 : 0;
   return o.seconds + live;
 }
-const hasOpened = (pid) => !!S.opened[pid]?.opened_at;
+const hasOpened = (pid) => Object.entries(S.opened).some(([opened, value]) => value.opened_at
+  && opened.slice(0, opened.lastIndexOf(':')) === pid.slice(0, pid.lastIndexOf(':')));
 function qualifyOpening(pid) {
   const o = S.opened[pid];
   const seconds = secondsInView(pid);
@@ -168,7 +169,8 @@ const claimById = (id) => S.view.claims.find((c) => c.claim_id === id);
 const clauseById = (id) => S.view.clauses.find((c) => c.clause_id === id);
 const decisive = () => S.view.clauses.filter((c) => c.clause_id !== 'other');
 const required = () => S.view.required_reading;
-const isRequired = (pid) => required().some((r) => r.passage_id === pid);
+const readingPassages = (r) => r.passages || [r];
+const isRequired = (pid) => required().some((r) => (r.passage_ids || [r.passage_id]).includes(pid));
 const flaggedFor = (cid) => required().filter((r) => r.clause_ids.includes(cid));
 // "Other facts" joins the list only when it holds something; it never takes an outcome.
 const railClauses = () => S.view.clauses.filter((c) => c.clause_id !== 'other'
@@ -180,17 +182,21 @@ const railClauses = () => S.view.clauses.filter((c) => c.clause_id !== 'other'
 
 const shortName = (cl) => cl.clause_id === 'other' ? 'Background facts (no decision needed)' : cl.title;
 
-// Two dated pages of the same kind of record (a January and a March ledger statement) are a
-// record that changed over time, not an inconsistency; the wording says which page is newer and
-// nothing more. Records of different kinds (a statement against a police report) keep "disagree":
-// a later document of another kind does not replace an earlier one.
-const caseDate = (pid) => { const s = src(pid); return s && s.kind === 'case' ? s.doc_date || '' : ''; };
-const datedPair = (p) => caseDate(p.a) && caseDate(p.b) && caseDate(p.a) !== caseDate(p.b)
-  && src(p.a).doc_type && src(p.a).doc_type === src(p.b).doc_type;
-const updatedOverTime = (cl) => cl.contradictions.length > 0 && cl.contradictions.every(datedPair);
+// Jev names the relation. Dates only order the display of a known update; they never infer it.
+const pairLabel = (p) => p.relation === 'updated' ? 'A later page updates this' : 'Two pages disagree';
+const allUpdates = (cl) => cl.contradictions.length > 0 && cl.contradictions.every((p) => p.relation === 'updated');
+const hasPairDates = (p) => src(p.a).doc_date && src(p.b).doc_date && src(p.a).doc_date !== src(p.b).doc_date;
+const orderedPair = (p) => p.relation === 'updated' && hasPairDates(p)
+  && src(p.a).doc_date > src(p.b).doc_date ? { ...p, a: p.b, b: p.a } : p;
+function updateWarning(pair) {
+  const p = orderedPair(pair);
+  return hasPairDates(p)
+    ? `Page ${src(p.a).page}${whenOf(p.a)} and page ${src(p.b).page}${whenOf(p.b)} differ; the later page is the newer record. Open both before you decide.`
+    : `Pages ${src(p.a).page} and ${src(p.b).page} record a change over time; open both before you decide.`;
+}
 
 function questionProblem(cl) {
-  if (cl.contradictions.length) return updatedOverTime(cl) ? 'A later page updates this' : 'Two pages disagree';
+  if (cl.contradictions.length) return allUpdates(cl) ? 'A later page updates this' : 'Two pages disagree';
   const claims = cl.claim_ids.map(claimById).filter(Boolean);
   if (claims.some((c) => c.status === 'quote_not_found')) return 'Quote not found';
   if (claims.some((c) => c.status === 'contradicted')) return 'Two pages disagree';
@@ -293,6 +299,13 @@ function passageRow(pid, { task = false, testid = 'passage-item', showParagraph 
     <span class="pmain"><span class="ploc">${esc(label)}</span></span>
     <span class="pstate"><span class="ps">${state}${!o && !cur ? icon('arrow') : ''}</span></span></button></li>`;
 }
+function requiredPassageRows(items) {
+  return items.map((r) => passageRow(r.passage_id, {
+    task: true, testid: 'flagged-item',
+    showParagraph: items.some((other) => other.passage_id !== r.passage_id
+      && pageKey(src(other.passage_id)) === pageKey(src(r.passage_id))),
+  })).join('');
+}
 function quoteHtml(claim, c, testid = 'quote') {
   const cur = S.current && S.current.pid === c.passage_id;
   return `<button class="quote ${c.quote_found ? '' : 'quote-bad'} ${cur ? 'is-cur' : ''}" data-act="open" data-arg="${esc(c.passage_id)}" data-claims="${esc(claim.claim_id)}" data-testid="${testid}" data-pid="${esc(c.passage_id)}"${S.signed ? ' disabled' : ''}>
@@ -337,7 +350,7 @@ function renderIntro() {
     <p data-testid="tier-explanation">“Needs a look” means a problem in the AI's notes or missing or conflicting evidence in the file. “Worth a look” means relevant pages the AI did not use.</p>
     <ol class="intro-steps">
       <li><b>What the AI did</b><span>Matched evidence to the questions. Its notes are behind “What the AI noted”.</span></li>
-      <li><b>What you open</b><span>Highlighted words sit in the real file. Each of the ${num(required().length)} required passages counts as opened after ${S.openedSeconds} seconds in view, accumulated across visits; other highlights are optional.</span></li>
+      <li><b>What you open</b><span>Highlighted words sit in the real file. Each of the ${num(required().length)} required pages counts as opened after ${S.openedSeconds} seconds in view, accumulated across visits; other highlights are optional.</span></li>
       <li><b>What you decide</b><span>Set all ${num(decisive().length)} outcomes, then sign. Missing evidence never means “not met”.</span></li>
     </ol></div>` : '';
 }
@@ -415,33 +428,30 @@ function clauseView(cl) {
   const flagged = st.flagged.length ? `<section class="must" data-testid="flagged">
     <b>Open before you sign</b>
     ${questionTier(cl) === 'worth' ? '<p class="note">Must open: a page the AI did not use</p>' : ''}
-    <ul class="plist">${st.flagged.map((r) => passageRow(r.passage_id, {
-      task: true, testid: 'flagged-item',
-      showParagraph: st.flagged.some((other) => other.passage_id !== r.passage_id
-        && pageKey(src(other.passage_id)) === pageKey(src(r.passage_id))),
-    })).join('')}</ul></section>` : '';
+    <ul class="plist">${requiredPassageRows(st.flagged)}</ul></section>` : '';
   // Several conflicting paragraphs can share a page pair; offer that comparison once.
   const uniquePairs = new Map();
   cl.contradictions.forEach((p) => {
     const key = [src(p.a).page, src(p.b).page].sort((a, b) => a - b).join(':');
-    if (!uniquePairs.has(key)) uniquePairs.set(key, p);
+    // A disagreement on the same pages must not be hidden by an update of another fact.
+    if (!uniquePairs.has(key) || p.relation === 'contradict') uniquePairs.set(key, orderedPair(p));
   });
   const pagePairs = [...uniquePairs.values()];
   const pairs = pagePairs.length ? `<div class="comparison-links" data-testid="pairs">
-    ${pagePairs.map((p) => `<button class="btn-secondary compare-btn" data-act="compare" data-arg="${esc(p.a)}" data-other="${esc(p.b)}" data-testid="compare-pages"${S.signed ? ' disabled' : ''}>Compare pages ${src(p.a).page} and ${src(p.b).page}${icon('arrows')}</button>`).join('')}
+    ${pagePairs.map((p) => `<button class="btn-secondary compare-btn" data-act="compare" data-arg="${esc(p.a)}" data-other="${esc(p.b)}" data-relation="${esc(p.relation)}" data-testid="compare-pages"${S.signed ? ' disabled' : ''}>Compare pages ${src(p.a).page} and ${src(p.b).page}${icon('arrows')}</button>`).join('')}
     </div>` : '';
   const o = st.outcome;
   const flag = questionFlag(cl);
   const worth = questionTier(cl) === 'worth';
-  const updated = updatedOverTime(cl);
+  const updated = allUpdates(cl);
   const disagreeingPages = [...new Map(cl.contradictions.flatMap((p) => [p.a, p.b])
     .map((pid) => [src(pid).page, pid])).values()];
-  if (updated) disagreeingPages.sort((x, y) => caseDate(x).localeCompare(caseDate(y)) || src(x).page - src(y).page);
   const pageNames = disagreeingPages.map((pid, i) => `${i ? 'page' : 'Page'} ${src(pid).page}${whenOf(pid)}`);
   const pageList = `${pageNames.slice(0, -1).join(', ')} and ${pageNames.at(-1)}`;
   const openAll = `open ${pageNames.length === 2 ? 'both' : 'each page'} before you decide.`;
-  const warning = pagePairs.length && updated ? `${pageList} differ; the later page is the newer record. ${openAll[0].toUpperCase()}${openAll.slice(1)}`
-    : pagePairs.length ? `${pageList} disagree; ${openAll}`
+  const warning = pagePairs.some((p) => p.relation === 'updated') ? pagePairs.map((p) => p.relation === 'updated'
+      ? updateWarning(p) : `Page ${src(p.a).page}${whenOf(p.a)} and page ${src(p.b).page}${whenOf(p.b)} disagree; open both before you decide.`).map(esc).join('<br>')
+    : pagePairs.length ? `${esc(pageList)} disagree; ${openAll}`
     : flag.includes('evidence not found') || flag === 'Evidence not found' ? 'Missing evidence does not mean “not met”; decide whether the file lets you answer this question.'
     : flag === 'Checker disagrees' ? 'The quote is in the file, but the second checker could not confirm the claim; open the passage and judge.'
     : flag === 'Quote not found' ? 'An AI note has no verified quote; open “What the AI noted” to see what could not be checked.'
@@ -453,7 +463,7 @@ function clauseView(cl) {
     <div class="d-head"><h2 data-testid="clause-title">${esc(shortName(cl))}</h2>
       <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
-    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}" aria-hidden="true">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? (updated ? 'Later pages update this' : 'Pages in the file disagree') : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
+    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}" aria-hidden="true">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 && !updated ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'note' : 'notes'}. <button class="act" data-act="claims">Show AI notes</button></section>` : ''}
     <div class="question-split"><section class="reader" id="reader" aria-label="${esc(caseNoun())} pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
@@ -584,7 +594,7 @@ function buildAnnotations() {
     if (!s || !s.exists || s.kind !== 'case') return;
     const existing = S.annotations.find((a) => a.pid === pid && a.cid === cid && a.quote === quote);
     const flagged = kind === 'quote' ? claimIds.some((id) => claimById(id).status !== 'supported')
-      : kind === 'pair' || isRequired(pid);
+      : kind === 'cited' ? false : kind === 'pair' || isRequired(pid);
     if (existing) {
       existing.flagged ||= flagged;
       existing.claimIds = [...new Set(existing.claimIds.concat(claimIds))];
@@ -604,12 +614,14 @@ function buildAnnotations() {
     }));
     cl.possibly_missed.forEach((p) => add(p.passage_id, cl.clause_id, null, 'missed'));
   });
-  required().forEach((r) => r.clause_ids.forEach((cid) => {
-    if (!S.annotations.some((a) => a.pid === r.passage_id && a.cid === cid)) add(r.passage_id, cid, null, 'flag');
+  required().flatMap(readingPassages).forEach((r) => r.clause_ids.forEach((cid) => {
+    if (!S.annotations.some((a) => a.pid === r.passage_id && a.cid === cid)) {
+      add(r.passage_id, cid, null, r.reasons.every((reason) => reason === 'cited') ? 'cited' : 'flag');
+    }
   }));
   // Mandatory passages in gate rank order, then additional claim flags in file order.
   S.annotations.sort((a, b) => {
-    const rank = (x) => required().find((r) => r.passage_id === x.pid)?.rank ?? 100;
+    const rank = (x) => required().find((r) => (r.passage_ids || [r.passage_id]).includes(x.pid))?.rank ?? 100;
     return rank(a) - rank(b) || Number(!a.flagged) - Number(!b.flagged)
       || src(a.pid).page - src(b.pid).page || Number(a.pid.split(':').pop()) - Number(b.pid.split(':').pop());
   });
@@ -656,7 +668,9 @@ function pageParagraph(p, previous = []) {
     const a = group.find((item) => item.id === S.current?.annotation) || primary;
     const flagged = group.some((item) => item.flagged);
     const repeated = previous.some((b) => labelKey(b) === labelKey(primary));
-    const label = `${shortName(clauseById(a.cid))}${primary.kind === 'missed' ? ' · Possibly missed' : primary.kind === 'pair' ? ` · ${updatedOverTime(clauseById(a.cid)) ? 'A later page updates this' : 'Two pages disagree'}` : S.fullFile && flagged ? ' · Check' : ''}`;
+    const pair = clauseById(a.cid).contradictions.find((p) => p.relation === 'contradict' && [p.a, p.b].includes(a.pid))
+      || clauseById(a.cid).contradictions.find((p) => [p.a, p.b].includes(a.pid));
+    const label = `${shortName(clauseById(a.cid))}${primary.kind === 'missed' ? ' · Possibly missed' : primary.kind === 'pair' ? ` · ${pairLabel(pair)}` : S.fullFile && flagged ? ' · Check' : ''}`;
     return `<button class="evidence-label ${repeated ? 'evidence-marker' : ''} ${flagged ? 'flag-label' : ''} ${S.current?.annotation === a.id ? 'current-label' : ''}" id="${a.id}" aria-label="${esc(label)}"
     data-act="annotation" data-arg="${a.id}" data-evidence="${group.map((item) => item.id).join(' ')}" data-flag-evidence="${group.filter((item) => item.flagged).map((item) => item.id).join(' ')}" data-testid="highlight-label" data-clause="${esc(a.cid)}" data-pid="${esc(a.pid)}"
     data-flag="${flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${repeated ? icon(flagged ? 'flag' : 'check') : `${S.fullFile ? icon(flagged ? 'flag' : 'check') : ''}${esc(label)}${S.fullFile && isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}`}</button>`;
@@ -682,7 +696,7 @@ function pageHtml(page) {
 const pageKey = (s) => `${s.kind === 'case' ? 'case' : s.passage_id.split(':')[0]}:${s.page}`;
 
 // Required pages first, then cited pages, then scan suggestions in their existing rank order.
-// A tab can contain several cited paragraphs; each required paragraph still opens separately.
+// A page takes one required slot and keeps every flagged and cited paragraph.
 function questionPages(cl) {
   const groups = [];
   const add = (pid, required = false, cited = false, missed = false) => {
@@ -696,7 +710,9 @@ function questionPages(cl) {
     group.cited ||= cited;
     group.missed ||= missed;
   };
-  flaggedFor(cl.clause_id).forEach((r) => add(r.passage_id, true, false, r.reasons.includes('possibly_missed')));
+  flaggedFor(cl.clause_id).flatMap(readingPassages).forEach((r) => {
+    if (r.clause_ids.includes(cl.clause_id)) add(r.passage_id, true, r.reasons.includes('cited'), r.reasons.includes('possibly_missed'));
+  });
   cl.claim_ids.map(claimById).filter(Boolean).forEach((c) => c.citations.forEach((q) => add(q.passage_id, false, true)));
   cl.possibly_missed.forEach((p) => add(p.passage_id, false, false, true));
   return groups;
@@ -819,15 +835,15 @@ function closeFullFile() {
   render();
 }
 
-function comparePages(a, b) {
+function comparePages(a, b, relation) {
   closePassage();
   render();
-  const pages = [...new Set([src(a).page, src(b).page])].map((n) => S.pages.find((p) => p.page === n));
-  const dated = datedPair({ a, b });
-  const [older, newer] = caseDate(a) <= caseDate(b) ? [a, b] : [b, a];
-  $('comparison').innerHTML = `<div class="dlg"><div class="dlg-head"><h2>Pages ${src(a).page} and ${src(b).page} ${dated ? 'differ over time' : 'disagree'}</h2>
+  const updated = relation === 'updated';
+  const p = orderedPair({ a, b, relation });
+  const pages = [...new Set([src(p.a).page, src(p.b).page])].map((n) => S.pages.find((p) => p.page === n));
+  $('comparison').innerHTML = `<div class="dlg"><div class="dlg-head"><h2>Pages ${src(p.a).page} and ${src(p.b).page} ${updated ? 'differ over time' : 'disagree'}</h2>
     <button class="icon-btn" data-act="compare-close" aria-label="Close comparison">${icon('x')}</button></div>
-    <p class="note">${dated ? `Page ${src(newer).page}${whenOf(newer)} is newer than page ${src(older).page}${whenOf(older)}. A later record may supersede an earlier one.`
+    <p class="note">${updated ? esc(updateWarning(p))
       : 'Two records disagree. A later record may supersede an earlier one.'} Select a highlighted passage to open and record it.</p>
     <div class="comparison-pages">${pages.map(pageHtml).join('')}</div></div>`;
   // No duplicate HTML ids; labels in the dialog still refer to the same annotations.
@@ -920,7 +936,7 @@ function renderAbout() {
       ${key('slash', 'neutral', 'No evidence in file', 'The AI looked for something and found nothing. That is not “not met”.')}
     </ul>
     <div class="sec-h"><span>Flagged passages</span></div>
-    <p class="note">At most ${num(v.cap)} passages are flagged as required, most decisive first; ${num(v.suggested_reading.length)} more are suggested. No score is shown per claim, so a number never stands in for reading the passage.</p>
+    <p class="note">At most ${num(v.cap)} pages are required, most decisive first; ${num(v.suggested_reading.length)} more are suggested. No score is shown per claim, so a number never stands in for reading the page.</p>
     <div class="sec-h"><span>Policies checked</span></div>
     <p class="note">${esc(S.questionList.title)}</p>
     <ul class="pol">${S.questionList.policies.map((p) => `<li>${esc(p.title)}, version ${num(esc(p.pin.version))}, approved ${esc(fmtDate(p.pin.approved))}</li>`).join('')}</ul>
@@ -1061,7 +1077,7 @@ document.addEventListener('click', (e) => {
     case 'previous-flag': moveFlag(-1); break;
     case 'previous-page': goToPage(S.readerPage - 1); break;
     case 'next-page': goToPage(S.readerPage + 1); break;
-    case 'compare': comparePages(arg, t.dataset.other); break;
+    case 'compare': comparePages(arg, t.dataset.other, t.dataset.relation); break;
     case 'compare-close': $('comparison').close(); break;
     case 'claims': S.claimOpen = true; render(); break;
     case 'outcome':
@@ -1143,7 +1159,7 @@ setInterval(() => {
   renderBar();
   renderRail();
   const flagged = document.querySelector('[data-testid="flagged"] .plist');
-  if (flagged) flagged.innerHTML = flaggedFor(S.sel).map((r) => passageRow(r.passage_id, { task: true, testid: 'flagged-item' })).join('');
+  if (flagged) flagged.innerHTML = requiredPassageRows(flaggedFor(S.sel));
   document.querySelectorAll('[data-testid="page-tab"], [data-testid="more-page"]').forEach((el) => {
     const group = questionPages(clauseById(S.sel)).find((g) => g.key === el.dataset.arg);
     if (group?.pids.some(hasOpened) && !el.textContent.includes('✓ opened')) el.firstChild.textContent += ' ✓ opened';

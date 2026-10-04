@@ -119,7 +119,10 @@ def test_bad_sentence_is_refused_then_corrected_and_used_in_a_case(app_options):
         signed = request.post(base + f"/api/records?case={cid}", data={
             "officer": "Test coordinator", "decision": "approve", "reason": "Evidence checked.",
             "clause_outcomes": {q["clause_id"]: "met" for q in spec["clauses"]},
-            "passages_opened": [], "disputes": [], "models": {}})
+            "passages_opened": [{"passage_id": r["passage_id"], "seconds_in_view": 3,
+                                 "opened_at": "2026-10-04T00:00:00Z"}
+                                for r in view["required_reading"]],
+            "disputes": [], "models": {}})
         assert signed.status == 200, signed.text()
         output = signed.json()
         assert request.get(base + output["json_url"]).json()["question_list"]["title"] == "Extension rules"

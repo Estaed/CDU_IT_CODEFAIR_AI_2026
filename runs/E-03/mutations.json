@@ -130,7 +130,7 @@
    "claim_id": "m05",
    "clause_id": "prio-discretion",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "supported",
    "values_missing": []
   },
@@ -240,7 +240,6 @@
    "claim_id": "m09",
    "clause_id": "elig-property",
    "contradicted_by": [
-    "E-03:p7:1",
     "E-03:p7:4"
    ],
    "required": true,
@@ -291,7 +290,7 @@
    "claim_id": "m11",
    "clause_id": "elig-property",
    "contradicted_by": [],
-   "required": true,
+   "required": false,
    "status": "checker_disagrees",
    "values_missing": []
   },
@@ -349,7 +348,7 @@
    "claim_id": "m13",
    "clause_id": "prio-discretion",
    "contradicted_by": [],
-   "required": false,
+   "required": true,
    "status": "checker_disagrees",
    "values_missing": []
   },

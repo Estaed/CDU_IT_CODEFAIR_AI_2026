@@ -2,13 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "readmark/view.schema.json",
   "title": "Readmark review view (runs/<case>/view.json)",
+  "$comment": "Version 3 adds contradict|updated on each pair. Version 4 caps reading by page, preserves each passage's reasons and retains neutral cited evidence in unused slots.",
   "description": "Everything the review screen shows for one case. Three status lists stay separate: claim checks (claims[].status), clause coverage (clauses[].coverage) and the clause outcome, which only the officer sets on screen and which therefore never appears here. Policy passage text is absent (text: null); the server reads it from the pinned PDF on demand. Version 2 adds the cross-passage checks (Task-05): claims[].contradicted_by, clauses[].contradictions, clauses[].possibly_missed, and reading items with clause_ids and the possibly_missed reason. Within version 2, Task-06 adds audit: the summary under audit, or null when no summary was audited. Every passage id named anywhere in the view, the audit's claims included, has an entry in sources; JSON Schema cannot express that, so readmark.pipeline.validate_view checks it in code.",
   "type": "object",
   "required": ["schema_version", "case", "policies", "models", "clauses", "claims", "sources",
                "required_reading", "suggested_reading", "cap", "audit"],
   "additionalProperties": false,
   "properties": {
-    "schema_version": {"const": 2},
+    "schema_version": {"const": 4},
     "case": {
       "type": "object",
       "required": ["case_id", "pages", "documents", "sha256", "synthetic"],
@@ -92,15 +93,16 @@
             }
           },
           "contradictions": {
-            "description": "Pairs of case passages that matter to this clause and that the checker called contradictory: one shows that a fact in the other is wrong or out of date. a is the earlier record; probability is the checker's for 'contradict'. Strongest first.",
+            "description": "Pairs requiring both records to be opened: relation is contradict for incompatible accounts, updated for a state changed over time. a is the earlier record by recorded date (page and paragraph break ties); without dates it implies no chronology. probability is the checker's for the named relation. Strongest first.",
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["a", "b", "probability"],
+              "required": ["a", "b", "relation", "probability"],
               "additionalProperties": false,
               "properties": {
                 "a": {"type": "string"},
                 "b": {"type": "string"},
+                "relation": {"enum": ["contradict", "updated"]},
                 "probability": {"type": ["number", "null"]}
               }
             }
@@ -250,18 +252,33 @@
       "properties": {"name": {"type": "string"}, "model": {"type": ["string", "null"]}}
     },
     "reading": {
-      "description": "One passage to open, carrying every reason it was flagged: a passage is never two items. claim_ids may be empty (the uncited side of a contradicting pair, a possibly missed passage); clause_ids never is.",
+      "description": "One page to open. passage_id is its navigation target; passage_ids and passages preserve all evidence and its individual reasons, claims and clauses. Cited evidence fills unused slots without becoming a failed check.",
       "type": "object",
-      "required": ["rank", "passage_id", "claim_ids", "clause_ids", "reasons"],
+      "required": ["rank", "passage_id", "passage_ids", "passages", "claim_ids", "clause_ids", "reasons"],
       "additionalProperties": false,
       "properties": {
         "rank": {"type": "integer", "minimum": 1},
         "passage_id": {"type": "string"},
+        "passage_ids": {"type": "array", "minItems": 1, "uniqueItems": true,
+                        "items": {"type": "string"}},
+        "passages": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/readingPassage"}},
         "claim_ids": {"type": "array", "items": {"type": "string"}},
         "clause_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}},
         "reasons": {"type": "array", "minItems": 1,
                     "items": {"enum": ["contradicted", "quote_not_found", "checker_disagrees",
-                                       "possibly_missed"]}}
+                                       "possibly_missed", "cited"]}}
+      }
+    },
+    "readingPassage": {
+      "type": "object",
+      "required": ["passage_id", "claim_ids", "clause_ids", "reasons"],
+      "additionalProperties": false,
+      "properties": {
+        "passage_id": {"type": "string"},
+        "claim_ids": {"type": "array", "items": {"type": "string"}},
+        "clause_ids": {"type": "array", "items": {"type": "string"}},
+        "reasons": {"type": "array", "items": {"enum": ["contradicted", "quote_not_found",
+                    "checker_disagrees", "possibly_missed", "cited"]}}
       }
     }
   }

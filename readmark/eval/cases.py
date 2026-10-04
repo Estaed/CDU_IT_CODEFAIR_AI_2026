@@ -155,12 +155,13 @@ def trap_touches(view: dict, facts: list[dict], passages: dict[str, dict]) -> li
         if fact["page"] and fact["quote"]:
             for bucket in ("required", "suggested"):
                 for item in view[f"{bucket}_reading"]:
-                    p = passages.get(item["passage_id"])
-                    if p and str(p["page"]) == fact["page"] and (
-                        fact["clause_id"] in item["clause_ids"]
-                        and normalise(fact["quote"]) in p["text"]
-                    ):
-                        hit[bucket].append(item["passage_id"])
+                    for evidence in item.get("passages", [item]):
+                        p = passages.get(evidence["passage_id"])
+                        if p and str(p["page"]) == fact["page"] and (
+                            fact["clause_id"] in evidence["clause_ids"]
+                            and normalise(fact["quote"]) in p["text"]
+                        ):
+                            hit[bucket].append(evidence["passage_id"])
         elif fact["role"] == "missing":
             clause = next(c for c in view["clauses"] if c["clause_id"] == fact["clause_id"])
             hit["missing_evidence_flag"] = bool(clause["missing"]) or (
@@ -179,7 +180,7 @@ def score_case(cid: str) -> dict:
     traps = trap_touches(view, facts, passages)
     result = {
         "required_reading": {"count": len(view["required_reading"]), "n": view["cap"],
-                             "unit": "passages; n is the maximum allowed"},
+                             "unit": "pages; n is the maximum allowed"},
         "gold_page_coverage": page_coverage(view["required_reading"], gold["required_reading"]),
         "all_flagged_gold_page_coverage": page_coverage(
             [*view["required_reading"], *view["suggested_reading"]], gold["required_reading"]),
@@ -302,6 +303,7 @@ def case_ablation(cid: str, gold: dict) -> list[dict]:
     checks = load(out / "checks.json")
     verdicts = {v["claim_id"]: v for v in load(out / "jev.json")["verdicts"]}
     view = load(out / "view.json")
+    passages = {p["passage_id"]: p for p in load(out / "passages.json")["case_passages"]}
     final = {c["claim_id"]: c for c in view["claims"]}
     clauses = [c["clause_id"] for c in view["clauses"] if c["clause_id"] != "other"]
     pairs = [{**p, "clause_id": c["clause_id"]} for c in view["clauses"]
@@ -318,7 +320,8 @@ def case_ablation(cid: str, gold: dict) -> list[dict]:
             claims.append({**f, "reasons": reasons, "status": claim_status(reasons),
                            "checker": verdicts.get(f["claim_id"]) if layer >= 2 else None})
         gate = required_reading(claims, clauses, contradictions=pairs if layer >= 3 else [],
-                                possibly_missed=missed if layer >= 4 else [])
+                                possibly_missed=missed if layer >= 4 else [],
+                                passages=passages if layer >= 4 else None)
         if layer == 4 and gate != load(out / "gate.json"):
             raise AssertionError(f"{cid}: full ablation must reproduce the saved gate.")
         coverage = page_coverage(gate["required"], gold["required_reading"])

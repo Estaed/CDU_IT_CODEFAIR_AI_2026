@@ -1,0 +1,15 @@
+{
+ "claude_on_path": false,
+ "command": "uv run python scripts/gate.py",
+ "content_changes": {
+  "count": 0,
+  "n": 3438
+ },
+ "exit_code": 0,
+ "n": 1,
+ "tests": {
+  "n": 280,
+  "passed": 272,
+  "skipped": 8
+ }
+}

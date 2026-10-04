@@ -41,10 +41,12 @@ class FixedChecker:
 
     def __init__(self, verdicts: dict[str, tuple[str, float]] | None = None,
                  scores: dict[str, dict[str, float]] | None = None,
-                 contradict: list[tuple[str, str]] = ()):
+                 contradict: list[tuple[str, str]] = (),
+                 updated: list[tuple[str, str]] = ()):
         self.verdicts = verdicts or {}
         self.scores = scores or {}
         self.contradict = {frozenset(p) for p in contradict}
+        self.updated = {frozenset(p) for p in updated}
         self.compared: list[tuple[str, str, str]] = []
 
     def scan(self, clauses, passages):
@@ -58,13 +60,14 @@ class FixedChecker:
         out = []
         for job in jobs:
             a, b = sorted([job["a"], job["b"]], key=date_order)
-            hit = frozenset((a["passage_id"], b["passage_id"])) in self.contradict
+            key = frozenset((a["passage_id"], b["passage_id"]))
+            verdict = "contradict" if key in self.contradict else "updated" if key in self.updated else "agree"
             self.compared.append((job["clause"]["clause_id"], a["passage_id"], b["passage_id"]))
             out.append({
                 "clause_id": job["clause"]["clause_id"], "a": a["passage_id"],
-                "b": b["passage_id"], "verdict": "contradict" if hit else "agree",
-                "probabilities": {"agree": 0.1 if hit else 0.9,
-                                  "contradict": 0.9 if hit else 0.1, "unrelated": 0.0},
+                "b": b["passage_id"], "verdict": verdict,
+                "probabilities": {v: 0.9 if v == verdict else 0.0
+                                  for v in ("agree", "updated", "contradict", "unrelated")},
             })
         return out
 

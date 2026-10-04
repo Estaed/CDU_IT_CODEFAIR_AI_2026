@@ -1,0 +1,200 @@
+{
+ "cap": 8,
+ "required": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-category"
+   ],
+   "passage_id": "E-03:p8:1",
+   "rank": 1,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c24"
+   ],
+   "clause_ids": [
+    "prio-category",
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p12:1",
+   "rank": 2,
+   "reasons": [
+    "contradicted",
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c24"
+   ],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p8:5",
+   "rank": 3,
+   "reasons": [
+    "contradicted",
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property"
+   ],
+   "passage_id": "E-03:p7:4",
+   "rank": 4,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property"
+   ],
+   "passage_id": "E-03:p4:2",
+   "rank": 5,
+   "reasons": [
+    "contradicted"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c31"
+   ],
+   "clause_ids": [
+    "other"
+   ],
+   "passage_id": "E-03:p12:5",
+   "rank": 6,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [
+    "c32"
+   ],
+   "clause_ids": [
+    "other"
+   ],
+   "passage_id": "E-03:p7:5",
+   "rank": 7,
+   "reasons": [
+    "checker_disagrees"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-property",
+    "prio-category",
+    "prio-discretion",
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p1:1",
+   "rank": 8,
+   "reasons": [
+    "possibly_missed"
+   ]
+  }
+ ],
+ "suggested": [
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-income"
+   ],
+   "passage_id": "E-03:p5:3",
+   "rank": 9,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-documentation",
+    "prio-category",
+    "prio-discretion"
+   ],
+   "passage_id": "E-03:p7:6",
+   "rank": 10,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-income"
+   ],
+   "passage_id": "E-03:p5:5",
+   "rank": 11,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "elig-income"
+   ],
+   "passage_id": "E-03:p5:1",
+   "rank": 12,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-documentation"
+   ],
+   "passage_id": "E-03:p6:4",
+   "rank": 13,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-discretion",
+    "elig-property"
+   ],
+   "passage_id": "E-03:p9:4",
+   "rank": 14,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-category"
+   ],
+   "passage_id": "E-03:p2:3",
+   "rank": 15,
+   "reasons": [
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [],
+   "clause_ids": [
+    "prio-category"
+   ],
+   "passage_id": "E-03:p2:1",
+   "rank": 16,
+   "reasons": [
+    "possibly_missed"
+   ]
+  }
+ ]
+}

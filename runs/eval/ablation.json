@@ -179,32 +179,32 @@
    },
    {
     "all_flagged_gold_page_coverage": {
-     "count": 2,
+     "count": 3,
      "covered": [
       "p8",
-      "p23"
+      "p23",
+      "p30"
      ],
      "missed": [
-      "p30",
       "p51",
       "p58"
      ],
      "n": 5,
-     "rate": 0.4
+     "rate": 0.6
     },
     "gold_page_coverage": {
-     "count": 2,
+     "count": 3,
      "covered": [
       "p8",
-      "p23"
+      "p23",
+      "p30"
      ],
      "missed": [
-      "p30",
       "p51",
       "p58"
      ],
      "n": 5,
-     "rate": 0.4
+     "rate": 0.6
     },
     "layer": "contradiction_pairs",
     "lost_gold_pages": {
@@ -213,14 +213,15 @@
      "pages": []
     },
     "new_gold_pages": {
-     "count": 1,
+     "count": 2,
      "n": 5,
      "pages": [
-      "p23"
+      "p23",
+      "p30"
      ]
     },
     "required_reading": {
-     "count": 3,
+     "count": 5,
      "n": 8
     },
     "writer_cited_gold_page_coverage": {
@@ -267,9 +268,11 @@
     },
     "layer": "scan",
     "lost_gold_pages": {
-     "count": 0,
+     "count": 1,
      "n": 5,
-     "pages": []
+     "pages": [
+      "p30"
+     ]
     },
     "new_gold_pages": {
      "count": 2,
@@ -513,17 +516,16 @@
    },
    {
     "all_flagged_gold_page_coverage": {
-     "count": 2,
+     "count": 4,
      "covered": [
-      "p5",
-      "p7"
-     ],
-     "missed": [
       "p1",
+      "p5",
+      "p7",
       "p8"
      ],
+     "missed": [],
      "n": 4,
-     "rate": 0.5
+     "rate": 1.0
     },
     "gold_page_coverage": {
      "count": 2,
@@ -732,30 +734,28 @@
    },
    {
     "all_flagged_gold_page_coverage": {
-     "count": 2,
-     "covered": [
-      "p2",
-      "p9"
-     ],
+     "count": 0,
+     "covered": [],
      "missed": [
+      "p2",
       "p6",
+      "p9",
       "p10"
      ],
      "n": 4,
-     "rate": 0.5
+     "rate": 0.0
     },
     "gold_page_coverage": {
-     "count": 2,
-     "covered": [
-      "p2",
-      "p9"
-     ],
+     "count": 0,
+     "covered": [],
      "missed": [
+      "p2",
       "p6",
+      "p9",
       "p10"
      ],
      "n": 4,
-     "rate": 0.5
+     "rate": 0.0
     },
     "layer": "contradiction_pairs",
     "lost_gold_pages": {
@@ -764,15 +764,12 @@
      "pages": []
     },
     "new_gold_pages": {
-     "count": 2,
+     "count": 0,
      "n": 4,
-     "pages": [
-      "p2",
-      "p9"
-     ]
+     "pages": []
     },
     "required_reading": {
-     "count": 4,
+     "count": 0,
      "n": 8
     },
     "writer_cited_gold_page_coverage": {
@@ -790,17 +787,16 @@
    },
    {
     "all_flagged_gold_page_coverage": {
-     "count": 3,
+     "count": 4,
      "covered": [
       "p2",
+      "p6",
       "p9",
       "p10"
      ],
-     "missed": [
-      "p6"
-     ],
+     "missed": [],
      "n": 4,
-     "rate": 0.75
+     "rate": 1.0
     },
     "gold_page_coverage": {
      "count": 3,
@@ -822,10 +818,12 @@
      "pages": []
     },
     "new_gold_pages": {
-     "count": 1,
+     "count": 3,
      "n": 4,
      "pages": [
-      "p10"
+      "p10",
+      "p2",
+      "p9"
      ]
     },
     "required_reading": {
@@ -1003,7 +1001,7 @@
      ]
     },
     "required_reading": {
-     "count": 4,
+     "count": 3,
      "n": 8
     },
     "writer_cited_gold_page_coverage": {
@@ -1063,7 +1061,7 @@
      ]
     },
     "required_reading": {
-     "count": 8,
+     "count": 4,
      "n": 8
     },
     "writer_cited_gold_page_coverage": {
@@ -1095,18 +1093,17 @@
      "rate": 1.0
     },
     "gold_page_coverage": {
-     "count": 3,
+     "count": 5,
      "covered": [
       "p4",
+      "p6",
       "p7",
+      "p9",
       "p12"
      ],
-     "missed": [
-      "p6",
-      "p9"
-     ],
+     "missed": [],
      "n": 5,
-     "rate": 0.6
+     "rate": 1.0
     },
     "layer": "scan",
     "lost_gold_pages": {
@@ -1115,9 +1112,12 @@
      "pages": []
     },
     "new_gold_pages": {
-     "count": 0,
+     "count": 2,
      "n": 5,
-     "pages": []
+     "pages": [
+      "p6",
+      "p9"
+     ]
     },
     "required_reading": {
      "count": 8,
@@ -1361,29 +1361,27 @@
      "rate": 0.625
     },
     "gold_page_coverage": {
-     "count": 4,
+     "count": 5,
      "covered": [
       "p3",
       "p5",
       "p12",
+      "p14",
       "p17"
      ],
      "missed": [
       "p6",
       "p13",
-      "p14",
       "p15"
      ],
      "n": 8,
-     "rate": 0.5
+     "rate": 0.625
     },
     "layer": "contradiction_pairs",
     "lost_gold_pages": {
-     "count": 1,
+     "count": 0,
      "n": 8,
-     "pages": [
-      "p14"
-     ]
+     "pages": []
     },
     "new_gold_pages": {
      "count": 3,
@@ -1395,7 +1393,7 @@
      ]
     },
     "required_reading": {
-     "count": 8,
+     "count": 7,
      "n": 8
     },
     "writer_cited_gold_page_coverage": {
@@ -1417,34 +1415,33 @@
    },
    {
     "all_flagged_gold_page_coverage": {
-     "count": 7,
+     "count": 8,
      "covered": [
       "p3",
       "p5",
+      "p6",
       "p12",
       "p13",
       "p14",
       "p15",
       "p17"
      ],
-     "missed": [
-      "p6"
-     ],
+     "missed": [],
      "n": 8,
-     "rate": 0.875
+     "rate": 1.0
     },
     "gold_page_coverage": {
      "count": 4,
      "covered": [
-      "p3",
       "p5",
       "p12",
+      "p14",
       "p17"
      ],
      "missed": [
+      "p3",
       "p6",
       "p13",
-      "p14",
       "p15"
      ],
      "n": 8,
@@ -1452,9 +1449,11 @@
     },
     "layer": "scan",
     "lost_gold_pages": {
-     "count": 0,
+     "count": 1,
      "n": 8,
-     "pages": []
+     "pages": [
+      "p3"
+     ]
     },
     "new_gold_pages": {
      "count": 0,

@@ -76,11 +76,14 @@ def pairs_of(candidates: list[str]) -> list[tuple[str, str]]:
 
 
 def contradicting(verdicts: list[dict]) -> list[dict]:
-    """The pairs a checker called contradictory, as the view shows them under their clause:
-    ``{a, b, probability}`` with the checker's probability for "contradict", strongest first."""
+    """Disagreements and updates both require reading and one-sided claim rechecks.
+
+    Keep the legacy list name; relation names Jev's answer and probability is for that answer.
+    """
     hits = [
-        {"a": v["a"], "b": v["b"], "probability": (v.get("probabilities") or {}).get("contradict")}
-        for v in verdicts if v["verdict"] == "contradict"
+        {"a": v["a"], "b": v["b"], "relation": v["verdict"],
+         "probability": (v.get("probabilities") or {}).get(v["verdict"])}
+        for v in verdicts if v["verdict"] in ("contradict", "updated")
     ]
     return sorted(hits, key=lambda p: (-(p["probability"] or 0.0), passage_key(p["a"]),
                                        passage_key(p["b"])))

@@ -1,6 +1,6 @@
 """Decision record: what the officer decided, why, and what they opened first.
 
-The server checks the same lock the screen shows (every required passage opened, every clause
+The server checks the same lock the screen shows (every required page opened, every clause
 outcome set by the officer) so a record can never claim a sign-off the gate did not allow. The
 record says "opened", never "read": opening a passage does not prove it was read.
 
@@ -33,8 +33,9 @@ LABELS = {
 OUTCOMES = {"met": "Met", "not_met": "Not met", "cannot_decide": "Cannot decide yet"}
 RECORD_ID = re.compile(r"^[0-9A-Za-z-]{1,64}$")
 OPENED_SECONDS = 3
-OPENED_NOTE = (f"A passage counts as opened after {OPENED_SECONDS} seconds in view, accumulated "
-               "across visits. Opening a passage is recorded; it does not prove it was read.")
+OPENED_NOTE = (f"A page counts as opened after a passage on it has {OPENED_SECONDS} seconds "
+               "in view, accumulated across visits. The viewed passage is recorded; "
+               "it does not prove the whole page was read.")
 # The same light-only government look as the screen; no separate export stylesheet.
 STYLE_FILES = ("theme.css",)
 
@@ -103,10 +104,11 @@ def validate(payload: dict, view: dict, opened_seconds: float = OPENED_SECONDS) 
               or p["seconds_in_view"] < opened_seconds or not p.get("opened_at")):
             problems.append(f"Open {source_label(view['sources'][pid])} for at least "
                             f"{opened_seconds:g} seconds in view.")
+    opened_pages = {pid.rsplit(":", 1)[0] for pid in opened if pid in view["sources"]}
     for item in view["required_reading"]:
-        if item["passage_id"] not in opened:
+        if item["passage_id"].rsplit(":", 1)[0] not in opened_pages:
             label = source_label(view["sources"][item["passage_id"]]).lower()
-            problems.append(f"Open required passage {label}.")
+            problems.append(f"Open required page {label}.")
     claims = {c["claim_id"] for c in view["claims"]}
     for d in payload.get("disputes") or []:
         if d.get("claim_id") not in claims or not str(d.get("reason") or "").strip():
@@ -123,7 +125,7 @@ def build(payload: dict, view: dict, now: datetime | None = None,
     words = wording(spec)
     signed_at = (now or datetime.now().astimezone()).isoformat(timespec="seconds")
     view_sha = hashlib.sha256(dumps(view).encode("utf-8")).hexdigest()
-    required = [i["passage_id"] for i in view["required_reading"]]
+    required = {i["passage_id"].rsplit(":", 1)[0] for i in view["required_reading"]}
     stamp = re.sub(r"[^0-9]", "", signed_at)[:14]
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
     record_id = f"{view['case']['case_id']}-{stamp}-{digest[:6]}"
@@ -153,7 +155,7 @@ def build(payload: dict, view: dict, now: datetime | None = None,
             {
                 "passage_id": p["passage_id"],
                 "label": source_label(view["sources"][p["passage_id"]]),
-                "required": p["passage_id"] in required,
+                "required": p["passage_id"].rsplit(":", 1)[0] in required,
                 "opened_at": str(p["opened_at"]),
                 "seconds_in_view": round(float(p["seconds_in_view"]), 1),
             }

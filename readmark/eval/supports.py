@@ -123,14 +123,21 @@ def refresh() -> None:
                                 and old['status'] != 'supported' and c['status'] == 'supported'})
     result['mutation_changes'] = changes
     current_cache = cache_inventory()
+    added = sorted(current_cache.keys() - before['cache_sha256'].keys())
+    changed = sorted(k for k, digest in before['cache_sha256'].items()
+                     if k in current_cache and current_cache[k] != digest)
     result['response_cache'] = {
         'n': len(before['cache_sha256']),
         'unchanged': current_cache == before['cache_sha256'],
+        'original_responses_unchanged': not changed and not (
+            before['cache_sha256'].keys() - current_cache.keys()),
         'changed_or_added': sorted(k for k in current_cache
                                    if current_cache[k] != before['cache_sha256'].get(k)),
         'removed': sorted(before['cache_sha256'].keys() - current_cache.keys()),
-        'new_model_calls': {'count': 0, 'n': 0,
-                            'method': 'Replay only; all response caches pinned byte for byte.'},
+        'new_model_calls': {'count': len(added), 'n': len(added),
+                            'method': 'Successful response files added since the frozen '
+                            'Task-14 baseline, including later live pair measurements. '
+                            'Refreshing this comparison itself makes no model calls.'},
     }
     result['first_run_h01'] = before['cases']['H-01']['first_run']
     write_part(PART, result)

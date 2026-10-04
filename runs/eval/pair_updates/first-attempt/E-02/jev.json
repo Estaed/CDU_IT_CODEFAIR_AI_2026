@@ -1,0 +1,120 @@
+{
+ "model": "jev-1.13.0",
+ "name": "jev",
+ "verdicts": [
+  {
+   "claim_id": "c01",
+   "probability": 1.0,
+   "supports": 0.96,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c02",
+   "probability": 0.88,
+   "supports": 0.65,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c03",
+   "probability": 1.0,
+   "supports": 0.96,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c05",
+   "probability": 1.0,
+   "supports": 0.97,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c06",
+   "probability": 0.98,
+   "supports": 0.89,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c07",
+   "probability": 0.99,
+   "supports": 0.94,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c09",
+   "probability": 1.0,
+   "supports": 0.98,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c10",
+   "probability": 1.0,
+   "supports": 0.93,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c11",
+   "probability": 1.0,
+   "supports": 0.95,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c12",
+   "probability": 1.0,
+   "supports": 0.88,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c13",
+   "probability": 0.98,
+   "supports": 0.83,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c14",
+   "probability": 0.99,
+   "supports": 0.74,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c15",
+   "probability": 0.85,
+   "supports": 0.79,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c16",
+   "probability": 0.95,
+   "supports": 0.46,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c17",
+   "probability": 0.81,
+   "supports": 0.77,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c19",
+   "probability": 0.92,
+   "supports": 0.81,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c20",
+   "probability": 0.95,
+   "supports": 0.82,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c22",
+   "probability": 0.88,
+   "supports": 0.6,
+   "verdict": "supports"
+  },
+  {
+   "claim_id": "c26",
+   "probability": 0.43,
+   "supports": 0.33,
+   "verdict": "supports"
+  }
+ ]
+}

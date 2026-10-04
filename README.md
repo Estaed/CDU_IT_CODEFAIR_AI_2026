@@ -13,7 +13,7 @@ wrong in ways that look right.
   file, highlighted and labelled with its question. The AI's own sentences sit behind a fold.
 - **Every claim is checked twice.** Plain code checks that each quote is really in the file.
   A second model from a different family checks that the quote supports the claim.
-- **The officer decides.** The flagged passages must be opened before sign-off. The app never
+- **The officer decides.** The required pages must be opened before sign-off. The app never
   recommends an outcome, and no answer is pre-selected.
 
 CDU IT Code Fair 2026, AI Challenge brief 6, team AIC014. The case files are synthetic. The NT
@@ -45,7 +45,7 @@ tests use.
    appear in a cited quote.
 4. **Checker:** Jev, a different model family, judges each claim. It also scans every page for
    relevant passages that no claim used, and compares pages that may disagree.
-5. **Gate:** failed checks and contradictions become required reading: at most 8 passages, most
+5. **Gate:** failed checks and record pairs become required reading: at most 8 pages, most
    decisive first.
 6. **Officer:** opens them, sets each question's outcome, and signs.
 
@@ -65,11 +65,16 @@ tests use.
 6. **Relevance scan** (Jev, `scan.json`): every case passage is scored 0 to 4 against each question,
    20 passages per call. A passage at or above the threshold that no claim cites is "worth a look".
    The threshold was set once on A-0142 with its gold file; `scan.json` records how.
-7. **Contradiction pairs** (Jev, `pairs.json`): for each question, up to five passages that matter
-   most are compared pair by pair. A claim resting on one side of a contradicting pair is flagged.
+7. **Record pairs** (Jev, `pairs.json`): for each question, up to five passages that matter
+   most are compared pair by pair: agree, updated, contradict or unrelated. Updates and
+   disagreements both feed required reading. A one-sided claim is checked against
+   the other passage before it can be flagged as contradicted.
    This catches a real quote that is out of date, which every check against its own passage passes.
-8. **Gate** (`readmark/gate/`): one entry per passage with all its reasons; the rest are suggested.
-9. **View** (`runs/<case>/view.json`, schema version 2), served by `readmark/serve.py` to `web/`.
+8. **Gate** (`readmark/gate/`): one entry per page, retaining every flagged passage and its reasons.
+   Connected updates share their strongest comparison's two primary pages; intermediate records
+   remain suggested unless independently flagged. Unused slots retain cited case evidence without
+   creating another error warning.
+9. **View** (`runs/<case>/view.json`, schema version 4), served by `readmark/serve.py` to `web/`.
 
 </details>
 

@@ -51,6 +51,21 @@
    "E-01:p5:1"
   ]
  },
+ "co_cited": {
+  "elig-debts": [],
+  "elig-former-tenancy": [
+   [
+    "E-01:p1:1",
+    "E-01:p7:1"
+   ]
+  ],
+  "elig-income": [],
+  "elig-property": [],
+  "elig-residency": [],
+  "prio-category": [],
+  "prio-discretion": [],
+  "prio-documentation": []
+ },
  "model": "jev-1.13.0",
  "top": 5,
  "verdicts": [
@@ -327,6 +342,18 @@
     "contradict": 0.1,
     "unrelated": 0.0,
     "updated": 0.01
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "E-01:p7:1",
+   "b": "E-01:p1:1",
+   "clause_id": "elig-former-tenancy",
+   "probabilities": {
+    "agree": 0.9,
+    "contradict": 0.01,
+    "unrelated": 0.09,
+    "updated": 0.0
    },
    "verdict": "agree"
   },

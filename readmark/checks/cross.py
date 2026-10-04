@@ -2,7 +2,7 @@
 
 1. **Contradiction pairs.** For each decisive clause, the case passages that matter most to it
    (cited by one of its claims, or at or above the scan threshold; the top ``PAIR_TOP`` by scan
-   score) are compared pair by pair. A claim that rests on one side of a contradicting pair and
+   score) are compared pair by pair, and so are the pages any one claim cites together. A claim that rests on one side of a contradicting pair and
    not the other is checked against the other passage before being marked contradicted.
    This is what catches "arrears $2,400"
    citing only the January ledger, which passes every check against its own passage.
@@ -19,7 +19,7 @@ from itertools import combinations
 
 from readmark.ingest import passage_key
 
-PAIR_TOP = 5  # "up to about five" passages per clause: at most 10 pairs per clause
+PAIR_TOP = 5  # "up to about five" passages per clause: 10 pairs, plus pages a claim cites together
 
 # 1.76 on the recorded A-0142 scan: the best scores of the five gold pages were p8 1.91,
 # p23 1.76, p30 3.47, p51 3.96 and p58 3.81 (n=5), so p23 sets it.
@@ -67,12 +67,36 @@ def pair_candidates(cited: list[str], scores: dict[str, float], threshold: float
     five."""
     cited_set = {pid for pid in cited if pid in scores}
     pool = cited_set | {pid for pid, s in scores.items() if s >= threshold}
+    # Paragraphs, not pages: Task-32 tried one slot per page and H-01 lost its planted p2:3-p12:1
+    # contradiction, because a page's best-scoring paragraph is not always the conflicting one.
     return sorted(pool, key=lambda pid: (pid not in cited_set, -scores[pid],
                                          passage_key(pid)))[:top]
 
 
 def pairs_of(candidates: list[str]) -> list[tuple[str, str]]:
     return list(combinations(candidates, 2))
+
+
+def co_cited_pairs(citations: list[list[str]], already: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    """Pages one claim cites together, compared even outside the top candidates.
+
+    ``citations`` holds each claim's cited passage ids under one clause. The writer put these
+    pages side by side, so the officer should learn whether they agree; on W-01 the child-presence
+    claim cites the statement and the police report, which the top five never paired. One
+    passage per page (the first cited), ordered by file position; pairs already asked are skipped.
+    """
+    seen = {frozenset((page_of(a), page_of(b))) for a, b in already}
+    out = []
+    for cited in citations:
+        first: dict[str, str] = {}
+        for pid in cited:
+            first.setdefault(page_of(pid), pid)
+        for a, b in combinations(sorted(first.values(), key=passage_key), 2):
+            key = frozenset((page_of(a), page_of(b)))
+            if key not in seen:
+                seen.add(key)
+                out.append((a, b))
+    return out
 
 
 def contradicting(verdicts: list[dict]) -> list[dict]:

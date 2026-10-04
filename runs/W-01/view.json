@@ -625,9 +625,11 @@
    "claim": "Police recorded that Jessica Tran's daughter, aged 6, was present and crying during the argument in which the candidate punched the hallway wall, and officers saw her crying on arrival.",
    "claim_id": "c20",
    "clause_id": "q05",
-   "contradicted_by": [],
+   "contradicted_by": [
+    "W-01-03:p12:2"
+   ],
    "required": true,
-   "status": "supported",
+   "status": "contradicted",
    "values_missing": []
   },
   {
@@ -2397,7 +2399,14 @@
     "c29"
    ],
    "clause_id": "q05",
-   "contradictions": [],
+   "contradictions": [
+    {
+     "a": "W-01-10:p38:10",
+     "b": "W-01-03:p12:2",
+     "probability": 0.99,
+     "relation": "contradict"
+    }
+   ],
    "coverage": "possibly_missed",
    "decides": "Does the file contain any allegation of an offence, or a pattern of behaviour, that points to a risk of harm or exploitation to children?",
    "missing": [],
@@ -4009,6 +4018,113 @@
  "required_reading": [
   {
    "claim_ids": [
+    "c21",
+    "c20",
+    "c22",
+    "c23",
+    "c24"
+   ],
+   "clause_ids": [
+    "q05",
+    "q07",
+    "q04"
+   ],
+   "passage_id": "W-01-10:p38:10",
+   "passage_ids": [
+    "W-01-10:p38:10",
+    "W-01-10:p38:11",
+    "W-01-10:p38:9",
+    "W-01-10:p38:12",
+    "W-01-10:p38:13",
+    "W-01-10:p38:14"
+   ],
+   "passages": [
+    {
+     "claim_ids": [
+      "c21",
+      "c20"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:10",
+     "reasons": [
+      "contradicted",
+      "checker_disagrees",
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c20"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:11",
+     "reasons": [
+      "contradicted",
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [],
+     "clause_ids": [
+      "q07",
+      "q04"
+     ],
+     "passage_id": "W-01-10:p38:9",
+     "reasons": [
+      "possibly_missed"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c22"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:12",
+     "reasons": [
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c23"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:13",
+     "reasons": [
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c24"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:14",
+     "reasons": [
+      "cited"
+     ]
+    }
+   ],
+   "rank": 1,
+   "reasons": [
+    "contradicted",
+    "checker_disagrees",
+    "cited",
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [
     "c21"
    ],
    "clause_ids": [
@@ -4039,6 +4155,7 @@
      ],
      "passage_id": "W-01-03:p12:2",
      "reasons": [
+      "contradicted",
       "checker_disagrees",
       "cited"
      ]
@@ -4107,112 +4224,9 @@
      ]
     }
    ],
-   "rank": 1,
-   "reasons": [
-    "checker_disagrees",
-    "cited",
-    "possibly_missed"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c21",
-    "c20",
-    "c22",
-    "c23",
-    "c24"
-   ],
-   "clause_ids": [
-    "q05",
-    "q07",
-    "q04"
-   ],
-   "passage_id": "W-01-10:p38:10",
-   "passage_ids": [
-    "W-01-10:p38:10",
-    "W-01-10:p38:9",
-    "W-01-10:p38:11",
-    "W-01-10:p38:12",
-    "W-01-10:p38:13",
-    "W-01-10:p38:14"
-   ],
-   "passages": [
-    {
-     "claim_ids": [
-      "c21",
-      "c20"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:10",
-     "reasons": [
-      "checker_disagrees",
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [],
-     "clause_ids": [
-      "q07",
-      "q04"
-     ],
-     "passage_id": "W-01-10:p38:9",
-     "reasons": [
-      "possibly_missed"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c20"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:11",
-     "reasons": [
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c22"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:12",
-     "reasons": [
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c23"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:13",
-     "reasons": [
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c24"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:14",
-     "reasons": [
-      "cited"
-     ]
-    }
-   ],
    "rank": 2,
    "reasons": [
+    "contradicted",
     "checker_disagrees",
     "cited",
     "possibly_missed"

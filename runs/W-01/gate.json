@@ -3,6 +3,113 @@
  "required": [
   {
    "claim_ids": [
+    "c21",
+    "c20",
+    "c22",
+    "c23",
+    "c24"
+   ],
+   "clause_ids": [
+    "q05",
+    "q07",
+    "q04"
+   ],
+   "passage_id": "W-01-10:p38:10",
+   "passage_ids": [
+    "W-01-10:p38:10",
+    "W-01-10:p38:11",
+    "W-01-10:p38:9",
+    "W-01-10:p38:12",
+    "W-01-10:p38:13",
+    "W-01-10:p38:14"
+   ],
+   "passages": [
+    {
+     "claim_ids": [
+      "c21",
+      "c20"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:10",
+     "reasons": [
+      "contradicted",
+      "checker_disagrees",
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c20"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:11",
+     "reasons": [
+      "contradicted",
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [],
+     "clause_ids": [
+      "q07",
+      "q04"
+     ],
+     "passage_id": "W-01-10:p38:9",
+     "reasons": [
+      "possibly_missed"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c22"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:12",
+     "reasons": [
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c23"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:13",
+     "reasons": [
+      "cited"
+     ]
+    },
+    {
+     "claim_ids": [
+      "c24"
+     ],
+     "clause_ids": [
+      "q05"
+     ],
+     "passage_id": "W-01-10:p38:14",
+     "reasons": [
+      "cited"
+     ]
+    }
+   ],
+   "rank": 1,
+   "reasons": [
+    "contradicted",
+    "checker_disagrees",
+    "cited",
+    "possibly_missed"
+   ]
+  },
+  {
+   "claim_ids": [
     "c21"
    ],
    "clause_ids": [
@@ -33,6 +140,7 @@
      ],
      "passage_id": "W-01-03:p12:2",
      "reasons": [
+      "contradicted",
       "checker_disagrees",
       "cited"
      ]
@@ -101,112 +209,9 @@
      ]
     }
    ],
-   "rank": 1,
-   "reasons": [
-    "checker_disagrees",
-    "cited",
-    "possibly_missed"
-   ]
-  },
-  {
-   "claim_ids": [
-    "c21",
-    "c20",
-    "c22",
-    "c23",
-    "c24"
-   ],
-   "clause_ids": [
-    "q05",
-    "q07",
-    "q04"
-   ],
-   "passage_id": "W-01-10:p38:10",
-   "passage_ids": [
-    "W-01-10:p38:10",
-    "W-01-10:p38:9",
-    "W-01-10:p38:11",
-    "W-01-10:p38:12",
-    "W-01-10:p38:13",
-    "W-01-10:p38:14"
-   ],
-   "passages": [
-    {
-     "claim_ids": [
-      "c21",
-      "c20"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:10",
-     "reasons": [
-      "checker_disagrees",
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [],
-     "clause_ids": [
-      "q07",
-      "q04"
-     ],
-     "passage_id": "W-01-10:p38:9",
-     "reasons": [
-      "possibly_missed"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c20"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:11",
-     "reasons": [
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c22"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:12",
-     "reasons": [
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c23"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:13",
-     "reasons": [
-      "cited"
-     ]
-    },
-    {
-     "claim_ids": [
-      "c24"
-     ],
-     "clause_ids": [
-      "q05"
-     ],
-     "passage_id": "W-01-10:p38:14",
-     "reasons": [
-      "cited"
-     ]
-    }
-   ],
    "rank": 2,
    "reasons": [
+    "contradicted",
     "checker_disagrees",
     "cited",
     "possibly_missed"

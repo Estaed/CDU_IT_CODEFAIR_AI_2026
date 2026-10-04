@@ -1344,38 +1344,38 @@
    },
    {
     "all_flagged_gold_page_coverage": {
-     "count": 5,
+     "count": 6,
      "covered": [
       "p3",
       "p5",
+      "p6",
       "p12",
       "p14",
       "p17"
      ],
      "missed": [
-      "p6",
       "p13",
       "p15"
      ],
      "n": 8,
-     "rate": 0.625
+     "rate": 0.75
     },
     "gold_page_coverage": {
-     "count": 5,
+     "count": 6,
      "covered": [
       "p3",
       "p5",
+      "p6",
       "p12",
       "p14",
       "p17"
      ],
      "missed": [
-      "p6",
       "p13",
       "p15"
      ],
      "n": 8,
-     "rate": 0.625
+     "rate": 0.75
     },
     "layer": "contradiction_pairs",
     "lost_gold_pages": {
@@ -1384,16 +1384,17 @@
      "pages": []
     },
     "new_gold_pages": {
-     "count": 3,
+     "count": 4,
      "n": 8,
      "pages": [
       "p17",
       "p3",
-      "p5"
+      "p5",
+      "p6"
      ]
     },
     "required_reading": {
-     "count": 7,
+     "count": 8,
      "n": 8
     },
     "writer_cited_gold_page_coverage": {
@@ -1449,10 +1450,11 @@
     },
     "layer": "scan",
     "lost_gold_pages": {
-     "count": 1,
+     "count": 2,
      "n": 8,
      "pages": [
-      "p3"
+      "p3",
+      "p6"
      ]
     },
     "new_gold_pages": {

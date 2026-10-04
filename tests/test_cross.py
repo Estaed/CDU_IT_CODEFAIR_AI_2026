@@ -9,7 +9,8 @@ from conftest import FixedChecker, FixedWriter, fact, needs_pdfs
 
 from readmark import CASES_DIR, ROOT
 from readmark.checks.cross import (
-    SCAN_THRESHOLD, THRESHOLD_CASE, choose_threshold, distinct_missed, page_of,
+    SCAN_THRESHOLD, THRESHOLD_CASE, choose_threshold, co_cited_pairs, distinct_missed, page_of,
+    pair_candidates, pairs_of,
 )
 from readmark.gate import CAP, required_reading
 from readmark.ingest import case_passages
@@ -83,6 +84,23 @@ def test_true_claim_on_one_side_of_a_pair_is_not_contradicted(tmp_path):
     assert opposing[1]['passages'][0]['passage_id'] == MARCH
     assert {JANUARY, MARCH} <= {i['passage_id'] for i in view['required_reading']}
     assert clause(view, 'elig-debts')['contradictions']
+
+
+def test_pages_one_claim_cites_together_are_paired_outside_the_top_five():
+    # Task-32, from W-01: the top five never held both the statement (p4) and the police report
+    # (p40) that one claim cites together, so Jev never compared them.
+    scores = {"W-01-05:p20:1": 3.9, "W-01-05:p20:2": 3.8, "W-01-05:p20:3": 3.7,
+              "W-01-07:p30:1": 3.0, "W-01-08:p31:1": 2.9, "W-01-03:p4:2": 2.0,
+              "W-01-10:p40:1": 1.9}
+    top = pair_candidates([], scores, 1.76)
+    statement, police = "W-01-03:p4:2", "W-01-10:p40:1"
+    assert statement not in top and police not in top
+    # Paragraphs stay distinct candidates: the conflicting one need not be a page's best.
+    assert [page_of(p) for p in top] == ["p20", "p20", "p20", "p30", "p31"]
+    extra = co_cited_pairs([[police, statement, "W-01-10:p40:3"], [top[0]]], pairs_of(top))
+    assert extra == [(statement, police)]  # file order, one passage per page
+    # A pair the top pages already ask is never asked twice, in either order.
+    assert co_cited_pairs([[top[1], top[0]]], pairs_of(top)) == []
 
 
 def test_possibly_missed_repetitions_keep_the_strongest_fact_and_distinct_values():

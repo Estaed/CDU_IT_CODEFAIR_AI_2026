@@ -40,6 +40,16 @@
    "stub:p1:4"
   ]
  },
+ "co_cited": {
+  "elig-debts": [],
+  "elig-former-tenancy": [],
+  "elig-income": [],
+  "elig-property": [],
+  "elig-residency": [],
+  "prio-category": [],
+  "prio-discretion": [],
+  "prio-documentation": []
+ },
  "model": "jev-1.13.0",
  "top": 5,
  "verdicts": [

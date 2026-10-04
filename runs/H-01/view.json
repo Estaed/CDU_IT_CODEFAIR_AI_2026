@@ -4339,6 +4339,12 @@
     },
     {
      "a": "H-01:p5:1",
+     "b": "H-01:p6:2",
+     "probability": 0.68,
+     "relation": "updated"
+    },
+    {
+     "a": "H-01:p5:1",
      "b": "H-01:p3:2",
      "probability": 0.54,
      "relation": "updated"
@@ -6294,12 +6300,14 @@
      ],
      "passage_id": "H-01:p6:2",
      "reasons": [
+      "contradicted",
       "cited"
      ]
     }
    ],
    "rank": 16,
    "reasons": [
+    "contradicted",
     "cited"
    ]
   },

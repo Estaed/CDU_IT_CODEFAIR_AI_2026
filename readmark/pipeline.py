@@ -37,6 +37,7 @@ from readmark.checks.cross import (
     contradicted_by,
     contradicting,
     distinct_missed,
+    co_cited_pairs,
     pair_candidates,
     pairs_of,
     possibly_missed,
@@ -325,8 +326,14 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
                 cited_by_clause.setdefault(f["clause_id"], []).append(c["passage_id"])
     candidates = {cid: pair_candidates(cited_by_clause.get(cid, []), scores[cid], SCAN_THRESHOLD)
                   for cid in clause_ids}
+    # Pages one claim cites together are compared too, even outside the top pages (Task-32).
+    co_cited = {cid: co_cited_pairs(
+        [[c["passage_id"] for c in f["citations"] if c["passage_id"] in case_by_id]
+         for f in found if f["clause_id"] == cid], pairs_of(candidates[cid]))
+        for cid in clause_ids}
     jobs = [{"clause": c, "a": case_by_id[a], "b": case_by_id[b]}
-            for c in clauses for a, b in pairs_of(candidates[c["clause_id"]])]
+            for c in clauses
+            for a, b in [*pairs_of(candidates[c["clause_id"]]), *co_cited[c["clause_id"]]]]
     pair_verdicts = cross_impl.compare(jobs) if jobs else []
     contradictions = {cid: contradicting([v for v in pair_verdicts if v["clause_id"] == cid])
                       for cid in clause_ids}
@@ -433,6 +440,7 @@ def run(case_id: str, replay: bool = False, checker: str = "jev", writer=None,
             "model": job_models.get("pairs", cross_model),
             "top": PAIR_TOP,
             "candidates": candidates,
+            "co_cited": {cid: [list(p) for p in pairs] for cid, pairs in co_cited.items()},
             "verdicts": sorted(pair_verdicts, key=lambda v: (
                 clause_ids.index(v["clause_id"]), passage_key(v["a"]), passage_key(v["b"]))),
         },

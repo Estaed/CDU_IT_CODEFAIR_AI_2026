@@ -32,49 +32,49 @@
     "by_kind": {
      "audit-cover": {
       "count": 1,
-      "n": 578
+      "n": 580
      },
      "audit-locate": {
       "count": 1,
-      "n": 578
+      "n": 580
      },
      "audit-split": {
       "count": 1,
-      "n": 578
+      "n": 580
      },
      "jev": {
       "count": 170,
-      "n": 578
+      "n": 580
      },
      "jev-dedup": {
       "count": 8,
-      "n": 578
+      "n": 580
      },
      "jev-dedup-confirm": {
       "count": 8,
-      "n": 578
+      "n": 580
      },
      "jev-pair": {
-      "count": 243,
-      "n": 578
+      "count": 245,
+      "n": 580
      },
      "jev-scan": {
       "count": 144,
-      "n": 578
+      "n": 580
      },
      "summary": {
       "count": 1,
-      "n": 578
+      "n": 580
      },
      "writer": {
       "count": 1,
-      "n": 578
+      "n": 580
      }
     },
     "claude": 5,
-    "jev": 573,
+    "jev": 575,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 578
+    "n": 580
    },
    "required_reading": {
     "count": 8,
@@ -217,37 +217,37 @@
     "by_kind": {
      "audit-locate": {
       "count": 1,
-      "n": 276
+      "n": 277
      },
      "jev": {
       "count": 47,
-      "n": 276
+      "n": 277
      },
      "jev-dedup": {
       "count": 6,
-      "n": 276
+      "n": 277
      },
      "jev-dedup-confirm": {
       "count": 6,
-      "n": 276
+      "n": 277
      },
      "jev-pair": {
-      "count": 183,
-      "n": 276
+      "count": 184,
+      "n": 277
      },
      "jev-scan": {
       "count": 32,
-      "n": 276
+      "n": 277
      },
      "writer": {
       "count": 1,
-      "n": 276
+      "n": 277
      }
     },
     "claude": 2,
-    "jev": 274,
+    "jev": 275,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 276
+    "n": 277
    },
    "required_reading": {
     "count": 8,
@@ -892,7 +892,7 @@
      "count": 1,
      "n": 1
     },
-    "scored_view_sha256": "075bf3a109efd78243fd24c6a8e061c880e91856aa5639722707ba815d72042f",
+    "scored_view_sha256": "a0b8686001303e87c14ae44d7fb58551d4541389c9ff3916268a552dd7a5e388",
     "seal_read_after_run": true,
     "started_at": "2026-10-03T06:16:01.666461+00:00",
     "tuned_after_run": true
@@ -902,49 +902,49 @@
     "by_kind": {
      "audit-cover": {
       "count": 1,
-      "n": 451
+      "n": 457
      },
      "audit-locate": {
       "count": 1,
-      "n": 451
+      "n": 457
      },
      "audit-split": {
       "count": 1,
-      "n": 451
+      "n": 457
      },
      "jev": {
-      "count": 210,
-      "n": 451
+      "count": 214,
+      "n": 457
      },
      "jev-dedup": {
       "count": 6,
-      "n": 451
+      "n": 457
      },
      "jev-dedup-confirm": {
       "count": 5,
-      "n": 451
+      "n": 457
      },
      "jev-pair": {
-      "count": 193,
-      "n": 451
+      "count": 195,
+      "n": 457
      },
      "jev-scan": {
       "count": 32,
-      "n": 451
+      "n": 457
      },
      "summary": {
       "count": 1,
-      "n": 451
+      "n": 457
      },
      "writer": {
       "count": 1,
-      "n": 451
+      "n": 457
      }
     },
     "claude": 5,
-    "jev": 446,
+    "jev": 452,
     "method": "One stored response per successful live request; replay makes no calls. Failed requests are not counted by cache files.",
-    "n": 451
+    "n": 457
    },
    "required_reading": {
     "count": 8,

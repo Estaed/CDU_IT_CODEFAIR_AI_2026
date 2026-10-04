@@ -52,6 +52,26 @@
    "H-01:p17:1"
   ]
  },
+ "co_cited": {
+  "elig-debts": [],
+  "elig-former-tenancy": [],
+  "elig-income": [
+   [
+    "H-01:p5:1",
+    "H-01:p6:2"
+   ]
+  ],
+  "elig-property": [],
+  "elig-residency": [],
+  "prio-category": [
+   [
+    "H-01:p9:2",
+    "H-01:p17:2"
+   ]
+  ],
+  "prio-discretion": [],
+  "prio-documentation": []
+ },
  "model": "jev-1.13.0",
  "top": 5,
  "verdicts": [
@@ -162,6 +182,18 @@
     "updated": 0.0
    },
    "verdict": "agree"
+  },
+  {
+   "a": "H-01:p5:1",
+   "b": "H-01:p6:2",
+   "clause_id": "elig-income",
+   "probabilities": {
+    "agree": 0.32,
+    "contradict": 0.0,
+    "unrelated": 0.0,
+    "updated": 0.68
+   },
+   "verdict": "updated"
   },
   {
    "a": "H-01:p5:1",
@@ -484,6 +516,18 @@
     "contradict": 0.0,
     "unrelated": 0.0,
     "updated": 0.2
+   },
+   "verdict": "agree"
+  },
+  {
+   "a": "H-01:p9:2",
+   "b": "H-01:p17:2",
+   "clause_id": "prio-category",
+   "probabilities": {
+    "agree": 0.93,
+    "contradict": 0.0,
+    "unrelated": 0.0,
+    "updated": 0.07
    },
    "verdict": "agree"
   },

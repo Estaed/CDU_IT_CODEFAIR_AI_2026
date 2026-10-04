@@ -1,0 +1,130 @@
+{
+ "key": "ffdabb2d59966195edabdf75bd500b72b67c393f71462bab4ded3e54973caacb",
+ "kind": "jev-coverage",
+ "response": {
+  "answers": {
+   "P01_coverage": {
+    "score": 0.01
+   },
+   "P01_rule": {
+    "score": 0.55
+   },
+   "P02_coverage": {
+    "score": 0.02
+   },
+   "P02_rule": {
+    "score": 2.8
+   },
+   "P03_coverage": {
+    "score": 0.02
+   },
+   "P03_rule": {
+    "score": 3.48
+   },
+   "P04_coverage": {
+    "score": 0.02
+   },
+   "P04_rule": {
+    "score": 0.92
+   },
+   "P05_coverage": {
+    "score": 0.03
+   },
+   "P05_rule": {
+    "score": 2.95
+   },
+   "P06_coverage": {
+    "score": 0.03
+   },
+   "P06_rule": {
+    "score": 2.9
+   },
+   "P07_coverage": {
+    "score": 0.04
+   },
+   "P07_rule": {
+    "score": 0.29
+   },
+   "P08_coverage": {
+    "score": 0.02
+   },
+   "P08_rule": {
+    "score": 3.89
+   },
+   "P09_coverage": {
+    "score": 0.03
+   },
+   "P09_rule": {
+    "score": 0.57
+   },
+   "P10_coverage": {
+    "score": 0.01
+   },
+   "P10_rule": {
+    "score": 2.33
+   },
+   "P11_coverage": {
+    "score": 0.01
+   },
+   "P11_rule": {
+    "score": 3.4
+   },
+   "P12_coverage": {
+    "score": 0.02
+   },
+   "P12_rule": {
+    "score": 0.75
+   },
+   "P13_coverage": {
+    "score": 0.03
+   },
+   "P13_rule": {
+    "score": 3.92
+   },
+   "P14_coverage": {
+    "score": 0.03
+   },
+   "P14_rule": {
+    "score": 3.62
+   },
+   "P15_coverage": {
+    "score": 0.03
+   },
+   "P15_rule": {
+    "score": 3.04
+   },
+   "P16_coverage": {
+    "score": 0.04
+   },
+   "P16_rule": {
+    "score": 1.49
+   },
+   "P17_coverage": {
+    "score": 0.03
+   },
+   "P17_rule": {
+    "score": 2.42
+   },
+   "P18_coverage": {
+    "score": 0.05
+   },
+   "P18_rule": {
+    "score": 3.3
+   },
+   "P19_coverage": {
+    "score": 0.02
+   },
+   "P19_rule": {
+    "score": 3.87
+   },
+   "P20_coverage": {
+    "score": 0.01
+   },
+   "P20_rule": {
+    "score": 0.22
+   }
+  },
+  "coverage_date": "2026-10-04",
+  "model": "jev-1.13.0"
+ }
+}

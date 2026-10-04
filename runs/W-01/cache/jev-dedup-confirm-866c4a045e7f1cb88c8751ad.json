@@ -1,0 +1,49 @@
+{
+ "key": "866c4a045e7f1cb88c8751ad1406d0b1c378a1c1da019f2b887a42ba8fcec05a",
+ "kind": "jev-dedup-confirm",
+ "response": {
+  "answers": {
+   "P108": {
+    "noul": 0.31,
+    "type": "noul"
+   },
+   "P111": {
+    "noul": 0.46,
+    "type": "noul"
+   },
+   "P112": {
+    "noul": 0.19,
+    "type": "noul"
+   },
+   "P113": {
+    "noul": 0.15,
+    "type": "noul"
+   },
+   "P114": {
+    "noul": 0.25,
+    "type": "noul"
+   },
+   "P117": {
+    "noul": 0.14,
+    "type": "noul"
+   },
+   "P118": {
+    "noul": 0.19,
+    "type": "noul"
+   },
+   "P119": {
+    "noul": 0.56,
+    "type": "noul"
+   },
+   "P120": {
+    "noul": 0.5,
+    "type": "noul"
+   }
+  },
+  "model": "jev-1.13.0",
+  "usage": {
+   "input_tokens": 15047,
+   "output_tokens": 175
+  }
+ }
+}

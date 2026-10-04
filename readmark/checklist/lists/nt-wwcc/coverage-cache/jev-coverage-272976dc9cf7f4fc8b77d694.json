@@ -1,0 +1,130 @@
+{
+ "key": "272976dc9cf7f4fc8b77d694a4e1df33c7103da28dcbffed4b8e571c761d5ac3",
+ "kind": "jev-coverage",
+ "response": {
+  "answers": {
+   "P01_coverage": {
+    "score": 0.02
+   },
+   "P01_rule": {
+    "score": 0.67
+   },
+   "P02_coverage": {
+    "score": 0.04
+   },
+   "P02_rule": {
+    "score": 0.84
+   },
+   "P03_coverage": {
+    "score": 0.11
+   },
+   "P03_rule": {
+    "score": 1.21
+   },
+   "P04_coverage": {
+    "score": 0.02
+   },
+   "P04_rule": {
+    "score": 1.28
+   },
+   "P05_coverage": {
+    "score": 0.06
+   },
+   "P05_rule": {
+    "score": 1.11
+   },
+   "P06_coverage": {
+    "score": 0.11
+   },
+   "P06_rule": {
+    "score": 1.24
+   },
+   "P07_coverage": {
+    "score": 0.03
+   },
+   "P07_rule": {
+    "score": 0.82
+   },
+   "P08_coverage": {
+    "score": 0.03
+   },
+   "P08_rule": {
+    "score": 0.99
+   },
+   "P09_coverage": {
+    "score": 0.05
+   },
+   "P09_rule": {
+    "score": 0.09
+   },
+   "P10_coverage": {
+    "score": 0.03
+   },
+   "P10_rule": {
+    "score": 1.37
+   },
+   "P11_coverage": {
+    "score": 0.03
+   },
+   "P11_rule": {
+    "score": 3.23
+   },
+   "P12_coverage": {
+    "score": 0.03
+   },
+   "P12_rule": {
+    "score": 0.23
+   },
+   "P13_coverage": {
+    "score": 0.06
+   },
+   "P13_rule": {
+    "score": 2.84
+   },
+   "P14_coverage": {
+    "score": 0.04
+   },
+   "P14_rule": {
+    "score": 0.76
+   },
+   "P15_coverage": {
+    "score": 0.12
+   },
+   "P15_rule": {
+    "score": 3.33
+   },
+   "P16_coverage": {
+    "score": 0.03
+   },
+   "P16_rule": {
+    "score": 2.59
+   },
+   "P17_coverage": {
+    "score": 0.04
+   },
+   "P17_rule": {
+    "score": 0.07
+   },
+   "P18_coverage": {
+    "score": 0.02
+   },
+   "P18_rule": {
+    "score": 1.15
+   },
+   "P19_coverage": {
+    "score": 0.02
+   },
+   "P19_rule": {
+    "score": 3.53
+   },
+   "P20_coverage": {
+    "score": 0.04
+   },
+   "P20_rule": {
+    "score": 3.62
+   }
+  },
+  "coverage_date": "2026-10-04",
+  "model": "jev-1.13.0"
+ }
+}

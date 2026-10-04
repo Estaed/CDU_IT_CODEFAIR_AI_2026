@@ -1,0 +1,27 @@
+id: nt-wwcc
+title: NT Working with Children Clearance
+scope: The NT Screening Authority decides whether a candidate for a Working with Children Clearance poses
+  an unacceptable risk of harm or exploitation to children.
+policy_directory: ../../../../data/policies/nt-wwcc
+policies:
+- key: act
+  file: care-and-protection-of-children-act-2007.pdf
+  title: Care and Protection of Children Act 2007
+  pin:
+    url: https://legislation.nt.gov.au/api/sitecore/Act/PDF?id=11659
+    version: As in force at 31 August 2026
+    approved: '2026-08-31'
+    sha256: 05c617e071490a3ca606c4c6da1bfbd2870c3c9757a2acbb7823d8ad139b2950
+    pages: 201
+- key: regulations
+  file: care-and-protection-of-children-screening-regulations-2010.pdf
+  title: Care and Protection of Children (Screening) Regulations 2010
+  pin:
+    url: https://legislation.nt.gov.au/api/sitecore/Act/PDF?id=11662
+    version: As in force at 25 March 2024
+    approved: '2024-03-25'
+    sha256: 27e652e994236e8b785775ddb4c55bea5d926b9722bef319f7d4c23cf17e3e05
+    pages: 15
+generation:
+  uploaded: '2026-10-04'
+  approved_date: '2026-10-04'

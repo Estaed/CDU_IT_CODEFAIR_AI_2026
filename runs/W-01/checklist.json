@@ -1,0 +1,70 @@
+[
+ {
+  "clause_id": "q01",
+  "item_passage_ids": [
+   "act:p145:8"
+  ],
+  "passage_id": "act:p145:7"
+ },
+ {
+  "clause_id": "q02",
+  "item_passage_ids": [
+   "regulations:p5:14",
+   "regulations:p6:1"
+  ],
+  "passage_id": "regulations:p5:13"
+ },
+ {
+  "clause_id": "q03",
+  "item_passage_ids": [
+   "act:p146:14"
+  ],
+  "passage_id": "act:p146:13"
+ },
+ {
+  "clause_id": "q04",
+  "item_passage_ids": [
+   "act:p147:8",
+   "act:p147:9"
+  ],
+  "passage_id": "act:p147:5"
+ },
+ {
+  "clause_id": "q05",
+  "item_passage_ids": [],
+  "passage_id": "act:p147:10"
+ },
+ {
+  "clause_id": "q06",
+  "item_passage_ids": [
+   "act:p146:9",
+   "act:p146:10"
+  ],
+  "passage_id": "act:p146:8"
+ },
+ {
+  "clause_id": "q07",
+  "item_passage_ids": [],
+  "passage_id": "act:p145:9"
+ },
+ {
+  "clause_id": "q08",
+  "item_passage_ids": [
+   "act:p145:3",
+   "act:p145:4"
+  ],
+  "passage_id": "act:p145:2"
+ },
+ {
+  "clause_id": "q09",
+  "item_passage_ids": [
+   "regulations:p4:12"
+  ],
+  "passage_id": "regulations:p4:11"
+ },
+ {
+  "clause_id": "q10",
+  "item_passage_ids": [],
+  "passage_id": "act:p141:9"
+ }
+]

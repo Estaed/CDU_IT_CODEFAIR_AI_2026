@@ -1,0 +1,11 @@
+{
+ "key": "d12b27531f695ee5059d10b33f0163e8b590bdd2a32da49ad601471db41cefe8",
+ "kind": "dating",
+ "response": {
+  "model": "claude-opus-5-5",
+  "output": {
+   "date": "2026-09-25",
+   "quote": "Reference - Moira Kells | Ref SYN-15-CJH | Page 1 of 1\\n\\n25 September 2026\\n\\nHi screening people, I am Moira Kells."
+  }
+ }
+}

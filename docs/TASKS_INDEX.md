@@ -61,7 +61,7 @@ Wave 13 (2026-10-04). Width 1. No Claude calls (split on 4 Oct).
 
 Wave 14 (2026-10-04). By hand on the website, after the Claude reset; not for otopilot.
 
-- [ ] Task-29: The Ochre Card case live on the website: questions from the rules, then the file (main-loop)
+- [x] Task-29: The Ochre Card case live on the website: questions from the rules, then the file (main-loop), eye check pending: 1
 
 Wave 15 (2026-10-04). Width 1.
 

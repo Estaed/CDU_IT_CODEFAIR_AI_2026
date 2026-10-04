@@ -1,0 +1,130 @@
+{
+ "key": "25765250aec00bf12c2e0f209d23579d3a87813f3ef625d57490127a565400b8",
+ "kind": "jev-coverage",
+ "response": {
+  "answers": {
+   "P01_coverage": {
+    "score": 0.06
+   },
+   "P01_rule": {
+    "score": 0.03
+   },
+   "P02_coverage": {
+    "score": 0.55
+   },
+   "P02_rule": {
+    "score": 0.15
+   },
+   "P03_coverage": {
+    "score": 0.24
+   },
+   "P03_rule": {
+    "score": 0.15
+   },
+   "P04_coverage": {
+    "score": 0.24
+   },
+   "P04_rule": {
+    "score": 0.06
+   },
+   "P05_coverage": {
+    "score": 0.06
+   },
+   "P05_rule": {
+    "score": 0.22
+   },
+   "P06_coverage": {
+    "score": 0.56
+   },
+   "P06_rule": {
+    "score": 0.06
+   },
+   "P07_coverage": {
+    "score": 0.37
+   },
+   "P07_rule": {
+    "score": 0.08
+   },
+   "P08_coverage": {
+    "score": 1.74
+   },
+   "P08_rule": {
+    "score": 0.1
+   },
+   "P09_coverage": {
+    "score": 0.41
+   },
+   "P09_rule": {
+    "score": 0.17
+   },
+   "P10_coverage": {
+    "score": 0.22
+   },
+   "P10_rule": {
+    "score": 0.11
+   },
+   "P11_coverage": {
+    "score": 0.22
+   },
+   "P11_rule": {
+    "score": 0.16
+   },
+   "P12_coverage": {
+    "score": 0.11
+   },
+   "P12_rule": {
+    "score": 0.09
+   },
+   "P13_coverage": {
+    "score": 0.15
+   },
+   "P13_rule": {
+    "score": 0.09
+   },
+   "P14_coverage": {
+    "score": 0.19
+   },
+   "P14_rule": {
+    "score": 0.09
+   },
+   "P15_coverage": {
+    "score": 0.35
+   },
+   "P15_rule": {
+    "score": 0.31
+   },
+   "P16_coverage": {
+    "score": 1.36
+   },
+   "P16_rule": {
+    "score": 0.3
+   },
+   "P17_coverage": {
+    "score": 0.18
+   },
+   "P17_rule": {
+    "score": 0.26
+   },
+   "P18_coverage": {
+    "score": 0.16
+   },
+   "P18_rule": {
+    "score": 0.08
+   },
+   "P19_coverage": {
+    "score": 0.12
+   },
+   "P19_rule": {
+    "score": 0.25
+   },
+   "P20_coverage": {
+    "score": 0.21
+   },
+   "P20_rule": {
+    "score": 0.15
+   }
+  },
+  "coverage_date": "2026-10-04",
+  "model": "jev-1.13.0"
+ }
+}

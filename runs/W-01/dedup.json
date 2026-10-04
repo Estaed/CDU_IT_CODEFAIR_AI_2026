@@ -1,0 +1,30 @@
+{
+ "duplicate_probability_minimum": 0.9,
+ "duplicates": {
+  "q01": {},
+  "q02": {},
+  "q03": {},
+  "q04": {},
+  "q05": {
+   "W-01-20:p80:12": "W-01-20:p72:6"
+  },
+  "q06": {},
+  "q07": {
+   "W-01-20:p80:12": "W-01-20:p72:6"
+  },
+  "q08": {
+   "W-01-04:p20:13": "W-01-04:p16:13"
+  },
+  "q09": {},
+  "q10": {
+   "W-01-20:p69:3": "W-01-20:p65:3",
+   "W-01-20:p73:3": "W-01-20:p65:3",
+   "W-01-20:p74:3": "W-01-20:p65:3",
+   "W-01-20:p75:3": "W-01-20:p65:3",
+   "W-01-20:p76:3": "W-01-20:p65:3",
+   "W-01-20:p81:3": "W-01-20:p65:3"
+  }
+ },
+ "method": "Keep the strongest distinct clause facts; discard only repetitions of a cited or stronger passage, with binary duplicate probability >= 0.9. Chosen after the demo audit; the held-out evaluation remains its honest test.",
+ "model": "jev-1.13.0"
+}

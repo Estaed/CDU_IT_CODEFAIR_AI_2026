@@ -1,0 +1,11 @@
+{
+ "key": "e42aff981ffc0d59dceab03e8f1afddc29b4c6519c2b8a53f4ec9f7e035ca237",
+ "kind": "dating",
+ "response": {
+  "model": "claude-opus-5-5",
+  "output": {
+   "date": "2022-04-08",
+   "quote": "Report date: 8 April 2022; copied 27 September 2026."
+  }
+ }
+}

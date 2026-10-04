@@ -1,0 +1,11 @@
+{
+ "key": "7a4d95f1ff606b3f6dc847a531383747730097d277312162d299dacf45f8424a",
+ "kind": "dating",
+ "response": {
+  "model": "claude-opus-5-5",
+  "output": {
+   "date": "2018-04-03",
+   "quote": "Original advice date: 3 April 2018."
+  }
+ }
+}

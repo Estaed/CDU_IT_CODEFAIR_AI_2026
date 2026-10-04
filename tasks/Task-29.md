@@ -56,14 +56,14 @@ The pitch shows two very different NT decisions on the same engine, and Task-27 
 real rulebook, used the way an officer would use it.
 
 ## Acceptance
-- [ ] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
-- [ ] Every evaluation number in `runs/eval/summary.json` is unchanged; A-0142's replay is unchanged.
-- [ ] The home screen lists exactly A-0142 and W-01 with no uploads present.
-- [ ] W-01 opens offline with no key from the replay cache, and validates like A-0142.
-- [ ] The report gives the coverage of the 10 clause_ids with n, the failed sentence checks, and
+- [x] `uv run python scripts/gate.py` exits 0, and `git status` shows no change after it runs.
+- [x] Every evaluation number in `runs/eval/summary.json` is unchanged; A-0142's replay is unchanged.
+- [x] The home screen lists exactly A-0142 and W-01 with no uploads present.
+- [x] W-01 opens offline with no key from the replay cache, and validates like A-0142.
+- [x] The report gives the coverage of the 10 clause_ids with n, the failed sentence checks, and
   W-01's flags for T1 and T3.
-- [ ] No rule PDF is committed (`git ls-files data/policies` holds only lock files).
-- [ ] Screenshots of W-01's case page with its intake note at 1280 and 1440 in
+- [x] No rule PDF is committed (`git ls-files data/policies` holds only lock files).
+- [x] Screenshots of W-01's case page with its intake note at 1280 and 1440 in
   `reports/screens/2026-10-05-wave13/`.
 - [ ] (eye) Tarık opens W-01: the intake note says what the file is in under ten seconds and hints
   at no outcome.

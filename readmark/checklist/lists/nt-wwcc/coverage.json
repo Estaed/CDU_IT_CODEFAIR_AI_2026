@@ -1,0 +1,21 @@
+{
+ "date": "2026-10-04",
+ "list_id": "nt-wwcc",
+ "method": "rule-question-coverage-and-scope-v2",
+ "model": "jev-1.13.0",
+ "n_reported": 0,
+ "n_scanned": 2247,
+ "n_scope_scanned": 483,
+ "policy_pins": {
+  "act": "05c617e071490a3ca606c4c6da1bfbd2870c3c9757a2acbb7823d8ad139b2950",
+  "regulations": "27e652e994236e8b785775ddb4c55bea5d926b9722bef319f7d4c23cf17e3e05"
+ },
+ "scope": "The NT Screening Authority decides whether a candidate for a Working with Children Clearance poses an unacceptable risk of harm or exploitation to children.",
+ "scope_model": "jev-1.13.0",
+ "suggestions": [],
+ "thresholds": {
+  "coverage_max": 1,
+  "rule_min": 3,
+  "scope_min": 2.0
+ }
+}

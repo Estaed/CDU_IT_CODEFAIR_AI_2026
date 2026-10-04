@@ -1,0 +1,192 @@
+- clause_id: q01
+  title: Prescribed conviction or criminal history
+  decides: Has the candidate been convicted of an offence, or does the candidate have a criminal history,
+    that is prescribed by regulation?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 189(1), page 145
+  sentence: '(1) If the candidate has been convicted of an offence, or has a criminal history, that is
+    prescribed by regulation, the Authority:'
+  items:
+  - (a) must not issue a clearance notice to the candidate;
+  why: If the answer is yes, this rule decides the clearance outcome and no risk assessment is made.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q02
+  title: Disqualifying offence, including interstate or overseas
+  decides: Does any offence on the candidate's record match a Schedule 3 provision, or would an interstate
+    or overseas offence match one if it had been committed in the Territory?
+  policy: regulations
+  source: Care and Protection of Children (Screening) Regulations 2010, reg 7(2), pages 5-6
+  sentence: '(2) A disqualifying offence is:'
+  items:
+  - (a) an offence against a provision of an Act or Ac t of the Commonwealth specified in Schedule 3,
+    subject to any qualification relating to the provision specified opposite the provision; or
+  - (f) an offence under a law of a State, other Territory or foreign country that, if it had been committed
+    in the Territory, would have constituted an offence mentioned in paragraphs (a) to (e).
+  why: Only a disqualifying offence counts as a prescribed offence under s 189(1).
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q03
+  title: Expunged charges or convictions
+  decides: Has any charge or conviction on the candidate's record been expunged under the Expungement
+    of Historical Homosexual Offence Records Act 2018 or Part XI, Division 18 of the Criminal Code?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 190(3), pages 146-147
+  sentence: '(3) If a charge or conviction is expunged under the Expungement of Historical Homosexual
+    Offence Records Act 2018 or Part XI, Division 18, of the Criminal Code:'
+  items:
+  - (a) the person is to be treated under this Act as if the person had never committed or been charged
+    with, prosecuted for, convicted of or sentenced for the offence; and
+  why: An expunged record has to be left out of the decision completely.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q04
+  title: Nature, gravity, relevance and age of offences
+  decides: For each offence the candidate has committed, how serious was it, how relevant is it to child-related
+    work, how old was the victim, and how long ago did it happen?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 191(3)(b), page 147
+  sentence: '(3) Without limiting subsection (2), the guidelines may provide for one or more of the following
+    to be taken into account in deciding whether or not to issue a clearance notice to a person:'
+  items:
+  - (i) the nature and gravity of the offence; and (ii) the relevance of the offence to any child- related
+    employment; and (iii) the age of the victim when the offence was committed;
+  - (iv) the time that has elapsed since the commission of the offence;
+  why: When no offence disqualifies the candidate, these factors decide how much weight each offence gets
+    in the risk assessment.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q05
+  title: Allegations and patterns of behaviour
+  decides: Does the file contain any allegation of an offence, or a pattern of behaviour, that points
+    to a risk of harm or exploitation to children?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 191(3)(c), page 147
+  sentence: (c) in relation to any alleged commission of an offence by the person – the risk of harm or
+    exploitation to children posed by the person in view of the allegation and other related circumstances
+    (including any patterns of the person's behaviour);
+  items: []
+  why: Allegations that never led to a conviction can still affect the risk assessment.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q06
+  title: Agency engagement and protective orders
+  decides: Has the Authority received information about the candidate's engagement with the Agency, or
+    about any court order under this Act, the Domestic and Family Violence Act 2007 or the Personal Violence
+    Restraining Orders Act 2016?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 190(1)(a), page 146
+  sentence: '(a) for the purpose of determining an application under section 188, the Commissioner of
+    Police, the CEO and any other person may give the Authority any information held by them about any
+    of the following:'
+  items:
+  - (i) the candidate's engagement with the Agency under this Act;
+  - (ii) any order imposed on the candidate by a court under this Act, the Domestic and Family Violence
+    Act 2007 or the Personal Violence Restraining Orders Act 2016;
+  why: These records may show risk that a criminal history check does not.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q07
+  title: Unacceptable risk finding
+  decides: Having regard to the administrative guidelines, does the candidate pose an unacceptable risk
+    of harm or exploitation to children?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 189(2), page 145
+  sentence: (2) If subsection (1) does not apply, the Authority must, having regard to the administrative
+    guidelines, decide whether the candidate poses an unacceptable risk of harm or exploitation to children.
+  items: []
+  why: When s 189(1) does not apply, this is the finding that decides the case.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q08
+  title: Application form, identity and authorising statement
+  decides: Is the application in the approved form, with the required proof of identity and the candidate's
+    statement authorising police and others to give information to the Authority?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 188(2), page 145
+  sentence: '(2) The application must be:'
+  items:
+  - '(a) in the approved form; and (b) accompanied by any proof of the identity of the candidate required
+    by regulation; and (c) accompanied by a statement of the candidate that:'
+  - (ii) authorises the Commissioner of Police and anyone prescribed by regulation to give information
+    about the candidate to the Authority.
+  why: Without the authorising statement, the Authority cannot get the information it needs to decide.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q09
+  title: 100-point identity documents
+  decides: For a candidate aged 18 or over, do the identity documents total at least 100 points and include
+    at least one primary document?
+  policy: regulations
+  source: Care and Protection of Children (Screening) Regulations 2010, reg 6(1), page 4
+  sentence: '(1) A clearance application for a candidate who is at l east 18 years of age must be accompanied
+    by identification documents in relation to the candidate that:'
+  items:
+  - (a) have a total value of at least 100 points; and (b) include at least one primary document.
+  why: Proof of identity is needed to be sure the criminal history checked belongs to the candidate.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'
+- clause_id: q10
+  title: Child-related work
+  decides: Does the work the candidate is seeking involve, or potentially involve, contact with children
+    in one of the listed settings?
+  policy: act
+  source: Care and Protection of Children Act 2007, s 185(2), page 141
+  sentence: '(2) Child-related work is any work that involves or may potentially involve contact with
+    children in connection with any of the following: (a) child protection services provided by or for
+    the Department; (b) an education and care service operated under the Education and Care Services National
+    Law (NT);'
+  items: []
+  why: The type of work decides whether a clearance is needed and how relevant any past offence is.
+  provenance:
+    suggested_by:
+      date: '2026-10-04'
+      model: claude-opus-5-5
+      name: Claude
+    approved_by: person
+    approved_date: '2026-10-04'

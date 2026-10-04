@@ -1,0 +1,130 @@
+{
+ "key": "0187c0b56577ec4c3bc352155f9632dfeec2cf0ec625a60d5af73f1ff39534ed",
+ "kind": "jev-coverage",
+ "response": {
+  "answers": {
+   "P01_coverage": {
+    "score": 0.02
+   },
+   "P01_rule": {
+    "score": 0.46
+   },
+   "P02_coverage": {
+    "score": 0.02
+   },
+   "P02_rule": {
+    "score": 0.38
+   },
+   "P03_coverage": {
+    "score": 0.03
+   },
+   "P03_rule": {
+    "score": 2.35
+   },
+   "P04_coverage": {
+    "score": 0.04
+   },
+   "P04_rule": {
+    "score": 2.35
+   },
+   "P05_coverage": {
+    "score": 0.05
+   },
+   "P05_rule": {
+    "score": 3.73
+   },
+   "P06_coverage": {
+    "score": 0.02
+   },
+   "P06_rule": {
+    "score": 2.73
+   },
+   "P07_coverage": {
+    "score": 0.04
+   },
+   "P07_rule": {
+    "score": 0.47
+   },
+   "P08_coverage": {
+    "score": 0.05
+   },
+   "P08_rule": {
+    "score": 3.01
+   },
+   "P09_coverage": {
+    "score": 0.02
+   },
+   "P09_rule": {
+    "score": 0.14
+   },
+   "P10_coverage": {
+    "score": 0.03
+   },
+   "P10_rule": {
+    "score": 2.11
+   },
+   "P11_coverage": {
+    "score": 0.02
+   },
+   "P11_rule": {
+    "score": 0.8
+   },
+   "P12_coverage": {
+    "score": 0.04
+   },
+   "P12_rule": {
+    "score": 0.94
+   },
+   "P13_coverage": {
+    "score": 0.02
+   },
+   "P13_rule": {
+    "score": 1.72
+   },
+   "P14_coverage": {
+    "score": 0.04
+   },
+   "P14_rule": {
+    "score": 0.05
+   },
+   "P15_coverage": {
+    "score": 0.03
+   },
+   "P15_rule": {
+    "score": 0.33
+   },
+   "P16_coverage": {
+    "score": 0.03
+   },
+   "P16_rule": {
+    "score": 2.71
+   },
+   "P17_coverage": {
+    "score": 0.04
+   },
+   "P17_rule": {
+    "score": 3.25
+   },
+   "P18_coverage": {
+    "score": 0.03
+   },
+   "P18_rule": {
+    "score": 1.43
+   },
+   "P19_coverage": {
+    "score": 0.01
+   },
+   "P19_rule": {
+    "score": 1.85
+   },
+   "P20_coverage": {
+    "score": 0.01
+   },
+   "P20_rule": {
+    "score": 1.77
+   }
+  },
+  "coverage_date": "2026-10-04",
+  "model": "jev-1.13.0"
+ }
+}

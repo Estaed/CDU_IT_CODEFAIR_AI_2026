@@ -1,0 +1,52 @@
+{
+ "key": "b2a849cf037e69983bff467169516e08bbe8731ec210a6643a3927ff21786221",
+ "kind": "jev-coverage",
+ "response": {
+  "answers": {
+   "P01_coverage": {
+    "score": 0.57
+   },
+   "P01_rule": {
+    "score": 0.36
+   },
+   "P02_coverage": {
+    "score": 0.24
+   },
+   "P02_rule": {
+    "score": 0.51
+   },
+   "P03_coverage": {
+    "score": 0.35
+   },
+   "P03_rule": {
+    "score": 0.1
+   },
+   "P04_coverage": {
+    "score": 0.02
+   },
+   "P04_rule": {
+    "score": 0.09
+   },
+   "P05_coverage": {
+    "score": 0.02
+   },
+   "P05_rule": {
+    "score": 0.45
+   },
+   "P06_coverage": {
+    "score": 0.02
+   },
+   "P06_rule": {
+    "score": 0.07
+   },
+   "P07_coverage": {
+    "score": 0.51
+   },
+   "P07_rule": {
+    "score": 0.34
+   }
+  },
+  "coverage_date": "2026-10-04",
+  "model": "jev-1.13.0"
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "key": "85671a12facd785086ddc49b5a392f91dd314573fdcfcceafe509faa4a60f5a9",
+ "kind": "dating",
+ "response": {
+  "model": "claude-opus-5-5",
+  "output": {
+   "date": "2017-04-03",
+   "quote": "Court reference: INVALID-LC-2017-CJB.\n\nDate: 3 April 2017. Judicial officer: Magistrate Elin Marr, fictional."
+  }
+ }
+}

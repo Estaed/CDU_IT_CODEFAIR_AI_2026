@@ -1,0 +1,973 @@
+{
+ "facts": [
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-05:p22:17",
+     "quote": "The Australian search records one criminal conviction and no further criminal charges after the 2016 assault."
+    },
+    {
+     "passage_id": "W-01-05:p22:10",
+     "quote": "Charge description: aggravated assault, Criminal Code s188."
+    }
+   ],
+   "claim": "The national police history records a single conviction, for aggravated assault, and no further criminal charges after the 2016 assault.",
+   "claim_id": "c01",
+   "clause_id": "q01",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-07:p30:1",
+     "quote": "You are convicted of aggravated assault and the conviction is recorded."
+    }
+   ],
+   "claim": "The Local Court convicted the candidate of aggravated assault and recorded the conviction.",
+   "claim_id": "c02",
+   "clause_id": "q01",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-05:p24:11",
+     "quote": "No sex-offence, child-abuse, drug or kidnapping charge is returned in this synthetic Australian history."
+    }
+   ],
+   "claim": "The Australian history returns no sex-offence, child-abuse, drug or kidnapping charge.",
+   "claim_id": "c03",
+   "clause_id": "q01",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-05:p22:18",
+     "quote": "No outstanding warrant or pending charge is returned in this synthetic disclosure."
+    }
+   ],
+   "claim": "The police search returned no outstanding warrant or pending charge.",
+   "claim_id": "c04",
+   "clause_id": "q01",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file does not show whether aggravated assault is an offence or criminal history prescribed by regulation.",
+   "claim_id": "c05",
+   "clause_id": "q01",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-06:p26:15",
+     "quote": "The 2011 New Zealand shoplifting matter was dealt with by completed Youth Court diversion and produced no conviction."
+    }
+   ],
+   "claim": "The 2011 New Zealand shoplifting matter ended in completed Youth Court diversion with no conviction.",
+   "claim_id": "c06",
+   "clause_id": "q02",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-06:p26:15",
+     "quote": "The record describes neither violence nor a child victim."
+    },
+    {
+     "passage_id": "W-01-06:p26:14",
+     "quote": "Further NZ entries: none returned in this synthetic search."
+    }
+   ],
+   "claim": "The New Zealand record describes neither violence nor a child victim, and the search returned no further New Zealand entries.",
+   "claim_id": "c07",
+   "clause_id": "q02",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file does not contain the Schedule 3 list, so it cannot show whether the aggravated assault or the New Zealand matter matches a listed provision.",
+   "claim_id": "c08",
+   "clause_id": "q02",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-08:p32:3",
+     "quote": "It does not expunge the recorded conviction or replace the sentencing order."
+    },
+    {
+     "passage_id": "W-01-08:p33:8",
+     "quote": "Recorded conviction removed | no"
+    }
+   ],
+   "claim": "The bond completion advice states that it does not expunge the recorded conviction, and the reissued copy confirms the conviction was not removed.",
+   "claim_id": "c09",
+   "clause_id": "q03",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file contains no record of any charge or conviction being expunged under the historical homosexual offence expungement laws.",
+   "claim_id": "c10",
+   "clause_id": "q03",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-07:p28:8",
+     "quote": "The victim was an adult man aged 23 and suffered a broken nose from the defendant's punch."
+    },
+    {
+     "passage_id": "W-01-05:p22:14",
+     "quote": "Victim age recorded in linked court record: 23 years."
+    }
+   ],
+   "claim": "The assault victim was an adult man aged 23 who suffered a broken nose.",
+   "claim_id": "c11",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-07:p28:9",
+     "quote": "No child was the victim of the offence before this court."
+    }
+   ],
+   "claim": "No child was the victim of the assault.",
+   "claim_id": "c12",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-07:p28:9",
+     "quote": "There is no finding here of lasting disability, but a broken nose is a substantial injury."
+    },
+    {
+     "passage_id": "W-01-07:p29:4",
+     "quote": "A fine alone would not mark the gravity of this conduct sufficiently."
+    }
+   ],
+   "claim": "The magistrate called the broken nose a substantial injury and found that a fine alone would not mark the gravity of the conduct.",
+   "claim_id": "c13",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-07:p30:2",
+     "quote": "The defendant received eight months imprisonment wholly suspended and a twelve-month good behaviour bond on 3 April 2017."
+    }
+   ],
+   "claim": "The candidate received eight months imprisonment wholly suspended and a twelve-month good behaviour bond on 3 April 2017.",
+   "claim_id": "c14",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-08:p32:4",
+     "quote": "The good behaviour bond was completed on 3 April 2018 without any recorded breach."
+    }
+   ],
+   "claim": "The good behaviour bond was completed on 3 April 2018 without any recorded breach.",
+   "claim_id": "c15",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-05:p22:9",
+     "quote": "Incident: 12 November 2016."
+    },
+    {
+     "passage_id": "W-01-03:p15:4",
+     "quote": "There has been nearly a decade since the assault and several years since the order."
+    }
+   ],
+   "claim": "The assault took place on 12 November 2016, which the candidate describes as nearly a decade ago.",
+   "claim_id": "c16",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-07:p28:7",
+     "quote": "The argument occurred outside a Mitchell Street nightclub after you and the other man had been drinking."
+    },
+    {
+     "passage_id": "W-01-03:p10:2",
+     "quote": "He was not a child and I did not know him before that evening."
+    }
+   ],
+   "claim": "The assault arose from an argument outside a nightclub with a man the candidate did not know, after both had been drinking.",
+   "claim_id": "c17",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-07:p29:1",
+     "quote": "Alcohol features prominently in the accepted account."
+    },
+    {
+     "passage_id": "W-01-07:p28:10",
+     "quote": "You were twenty-two when you committed it and are twenty-two today."
+    }
+   ],
+   "claim": "Alcohol featured prominently in the accepted account of the assault, and the candidate was twenty-two at the time.",
+   "claim_id": "c18",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-06:p26:8",
+     "quote": "Year: 2011. Age at event: sixteen."
+    },
+    {
+     "passage_id": "W-01-06:p26:10",
+     "quote": "Conduct description: shoplifting of low-value retail goods."
+    }
+   ],
+   "claim": "The 2011 New Zealand matter was shoplifting of low-value goods when the candidate was sixteen.",
+   "claim_id": "c19",
+   "clause_id": "q04",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-10:p38:10",
+     "quote": "Jessica Tran's daughter, aged 6, was present in the residence and was crying during the argument in which Callum punched the hallway wall."
+    },
+    {
+     "passage_id": "W-01-10:p38:11",
+     "quote": "officers also observed the child crying on arrival."
+    }
+   ],
+   "claim": "Police recorded that Jessica Tran's daughter, aged 6, was present and crying during the argument in which the candidate punched the hallway wall, and officers saw her crying on arrival.",
+   "claim_id": "c20",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-03:p12:2",
+     "quote": "Jessica's daughter was at her grandmother's in Palmerston that night and never saw any of it."
+    },
+    {
+     "passage_id": "W-01-10:p38:10",
+     "quote": "Jessica Tran's daughter, aged 6, was present in the residence and was crying during the argument in which Callum punched the hallway wall."
+    }
+   ],
+   "claim": "The candidate states the daughter was at her grandmother's that night and saw none of it, which contradicts the police narrative.",
+   "claim_id": "c21",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-10:p38:12",
+     "quote": "The child was not interviewed for a statement during this attendance."
+    },
+    {
+     "passage_id": "W-01-10:p42:11",
+     "quote": "Contents not supplied: event photographs; any audio recording; a statement from the child; a later statement from Ms Tran; tenancy repair evidence; a clinical assessment; child protection agency records."
+    }
+   ],
+   "claim": "The child was never interviewed, and the police release holds no statement from the child, no later statement from Ms Tran and no child protection agency records.",
+   "claim_id": "c22",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-10:p38:13",
+     "quote": "She said the respondent punched the hallway wall during the argument and she was frightened by the force of it."
+    }
+   ],
+   "claim": "Ms Tran told police she was frightened by the force of the candidate punching the hallway wall.",
+   "claim_id": "c23",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-10:p38:14",
+     "quote": "No criminal charge was laid from this attendance."
+    },
+    {
+     "passage_id": "W-01-10:p39:7",
+     "quote": "No allegation of sexual conduct, exploitation or a direct strike to the child is recorded."
+    }
+   ],
+   "claim": "No criminal charge was laid from the domestic incident, and no sexual conduct, exploitation or direct strike to the child is alleged.",
+   "claim_id": "c24",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-03:p15:4",
+     "quote": "I know there is a pattern someone can see between the assault, the work argument and the wall."
+    },
+    {
+     "passage_id": "W-01-03:p11:4",
+     "quote": "A wall, a clipboard and a punch are different acts; each of them happened when I was angry."
+    }
+   ],
+   "claim": "The candidate acknowledges a visible pattern of angry conduct linking the assault, the workplace argument and the wall.",
+   "claim_id": "c25",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-09:p34:6",
+     "quote": "The 2019 yard altercation involved shouting and a thrown clipboard, with no reported injury."
+    },
+    {
+     "passage_id": "W-01-09:p34:7",
+     "quote": "Other staff working nearby did not know whether the argument would continue or whether another object would be thrown."
+    }
+   ],
+   "claim": "A 2019 workplace altercation involved shouting and a thrown clipboard, with no reported injury but with nearby staff unsure what would happen next.",
+   "claim_id": "c26",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-18:p57:4",
+     "quote": "The club incident register contains no entry concerning misconduct by Callum in either the 2024 or 2025 season."
+    },
+    {
+     "passage_id": "W-01-20:p72:6",
+     "quote": "This leaf contains no complaint or misconduct entry about Callum James Hartigan."
+    },
+    {
+     "passage_id": "W-01-20:p65:10",
+     "quote": "This is a record of reported events, not continuous observation of every conversation."
+    }
+   ],
+   "claim": "The club incident register holds no misconduct entry about the candidate in the 2024 or 2025 season, though it records only reported events.",
+   "claim_id": "c27",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-15:p53:5",
+     "quote": "I did not see Callum threaten or shout angrily at a child during either season."
+    }
+   ],
+   "claim": "A club volunteer did not see the candidate threaten or shout angrily at a child.",
+   "claim_id": "c28",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-18:p57:6",
+     "quote": "Early in the first season I told him to use a normal voice closer to the children rather than a warehouse call from the other side of the drill."
+    },
+    {
+     "passage_id": "W-01-18:p57:6",
+     "quote": "I did not observe an angry confrontation with a child or treat the advice as a disciplinary warning."
+    }
+   ],
+   "claim": "The head coach once told him to use a normal voice near the children instead of a warehouse call, and did not treat it as a disciplinary matter.",
+   "claim_id": "c29",
+   "clause_id": "q05",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-10:p40:4",
+     "quote": "Authority used: police-initiated domestic violence order under the Domestic and Family Violence Act 2007."
+    }
+   ],
+   "claim": "A police-initiated domestic violence order was made against the candidate under the Domestic and Family Violence Act 2007.",
+   "claim_id": "c30",
+   "clause_id": "q06",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-11:p43:6",
+     "quote": "Court confirmation: Darwin Local Court, 22 March 2021."
+    },
+    {
+     "passage_id": "W-01-11:p43:7",
+     "quote": "Term: 16 March 2021 through 15 March 2022 inclusive."
+    },
+    {
+     "passage_id": "W-01-11:p43:12",
+     "quote": "Respondent did not contest continuation of the protective terms at confirmation."
+    }
+   ],
+   "claim": "The Darwin Local Court confirmed the order on 22 March 2021 for a term from 16 March 2021 to 15 March 2022, and the candidate did not contest it.",
+   "claim_id": "c31",
+   "clause_id": "q06",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-11:p43:10",
+     "quote": "The protected person on this order is Jessica Tran; the order is not a conviction for a criminal offence."
+    },
+    {
+     "passage_id": "W-01-11:p43:11",
+     "quote": "No child is separately named as a protected person on this copy."
+    }
+   ],
+   "claim": "The order protected Jessica Tran only, and no child was named as a protected person.",
+   "claim_id": "c32",
+   "clause_id": "q06",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-11:p45:6",
+     "quote": "The registry status is expired; no extension, breach proceeding or criminal charge is recorded against this order in the supplied linked extract."
+    }
+   ],
+   "claim": "The order has expired with no extension, breach proceeding or criminal charge recorded.",
+   "claim_id": "c33",
+   "clause_id": "q06",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p6:7",
+     "quote": "Agency orders under the child protection legislation: None known to candidate."
+    },
+    {
+     "passage_id": "W-01-02:p6:13",
+     "quote": "A checked 'No' answer records the candidate's answer, not a database search result."
+    }
+   ],
+   "claim": "The candidate answered that no Agency orders are known to him, which records only his own answer and not a database search.",
+   "claim_id": "c34",
+   "clause_id": "q06",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file holds no information from the CEO or the Agency about the candidate's engagement with the Agency.",
+   "claim_id": "c35",
+   "clause_id": "q06",
+   "found": false
+  },
+  {
+   "citations": [],
+   "claim": "The file holds no information about any order under the Personal Violence Restraining Orders Act or the Care and Protection of Children Act.",
+   "claim_id": "c36",
+   "clause_id": "q06",
+   "found": false
+  },
+  {
+   "citations": [],
+   "claim": "The administrative guidelines the Authority must consider are not in the file.",
+   "claim_id": "c37",
+   "clause_id": "q07",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-12:p46:7",
+     "quote": "Callum James Hartigan completed the program on 14 February 2022."
+    },
+    {
+     "passage_id": "W-01-13:p47:9",
+     "quote": "The final session Callum attended was 28 March 2022, and he attended 18 of 20 scheduled sessions with two make-up sessions."
+    },
+    {
+     "passage_id": "W-01-13:p51:8",
+     "quote": "No amended completion certificate or note reconciling the two documents' dates accompanies this release."
+    }
+   ],
+   "claim": "The certificate gives the program completion date as 14 February 2022, but the facilitator report records the final session as 28 March 2022, and no document reconciles the two dates.",
+   "claim_id": "c38",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-13:p47:9",
+     "quote": "The final session Callum attended was 28 March 2022, and he attended 18 of 20 scheduled sessions with two make-up sessions."
+    }
+   ],
+   "claim": "The candidate attended 18 of 20 scheduled program sessions, plus two make-up sessions.",
+   "claim_id": "c39",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-13:p48:5",
+     "quote": "The report records developing insight but also defensiveness when responsibility was discussed."
+    },
+    {
+     "passage_id": "W-01-13:p47:13",
+     "quote": "There is no validated risk score attached."
+    }
+   ],
+   "claim": "The facilitator report records both developing insight and defensiveness, and it attaches no validated risk score.",
+   "claim_id": "c40",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-03:p13:4",
+     "quote": "I have not supplied a clinical assessment of alcohol use and I am not claiming to have a medical diagnosis."
+    }
+   ],
+   "claim": "No clinical assessment of the candidate's alcohol use has been supplied.",
+   "claim_id": "c41",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p5:12",
+     "quote": "Previous notice recorded on club register: issued 1 February 2024, expired 1 February 2026"
+    },
+    {
+     "passage_id": "W-01-18:p57:3",
+     "quote": "That earlier notice expired in February 2026 and is not being relied upon for the proposed Association employment."
+    }
+   ],
+   "claim": "The candidate previously held a clearance notice issued 1 February 2024 that expired 1 February 2026, and it is not relied on for this application.",
+   "claim_id": "c42",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-16:p54:5",
+     "quote": "There have been no disciplinary findings for violence, threats or aggressive conduct at this workplace since his commencement."
+    },
+    {
+     "passage_id": "W-01-23:p99:11",
+     "quote": "Personnel conduct search: no disciplinary findings for violence, threats or aggressive conduct since commencement."
+    }
+   ],
+   "claim": "His current employer records no disciplinary findings for violence, threats or aggressive conduct since he started.",
+   "claim_id": "c43",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-16:p55:2",
+     "quote": "In February 2026 two staff disagreed about unloading priority while a vehicle was waiting."
+    },
+    {
+     "passage_id": "W-01-16:p55:2",
+     "quote": "Mr Hartigan stopped the unloading movement, put the docket on the desk and asked me to make the priority decision."
+    }
+   ],
+   "claim": "In February 2026 he stopped a staff dispute over unloading priority and asked his manager to decide.",
+   "claim_id": "c44",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-16:p55:3",
+     "quote": "He can still sound abrupt when there is time pressure."
+    }
+   ],
+   "claim": "His manager reports that he can still sound abrupt under time pressure.",
+   "claim_id": "c45",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-17:p56:5",
+     "quote": "I have observed Callum stop an adult disagreement and return to it later without threats or throwing objects."
+    }
+   ],
+   "claim": "A community garden coordinator saw him stop an adult disagreement and return to it later without threats or throwing objects.",
+   "claim_id": "c46",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-18:p58:2",
+     "quote": "I would support him in an assistant position with a named head coach."
+    },
+    {
+     "passage_id": "W-01-18:p58:2",
+     "quote": "I cannot give a view about an unrestricted role away from the supervision I observed."
+    }
+   ],
+   "claim": "The head coach supports him only as an assistant under a named head coach and gives no view about an unrestricted role.",
+   "claim_id": "c47",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-19:p63:3",
+     "quote": "Callum must never be alone with children, and a head coach must be physically present whenever he assists a session."
+    }
+   ],
+   "claim": "The supervision plan says he must never be alone with children and that a head coach must be physically present whenever he assists.",
+   "claim_id": "c48",
+   "clause_id": "q07",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p8:5",
+     "quote": "I authorise the Commissioner of Police to provide information about me to the Screening Authority for this application."
+    },
+    {
+     "passage_id": "W-01-02:p8:5",
+     "quote": "I authorise any person prescribed for this application to provide the information permitted for this assessment."
+    }
+   ],
+   "claim": "The candidate's signed statement authorises the Commissioner of Police and any prescribed person to give information to the Screening Authority.",
+   "claim_id": "c49",
+   "clause_id": "q08",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p8:4",
+     "quote": "I authorise the Association to make this clearance application for me."
+    }
+   ],
+   "claim": "The candidate authorised the Association to make the application for him.",
+   "claim_id": "c50",
+   "clause_id": "q08",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p8:3",
+     "quote": "Application signed: 21 September 2026."
+    },
+    {
+     "passage_id": "W-01-02:p8:8",
+     "quote": "Witness date: 21 September 2026."
+    },
+    {
+     "passage_id": "W-01-05:p22:6",
+     "quote": "Consent reference: signed candidate authority, 21 September 2026."
+    }
+   ],
+   "claim": "The application was signed and witnessed on 21 September 2026, and the police history was run on that signed authority.",
+   "claim_id": "c51",
+   "clause_id": "q08",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p7:1",
+     "quote": "Certified copy bundle attached."
+    }
+   ],
+   "claim": "A certified identity copy bundle was attached to the application.",
+   "claim_id": "c52",
+   "clause_id": "q08",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file does not confirm that the employer lodgement form is the approved form.",
+   "claim_id": "c53",
+   "clause_id": "q08",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p3:2",
+     "quote": "Date of birth: 17 August 1994."
+    }
+   ],
+   "claim": "The candidate was born on 17 August 1994 and is an adult.",
+   "claim_id": "c54",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p7:2",
+     "quote": "Primary documents nominated by candidate: citizenship certificate and current NT driver licence."
+    }
+   ],
+   "claim": "The candidate nominated his citizenship certificate and current NT driver licence as primary documents.",
+   "claim_id": "c55",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-04:p19:10",
+     "quote": "Callum James Hartigan became an Australian citizen by conferral on 26 January 2020 at Palmerston."
+    }
+   ],
+   "claim": "The citizenship certificate names Callum James Hartigan as a citizen by conferral since 26 January 2020.",
+   "claim_id": "c56",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-04:p17:5",
+     "quote": "Issue date: 6 December 2021. Expiry date: 5 December 2026."
+    },
+    {
+     "passage_id": "W-01-04:p17:10",
+     "quote": "the card is in force at application and assembly dates."
+    }
+   ],
+   "claim": "The NT driver licence is in force and expires on 5 December 2026.",
+   "claim_id": "c57",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-04:p17:8",
+     "quote": "The current NT driver licence still shows the Moulden address rather than the candidate's current Gray address."
+    }
+   ],
+   "claim": "The driver licence still shows the old Moulden address, not the candidate's current Gray address.",
+   "claim_id": "c58",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-04:p16:10",
+     "quote": "The current New Zealand passport is in the former name Callum James Byrne."
+    },
+    {
+     "passage_id": "W-01-04:p20:7",
+     "quote": "The registered change of name links Callum James Byrne to Callum James Hartigan."
+    }
+   ],
+   "claim": "The New Zealand passport is in the former name Byrne, which the registered change of name links to Hartigan.",
+   "claim_id": "c59",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-04:p18:9",
+     "quote": "Purpose for this bundle: supplementary identity item received with the primary credentials."
+    }
+   ],
+   "claim": "The Medicare card was supplied as a supplementary identity item.",
+   "claim_id": "c60",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-04:p16:13",
+     "quote": "No verification against an issuing authority's database is represented."
+    },
+    {
+     "passage_id": "W-01-04:p16:13",
+     "quote": "The clerk does not certify the candidate's whereabouts on a historical date or the suitability of any document for a particular points category."
+    }
+   ],
+   "claim": "The copy clerk did not check the documents with their issuers or certify them for any points category.",
+   "claim_id": "c61",
+   "clause_id": "q09",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file does not give point values for the identity documents or a points total.",
+   "claim_id": "c62",
+   "clause_id": "q09",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p3:1",
+     "quote": "Position sought: paid part-time assistant coach, under-12 teams"
+    },
+    {
+     "passage_id": "W-01-02:p5:2",
+     "quote": "Employment type: paid casual part-time appointment, proposed six hours a week."
+    }
+   ],
+   "claim": "The candidate is applying for a paid part-time assistant coach position with under-12 teams, at about six hours a week.",
+   "claim_id": "c63",
+   "clause_id": "q10",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p5:10",
+     "quote": "The role involves direct instruction of under-12 children during drills and matches."
+    },
+    {
+     "passage_id": "W-01-19:p59:6",
+     "quote": "The engagement involves children, not merely equipment away from them."
+    }
+   ],
+   "claim": "The role involves directly instructing under-12 children during drills and matches, not just handling equipment away from them.",
+   "claim_id": "c64",
+   "clause_id": "q10",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-23:p99:8",
+     "quote": "It is not a child-related appointment."
+    }
+   ],
+   "claim": "His full-time warehouse job is not a child-related appointment.",
+   "claim_id": "c65",
+   "clause_id": "q10",
+   "found": true
+  },
+  {
+   "citations": [],
+   "claim": "The file does not say which listed category of child-related work junior football coaching falls under.",
+   "claim_id": "c66",
+   "clause_id": "q10",
+   "found": false
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-02:p4:1",
+     "quote": "Requested period: last five years, 21 September 2021 to 21 September 2026."
+    },
+    {
+     "passage_id": "W-01-02:p4:9",
+     "quote": "Additional residential addresses in the requested period: None listed."
+    },
+    {
+     "passage_id": "W-01-22:p95:5",
+     "quote": "Callum James Hartigan resided at the Katherine premises from June 2022 to October 2022."
+    },
+    {
+     "passage_id": "W-01-21:p83:7",
+     "quote": "The statement mailing address for this period was 7/22 Mangola Street, Katherine NT 0850."
+    }
+   ],
+   "claim": "The application lists no other address in the five-year period, but a tenancy ledger and bank statements show the candidate lived in Katherine from June 2022 to October 2022.",
+   "claim_id": "c67",
+   "clause_id": "other",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-14:p52:3",
+     "quote": "My name is Samuel Hartigan and I am a long-time family friend of Callum."
+    },
+    {
+     "passage_id": "W-01-02:p7:7",
+     "quote": "Referee 1: Samuel Hartigan; family friend; known since childhood."
+    },
+    {
+     "passage_id": "W-01-22:p95:4",
+     "quote": "Tenants: Callum James Hartigan and Samuel Hartigan (cousin)."
+    }
+   ],
+   "claim": "Referee Samuel Hartigan is described as a family friend, but the tenancy ledger records him as the candidate's cousin and co-tenant.",
+   "claim_id": "c68",
+   "clause_id": "other",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-19:p62:7",
+     "quote": "The CEO specifies an exemption period from 29 September 2026 to 30 November 2026 for the named candidate and employer in the described assistant-coach engagement while the clearance application remains undecided."
+    },
+    {
+     "passage_id": "W-01-19:p62:8",
+     "quote": "This is an exemption-period record, not a clearance notice."
+    }
+   ],
+   "claim": "The CEO granted an exemption period from 29 September 2026 to 30 November 2026 for this engagement only, and it is not a clearance notice.",
+   "claim_id": "c69",
+   "clause_id": "other",
+   "found": true
+  },
+  {
+   "citations": [
+    {
+     "passage_id": "W-01-24:p103:14",
+     "quote": "The traffic extract records one paid speeding infringement in 2024 and no other traffic entry."
+    }
+   ],
+   "claim": "The traffic record shows one paid speeding infringement in 2024 and no other traffic entry.",
+   "claim_id": "c70",
+   "clause_id": "other",
+   "found": true
+  }
+ ],
+ "model": "claude-opus-5-5",
+ "name": "claude"
+}

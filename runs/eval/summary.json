@@ -3824,6 +3824,8 @@
        "readmark/checklist/lists.py",
        "readmark/checklist/lists/nt-priority-housing/clauses.yaml",
        "readmark/checklist/lists/nt-priority-housing/list.yaml",
+       "readmark/checklist/lists/nt-wwcc/clauses.yaml",
+       "readmark/checklist/lists/nt-wwcc/list.yaml",
        "readmark/checklist/writer.py",
        "readmark/checks/__init__.py",
        "readmark/checks/cross.py",
@@ -3842,6 +3844,7 @@
        "readmark/pipeline.py",
        "readmark/schemas/view.schema.json",
        "readmark/writer/claude_cli.py",
+       "readmark/writer/dating.py",
        "readmark/writer/transcription.py",
        "tests/test_eval_cases.py",
        "uv.lock"

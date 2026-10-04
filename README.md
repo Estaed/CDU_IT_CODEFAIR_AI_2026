@@ -1,23 +1,144 @@
 # Readmark
 
-Readmark helps an NT delegated officer assess an urban priority-housing application without
-over-trusting an AI summary. For each decisive policy clause it shows the verbatim quotes first,
-then the AI's claims and how each one fared against the file. The officer must open the flagged
-passages before signing. The officer sets every clause outcome; the app never recommends one.
+**An AI reads the case file and points. The officer reads the pages it points to, and decides.**
+
+![The review flow: a flag, two pages compared, an outcome set, the next question, sign-off locked](docs/img/review-flow.gif)
+
+Think of an exam answer key. It does not grade the paper for you; it shows where on the page the
+answer should be. Readmark does the same for an NT delegated officer who assesses an urban
+priority-housing application. The application is a 60-page file, and an AI summary of it can be
+wrong in ways that look right.
+
+- **Quotes first.** For each decisive policy question, the screen shows the real passage in the
+  file, highlighted and labelled with its question. The AI's own sentences sit behind a fold.
+- **Every claim is checked twice.** Plain code checks that each quote is really in the file.
+  A second model from a different family checks that the quote supports the claim.
+- **The officer decides.** The flagged passages must be opened before sign-off. The app never
+  recommends an outcome, and no answer is pre-selected.
 
 CDU IT Code Fair 2026, AI Challenge brief 6, team AIC014. The case files are synthetic. The NT
 policies are real and are not bundled.
 
-## 1. Setup
+## Quick start: replay, no keys, no network
 
-You need Python 3.13 and [uv](https://docs.astral.sh/uv/) 0.12 or later.
+You need Python 3.13 and [uv](https://docs.astral.sh/uv/) 0.12 or later, plus the five policy
+PDFs (see [Policy PDFs](#policy-pdfs); the NT site blocks scripted downloads).
 
 ```sh
-uv sync                              # creates .venv from uv.lock
-uv run playwright install chromium   # only needed for the screen test in the gate
+uv sync
+uv run python -m readmark run --case A-0142 --replay   # rebuilds runs/A-0142/ from the cache
+uv run python -m readmark serve --case A-0142          # http://localhost:8765/
 ```
 
-## 2. Download the five policy PDFs by hand
+Every model response from our runs is in the replay cache (`runs/<case>/cache/`), so replay
+rebuilds every stage file byte for byte. A-0142 is the demo file. `stub` is a 6-page file the
+tests use.
+
+## How it works
+
+![The six stages: case file, Claude writer, quote check, Jev checker, required pages, officer](docs/img/pipeline.gif)
+
+1. **Ingest:** the case file and the pinned policy PDFs become numbered passages.
+2. **Writer:** Claude finds everything that could change the decision, for and against, with
+   verbatim quotes, or says what is missing.
+3. **Code checks:** each quote must be in its passage; every number and date in a claim must
+   appear in a cited quote.
+4. **Checker:** Jev, a different model family, judges each claim. It also scans every page for
+   relevant passages that no claim used, and compares pages that may disagree.
+5. **Gate:** failed checks and contradictions become required reading: at most 8 passages, most
+   decisive first.
+6. **Officer:** opens them, sets each question's outcome, and signs.
+
+<details>
+<summary>Each stage in detail (files and rules)</summary>
+
+`python -m readmark run` runs each stage once and writes `runs/<case>/<stage>.json`.
+
+1. **Ingest** (`readmark/ingest/`): passages get ids `<case>:p<page>:<paragraph>`. Stage files keep
+   policy passages as offsets and hashes only; the server reads policy text from the PDFs when a
+   passage is opened.
+2. **Question list** (`readmark/checklist/`): the decisive questions, each anchored to its verbatim
+   policy sentence. Each list brings its own policies and questions.
+3. **Writer** (`readmark/writer/`): Claude gets a goal, not steps.
+4. **Code checks** (`readmark/checks/`): a failure shows as "quote not found".
+5. **Checker** (`readmark/jev/`): supports, contradicts, or not enough information, on every claim.
+6. **Relevance scan** (Jev, `scan.json`): every case passage is scored 0 to 4 against each question,
+   20 passages per call. A passage at or above the threshold that no claim cites is "worth a look".
+   The threshold was set once on A-0142 with its gold file; `scan.json` records how.
+7. **Contradiction pairs** (Jev, `pairs.json`): for each question, up to five passages that matter
+   most are compared pair by pair. A claim resting on one side of a contradicting pair is flagged.
+   This catches a real quote that is out of date, which every check against its own passage passes.
+8. **Gate** (`readmark/gate/`): one entry per passage with all its reasons; the rest are suggested.
+9. **View** (`runs/<case>/view.json`, schema version 2), served by `readmark/serve.py` to `web/`.
+
+</details>
+
+## What else is on the screen
+
+- **Case home:** cases in progress, completed and evaluation files.
+- **New case:** upload several documents (PDF or text) and run the checks live.
+- **Scanned pages:** Claude reads the page image, and the image stays beside the text.
+- **Search:** words always; meaning through Jev when online.
+- **Question-list coverage:** Jev shows decisive policy rules that no question covers
+  (`python -m readmark lists --coverage <list-id>`).
+
+<details>
+<summary>Screens: a question, case home and the signed decision record</summary>
+
+![A flagged question: the policy sentence, and the case file with the verified quote highlighted](docs/img/review.png)
+
+![Case home](docs/img/home.png)
+
+![A signed decision record](docs/img/record.png)
+
+</details>
+
+The decision record can be exported as HTML or JSON and is saved under `runs/<case>/records/`.
+Opening a passage is recorded; it does not prove it was read, so the record says "opened".
+
+## Evaluation
+
+```sh
+uv run python -m readmark eval --part <checker|cases|mutations|ablation|benchmark> --replay
+```
+
+Every number goes to `runs/eval/summary.json` with its n: the checker on SummEdits, end-to-end
+case files, a mutation set of broken claims, a held-out file written blind (H-01), and an ablation
+that adds one layer at a time.
+
+## Live runs with your own keys
+
+A live run sends the synthetic case file and the policy passages to two model services. Never use
+it with real case data.
+
+- **Writer:** Claude through the Claude Code CLI (`claude -p --model opus --json-schema`). Install
+  it and sign in; there is no API key to set.
+- **Checker:** Jev (TypeSafe) at `https://api.typesafe.ai/v1/systemone`. Put your key in the
+  environment or in a git-ignored `.env` at the repo root: `TYPESAFE_API_KEY=...`.
+
+```sh
+uv run python -m readmark run --case A-0142                    # Claude writer, Jev checker
+uv run python -m readmark run --case A-0142 --checker claude   # Claude as the second key too
+```
+
+The relevance scan and the contradiction pairs always run on Jev. New responses are added to the
+cache. Jev is not deterministic, so a fresh live run can give different verdicts from the cache.
+
+## Check it
+
+```sh
+uv run playwright install chromium   # once, for the screen test
+uv run python scripts/gate.py
+```
+
+The gate runs `ruff check`, `pytest` (including a headless browser test of the review screen) and
+a replay smoke test of the stub and A-0142 with no API key, which validates each `view.json`
+against `readmark/schemas/view.schema.json`. Exit 0 means clean.
+
+## Policy PDFs
+
+<details>
+<summary>The five NT policy PDFs, downloaded by hand (names, sources, SHA-256)</summary>
 
 The NT Government site blocks scripted downloads, so the PDFs are fetched in a browser and saved
 in `data/policies/` under the names below. They are NTG copyright, so they are git-ignored and never
@@ -41,85 +162,8 @@ page. Its terms allow private and in-organisation use, not publishing, so the te
 locally rather than shipped. The script pins it to the SHA-256 in
 `readmark/checklist/lists/cdu-extension/list.yaml`:
 
-```
+```sh
 uv run python scripts/fetch_cdu_policy.py
 ```
 
-## 3. Replay first: no keys, no network
-
-Every model response from our runs is in the replay cache (`runs/<case>/cache/`). Replay rebuilds
-every stage file from it, byte for byte:
-
-```sh
-uv run python -m readmark run --case A-0142 --replay   # rebuilds runs/A-0142/*.json
-uv run python -m readmark serve --case A-0142          # http://localhost:8765/
-```
-
-A-0142 is the demo file: a 60-page synthetic application. `stub` is a 6-page file the tests use;
-replay it the same way with `--case stub`.
-
-The review screen lets you follow a claim to its passage, see why sign-off is locked, open the
-required passages one at a time, set each clause outcome, dispute a claim, sign, and export the
-decision record as HTML or JSON. Records are saved under `runs/<case>/records/`.
-
-## 4. Live runs with your own keys
-
-A live run sends the synthetic case file and the policy passages to two model services. Never use
-it with real case data.
-
-- **Writer:** Claude through the Claude Code CLI (`claude -p --model opus --json-schema`). Install
-  it and sign in; there is no API key to set.
-- **Checker:** Jev (TypeSafe) at `https://api.typesafe.ai/v1/systemone`. Put your key in the
-  environment or in a git-ignored `.env` at the repo root: `TYPESAFE_API_KEY=...`.
-
-```sh
-uv run python -m readmark run --case A-0142                    # Claude writer, Jev checker
-uv run python -m readmark run --case A-0142 --checker claude   # Claude as the second key too
-```
-
-The relevance scan and the contradiction pairs always run on Jev.
-
-New responses are added to the cache, so the same run can be replayed afterwards. Jev is not
-deterministic, so a fresh live run can give different verdicts from the cached ones.
-
-## 5. Check it
-
-```sh
-uv run python scripts/gate.py
-```
-
-The gate runs `ruff check`, `pytest` (including a headless browser test of the review screen) and
-a replay smoke test of the stub and A-0142 with no API key, which validates each `view.json`
-against `readmark/schemas/view.schema.json`. Exit 0 means clean.
-
-## How it works
-
-`python -m readmark run` runs each stage once and writes `runs/<case>/<stage>.json`:
-
-1. **Ingest** (`readmark/ingest/`): the pinned PDFs and the case file become numbered passages
-   (`<case>:p<page>:<paragraph>`). Stage files keep policy passages as offsets and hashes only;
-   the server reads policy text from the PDFs when a passage is opened.
-2. **Checklist** (`readmark/checklist/clauses.yaml`): the eight decisive clauses, each anchored to
-   its verbatim policy sentence.
-3. **Writer** (`readmark/writer/`): Claude gets a goal, not steps: find everything that could
-   change the officer's decision, for and against, with verbatim quotes, or say what is missing.
-4. **Code checks** (`readmark/checks/`): each quote must be in its passage, and every number and
-   date in a claim must appear in a cited quote. A failure shows as "quote not found".
-5. **Checker** (`readmark/jev/`): a second key on every claim (supports, contradicts, not enough
-   information), from a different model family than the writer.
-6. **Relevance scan** (Jev, `scan.json`): every case passage is scored 0 to 4 against each
-   decisive clause, 20 passages per call. A passage at or above the threshold that no claim cites
-   is "possibly missed" under that clause. The threshold was set once on A-0142 with its gold
-   file, and `scan.json` records it and how it was chosen.
-7. **Contradiction pairs** (Jev, `pairs.json`): for each clause, up to five passages that matter
-   most to it (cited by its claims first, then high in the scan) are compared pair by pair. A
-   claim resting on one side of a contradicting pair is "contradicted by another passage". This
-   catches a real quote that is out of date, which every check against its own passage passes.
-8. **Gate** (`readmark/gate/`): passages behind failed checks and both sides of every
-   contradicting pair, then the strongest possibly missed passages, become required reading: at
-   most 8, most decisive first, one entry per passage with all its reasons. The rest are suggested.
-9. **View** (`runs/<case>/view.json`, schema version 2), served by `readmark/serve.py` to `web/`.
-
-`python -m readmark eval` (the evaluation) arrives in wave 2.
-
-Opening a passage is recorded; it does not prove it was read. The decision record says "opened".
+</details>

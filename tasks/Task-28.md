@@ -63,8 +63,8 @@
     support services."
 
 ### 4. Polish the look
-- **A Readmark mark and favicon:** a simple marked-page symbol beside the name in the header, an
-  SVG in `web/`. Never the NT coat of arms.
+- **A Readmark mark and favicon:** a simple marked-page symbol beside the name in the header,
+  sharp at any size. Never the NT coat of arms.
 - **Status icons:** small icons for flagged, checked, document and opened, always with their
   word beside them, because colour or an icon is never the only signal.
 - **Less plain text:** explanatory paragraphs become callout or inset boxes; case facts become a
@@ -74,8 +74,8 @@
   - stacked highlight tags in one paragraph;
   - an active-looking Approve button on a suggestion whose sentence was not found.
 - **Accessibility check:** keyboard only (every action reachable, visible focus), labels a
-  screen reader announces, and colour contrast to WCAG 2.2 AA. Use Playwright with axe-core or an
-  equivalent. Fix what fails; list what remains in `reports/2026-10-04-accessibility.md`.
+  screen reader announces, and colour contrast to WCAG 2.2 AA, checked by an automated audit as well
+  as by hand. Fix what fails; list what remains in `reports/2026-10-04-accessibility.md`.
 
 ## Why
 The pitch shows two very different NT decisions on the same engine, and Task-27 gets its first

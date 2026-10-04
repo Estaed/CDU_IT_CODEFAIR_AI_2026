@@ -116,7 +116,7 @@ a, .act { color: var(--primary); }
 .intake-head h2 { margin: 0; font-size: 20px; }
 .intake-head .eyebrow { margin: 4px 0 0; }
 .intake-note > p { margin: 12px 0 0; max-width: 1000px; }
-.service-context { border-right: 1px solid var(--line); padding-right: 20px; line-height: 1.2; }
+.service-context { border-left: 1px solid var(--line); padding-left: 20px; line-height: 1.2; }
 .officer { margin-left: auto; }
 .casebar { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--line); }
 .casebar-in { display: flex; align-items: center; gap: 16px; padding-top: 12px; padding-bottom: 12px; }

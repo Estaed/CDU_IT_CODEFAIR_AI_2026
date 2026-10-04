@@ -117,7 +117,7 @@ def test_thresholds_leave_uncertain_and_partial_rules_out(tiny_list, monkeypatch
         "assessment:p1:3"]
 
 
-@pytest.mark.parametrize("list_id", ["nt-priority-housing", "cdu-extension"])
+@pytest.mark.parametrize("list_id", ["nt-priority-housing"])
 def test_delivered_coverage_replays_without_key_and_has_verified_short_excerpts(
         list_id, tmp_path, monkeypatch):
     original_folder = QUESTION_LISTS_DIR / list_id
@@ -147,9 +147,6 @@ def test_delivered_coverage_replays_without_key_and_has_verified_short_excerpts(
         assert suggestion["scores"]["rule"] >= 3
         assert suggestion["scores"]["coverage"] <= 1
         assert suggestion["scores"]["scope"] >= 2.0
-    if list_id == "cdu-extension":
-        assert {"Procedure (74)", "Procedure (78)"} <= {
-            s["section"] for s in result["suggestions"]}
 
 
 def test_batching_keeps_every_paragraph_and_records_all_models(tmp_path, monkeypatch):

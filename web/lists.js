@@ -83,13 +83,13 @@ async function showGeneratedList(listId) {
 
 function renderListReview(listId, job) {
   const suggestions = job.suggestions.map((q) => ({ ...q }));
-  $('listReview').innerHTML = `<p>Claude suggested these. You decide which questions the officer must answer.</p>
+  $('listReview').innerHTML = `<p class="inset-note">Claude suggested these. You decide which questions the officer must answer.</p>
     <p class="note">Approve selects a question for this list. Only Save approved questions makes it available for cases.</p>
     <div id="questionSuggestions" data-testid="question-suggestions"></div>
     <p class="err" role="alert" id="reviewError" hidden></p>
     <p class="note" id="coverageNote" data-testid="coverage-note">${esc(job.coverage_note || '')}</p>
     <button class="btn-primary" id="saveList" data-testid="save-list">Save approved questions</button><div id="listSaved"></div>`;
-  const draw = () => {
+  const draw = (index = null, focusTarget = null) => {
     $('questionSuggestions').innerHTML = suggestions.map((q, n) => `<section class="question-suggestion" data-testid="question-suggestion" data-index="${n}">
       <h2>${n + 1}. ${esc(q.title)}</h2><p class="suggested-question">${esc(q.decides)}</p>
       <p class="note">${esc(job.policies.find((p) => p.key === q.policy)?.title || q.policy)} · ${esc(q.source)}</p>
@@ -97,26 +97,34 @@ function renderListReview(listId, job) {
       <p>${esc(q.why)}</p><p class="sentence-check${q.sentence_found ? '' : ' err'}" data-testid="sentence-check">${esc(q.check)}</p>
       <p class="note">Suggested by Claude (${esc(q.suggested_by.model)}) on ${esc(q.suggested_by.date)}${q.provenance ? `; approved by a person on ${esc(q.provenance.approved_date)}` : ''}.</p>
       <p class="review-choice" data-testid="review-choice">${q.status === 'approved' ? '✓ Approved for saving' : q.status === 'rejected' ? 'Rejected' : 'Awaiting your choice'}</p>
-      <div class="suggestion-actions"><button class="btn-secondary" data-approve${q.sentence_found ? '' : ' disabled'}>Approve</button>
+      <div class="suggestion-actions"><button class="btn-secondary" data-approve${q.sentence_found ? '' : ` disabled aria-describedby="approval-help-${n}"`}>Approve</button>
         <button class="act" data-edit>Edit</button><button class="act" data-reject>Reject</button></div>
+      ${q.sentence_found ? '' : `<p class="note" id="approval-help-${n}">Approval unavailable: edit the sentence and check it against the rule first.</p>`}
       <div class="suggestion-editor" hidden>
         ${[['title', 'Title'], ['decides', 'Question'], ['policy', 'Rule file'], ['source', 'Section or page'], ['sentence', 'Verbatim sentence'], ['items', 'Verbatim items (one per line)'], ['why', 'Why it decides the case']].map(([key, label]) =>
           `<label class="flabel" for="edit-${n}-${key}">${label}</label><textarea id="edit-${n}-${key}" data-field="${key}" rows="${key === 'sentence' || key === 'items' ? 3 : 1}">${esc(key === 'items' ? (q.items || []).join('\n') : q[key])}</textarea>`).join('')}
         <button class="btn-secondary" data-check>Check changes</button></div>
     </section>`).join('') || '<p>No questions were suggested. Start again with a different scope or rulebook.</p>';
+    if (index !== null && focusTarget) {
+      $('questionSuggestions').querySelector(`[data-index="${index}"] ${focusTarget}`)?.focus();
+    }
   };
   draw();
   $('questionSuggestions').onclick = async (event) => {
     const row = event.target.closest('[data-index]');
     if (!row) return;
-    const q = suggestions[Number(row.dataset.index)];
+    const index = Number(row.dataset.index);
+    const q = suggestions[index];
     if (event.target.closest('[data-edit]')) row.querySelector('.suggestion-editor').hidden = false;
-    if (event.target.closest('[data-approve]')) { q.status = 'approved'; draw(); }
-    if (event.target.closest('[data-reject]')) { q.status = 'rejected'; draw(); }
+    if (event.target.closest('[data-approve]')) { q.status = 'approved'; draw(index, '[data-approve]'); }
+    if (event.target.closest('[data-reject]')) { q.status = 'rejected'; draw(index, '[data-reject]'); }
     if (event.target.closest('[data-check]')) {
       row.querySelectorAll('[data-field]').forEach((input) => { q[input.dataset.field] = input.dataset.field === 'items' ? input.value.split('\n').filter((v) => v.trim()) : input.value; });
       q.status = 'pending';
-      try { Object.assign(q, await listRequest(`/api/question-lists/${encodeURIComponent(listId)}/check`, q)); draw(); }
+      try {
+        Object.assign(q, await listRequest(`/api/question-lists/${encodeURIComponent(listId)}/check`, q));
+        draw(index, q.sentence_found ? '[data-approve]' : '[data-edit]');
+      }
       catch (error) { $('reviewError').textContent = error.message; $('reviewError').hidden = false; }
     }
   };

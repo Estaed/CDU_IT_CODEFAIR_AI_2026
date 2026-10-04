@@ -1,0 +1,255 @@
+{
+  "case_id": "SYN-CJH-OCHRE-2026",
+  "assessment_reference_date": "2026-10-04",
+  "overall_handling": "request_information",
+  "overall_rationale": "Do not grant or refuse on this packet alone: child exposure to the domestic incident is directly disputed and changes the weight of the anger pattern against rehabilitation evidence. Request source clarification and the candidate's response, correct the address history, clarify the referee relationship and reconcile the program dates, then reassess under s189(2).",
+  "outcome_semantics": {
+    "id-100-points": "met means the documentary points requirement is satisfied",
+    "disqualifying-offence": "met would mean the automatic refusal trigger is present; not_met means no supplied history engages it",
+    "form-complete": "met would mean the supplied form answers and required authorities are complete",
+    "assessment_factors": "met means sufficient evidence establishes the named factor, not that risk is acceptable; cannot_decide means a material clarification is needed to finish that assessment"
+  },
+  "policy_basis": {
+    "sources": [
+      "policy-text/care-and-protection-of-children-act-2007.txt",
+      "policy-text/screening-regulations-2010.txt"
+    ],
+    "scope": "Use the supplied legislative extracts as the fixed test rules, not a representation of legislation current in October 2026.",
+    "guidelines": "No separate gazetted administrative guidelines are supplied; s191(3) lists matters guidelines may provide for, not a checklist made mandatory by that subsection alone.",
+    "s192": "The historical club notice expired; the current exemption is not a clearance notice, and s192 revocation is not a substitute for completing this pending assessment."
+  },
+  "clauses": {
+    "id-100-points": {
+      "outcome": "met",
+      "rationale": "Regulation 6(1), (4)-(5) and Schedule 2 items 1(b)(ii) and 1(a)(iii) support 70 points for the Australian citizenship certificate plus 40 for the in-force NT driver licence, giving 110 with primary documents. The registered name change links the former-name records, while the foreign passport fails item 1(a)(i) because no Australian visa is in force and the stale licence address requires an administrative clarification without defeating these points.",
+      "pages": [
+        "04-p4",
+        "04-p2",
+        "04-p1",
+        "04-p5",
+        "04-p6"
+      ]
+    },
+    "disqualifying-offence": {
+      "outcome": "not_met",
+      "rationale": "The prescribed-history trigger in Act s189(1), regulation 7 and Schedule 3 is not established: Criminal Code s188 is not a listed provision, and the other history is youth shoplifting diversion rather than a listed or equivalent offence. The adult victim aged 23 supports the discretionary assessment but is not the reason s188 is absent from Schedule 3, so the Authority proceeds to s189(2).",
+      "pages": [
+        "05-p1",
+        "06-p1",
+        "07-p1"
+      ]
+    },
+    "whole-history": {
+      "outcome": "cannot_decide",
+      "rationale": "Act s189(2) and s191(3)(a), (c)-(d) support reading both-name Australian history, the NZ diversion and non-conviction conduct together rather than stopping at the single conviction. The supplied sources conflict about the child and leave related source information unconfirmed, so a complete risk appraisal needs targeted additional information under s188(3), with relevant records sought through s190(1).",
+      "pages": [
+        "05-p1",
+        "05-p3",
+        "06-p1",
+        "09-p1",
+        "03-p4",
+        "10-p1",
+        "10-p5"
+      ]
+    },
+    "nature-gravity": {
+      "outcome": "met",
+      "rationale": "The evidence is sufficient to assess the nature and gravity factor described in s191(3)(b)(i): a deliberate intoxicated punch broke an adult victim's nose and resulted in a recorded conviction and a wholly suspended eight-month custodial term. The same remarks accept an early plea, remorse and no prior adult record, which are real mitigating evidence under the s189(2) assessment without making the injury minor.",
+      "pages": [
+        "07-p1",
+        "07-p2",
+        "07-p3"
+      ]
+    },
+    "relevance-to-work": {
+      "outcome": "cannot_decide",
+      "rationale": "For s191(3)(b)(ii), (c)-(d) and s189(2), the under-12 duties, head-coach safeguards and two incident-free reported seasons provide meaningful context while anger under frustration remains relevant to direct child contact. The child-presence dispute prevents a settled risk appraisal, and the employer-specific pending exemption under s187(4)-(5) is neither a clearance nor a substitute for that appraisal.",
+      "pages": [
+        "02-p3",
+        "18-p1",
+        "20-p8",
+        "20-p16",
+        "19-p4",
+        "19-p5",
+        "03-p4",
+        "10-p1"
+      ]
+    },
+    "victim-age": {
+      "outcome": "met",
+      "rationale": "The victim-age factor in s191(3)(b)(iii) is established for the proved assault: the victim was 23, not a child. The police account of a six-year-old possibly exposed to the later domestic incident remains a separate unresolved consideration under s191(3)(c)-(d), not proof of a child-victim assault conviction.",
+      "pages": [
+        "07-p1",
+        "10-p1",
+        "03-p4"
+      ]
+    },
+    "time-elapsed": {
+      "outcome": "met",
+      "rationale": "The dates establish nearly ten years between the 12 November 2016 assault and the 4 October 2026 assembly reference, a factor described by s191(3)(b)(iv). Bond completion without breach, no further criminal charges and sustained recent workplace and club observations support rehabilitation under s189(2), but later 2019 and 2021 conduct must still be weighed.",
+      "pages": [
+        "05-p1",
+        "01-p2",
+        "08-p1",
+        "16-p1",
+        "18-p1",
+        "09-p1",
+        "10-p1"
+      ]
+    },
+    "alleged-and-pattern": {
+      "outcome": "cannot_decide",
+      "rationale": "Under s191(3)(c)-(d) and s189(2), the 2016 assault, 2019 clipboard incident and 2021 wall-punching event support concern about anger across settings, while program insight and recent conduct provide counterweight. The direct child-location contradiction, inconsistent program completion dates and undisclosed cousin relationship require proportionate clarification under s188(3) before a final view, with the child contradiction the principal blocker.",
+      "pages": [
+        "07-p1",
+        "09-p1",
+        "10-p1",
+        "03-p4",
+        "12-p1",
+        "13-p1",
+        "13-p2",
+        "13-p5",
+        "14-p1",
+        "22-p1"
+      ]
+    },
+    "orders-and-agency": {
+      "outcome": "cannot_decide",
+      "rationale": "Act s190(1)(a)(i)-(iii) permits relevant agency, order and criminal-history information to be provided, and s191(3)(c)-(d) allows reasonable consideration of the protective incident despite no breach or charge. The DVO existence and expiry are established, but its confirmation did not resolve the child question and no independent agency response or later adult account is supplied, so targeted source clarification is needed rather than treating missing agency records as an adverse finding.",
+      "pages": [
+        "05-p2",
+        "11-p1",
+        "11-p2",
+        "10-p1",
+        "10-p4",
+        "10-p5"
+      ]
+    },
+    "form-complete": {
+      "outcome": "not_met",
+      "rationale": "The employer application contains candidate authority and police consent required by s188(2)(c), and identity proof is sufficient under s188(2)(b) and regulation 6. Its completed five-year residential answer omits the June-October 2022 Katherine tenancy evidenced by the ledger and bank statements, so the form response needs correction and explanation under s188(2)(a) and s188(3) without assuming deliberate deception.",
+      "pages": [
+        "02-p2",
+        "02-p6",
+        "21-p1",
+        "22-p1"
+      ]
+    }
+  },
+  "decisive_pages": [
+    "01-p2",
+    "02-p2",
+    "02-p3",
+    "02-p4",
+    "02-p5",
+    "02-p6",
+    "03-p1",
+    "03-p3",
+    "03-p4",
+    "04-p1",
+    "04-p2",
+    "04-p4",
+    "04-p5",
+    "04-p6",
+    "05-p1",
+    "05-p2",
+    "05-p3",
+    "06-p1",
+    "07-p1",
+    "07-p2",
+    "07-p3",
+    "08-p1",
+    "09-p1",
+    "10-p1",
+    "10-p5",
+    "11-p1",
+    "11-p2",
+    "13-p1",
+    "13-p2",
+    "13-p5",
+    "14-p1",
+    "16-p1",
+    "18-p1",
+    "19-p1",
+    "19-p5",
+    "20-p8",
+    "20-p16",
+    "21-p1",
+    "22-p1"
+  ],
+  "information_requests": [
+    {
+      "priority": "primary",
+      "subject": "Child presence and exposure",
+      "basis": [
+        "s188(3)",
+        "s190(1)",
+        "s191(3)(c)-(d)"
+      ],
+      "request": "Put the quoted police sentence to the candidate and obtain his specific response; ask the police source to clarify the observation, sequence and available supporting records, and seek relevant existing adult or agency information if held through appropriate authority channels.",
+      "pages": [
+        "03-p4",
+        "10-p1",
+        "10-p4",
+        "10-p5",
+        "13-p5"
+      ],
+      "limit": "Do not prefer either account solely because of its author, infer no agency involvement from absent records, or direct the candidate to contact the child or former partner."
+    },
+    {
+      "priority": "supporting",
+      "subject": "Residential chronology",
+      "basis": [
+        "s188(2)(a)",
+        "s188(3)"
+      ],
+      "request": "Obtain a corrected five-year address section including June-October 2022 at Katherine, an explanation of the omission, and confirmation of present residence and the old licence address.",
+      "pages": [
+        "02-p2",
+        "21-p1",
+        "22-p1",
+        "04-p2"
+      ]
+    },
+    {
+      "priority": "supporting",
+      "subject": "Reference relationship",
+      "basis": [
+        "s188(3)",
+        "s191(3)(d)"
+      ],
+      "request": "Ask the candidate and Samuel to clarify the cousin relationship and why the reference labels him only a family friend; reassess independence without excluding his observations automatically.",
+      "pages": [
+        "14-p1",
+        "22-p1",
+        "03-p1",
+        "04-p5"
+      ]
+    },
+    {
+      "priority": "minor",
+      "subject": "Program completion chronology",
+      "basis": [
+        "s188(3)",
+        "s191(3)(d)"
+      ],
+      "request": "Ask the provider to reconcile the 14 February certificate with the 28 March final attendance and the 18 group plus two make-up record; obtain a corrected or explained completion field if appropriate.",
+      "pages": [
+        "12-p1",
+        "13-p1",
+        "13-p3",
+        "13-p5"
+      ],
+      "limit": "No explanation is established in this packet; do not treat the mismatch as proof that the course was not attended."
+    }
+  ],
+  "trap_ids": [
+    "T1",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7"
+  ]
+}

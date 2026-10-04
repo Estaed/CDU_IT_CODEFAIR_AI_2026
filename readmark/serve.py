@@ -52,6 +52,7 @@ from readmark.writer.transcription import ClaudeTranscriber
 UPLOAD_STEPS = ["Splitting into passages", "The AI is reading", "Checking quotes",
                 "Second reader", "Ready"]
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+SHOWCASE_CASES = {"A-0142", "W-01"}
 
 
 # Officer search is a server feature, separate from the frozen analysis stages. Keep these
@@ -517,7 +518,11 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
         if case_id and default_run and (default_run / "view.json").exists():
             ids.add(case_id)
         result = []
-        for cid in sorted(ids - {"stub", "eval"}):
+        # The evaluation fixtures remain addressable by run/eval and direct case links.
+        # A showcase joins home only when it has a view; W-01 has files only until Task-29.
+        for cid in sorted(ids):
+            if cid not in SHOWCASE_CASES and not cid.startswith("U-"):
+                continue
             if cid.startswith("U-") and upload_job(cid)["status"] != "ready":
                 continue
             v = view(cid)
@@ -541,8 +546,7 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
                            "question_ids": [c["clause_id"] for c in clauses],
                            "flags": flags, "worth_a_look": worth,
                            "required_count": len(v["required_reading"]),
-                           "draft_key": draft_key(v), "signed": signed(cid),
-                           "evaluation": cid in {"E-01", "E-02", "E-03", "H-01"}})
+                           "draft_key": draft_key(v), "signed": signed(cid)})
         with job_lock:
             pending = [json.loads(p.read_text(encoding="utf-8")) for p in
                        sorted(uploads.glob("*/job.json"))]
@@ -597,6 +601,25 @@ def create_app(case_id: str | None = None, run_dir: Path | None = None,
     @app.get("/api/view")
     def get_view(request: Request):
         return view(selected(request))
+
+    @app.get("/api/intake-note")
+    def get_intake_note(request: Request):
+        cid = selected(request)
+        view(cid)
+        case_folder = uploads / cid if cid.startswith("U-") else DATA / "cases" / cid
+        path = case_folder / "intake-note.json"
+        if not path.is_file():
+            # Companion metadata supports immutable showcase folders without changing replay.
+            path = WEB_DIR / "case-notes" / cid / "intake-note.json"
+        if not path.is_file():
+            return None
+        try:
+            note = json.loads(path.read_text(encoding="utf-8")).get("intake_note")
+            if not isinstance(note, str) or not note.strip():
+                raise ValueError("Expected a non-empty intake_note")
+        except (OSError, ValueError, AttributeError):
+            raise HTTPException(503, "The intake note could not be read.") from None
+        return {"intake_note": note}
 
     @app.get("/api/settings")
     def get_settings(request: Request):

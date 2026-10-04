@@ -22,7 +22,7 @@ SHOTS = ROOT / ".tmp/shots/wave8"
 @pytest.fixture
 def home_runs(tmp_path):
     runs = tmp_path / "runs"
-    # Discover views, so the same suite works when Task-21 adds S-01.
+    # Discover replay views, including evaluation cases hidden from home.
     for source in (ROOT / "runs").glob("*/view.json"):
         # Uploaded cases (U-*) are local, git-ignored data with user-given names; the suite
         # tests the committed cases, so a local upload never turns the gate red.
@@ -46,7 +46,7 @@ def test_home_discovers_cases_with_or_without_optional_examples(include_examples
         target = subset / source.parent.name
         target.mkdir()
         shutil.copyfile(source, target / "view.json")
-    expected = {p.parent.name for p in subset.glob("*/view.json")} - {"stub", "eval"}
+    expected = {p.parent.name for p in subset.glob("*/view.json")} & {"A-0142", "W-01"}
     with serving(None, None, None, runs_root=subset) as base, sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page()
@@ -83,7 +83,7 @@ def test_home_counts_both_tiers_from_each_replay(width, home_runs):
             expect(flags.locator(".task-icon.flag")).to_have_count(len(needs))
             expect(flags.locator(".task-icon.worth")).to_have_count(len(worth))
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-            if cid in {"A-0142", "S-01"}:
+            if cid in {"A-0142", "W-01"}:
                 TIER_SHOTS.mkdir(parents=True, exist_ok=True)
                 page.screenshot(path=str(TIER_SHOTS / f"{cid}-home-{width}.png"), full_page=True)
         browser.close()
@@ -175,7 +175,7 @@ def test_home_lists_groups_titles_pages_and_signed_record(width, home_runs):
         expect(page.get_by_role("heading", name="All cases", exact=True)).to_be_visible()
         expect(page.get_by_test_id("new-case")).to_be_enabled()
         expected_ids = {path.parent.name for path in home_runs.glob("*/view.json")}
-        expected_ids -= {"stub", "eval"}
+        expected_ids &= {"A-0142", "W-01"}
         assert set(page.get_by_test_id("home-case").evaluate_all(
             "rows => rows.map(row => row.dataset.case)")) == expected_ids
         for cid in sorted(expected_ids):
@@ -184,9 +184,7 @@ def test_home_lists_groups_titles_pages_and_signed_record(width, home_runs):
             row = page.locator(f'[data-testid="home-case"][data-case="{cid}"]')
             expect(row).to_contain_text(spec["title"])
             expect(row).to_contain_text(f"{view['case']['pages']} pages")
-            if cid in {"E-01", "E-02", "E-03", "H-01"}:
-                expect(page.get_by_role("region", name="Evaluation files").locator(
-                    f'[data-case="{cid}"]')).to_have_count(1)
+        expect(page.get_by_role("region", name="Evaluation files")).to_have_count(0)
         expect(page.get_by_role("region", name="In progress").locator(
             '[data-case="A-0142"]')).to_contain_text("0 of 8 decided")
         expect(page.get_by_test_id("case-summary")).to_contain_text("Documents (60)")
@@ -262,8 +260,8 @@ def test_case_progress_openings_and_disputes_survive_reload_without_leaking(home
         page.get_by_test_id("dispute-save").click()
         page.get_by_test_id("home-link").click()
         expect(page.locator('[data-case="A-0142"]')).to_contain_text("2 of 8 decided")
-        page.locator('[data-case="E-02"]').click()
-        page.get_by_test_id("open-case").click()
+        expect(page.locator('[data-case="E-02"]')).to_have_count(0)
+        page.goto(base + "/?case=E-02")
         expect(page.get_by_test_id("clause-row").first).to_be_visible()
         assert page.evaluate("Object.keys(S.outcomes).length") == 0
         assert page.evaluate("Object.keys(S.disputes).length") == 0
@@ -379,7 +377,7 @@ def test_home_question_list_coverage_opens_policies_without_changing_case_state(
         shots.mkdir(parents=True, exist_ok=True)
         section.scroll_into_view_if_needed()
         page.screenshot(path=str(shots / f"question-lists-{width}.png"), full_page=True)
-        for list_id in ("cdu-extension", "nt-priority-housing"):
+        for list_id in ("nt-priority-housing",):
             coverage = read_coverage(list_id)
             link = section.locator(f'[data-coverage="{list_id}"]')
             expect(link).to_have_text(f"{coverage['n_reported']} policy rules no question covers")
@@ -388,15 +386,6 @@ def test_home_question_list_coverage_opens_policies_without_changing_case_state(
             expect(dialog).to_be_visible()
             expect(dialog.get_by_test_id("coverage-suggestion")).to_have_count(coverage["n_reported"])
             expect(dialog).to_contain_text(f"{coverage['n_scanned']} paragraphs scanned")
-            if list_id == "cdu-extension":
-                for number in (74, 78):
-                    expect(dialog.get_by_role("heading", name=f"Procedure ({number})", exact=True)).to_have_count(1)
-                page.screenshot(path=str(shots / f"cdu-suggestions-{width}.png"))
-                for number in (74, 78):
-                    rule = dialog.get_by_test_id("coverage-suggestion").filter(
-                        has=page.get_by_role("heading", name=f"Procedure ({number})", exact=True))
-                    rule.scroll_into_view_if_needed()
-                    page.screenshot(path=str(shots / f"cdu-procedure-{number}-{width}.png"))
             suggestion = coverage["suggestions"][0]
             dialog.locator(f'[data-list-policy="{suggestion["passage_id"]}"]').click()
             policy = page.get_by_test_id("coverage-policy")
@@ -412,9 +401,9 @@ def test_home_question_list_coverage_opens_policies_without_changing_case_state(
             expect(dialog).to_be_hidden()
         assert page.evaluate("JSON.stringify(localStorage)") == storage_before
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
-        assert page.request.get(base + "/api/question-lists/cdu-extension/passages/priority:p1:1").status == 404
+        assert page.request.get(base + "/api/question-lists/nt-priority-housing/passages/assessment:p1:1").status == 404
         assert page.request.get(base + "/api/question-lists/unknown/coverage").status == 404
-        assert page.request.get(base + "/api/question-lists/cdu-extension/passages/assessment:p999:1").status == 404
+        assert page.request.get(base + "/api/question-lists/nt-priority-housing/passages/priority:p999:1").status == 404
         assert errors == []
         browser.close()
     assert before == {str(path): hashlib.sha256(path.read_bytes()).hexdigest()

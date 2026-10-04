@@ -88,7 +88,7 @@ def _free_port() -> int:
 # proven once, on the real clock, in test_opening_accumulates_three_visible_seconds_across_visits.
 FAST_OPEN = 0.3
 
-# Discover optional examples from replay views; the gate also runs before S-01 is integrated.
+# Discover every committed replay, including the evaluation fixtures hidden from home.
 # Uploaded cases (U-*) are local, git-ignored data with user-given names; only committed cases count.
 COMMITTED_VIEWS = [p for p in sorted((ROOT / "runs").glob("*/view.json")) if not p.parent.name.startswith("U-")]
 LABELLED_CASES = [path.parent.name for path in COMMITTED_VIEWS
@@ -582,6 +582,9 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
         screenshot(page, width, "debts")
 
         # Compare the two real pages together, without silently marking either as opened.
+        # The current page was deliberately opened above. Let its short test clock settle
+        # before taking the counter snapshot, so a threshold crossing cannot race the click.
+        wait_until_opened(page)
         before = page.locator("#passageCount").inner_text()
         page.get_by_test_id("compare-pages").click()
         comparison = page.locator("#comparison")
@@ -618,7 +621,8 @@ def test_answer_key_review_flow_on_a0142(width, tmp_path, a0142_screen):
         # Next flag reaches every flagged highlight in its displayed order, including scan hits
         # and the second side of the pair. Several highlights can share one required passage.
         flags = page.locator('#fileScroll [data-testid="highlight-label"][data-flag="true"]')
-        expected = flags.evaluate_all("els => els.map(e => [e.dataset.arg, e.dataset.pid])")
+        expected = flags.evaluate_all("""els => els.flatMap(e =>
+            e.dataset.flagEvidence.split(' ').map(id => [id, e.dataset.pid]))""")
         # DOM file order differs from the deliberate gate-rank navigation order. Get the order
         # from the user-facing sequence by starting at the first required passage and check the
         # visited set, required-prefix rank, and that each jump is actually visible.
@@ -1381,7 +1385,7 @@ def test_question_tiers_from_every_replay_keep_required_reading(case_id, width, 
             f"0 of {len(view['required_reading'])} required opened")
         assert page.locator('[data-outcome]:checked').count() == 0
         page.get_by_test_id("intro-dismiss").click()
-        if case_id in {"A-0142", "S-01"}:
+        if case_id in {"A-0142", "W-01"}:
             TIER_SHOTS.mkdir(parents=True, exist_ok=True)
             page.screenshot(path=str(TIER_SHOTS / f"{case_id}-case-list-{width}.png"),
                             full_page=True)
@@ -1395,8 +1399,6 @@ def test_question_tiers_from_every_replay_keep_required_reading(case_id, width, 
         order = [{"needs": 0, "worth": 1, "clean": 2}[tier]
                  for cid, tier in rows if cid != "other"]
         assert order == sorted(order)
-        if case_id == "S-01":
-            assert sum(tier == "needs" for tier in tiers.values()) <= 2
         if case_id == "A-0142":
             assert tiers["elig-debts"] == tiers["elig-residency"] == "needs"
         photographed_worth = False
@@ -1426,7 +1428,7 @@ def test_question_tiers_from_every_replay_keep_required_reading(case_id, width, 
                 if required:
                     expect(page.get_by_test_id("flagged")).to_contain_text(
                         "Must open: a page the AI did not use")
-                if case_id in {"A-0142", "S-01"} and required and not photographed_worth:
+                if case_id in {"A-0142", "W-01"} and required and not photographed_worth:
                     page.screenshot(path=str(TIER_SHOTS / f"{case_id}-worth-a-look-{width}.png"),
                                     full_page=True)
                     photographed_worth = True

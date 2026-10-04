@@ -75,7 +75,11 @@ tests use.
 
 ## What else is on the screen
 
-- **Case home:** cases in progress, completed and evaluation files.
+- **Case home:** A-0142 (NT priority housing), W-01 (NT Working with Children Clearance) once
+  its checks are ready, and your own uploads, grouped as in progress or completed. Evaluation
+  files stay available to `run` and `eval`, and stay off the home screen.
+- **Intake note:** a receiving officer's neutral description of what the file holds. Close it
+  or reopen it with **Intake note**; it never recommends an outcome.
 - **New case:** upload several documents (PDF or text) and run the checks live.
 - **Scanned pages:** Claude reads the page image, and the image stays beside the text.
 - **Search:** words always; meaning through Jev when online.
@@ -157,13 +161,19 @@ If the site has published a newer version, its SHA-256 will differ and ingest wi
 on purpose (update `policies.lock.json` and check that `readmark/checklist/clauses.yaml` still
 matches word for word), never silently.
 
-**The easy example (S-01)** uses CDU's coursework assessment policy, which CDU publishes as a web
-page. Its terms allow private and in-organisation use, not publishing, so the text is rebuilt
-locally rather than shipped. The script pins it to the SHA-256 in
-`readmark/checklist/lists/cdu-extension/list.yaml`:
+</details>
+
+W-01 contains 24 synthetic application PDFs (104 pages), with `facts.csv`, `gold.json` and
+`intake-note.json` in `data/cases/W-01/`. Its question list and live run are prepared separately;
+until a run exists, home shows A-0142 alone. The answer key is evaluation data, never model input.
+
+Download its two fixed test rule PDFs from the NT legislation site:
 
 ```sh
-uv run python scripts/fetch_cdu_policy.py
+uv run python scripts/fetch_wwcc_rules.py
 ```
 
-</details>
+The script uses a browser User-Agent, verifies both downloads before saving, and rejects any
+SHA-256 mismatch. `data/policies/nt-wwcc/policies.lock.json` pins the Act as in force at
+31 August 2026 and the Screening Regulations as in force at 25 March 2024. The PDFs remain
+git-ignored. These are the supplied test versions.

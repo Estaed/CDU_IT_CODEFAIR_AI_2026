@@ -7,7 +7,8 @@ data/uploads/
 data/question-lists/
 runs/U-*/
 data/policies/*.pdf
+data/policies/nt-wwcc/*.pdf
 __pycache__/
 runs/*/records/
-# CDU policy text: rebuilt by scripts/fetch_cdu_policy.py, not published (CDU terms)
-data/policies/cdu-extension/*.txt
+# Restricted policy text, including locally retained historical downloads.
+data/policies/**/*.txt

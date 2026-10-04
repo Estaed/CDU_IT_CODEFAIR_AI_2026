@@ -298,7 +298,7 @@ def test_uploads_runs_and_env_are_git_ignored():
                  "runs/U-test/view.json", "runs/U-test/cache/writer.json", ".env"]:
         assert ignored(path), path
     for path in ["runs/A-0142/view.json", "runs/E-01/view.json", "runs/H-01/view.json",
-                 "runs/S-01/view.json", "runs/eval/summary.json"]:
+                 "runs/eval/summary.json"]:
         assert not ignored(path), path
 
 

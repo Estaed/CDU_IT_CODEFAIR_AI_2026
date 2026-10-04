@@ -33,6 +33,7 @@ const icon = (n) => `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="curr
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const $ = (id) => document.getElementById(id);
 const num = (n) => `<span class="mono">${n}</span>`;
+const pageCount = (n) => `${n} ${n === 1 ? 'page' : 'pages'}`;
 const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 // Three status lists, kept apart: claim checks, clause coverage, the officer's outcome. Each status
@@ -295,7 +296,7 @@ function quoteHtml(claim, c, testid = 'quote') {
 function renderBar() {
   const v = S.view;
   $('caseId').textContent = v.case.title || v.case.case_id;
-  $('caseFacts').textContent = `${v.case.pages} pages · ${v.case.synthetic ? 'synthetic case' : caseNoun().toLowerCase()}`;
+  $('caseFacts').innerHTML = `<div><dt>File</dt><dd>${pageCount(v.case.pages)}</dd></div><div><dt>Type</dt><dd>${v.case.synthetic ? 'Synthetic case' : esc(caseNoun())}</dd></div>`;
   const n = nextAction();
   let label;
   let hint;
@@ -345,7 +346,7 @@ function renderRail() {
       : tier === 'worth' ? `Worth a look · ${pages} ${pages === 1 ? 'page' : 'pages'} the AI did not use` : 'Looks clean · not decided';
     return `<button class="rrow ${sel ? 'is-sel' : ''}"
       data-act="clause" data-arg="${esc(id)}" data-testid="clause-row" data-clause="${esc(id)}" data-tier="${tier}" aria-current="${sel}">
-      <span class="task-icon ${st.outcome ? `outcome-${st.outcome}` : tier === 'needs' ? 'flag' : tier === 'worth' ? 'worth' : ''}">${st.outcome ? {met: '✓', not_met: '✗', cannot_decide: '⏸'}[st.outcome] : tier === 'needs' ? '!' : tier === 'worth' ? '○' : id === 'other' ? '–' : ''}</span>
+      <span class="task-icon ${st.outcome ? `outcome-${st.outcome}` : tier === 'needs' ? 'flag' : tier === 'worth' ? 'worth' : ''}" aria-hidden="true">${st.outcome ? {met: '✓', not_met: '✗', cannot_decide: '⏸'}[st.outcome] : tier === 'needs' ? '!' : tier === 'worth' ? '○' : id === 'other' ? '–' : ''}</span>
       <span><span class="rname">${esc(shortName(cl))}</span>
       <span class="rstat">${esc(status)}${st.flagged.length ? ` · ${st.opened} of ${st.flagged.length} opened` : ''}</span></span></button>`;
   };
@@ -365,7 +366,7 @@ function renderRail() {
       ${clean.map(row).join('')}</details>` : ''}
     ${other.length ? `<details class="rail-list other-group"><summary>Background facts (no decision needed)</summary>${other.map(row).join('')}</details>` : ''}
     <div class="rail-list"><button class="rrow signrow ${S.signed ? 'is-signed' : ''} ${S.sel === 'signoff' ? 'is-sel' : ''}" data-act="signoff" data-testid="signoff-row">
-      <span class="task-icon">${S.signed ? '✓' : '–'}</span><span><span class="rname">Sign decision</span><span class="rstat">${sign}</span></span></button></div>`;
+      <span class="task-icon" aria-hidden="true">${S.signed ? '✓' : '–'}</span><span><span class="rname">Sign decision</span><span class="rstat">${sign}</span></span></button></div>`;
 }
 
 // ---- Right: the selected clause ----
@@ -438,7 +439,7 @@ function clauseView(cl) {
     <div class="d-head"><h2 data-testid="clause-title">${esc(shortName(cl))}</h2>
       <span class="sub">${id === 'other' ? 'No outcome needed' : `Question ${number} of ${decisive().length} · ${esc(cl.source || 'Policy question')}`}</span></div>
     ${cl.policy_sentence ? `<blockquote class="policy-inset">“${esc(cl.policy_sentence)}”</blockquote>` : ''}
-    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
+    ${warning ? `<section class="warning-box${worth ? ' worth-box' : ''}" data-testid="question-warning"><span class="task-icon ${worth ? 'worth' : 'flag'}" aria-hidden="true">${worth ? '○' : '!'}</span><div class="warning-copy"><div class="warning-heading"><b>${esc(disagreeingPages.length > 2 ? 'Pages in the file disagree' : flag)}</b></div><p>${warning}</p>${pairs}</div></section>` : ''}
     ${badQuotes.length ? `<section class="question-block quote-warning" data-testid="quote-warning">${icon('alert')}Quote not found for ${badQuotes.length} ${badQuotes.length === 1 ? 'note' : 'notes'}. <button class="act" data-act="claims">Show AI notes</button></section>` : ''}
     <div class="question-split"><section class="reader" id="reader" aria-label="${esc(caseNoun())} pages"></section>
       <aside class="answer-panel">${id !== 'other' ? `<div class="outbar" data-testid="outcome-bar">
@@ -628,12 +629,23 @@ function pageParagraph(p, previous = []) {
       data-evidence="${here.map((a) => a.id).join(' ')}" data-claims="${[...new Set(here.flatMap((a) => a.claimIds))].join(' ')}"
       data-clauses="${[...new Set(here.map((a) => a.cid))].join(' ')}">${words}</mark>` : words;
   }
-  const labels = annotations.map((a) => {
-    const repeated = previous.some((b) => labelKey(b) === labelKey(a));
-    const label = `${shortName(clauseById(a.cid))}${a.kind === 'missed' ? ' · Possibly missed' : a.kind === 'pair' ? ' · Two pages disagree' : S.fullFile && a.flagged ? ' · Check' : ''}`;
-    return `<button class="evidence-label ${repeated ? 'evidence-marker' : ''} ${a.flagged ? 'flag-label' : ''} ${S.current?.annotation === a.id ? 'current-label' : ''}" id="${a.id}" aria-label="${esc(label)}"
-    data-act="annotation" data-arg="${a.id}" data-testid="highlight-label" data-clause="${esc(a.cid)}" data-pid="${esc(a.pid)}"
-    data-flag="${a.flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${repeated ? icon(a.flagged ? 'flag' : 'check') : `${S.fullFile ? icon(a.flagged ? 'flag' : 'check') : ''}${esc(label)}${S.fullFile && isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}`}</button>`;
+  // One tag per question in a paragraph. Every quote and claim association
+  // stays on its highlight; tags retain all targets for the opening clock and navigation.
+  const labelGroups = new Map();
+  annotations.forEach((a) => {
+    const key = a.cid;
+    if (!labelGroups.has(key)) labelGroups.set(key, []);
+    labelGroups.get(key).push(a);
+  });
+  const labels = [...labelGroups.values()].map((group) => {
+    const primary = group.find((item) => item.flagged) || group[0];
+    const a = group.find((item) => item.id === S.current?.annotation) || primary;
+    const flagged = group.some((item) => item.flagged);
+    const repeated = previous.some((b) => labelKey(b) === labelKey(primary));
+    const label = `${shortName(clauseById(a.cid))}${primary.kind === 'missed' ? ' · Possibly missed' : primary.kind === 'pair' ? ' · Two pages disagree' : S.fullFile && flagged ? ' · Check' : ''}`;
+    return `<button class="evidence-label ${repeated ? 'evidence-marker' : ''} ${flagged ? 'flag-label' : ''} ${S.current?.annotation === a.id ? 'current-label' : ''}" id="${a.id}" aria-label="${esc(label)}"
+    data-act="annotation" data-arg="${a.id}" data-evidence="${group.map((item) => item.id).join(' ')}" data-flag-evidence="${group.filter((item) => item.flagged).map((item) => item.id).join(' ')}" data-testid="highlight-label" data-clause="${esc(a.cid)}" data-pid="${esc(a.pid)}"
+    data-flag="${flagged}" aria-current="${S.current?.annotation === a.id}"${S.signed ? ' disabled' : ''}>${repeated ? icon(flagged ? 'flag' : 'check') : `${S.fullFile ? icon(flagged ? 'flag' : 'check') : ''}${esc(label)}${S.fullFile && isRequired(a.pid) ? '<span class="label-required">Required</span>' : ''}`}</button>`;
   }).join('');
   const active = S.current?.pid === p.passage_id;
   return `<div class="file-paragraph ${active ? 'active-passage' : ''} ${annotations.some((a) => !a.quote) ? 'scan-passage' : ''}"
@@ -704,7 +716,7 @@ function renderReader() {
   const more = optional.slice(2);
   const active = groups.find((g) => g.key === S.tab) || groups[0];
   if (active) S.tab = active.key;
-  const fullButton = `<button class="act full-link" data-act="full-open" data-testid="open-full-file">Open in full file (${S.pages.length} pages) ↗</button>`;
+  const fullButton = `<button class="act full-link" data-act="full-open" data-testid="open-full-file">${icon('file')}Open in full file (${pageCount(S.pages.length)}) ↗</button>`;
   const tabs = `<div class="viewer-top"><div class="page-tabs" role="tablist" aria-label="Pages for this question">${visible.map((g) => {
     const opened = g.pids.some(hasOpened);
     const solelyMissed = g.missed && !g.pids.some((pid) => S.annotations.some((a) => a.pid === pid && a.cid === S.sel && a.quote)) && !clauseById(S.sel).contradictions.some((p) => g.pids.includes(p.a) || g.pids.includes(p.b));
@@ -1128,12 +1140,43 @@ $('rail').innerHTML = Array.from({ length: 6 }, () => '<div class="skel rrow-ske
 $('detail').innerHTML = '<div class="skel skel-head"></div><div class="skel skel-body"></div>';
 
 // Context has its own request: an unavailable context file cannot block case review.
+function loadIntakeNote() {
+  fetch(caseApi('/api/intake-note')).then((response) => {
+    if (!response.ok) throw new Error();
+    return response.json();
+  }).then((data) => {
+    if (!data?.intake_note) return;
+    const panel = $('intakeNote');
+    const key = `readmark-intake-dismissed-${activeCase}`;
+    panel.innerHTML = `<div class="intake-head"><div><h2 id="intakeTitle">About this file</h2><p class="eyebrow">Intake note · Receiving officer</p></div><button class="btn-secondary" data-testid="intake-dismiss" aria-label="Close intake note">Close</button></div><p>${esc(data.intake_note)}</p>`;
+    panel.hidden = Boolean(stored(key));
+    panel.querySelector('button').onclick = () => {
+      panel.hidden = true;
+      store(key, '1');
+      $('caseSearch').focus();
+    };
+    $('intakeRecall').hidden = false;
+    $('intakeRecall').onclick = () => {
+      panel.hidden = false;
+      store(key, '');
+      panel.querySelector('button').focus();
+      panel.scrollIntoView({ block: 'start' });
+    };
+  }).catch(() => {
+    const panel = $('intakeNote');
+    panel.hidden = false;
+    panel.innerHTML = '<div class="intake-head"><h2 id="intakeTitle">About this file</h2><button class="btn-secondary" aria-label="Close intake note">Close</button></div><p class="note">The intake note is unavailable. You can still review this file.</p>';
+    panel.querySelector('button').onclick = () => { panel.hidden = true; $('caseSearch').focus(); };
+  });
+}
+
 function loadCase() {
 Promise.all(['/api/view', '/api/case-pages', '/api/settings', '/api/question-list'].map((url) => fetch(caseApi(url))
   .then(async (r) => { if (!r.ok) throw new Error((await r.json()).detail || `HTTP ${r.status}`); return r.json(); })))
   .then(([v, file, settings, questionList]) => {
     S.view = v;
     activeCase = v.case.case_id;
+    loadIntakeNote();
     S.draftKey = settings.draft_key;
     S.questionList = questionList;
     $('caseNoun').textContent = caseNoun();

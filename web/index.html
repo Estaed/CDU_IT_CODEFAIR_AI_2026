@@ -4,28 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Readmark · Priority housing review</title>
-<link rel="icon" href="data:,">
+<link rel="icon" type="image/svg+xml" href="mark.svg">
 <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <header class="service-band" data-testid="service-band">
   <div class="service-context" id="serviceContext">NT priority housing<br>Demonstration service</div>
-  <div><b>Readmark</b><div id="serviceDescription">Priority housing review · Darwin urban</div></div>
+  <div><b class="service-name"><svg class="service-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M7 3h12l6 6v20H7zM19 3v6h6M11 14h10M11 19h10M11 24h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M3 17h4v7H3z" fill="currentColor"/></svg>Readmark</b><div id="serviceDescription">Priority housing review · Darwin urban</div></div>
   <span class="officer" id="officerLabel">Delegated officer</span>
 </header>
-<div class="casebar" id="casebar" aria-label="Case">
+<section class="casebar" id="casebar" aria-label="Case">
   <div class="wrap casebar-in">
     <div class="case-id">
       <a class="act" href="/?home=1" data-testid="home-link">All cases</a>
       <h1><span id="caseNoun">Applicant file</span> <span class="accent" id="caseId">…</span></h1>
     </div>
-    <div class="case-facts"><span id="caseFacts"></span><p class="context" id="waitContext" data-testid="wait-context"></p></div>
+    <div class="case-facts"><dl class="case-summary-list" id="caseFacts"></dl><p class="context" id="waitContext" data-testid="wait-context"></p></div>
     <div class="next" id="next"></div>
   </div>
-</div>
+</section>
 
 <main class="wrap home" id="home" hidden aria-label="Case home"></main>
-<div class="wrap" id="review">
+<main class="wrap" id="review" aria-label="Case review">
+  <section class="intake-note" id="intakeNote" aria-labelledby="intakeTitle" data-testid="intake-note" hidden></section>
   <p class="sr" id="job">Loading the case…</p>
   <section class="case-search" aria-label="Search this case">
     <form id="caseSearchForm" role="search">
@@ -42,16 +43,17 @@
   <div class="work" id="work">
     <nav class="rail" id="rail" aria-label="Questions"></nav>
     <section id="intro" aria-label="How this works" hidden></section>
-    <main class="detail" id="detail"></main>
+    <div class="detail" id="detail"></div>
   </div>
   <div class="job-actions">
     <button class="act" type="button" data-act="intro-open" data-testid="help-btn">How this works</button>
     <button class="act" type="button" data-act="about-open" data-testid="about-btn">About these checks</button>
+    <button class="act" type="button" id="intakeRecall" data-testid="intake-recall" hidden>Intake note</button>
   </div>
   <footer id="reviewFooter">Synthetic case file. Policy text from NT public housing policies, read from the pinned
     PDFs. Opening a passage is recorded; it does not prove it was read. The AI checks claims; it
     never sets a question outcome or recommends a decision.</footer>
-</div>
+</main>
 
 <dialog id="about" aria-labelledby="aboutTitle" data-testid="about"></dialog>
 <dialog id="policy" aria-label="Policy passage"><div id="pane"></div></dialog>

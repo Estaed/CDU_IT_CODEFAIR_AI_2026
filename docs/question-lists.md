@@ -94,13 +94,11 @@ suggestion, plus the scope sentence, threshold, scope model and `n_scope_scanned
 use the same list-local replay cache, storing responses rather than policy text. The home
 screen count is the number left after this filter.
 
-The orchestrator's 4 Oct scope probe kept **7 of 52** candidates for `cdu-extension`
-(264 paragraphs scanned), and **13 of 56** for `nt-priority-housing` (368 scanned).
-The delivered live run with the same topic and threshold kept **6 of 52** and **12 of 56**,
-respectively; live model scores can vary. Its recorded responses are frozen in each list's
-cache and reproduce byte for byte with `--replay`. CDU procedures **(74)** (special
-consideration) and **(78)** (late penalty), and the seven-day late-submission cutoff, remain
-suggestions. These counts describe suggestions, not measured accuracy.
+The orchestrator's 4 Oct scope probe kept **13 of 56** candidates for `nt-priority-housing`
+(368 paragraphs scanned). The delivered live run with the same topic and threshold kept
+**12 of 56**; live model scores can vary. Its recorded responses are frozen in the list's
+cache and reproduce byte for byte with `--replay`. These counts describe suggestions,
+not measured accuracy.
 
 `coverage.json` records the scanned/reported counts, thresholds, model, recorded UTC date,
 policy SHA-256 pins, and each suggestion's paragraph id, section, page, scores and a verified

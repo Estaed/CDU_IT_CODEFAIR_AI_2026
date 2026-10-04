@@ -164,6 +164,25 @@ def complete_outputs():
     return all((EVAL / f"{part}.json").exists() for part in PARTS)
 
 
+def assert_replay_unchanged(actual, expected):
+    """Only H-01's implementation list may lose the two deleted CDU source paths."""
+    if actual.name not in {"cases.json", "summary.json"}:
+        assert actual.read_bytes() == expected.read_bytes()
+        return
+    replay, baseline = load(actual), load(expected)
+    replay_cases = replay["parts"]["cases"] if actual.name == "summary.json" else replay
+    baseline_cases = baseline["parts"]["cases"] if actual.name == "summary.json" else baseline
+    replay_pin = replay_cases["cases"]["H-01"]["heldout_discipline"]
+    baseline_pin = baseline_cases["cases"]["H-01"]["heldout_discipline"]
+    retired = {"readmark/checklist/lists/cdu-extension/clauses.yaml",
+               "readmark/checklist/lists/cdu-extension/list.yaml"}
+    assert replay_pin["changed_result_files"] == [p for p in baseline_pin["changed_result_files"]
+                                                 if p not in retired]
+    baseline_pin["changed_result_files"] = replay_pin["changed_result_files"]
+    # Every other field, including every number and denominator, must remain exactly equal.
+    assert replay == baseline
+
+
 @needs_pdfs
 @pytest.mark.skipif(not complete_outputs(), reason="live evaluation has not completed yet")
 def test_each_new_part_replays_twice_with_no_keys_or_claude(tmp_path):
@@ -179,14 +198,14 @@ def test_each_new_part_replays_twice_with_no_keys_or_claude(tmp_path):
     # the project's committed CSVs. It has no live-model code path.
     for part in ("cases", "mutations", "ablation", None):
         name = part or 'audit_labels'  # summary assembly also rebuilds the labelled comparison
-        expected = (EVAL / f"{name}.json").read_bytes()
+        expected = EVAL / f"{name}.json"
         for _ in range(2):
             command = [sys.executable, '-m', 'readmark', 'eval', '--replay']
             if part:
                 command += ['--part', part]
             subprocess.run(command,
                            cwd=ROOT, env=env, capture_output=True, check=True, timeout=300)
-            assert (runs / "eval" / f"{name}.json").read_bytes() == expected
+            assert_replay_unchanged(runs / "eval" / f"{name}.json", expected)
             for cid in ALL_CASES:
                 stages = ['view', 'writer', 'checks', 'jev', 'gate', 'scan', 'pairs', 'dedup']
                 if cid in ('A-0142', 'H-01'):
@@ -196,7 +215,7 @@ def test_each_new_part_replays_twice_with_no_keys_or_claude(tmp_path):
                 for stage in stages:
                     assert (runs / cid / f"{stage}.json").read_bytes() == (
                         ROOT / "runs" / cid / f"{stage}.json").read_bytes()
-    assert (runs / 'eval' / 'summary.json').read_bytes() == (EVAL / 'summary.json').read_bytes()
+    assert_replay_unchanged(runs / 'eval' / 'summary.json', EVAL / 'summary.json')
     assert (runs / 'eval' / 'checks_round2.json').read_bytes() == (
         EVAL / 'checks_round2.json').read_bytes()
     assert (runs / 'eval' / 'jev_supports.json').read_bytes() == (

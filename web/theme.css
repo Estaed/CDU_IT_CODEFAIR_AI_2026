@@ -53,13 +53,13 @@ a, .act { color: var(--primary); }
 .case-row:hover { background: var(--selected); }
 .case-row[aria-pressed="true"] { background: var(--selected); border-left: 4px solid var(--primary); padding-left: 6px; }
 .group-empty { padding: 8px 10px; border-top: 1px solid var(--line); }
-.evaluation-group h2 { color: var(--secondary); }
 .case-summary { min-width: 0; }
 .case-summary h2 { font-size: 30px; margin: 4px 0 0; }
 .home-progress { margin: 8px 0 20px; color: var(--secondary); }
 .home-facts { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px 16px; margin: 0 0 24px; }
 .home-facts dt { font-weight: bold; }
 .home-facts dd { margin: 0; }
+.home-facts dt, .home-facts dd { padding: 8px 0; border-bottom: 1px solid var(--line); }
 .home-flags { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--line); }
 .case-summary h3 { font-size: 18px; margin: 10px 0; }
 .home-flags p { margin: 8px 0; }
@@ -90,6 +90,10 @@ a, .act { color: var(--primary); }
 .btn-primary:hover { background: var(--button-edge); }
 .btn-secondary { background: var(--secondary-button); color: var(--header); box-shadow: 0 2px 0 var(--line); }
 .btn-secondary:hover { background: var(--viewer); }
+.btn-primary:disabled, .btn-secondary:disabled, .btn-secondary:disabled:hover {
+  color: var(--secondary); background: var(--viewer); border: 1px solid var(--line);
+  box-shadow: none; cursor: not-allowed;
+}
 .sign-pending { border: 1px solid var(--primary); background: var(--paper); color: var(--primary); box-shadow: none; }
 .sign-ready { background: var(--success); box-shadow: 0 2px 0 var(--success-edge); }
 .sign-ready:hover { background: var(--success-edge); }
@@ -98,6 +102,20 @@ a, .act { color: var(--primary); }
 .icon-btn { display: grid; place-items: center; width: 36px; height: 36px; border: 0; background: var(--paper); color: var(--primary); }
 .service-band { display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: var(--header); color: var(--paper); border-bottom: 6px solid var(--header-rule); font-size: 13px; }
 .service-band b { font-size: 20px; }
+.service-name { display: flex; align-items: center; gap: 8px; }
+.service-mark { width: 28px; height: 28px; flex: none; }
+.service-band :focus-visible { outline-color: var(--paper); }
+.case-row-name .i, .home-documents .i { margin-right: 6px; }
+.inset-note { padding: 12px 16px; border-left: 4px solid var(--line); background: var(--viewer); }
+.case-summary-list { margin: 0; font-size: 14px; }
+.case-summary-list > div { display: flex; gap: 8px; }
+.case-summary-list dt { font-weight: bold; }
+.case-summary-list dd { margin: 0; }
+.intake-note { border: 1px solid var(--line); border-left: 4px solid var(--primary); background: var(--selected); padding: 16px 20px; margin-top: 20px; scroll-margin-top: calc(var(--bar-h, 100px) + 12px); }
+.intake-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
+.intake-head h2 { margin: 0; font-size: 20px; }
+.intake-head .eyebrow { margin: 4px 0 0; }
+.intake-note > p { margin: 12px 0 0; max-width: 1000px; }
 .service-context { border-right: 1px solid var(--line); padding-right: 20px; line-height: 1.2; }
 .officer { margin-left: auto; }
 .casebar { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--line); }
@@ -156,7 +174,7 @@ h1 { font-size: 22px; margin: 0; white-space: nowrap; }
 .more-page-list li + li { border-top: 1px solid var(--line); }
 .more-page-list .act { width: 100%; padding: 10px 0; }
 .more-page-list [aria-current="page"] { font-weight: bold; }
-.full-link { display: flex; margin: 0 12px 0 auto; width: 180px; flex: none; justify-content: flex-end; font-size: 13px; min-height: 38px; }
+.full-link { display: flex; margin: 0 12px 0 auto; flex: none; justify-content: flex-end; font-size: 13px; min-height: 38px; white-space: nowrap; }
 .file-scroll { height: 404px; padding: 14px; overflow: auto; overscroll-behavior: contain; }
 .file-page { padding: 22px 34px; background: var(--paper); border: 1px solid var(--line); font: 400 15px/1.6 Georgia, serif; overflow-wrap: break-word; min-height: 374px; }
 .file-page + .file-page { margin-top: 24px; }

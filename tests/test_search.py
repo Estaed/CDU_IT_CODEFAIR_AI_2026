@@ -168,7 +168,7 @@ def test_search_words_meaning_and_real_opening_clock(width, tmp_path):
 
 
 @needs_pdfs
-def test_policy_search_and_student_case_isolation(tmp_path):
+def test_policy_search_and_case_isolation(tmp_path):
     from playwright.sync_api import expect, sync_playwright
 
     with serving("A-0142", A0142_RUN, tmp_path / "records") as base, sync_playwright() as p:
@@ -185,18 +185,18 @@ def test_policy_search_and_student_case_isolation(tmp_path):
         expect(dialog).to_be_visible()
         expect(dialog.get_by_test_id("search-match").first).to_have_text("withheld")
         page.wait_for_function("hasOpened(S.current.pid)", timeout=3000)
-        response = page.request.get(base + "/api/search?case=S-01&q=extension").json()
+        response = page.request.get(base + "/api/search?case=E-02&q=application").json()
         hits = [r for g in response["groups"] for r in g["results"]]
         case_hits = [r for r in hits if r["kind"] == "case"]
-        assert case_hits and all(r["passage_id"].startswith("S-01:") for r in case_hits)
-        assert all(r["passage_id"].startswith("assessment:") for r in hits if r["kind"] == "policy")
-        assert page.request.get(base + "/api/passages/eligibility:p1:1?case=S-01").status == 404
-        page.goto(base + "/?case=S-01")
-        page.get_by_test_id("case-search").fill("extension")
+        assert case_hits and all(r["passage_id"].startswith("E-02:") for r in case_hits)
+        assert all(not r["passage_id"].startswith("A-0142:") for r in hits)
+        assert page.request.get(base + "/api/passages/A-0142:p1:1?case=E-02").status == 404
+        page.goto(base + "/?case=E-02")
+        page.get_by_test_id("case-search").fill("application")
         expect(page.get_by_test_id("search-status")).to_contain_text("word search ·")
-        student_ids = page.locator('[data-testid="search-result"][data-kind="case"]').evaluate_all(
+        other_ids = page.locator('[data-testid="search-result"][data-kind="case"]').evaluate_all(
             "els => els.map(e => e.dataset.searchPid)")
-        assert student_ids and all(pid.startswith("S-01:") for pid in student_ids)
+        assert other_ids and all(pid.startswith("E-02:") for pid in other_ids)
         browser.close()
 
 
@@ -259,7 +259,7 @@ def test_uncited_search_openings_sign_without_changing_frozen_view(tmp_path):
                                                  "opened_at": "2026-10-04T00:00:00Z"}
                                                 for extra in extras]}
         # An opening from a different case/list cannot enter the decision record.
-        invalid = dict(payload, passages_opened=opened + [{"passage_id": "S-01:p1:1"}])
+        invalid = dict(payload, passages_opened=opened + [{"passage_id": "E-02:p1:1"}])
         assert page.request.post(base + "/api/records", data=invalid).status == 422
         response = page.request.post(base + "/api/records", data=payload)
         assert response.status == 200, response.text()

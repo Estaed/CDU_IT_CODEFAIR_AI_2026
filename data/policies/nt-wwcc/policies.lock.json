@@ -1,0 +1,16 @@
+{
+  "care-and-protection-of-children-act-2007.pdf": {
+    "url": "https://legislation.nt.gov.au/api/sitecore/Act/PDF?id=11659",
+    "version": "As in force at 31 August 2026",
+    "approved": "2026-08-31",
+    "sha256": "05c617e071490a3ca606c4c6da1bfbd2870c3c9757a2acbb7823d8ad139b2950",
+    "pages": 201
+  },
+  "care-and-protection-of-children-screening-regulations-2010.pdf": {
+    "url": "https://legislation.nt.gov.au/api/sitecore/Act/PDF?id=11662",
+    "version": "As in force at 25 March 2024",
+    "approved": "2024-03-25",
+    "sha256": "27e652e994236e8b785775ddb4c55bea5d926b9722bef319f7d4c23cf17e3e05",
+    "pages": 15
+  }
+}

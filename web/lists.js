@@ -73,7 +73,7 @@ async function showGeneratedList(listId) {
       if (!$('listStatus')) return;
       $('listTitle').textContent = job.name;
       $('listStatus').textContent = job.status === 'failed' ? job.message : job.steps.at(-1) || 'Rules uploaded';
-      $('listSteps').innerHTML = LIST_STEPS.map((step) => `<li><span>${step}</span><span class="upload-step-state">${job.steps.includes(step) ? job.status === 'running' && step === job.steps.at(-1) ? 'In progress' : '✓ Done' : 'Waiting'}</span></li>`).join('');
+      $('listSteps').innerHTML = LIST_STEPS.map((step) => `<li><span>${step}</span><span class="upload-step-state">${job.steps.includes(step) ? step === job.steps.at(-1) && job.status !== 'ready' ? job.status === 'failed' ? 'Stopped' : 'In progress' : '✓ Done' : 'Waiting'}</span></li>`).join('');
       if (job.status === 'running') setTimeout(poll, 500);
       else if (job.status === 'ready') renderListReview(listId, job);
     } catch (error) { if ($('listStatus')) $('listStatus').textContent = error.message; }

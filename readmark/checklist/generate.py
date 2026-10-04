@@ -129,14 +129,21 @@ def suggest(list_id: str, *, replay: bool = False, lists_dir: Path = QUESTION_LI
     stage(STEPS[0])
     spec_yaml = read_yaml(folder / "list.yaml")
     # Reject image-only or partly scanned policies. OCR is deliberately outside this flow.
+    # A textless page without images is a genuine blank page (NT legislation has one after its
+    # contents), so it is kept; a file with no text at all still fails.
     for policy in spec_yaml["policies"]:
         path = folder / "policies" / policy["file"]
         try:
-            pages = ([p.extract_text() or "" for p in PdfReader(path).pages]
-                     if path.suffix == ".pdf" else path.read_text(encoding="utf-8").split("\f"))
+            if path.suffix == ".pdf":
+                pdf_pages = PdfReader(path).pages
+                pages = [p.extract_text() or "" for p in pdf_pages]
+                scanned = any(not text.strip() and len(page.images)
+                              for text, page in zip(pages, pdf_pages))
+            else:
+                pages, scanned = path.read_text(encoding="utf-8").split("\f"), False
         except Exception as exc:
             raise IngestError("A rule file could not be read; your files are kept.") from exc
-        if not pages or any(not p.strip() for p in pages):
+        if scanned or not any(p.strip() for p in pages):
             raise IngestError("Choose rules with selectable text; a scanned or empty page was found.")
         policy["pin"]["pages"] = len(pages)
     write_yaml(folder / "list.yaml", spec_yaml)

@@ -120,8 +120,8 @@ case name and chosen documents while that browser page stays open.
 
 Code assigns safe rule filenames and policy keys, SHA-256 pins, actual page counts, UTC upload
 dates and version `uploaded <date>`. Originals, list metadata, suggestions and model responses
-stay in the ignored folder. Scanned, empty or unreadable rule pages fail plainly and retain
-the uploads. No policy text is copied into a committed list or a case replay.
+stay in the ignored folder. Scanned pages, files with no text and unreadable files fail plainly
+and retain the uploads; a blank page without images is kept. No policy text is copied into a committed list or a case replay.
 
 The existing Claude CLI wrapper (`opus`, structured schema) suggests at most ten questions,
 most decisive first. Each has the ordinary clause fields plus `why`. Rule text and scope are

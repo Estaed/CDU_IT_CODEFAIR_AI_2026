@@ -182,10 +182,12 @@ def test_multiple_rule_files_have_exact_pins_and_page_counts(app_options):
     lists = app_options["lists_dir"]
     create_draft("mixed", "Mixed rules", "Student extension rules.",
                  [("text.txt", RULES + b"\fAn officer must check the date."),
-                  ("policy.pdf", pdf_bytes("The officer must record the reason."))], lists_dir=lists)
+                  # A blank page with no image (as after NT legislation contents) is not a scan.
+                  ("policy.pdf", pdf_bytes("The officer must record the reason.",
+                                           empty_second_page=True))], lists_dir=lists)
     suggest("mixed", lists_dir=lists)
     spec = load_question_list("mixed", lists, allow_draft=True)
-    assert [p["pin"]["pages"] for p in spec["policies"]] == [2, 1]
+    assert [p["pin"]["pages"] for p in spec["policies"]] == [2, 2]
     for policy in spec["policies"]:
         assert policy["pin"]["sha256"] == hashlib.sha256(
             (spec["policies_dir"] / policy["file"]).read_bytes()).hexdigest()
@@ -270,7 +272,9 @@ def test_form_progress_review_fix_and_return_to_new_case(width, app_options, mon
         browser.close()
 
 
-@pytest.mark.parametrize("content", [b"not a PDF", pdf_bytes(), pdf_bytes("Readable", empty_second_page=True)])
+@pytest.mark.parametrize("content", [b"not a PDF", pdf_bytes(),
+                                     (ROOT / "tests/fixtures/scanned/mixed.pdf").read_bytes()],
+                         ids=["not-pdf", "no-text", "scanned-page"])
 def test_scanned_or_bad_rules_fail_plainly_and_keep_uploads(content, app_options):
     with serving(None, None, None, **app_options) as base, sync_playwright() as p:
         request = p.request.new_context()

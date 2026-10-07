@@ -37,7 +37,7 @@ and `notes.md` keeps a one-line link.
 For CDU IT Code Fair 2026, AI Challenge brief 6, team AIC014. An NT decision-maker reads a long
 case file against the rules: Claude cites verbatim quotes, code checks them, Jev reads a second
 time, and the officer sets every outcome. Two showcase cases: A-0142 (urban priority housing) and
-W-01 (Working with Children Clearance). Dates: numbers frozen 7 Oct, ZIP emailed 8 Oct, pitch 15 Oct.
+W-01 (Working with Children Clearance). Dates: numbers frozen 7 Oct, ZIP uploaded 8 Oct (registration link, not email), pitch 15 Oct.
 
 - **Read `docs/blueprint.md` before** planning a task, changing a stage, the screen or a number,
   and whenever code seems to contradict a decision.

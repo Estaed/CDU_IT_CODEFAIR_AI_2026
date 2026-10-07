@@ -17,9 +17,10 @@ Lines marked *(draft, Eko)* are notes taken for Tarık; his own words replace th
 Source: <https://itcodefair.cdu.edu.au/ai-challenge-task-details/>, read 2026-10-03.
 
 **Competition facts (site and organiser mail, read 2026-10-03):**
-- **Submission, 8 Oct 2026:** a ZIP emailed to itcodefair@cdu.edu.au with subject
-  "AI Challenge Submission – [Group] – IT Code Fair 2026". It holds the report, Python source with
-  remarks and a README with reproduction steps.
+- **Submission, 8 Oct 2026 (organiser reminder, 6 Oct; site read 7 Oct):** one ZIP uploaded through
+  the "Submit Here" link in the 3 Sep registration email (AIC014), **not by email**. It holds the
+  report (with links to every data source), Python source with remarks and a README with
+  reproduction steps, the presentation slides, and every file needed to run the project.
 - **Challenge Day, 15 Oct:** 10-minute pitch plus 5-minute Q&A, face to face.
 - **Judges:** Sarah Strzelecki and Brett Riley (NTG, DCDD), Dr Cat Kutay (CDU), Rushi Vyas (OpenAI).
 - **Criteria (unweighted):** datasets, creativity, technical sophistication, context and practicality,

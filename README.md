@@ -21,13 +21,21 @@ policies are real and are not bundled.
 
 ## Quick start: replay, no keys, no network
 
-You need Python 3.13 and [uv](https://docs.astral.sh/uv/) 0.12 or later, plus the five policy
-PDFs (see [Policy PDFs](#policy-pdfs); the NT site blocks scripted downloads).
+You need Python 3.13 and [uv](https://docs.astral.sh/uv/) 0.12 or later. The results of both
+showcase cases are committed, so opening them needs nothing else:
 
 ```sh
 uv sync
+uv run python -m readmark serve      # http://localhost:8765/ : A-0142 and W-01 on the case home
+```
+
+Without the policy PDFs, only the full text of a policy page stays closed; the quoted policy
+sentences still show. To rebuild the results, save the policy PDFs first (see
+[Policy PDFs](#policy-pdfs); the NT housing site blocks scripted downloads), then:
+
+```sh
 uv run python -m readmark run --case A-0142 --replay   # rebuilds runs/A-0142/ from the cache
-uv run python -m readmark serve --case A-0142          # http://localhost:8765/
+uv run python -m readmark run --case W-01 --replay
 ```
 
 Every model response from our runs is in the replay cache (`runs/<case>/cache/`), so replay
@@ -80,8 +88,8 @@ tests use.
 
 ## What else is on the screen
 
-- **Case home:** A-0142 (NT priority housing), W-01 (NT Working with Children Clearance) once
-  its checks are ready, and your own uploads, grouped as in progress or completed. Evaluation
+- **Case home:** A-0142 (NT priority housing), W-01 (NT Working with Children Clearance)
+  and your own uploads, grouped as in progress or completed. Evaluation
   files stay available to `run` and `eval`, and stay off the home screen.
 - **Intake note:** a receiving officer's neutral description of what the file holds. Close it
   or reopen it with **Intake note**; it never recommends an outcome.
@@ -172,8 +180,8 @@ matches word for word), never silently.
 </details>
 
 W-01 contains 24 synthetic application PDFs (104 pages), with `facts.csv`, `gold.json` and
-`intake-note.json` in `data/cases/W-01/`. Its question list and live run are prepared separately;
-until a run exists, home shows A-0142 alone. The answer key is evaluation data, never model input.
+`intake-note.json` in `data/cases/W-01/`. Its run is committed and replays
+offline like A-0142. The answer key is evaluation data, never model input.
 
 Download its two fixed test rule PDFs from the NT legislation site:
 

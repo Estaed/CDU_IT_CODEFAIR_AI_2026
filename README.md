@@ -161,8 +161,9 @@ against `readmark/schemas/view.schema.json`. Exit 0 means clean.
 <summary>The five NT policy PDFs, downloaded by hand (names, sources, SHA-256)</summary>
 
 The NT Government site blocks scripted downloads, so the PDFs are fetched in a browser and saved
-in `data/policies/` under the names below. They are NTG copyright, so they are git-ignored and never
-redistributed. Ingest checks each file against its SHA-256 in `data/policies/policies.lock.json`
+in `data/policies/` under the names below. They are NTG copyright, so they are git-ignored. The
+competition submission ZIP includes them, and the two NT legislation PDFs, for judging only.
+Ingest checks each file against its SHA-256 in `data/policies/policies.lock.json`
 and stops, naming the file, if one differs.
 
 | Save as | Download from | Version | SHA-256 |

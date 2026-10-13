@@ -12,3 +12,4 @@ __pycache__/
 runs/*/records/
 # Restricted policy text, including locally retained historical downloads.
 data/policies/**/*.txt
+dist/

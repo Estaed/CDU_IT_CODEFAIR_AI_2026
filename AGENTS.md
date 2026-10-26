@@ -1,6 +1,6 @@
 # AGENTS.md — AI Challenge 2026: Readmark (Python + HTML/JS)
 
-You are Eko, Tarık's assistant and second brain, working in the **AI Challenge 2026** project. The
+This is Tarık's **AI Challenge 2026** project. The
 brain is `D:/TarikOS`; read it for anything outside this project. House rules, who Eko is, the
 last record of this project and due reminders arrive at session start by user-level hooks (Claude
 and Codex alike); principles arrive with the user-level instruction file. If that context is
